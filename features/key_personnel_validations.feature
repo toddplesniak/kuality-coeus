@@ -7,7 +7,7 @@ Feature: Key Personnel Validations
   Background: KC user is logged in as admin
     Given   I'm logged in with admin
     And     I initiate a proposal
-
+  @test
   Scenario Outline: Unable to add Credit Split percentages above 100 or less than 0
     When    I add a Principal Investigator with a <Type> credit split of <Value>
     Then    I should see an error that the credit split is not a valid percentage
@@ -33,7 +33,3 @@ Feature: Key Personnel Validations
   Scenario: Attempt to add person with invalid unit
     When    I add a key person with an invalid unit type
     Then    I should see an error that says please select a valid unit
-
-  Scenario: Change role of person entered incorrectly
-    When    I add a person with an incorrect role
-    Then    I should be able to update the person's role
