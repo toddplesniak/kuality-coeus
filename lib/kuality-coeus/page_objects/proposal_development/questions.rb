@@ -1,6 +1,7 @@
 class Questions < ProposalDevelopmentDocument
 
   proposal_header_elements
+  error_messages
 
   # Used strictly for navigation validation...
   element(:questions_header) { |b| b.frm.h2(text: 'A. Proposal Questions') }
@@ -24,7 +25,14 @@ class Questions < ProposalDevelopmentDocument
   # page.civil_service "Y" #=> The "Y" is the value of the instance variable, and could also be "N"
   # ...
   [0,1,4,7,10,13,16,19,21,28,31,32,34,36,37,38,39,40,41,42,43,64,65,66,68,70,72,75,77,80,81].each_with_index do |num, index|
-    action("s2s_r#{index+1}".to_sym) { |answer, b| b.q_num_div(num).radio(value: answer).set unless answer==nil }
+    action("s2s_r#{index+1}"
+           .to_sym) { |answer, b|
+                                  b
+                                  .q_num_div(
+                                      num.to_s)
+                                  .radio(value: answer)
+                                  .set
+    }
   end
   alias_method :civil_service, :s2s_r1
   alias_method :total_ftes, :s2s_r2
@@ -137,5 +145,9 @@ class Questions < ProposalDevelopmentDocument
 
   # Used in other elements. Not needed outside this class
   action(:q_num_div) { |index, b| b.frm.div(id: "HD0-QN#{index}div").div(class: 'Qresponsediv') }
+
+  #Action buttons
+  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
+  action(:save) { |b| b.save_button.click }
 
 end

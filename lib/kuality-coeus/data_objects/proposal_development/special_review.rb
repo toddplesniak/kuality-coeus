@@ -5,36 +5,51 @@ class SpecialReviewObject
   include StringFactory
   include Navigation
 
-  attr_accessor :type, :approval_status, :document_id
+  attr_accessor :type, :approval_status, :document_id, :protocol_number,
+                :application_date, :approval_date, :expiration_date,
+                :exemption_number
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
-      type: :random,
-      approval_status: :random
+      type:            '::random::',
+      approval_status: '::random::'
     }
 
     set_options(defaults.merge(opts))
-    requires @document_id
+    requires :document_id
   end
 
   def create
     navigate
     on SpecialReview do |add|
-      @type = add.type.pick @type
-      @approval_status = add.approval_status.pick @approval_status
+      add.add_type.pick! @type
+      case(@type)
+        when 'Human Subjects'
+          @approval_status='Pending/In Progress'
+        else
+          add.add_approval_status.pick! @approval_status
+      end
+      add.add_protocol_number.fit @protocol_number
+      add.add_application_date.fit @application_date
+      add.add_approval_date.fit @approval_date
+      add.add_expiration_date.fit @expiration_date
+      add.add_exemption_number.fit @exemption_number
       add.add
+      break if add.error_messages_div.present? # No need to save if we've thrown an error already
       add.save
     end
   end
 
   def edit opts={}
-
+    # TODO
     set_options(opts)
   end
 
+  # =======
   private
+  # =======
 
   def navigate
     open_document unless on_document?
@@ -65,5 +80,12 @@ class SpecialReviewCollection < Array
     self.collect { |s_r| s_r.approval_status }
   end
 
-end # SpecialReviewCollection
+  # A warning about this method:
+  # it's going to return the FIRST match in the collection,
+  # under the assumption that there won't be multiple
+  # Special Review items of the same type.
+  def type(srtype)
+    self.find { |s_r| s_r.type==srtype}
+  end
 
+end # SpecialReviewCollection

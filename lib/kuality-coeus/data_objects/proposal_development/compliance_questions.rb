@@ -11,7 +11,7 @@ class ComplianceQuestionsObject
   def initialize(browser, opts={})
     @browser = browser
     # PLEASE NOTE:
-    # This is a unique data object class in that
+    # This is an unusual data object class in that
     # it breaks the typical model for radio button
     # methods and their associated class instance variables
     #
@@ -19,18 +19,17 @@ class ComplianceQuestionsObject
     # to use "Y" and "N" as the instance variables associated with them.
     defaults = {
         agree_to_ethical_conduct: 'Y',
-        conduct_review_date: right_now[:date_w_slashes],
+        conduct_review_date:      right_now[:date_w_slashes],
     }
     set_options(defaults.merge(opts))
-    requires @document_id
+    requires :document_id
   end
 
   def create
     navigate
     on Questions do |cq|
       cq.show_compliance_questions
-      cq.agree_to_nih_policy @agree_to_ethical_conduct
-      cq.policy_review_date.fit @conduct_review_date
+      fill_out cq, :agree_to_ethical_conduct, :conduct_review_date
       cq.save
     end
   end

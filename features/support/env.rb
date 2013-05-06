@@ -21,6 +21,8 @@ require 'rspec/matchers'
 
 World Foundry
 World StringFactory
+World DateFactory
+World Utilities
 
 kuality = Kuality.new @config[:browser]
 
@@ -28,4 +30,5 @@ Before do
   @browser = kuality.browser
 end
 
-at_exit { kuality.browser.close }
+# Comment out to help with debugging...
+# at_exit { kuality.browser.close }
