@@ -2,14 +2,22 @@ And /^I initiate a proposal$/ do
   @proposal = create ProposalDevelopmentObject
 end
 
-When /^I begin a proposal without a (.*)$/ do |name|
-  name=~/Type/ || name=='Lead Unit' ? value='select' : value=''
-  field = StringFactory.damballa(name)
+When /^I initiate a proposal but miss a required field$/ do
+  @name = ['Description', 'Proposal Type', 'Lead Unit', 'Activity Type',
+           'Project Title', 'Sponsor Code', 'Project Start Date', 'Project End Date'
+          ].sample
+  @name=~/Type/ || @name=='Lead Unit' ? value='select' : value=''
+  field = snake_case(@name)
   @proposal = create ProposalDevelopmentObject, field=>value
 end
 
-Then /^I should see an error that says "(.* is a required field.)"$/ do |text|
-  text=~/Description/ ? error='Document '+text : error=text
+When /^I begin a proposal with a '(.*)' sponsor type$/ do |type|
+  @proposal = create ProposalDevelopmentObject, sponsor_type_code: type
+end
+
+Then /^I should see an error that says the field is required$/ do
+  text="#{@name} is a required field."
+  @name=='Description' ? error='Document '+text : error=text
   on(Proposal) do |page|
     page.error_summary.wait_until_present(5)
     page.errors.should include error
@@ -20,7 +28,11 @@ When /^I begin a proposal with an invalid sponsor code$/ do
   @proposal = create ProposalDevelopmentObject, :sponsor_code=>'000000'
 end
 
-Then /^I should see an error that says valid sponsor code required$/ do
+Given /^I initiate a proposal without a sponsor deadline date$/ do
+  @proposal = create ProposalDevelopmentObject, sponsor_deadline_date: ''
+end
+
+Then /^I should see an error that says a valid sponsor code is required$/ do
   on(Proposal).errors.should include 'A valid Sponsor Code (Sponsor) must be selected.'
 end
 
@@ -40,11 +52,11 @@ When /^I complete the proposal$/ do
 end
 
 When /^I add (.*) as (a|an) (.*) to the proposal permissions$/ do |username, x, role|
-  @proposal.permissions.send("#{StringFactory.damballa(role)}s") << username
+  @proposal.permissions.send("#{snake_case(role)}s") << username
   @proposal.permissions.assign
 end
 
 When /^I save and close the proposal document$/ do
   @proposal.close
-  on(QuestionDialogPage).yes
+  on(Confirmation).yes
 end
