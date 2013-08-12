@@ -1,7 +1,6 @@
 class KeyPersonnel < ProposalDevelopmentDocument
 
   proposal_header_elements
-  error_messages
 
   action(:employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.KcPerson!!).(((personId:newPersonId))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
   action(:non_employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.NonOrganizationalRolodex!!).(((rolodexId:newRolodexId))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
@@ -9,6 +8,8 @@ class KeyPersonnel < ProposalDevelopmentDocument
   element(:key_person_role) { |b| b.frm.text_field(id: 'newProposalPerson.projectRole') }
   action(:add_person) { |b| b.frm.button(name: 'methodToCall.insertProposalPerson').click }
   action(:clear) { |b| b.frm.button(name: 'methodToCall.clearProposalPerson').click }
+
+  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
 
   value(:person_name) { |b| b.frm.table(class: 'grid')[0][1].text }
 
@@ -37,6 +38,14 @@ class KeyPersonnel < ProposalDevelopmentDocument
   action(:role) { |full_name, p| p.person_div(full_name).select(name: /document.developmentProposalList[\d+].proposalPersons[\d+].proposalPersonRoleId/) }
   action(:user_name) { |full_name, p| p.person_div(full_name).table[1][3].text }
   action(:home_unit) { |full_name, p| p.person_div(full_name).table[8][1].text }
+  action(:era_commons_name) { |full_name, p| p.person_div(full_name).text_field(name: /eraCommonsUserName/) }
+
+  # Degrees...
+  action(:degree_type) { |full_name, p| p.degrees_div(full_name).select(name: 'newProposalPersonDegree[0].degreeCode') }
+  action(:degree_description) { |full_name, p| p.degrees_div(full_name).text_field(name: 'newProposalPersonDegree[0].degree') }
+  action(:graduation_year) { |full_name, p| p.degrees_div(full_name).text_field(name: 'newProposalPersonDegree[0].graduationYear') }
+  action(:school) { |full_name, p| p.degrees_div(full_name).text_field(name: 'newProposalPersonDegree[0].school') }
+  action(:add_degree) { |full_name, p| p.degrees_div(full_name).button(name: 'methodToCall.insertDegree.document.developmentProposalList[0].proposalPersons[0].line').click }
 
   # Unit Details...
   action(:unit_details_errors_div) { |full_name, p| p.unit_div(full_name).div(class: 'left-errmsg-tab').div }
@@ -109,6 +118,7 @@ class KeyPersonnel < ProposalDevelopmentDocument
   end
 
   action(:person_div) { |full_name, b| b.frm.div(id: "tab-#{nsp(full_name)}:PersonDetails-div") }
+  action(:degrees_div) { |full_name, b| b.frm.div(id: "tab-#{nsp(full_name)}:Degrees-div") }
   action(:unit_div) { |full_name, b| b.frm.div(id: "tab-#{nsp(full_name)}:UnitDetails-div") }
   action(:questions_div) { |full_name, b| b.frm.span(class: 'subhead-left', text: full_name).parent.parent.div(class: 'questionnaireContent') }
   action(:certification_div) { |full_name, b| b.frm.div(id: "tab-#{nsp(full_name)}:Certify-div") }

@@ -3,10 +3,9 @@ class PermissionsObject
   include Foundry
   include DataFactory
   include Navigation
-  include Utilities
 
   attr_accessor :document_id, :aggregators, :budget_creators, :narrative_writers,
-                :viewers, :approvers, :deleters
+                :viewers, :approvers, :delete_proposals
 
   def initialize(browser, opts={})
     @browser = browser
@@ -15,7 +14,7 @@ class PermissionsObject
         budget_creators:   [], # Arrays should contain usernames
         narrative_writers: [],
         viewers:           [],
-        deleters:          [],
+        delete_proposals:  [],
         approvers:         []
     }
 
@@ -89,20 +88,8 @@ class PermissionsObject
   # Nav Aids...
 
   def navigate
-    open_document
-    on(Proposal).permissions unless on_page?
-  end
-
-  def on_page?
-    # Note, the rescue clause should be
-    # removed when the Selenium bug with
-    # firefox elements gets fixed. This is
-    # still broken in selenium-webdriver 2.29
-    begin
-      on(Permissions).user_name.exist?
-    rescue
-      false
-    end
+    open_document @doc_type
+    on(Proposal).permissions unless on_page?(on(Permissions).user_name)
   end
 
   # Add/Remove roles here, as needed...
@@ -113,7 +100,7 @@ class PermissionsObject
         :@budget_creators=>'Budget Creator',
         :@narrative_writers=>'Narrative Writer',
         :@approvers=>'approver',
-        :@deleters=>'Delete Proposal'
+        :@delete_proposals=>'Delete Proposal'
     }
   end
 

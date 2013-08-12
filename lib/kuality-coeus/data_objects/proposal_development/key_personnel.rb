@@ -2,17 +2,15 @@ class KeyPersonObject
 
   include Foundry
   include DataFactory
-  include DateFactory
   include StringFactory
   include Navigation
-  include Utilities
 
   attr_accessor :first_name, :last_name, :role, :document_id, :key_person_role,
                 :full_name, :user_name, :home_unit, :units, :responsibility,
                 :financial, :recognition, :certified, :certify_info_true,
                 :potential_for_conflicts, :submitted_financial_disclosures,
                 :lobbying_activities, :excluded_from_transactions, :familiar_with_pla,
-                :space, :other_key_persons
+                :space, :other_key_persons, :era_commons_name, :degrees
 
   # Note that you must pass in both first and last names (or neither).
   def initialize(browser, opts={})
@@ -21,10 +19,7 @@ class KeyPersonObject
     defaults = {
       role:                            'Principal Investigator',
       units:                           [],
-      space:                           rand_num,
-      responsibility:                  rand_num,
-      financial:                       rand_num,
-      recognition:                     rand_num,
+      degrees:                         DegreesCollection.new,
       certified:                       true, # Set this to false if you do not want any Proposal Person Certification Questions answered
       certify_info_true:               'Y',
       potential_for_conflict:          'Y',
@@ -60,10 +55,18 @@ class KeyPersonObject
       end
     end
     on KeyPersonnel do |person|
-      person.proposal_role.pick! @role
+      # This conditional exists to deal with the fact that
+      # a Principal Investigator can also be called a "PI/Contact",
+      # in cases where it's an NIH proposal.
+      if person.proposal_role.include? @role
+        person.proposal_role.select @role
+      else
+        person.proposal_role.select_value role_value[@role]
+        @role = person.proposal_role.selected_options[0].text
+      end
       person.key_person_role.fit @key_person_role
       person.add_person
-      break if person.add_person_errors_div.present? # ..we've thrown an error, so no need to continue this method...
+      break unless person.add_person_errors.empty? # ..we've thrown an error, so no need to continue this method...
       person.expand_all
       @user_name=person.user_name @full_name
       @home_unit=person.home_unit @full_name
@@ -106,10 +109,10 @@ class KeyPersonObject
       # If it's a key person without units then they won't have credit splits,
       # otherwise, the person will, so fill them out...
       if @key_person_role==nil || !@units.empty?
-        person.space(@full_name).set @space
-        person.responsibility(@full_name).set @responsibility
-        person.financial(@full_name).set @financial
-        person.recognition(@full_name).set @recognition
+        person.space(@full_name).fit @space
+        person.responsibility(@full_name).fit @responsibility
+        person.financial(@full_name).fit @financial
+        person.recognition(@full_name).fit @recognition
       end
 
       # Proposal Person Certification
@@ -120,15 +123,13 @@ class KeyPersonObject
          cert_questions.each { |q| set(q, nil) }
       end
 
-      # Add gathering of more attributes here as needed
+      # Add gathering/setting of more attributes here as needed
+      person.era_commons_name(@full_name).fit @era_commons_name
       person.save
     end
   end
 
   # IMPORTANT NOTE:
-  # Currently this method only edits the person credit splits
-  # for the data object!
-  #
   # Add edit options to this method as needed.
   #
   # HOWEVER:
@@ -139,10 +140,12 @@ class KeyPersonObject
     navigate
     on KeyPersonnel do |update|
       update.expand_all
-      update.space(@full_name).fit opts[:space]
-      update.responsibility(@full_name).fit opts[:responsibility]
-      update.financial(@full_name).fit opts[:financial]
-      update.recognition(@full_name).fit opts[:recognition]
+      # Note: This is a dangerous short cut, as it may not
+      # apply to every field that could be edited with this
+      # method...
+      opts.each do |field, value|
+        update.send(field, @full_name).fit value
+      end
       update.save
     end
     update_options(opts)
@@ -173,6 +176,14 @@ class KeyPersonObject
     end
   end
 
+  def add_degree_info opts={}
+    defaults = { document_id: @document_id,
+                 person: @full_name }
+    degree = make DegreeObject, defaults.merge(opts)
+    degree.create
+    @degrees << degree
+  end
+
   def delete
     navigate
     on KeyPersonnel do |person|
@@ -197,7 +208,7 @@ class KeyPersonObject
   # Nav Aids...
 
   def navigate
-    open_document unless on_document?
+    open_document @doc_type
     on(Proposal).key_personnel unless on_page?
   end
 
@@ -213,10 +224,6 @@ class KeyPersonObject
     end
   end
 
-  def rand_num
-    "#{rand(100)}.#{rand(100)}"
-  end
-
   def cert_questions
     [:certify_info_true,
      :potential_for_conflict,
@@ -224,6 +231,15 @@ class KeyPersonObject
      :lobbying_activities,
      :excluded_from_transactions,
      :familiar_with_pla]
+  end
+
+  def role_value
+    {
+        'Principal Investigator' => 'PI',
+        'PI/Contact' => 'PI',
+        'Co-Investigator' => 'COI',
+        'Key Person' => 'KP'
+    }
   end
 
 end # KeyPersonObject
@@ -235,23 +251,19 @@ class KeyPersonnelCollection < Array
   end
 
   def roles
-    rls = self.collect { |person| person.role }
-    rls.uniq
+    self.collect{ |person| person.role }.uniq
   end
 
   def unit_names
-    names = units.collect { |unit| unit[:name] }
-    names.uniq
+    units.collect{ |unit| unit[:name] }.uniq
   end
 
   def unit_numbers
-    nums = units.collect { |unit| unit[:number] }
-    nums.uniq
+    units.collect{ |unit| unit[:number] }.uniq
   end
 
   def units
-    units=self.collect { |person| person.units }
-    units.flatten
+    self.collect{ |person| person.units }.flatten
   end
 
   def person(full_name)
@@ -265,7 +277,7 @@ class KeyPersonnelCollection < Array
   end
 
   def principal_investigator
-    self.find { |person| person.role=='Principal Investigator' }
+    self.find { |person| person.role=='Principal Investigator' || person.role=='PI/Contact' }
   end
 
   def co_investigator

@@ -1,7 +1,39 @@
 class UserCollection < Hash
 
+  # Returns an array of all users with the specified role. Takes the role name as a string.
+  # The array is shuffled so that #have_role('role name')[0] will be a random selection
+  # from the list of matching users.
   def have_role(role)
     self.find_all{|user| user[1][:roles] != nil && user[1][:roles].include?(role)}.shuffle
+  end
+
+  # Returns an array of all users with the specified campus code. Takes the code as a string.
+  # The array is shuffled so that #with_campus_code('code')[0] will be a random selection
+  # from the list of matching users.
+  def with_campus_code(code)
+    self.find_all{|user| user[1][:campus_code]==code }.shuffle
+  end
+
+  # Returns an array of all users with the specified affiliation type. Takes the type name as a string.
+  # The array is shuffled so that #with_affiliation_type('type name')[0] will be a random selection
+  # from the list of matching users.
+  def with_affiliation_type(type)
+    self.find_all{|user| user[1][:affiliation_type]==type }.shuffle
+  end
+
+  def with_employee_type(type)
+    self.find_all{|user| user[1][:employee_type]==type }.shuffle
+  end
+
+  def with_primary_dept_code(code)
+    self.find_all{|user| user[1][:primary_dept_code]==code }.shuffle
+  end
+
+  # This is a short cut to "knowing" which user can be used as a PI for
+  # a Grants.gov proposal. At some point this should be eliminated--as in,
+  # when we know better what exactly a grants.gov PI requires.
+  def era_commons_user(username)
+    self.find{ |user| user[1][:era_commons_user_name]==username }[0]
   end
 
 end
@@ -12,13 +44,14 @@ class UserObject
   include DataFactory
   include Navigation
 
-  attr_accessor :user_name,
+  attr_accessor :user_name, :principal_id,
                 :first_name, :last_name,
                 :description, :affiliation_type, :campus_code,
-                :employee_id, :employee_status, :employee_type, :base_salary,
-                :groups, :roles, :role_qualifiers,
-                :address_type, :line_1, :city, :state, :country,
-                :phone_type, :phone_number
+                :employee_id, :employee_status, :employee_type, :base_salary, :primary_dept_code,
+                :groups, :roles, :role_qualifiers, :addresses, :phones, :emails,
+                :primary_title, :directory_title, :citizenship_type,
+                :era_commons_user_name, :graduate_student_count, :billing_element,
+                :directory_department
 
   USERS = UserCollection[YAML.load_file("#{File.dirname(__FILE__)}/users.yml")]
 
@@ -73,7 +106,20 @@ class UserObject
   end
 
   def create
-    visit(SystemAdmin).person unless PersonLookup.new(@browser).principal_id.present?
+    # First we have to make sure we're logged in with
+    # a user that has permissions to create other users...
+    if login_info_div.text =~ /admin$/
+      visit(SystemAdmin).person unless PersonLookup.new(@browser).principal_id.present?
+    else
+      @logged_in_user_name = login_info_div.text[/\w+$/]
+      visit Login do |log_in|
+        log_in.close_parents
+        log_in.username.set 'admin'
+        log_in.login
+      end
+      visit(SystemAdmin).person
+    end
+    # Now we're certain the create button will be there, so...
     on(PersonLookup).create
     on Person do |add|
       add.expand_all
@@ -90,7 +136,7 @@ class UserObject
       # TODO: Another thing that will need to be changed if ever there's a need to test multiple
       # lines of employment:
       unless @employee_id.nil?
-        fill_out add, :employee_id, :employee_status, :employee_type, :base_salary
+        fill_out add, :employee_id, :employee_status, :employee_type, :base_salary, :primary_dept_code
         add.primary_employment.set
         add.add_employment_information
       end
@@ -101,7 +147,6 @@ class UserObject
         end
       end
       unless @role_qualifiers.nil?
-        puts @role_qualifiers.inspect
         @role_qualifiers.each do |role, unit|
           add.unit_number(role).set unit
           add.add_role_qualifier role
@@ -113,17 +158,56 @@ class UserObject
           add.add_group
         end
       end
-      unless @line_1.nil?
-        fill_out add, :address_type, :line_1, :line_2, :line_3, :city, :state, :country
-        add.address_default.set
-        add.add_address
+      unless @addresses.nil?
+        @addresses.each do |address|
+          add.address_type.fit address[:type]
+          add.line_1.fit address[:line_1]
+          add.city.fit address[:city]
+          add.state.pick! address[:state]
+          add.country.pick! address[:country]
+          add.zip.fit address[:zip]
+          add.address_default.fit address[:default]
+          add.add_address
+        end
       end
-      unless @phone_number.nil?
-        fill_out add, :phone_type, :phone_number
-        add.phone_default.set
-        add.add_phone
+      unless @phones.nil?
+        @phones.each do |phone|
+          add.phone_type.fit phone[:type]
+          add.phone_number.fit phone[:number]
+          add.phone_default.fit phone[:default]
+          add.add_phone
+        end
       end
+      unless @emails.nil?
+        @emails.each do |email|
+          add.email.fit email[:email]
+          add.email_type.pick! email[:type]
+          add.email_default.fit email[:default]
+          add.add_email
+        end
+      end
+      # A breaking of the design pattern, but there's no other
+      # way to obtain this number:
+      @principal_id = add.principal_id
       add.blanket_approve
+    end
+    visit(SystemAdmin).person_extended_attributes
+    on(PersonExtendedAttributesLookup).create
+    on PersonExtendedAttributes do |page|
+      page.expand_all
+      fill_out page, :description, :primary_title, :directory_title, :citizenship_type,
+               :era_commons_user_name, :graduate_student_count, :billing_element,
+               :principal_id, :directory_department
+      page.blanket_approve
+    end
+    # Now that we're done with the user creation, we can log back in
+    # with the other user, if necessary...
+    unless @logged_in_user_name.nil?
+      s_o.click
+      on Login do |log_in|
+        log_in.username.set @logged_in_user_name
+        log_in.login
+      end
     end
   end
 
@@ -178,11 +262,29 @@ class UserObject
   alias_method :log_out, :sign_out
 
   def exist?
-    visit(SystemAdmin).person
+    visit SystemAdmin do |page|
+      if username_field.present?
+        UserObject.new(@browser).log_in
+      end
+      page.person
+    end
     on PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
-      return search.results_table.present? #TODO: Make this a little more robust, as there's a slim chance for a false positive
+      begin
+        if search.item_row(@user_name).present?
+          # FIXME!
+          # This is a coding abomination to include
+          # this here, but it's here until I can come
+          # up with a better solution...
+          @principal_id = search.item_row(@user_name).link(title: /^Person Principal ID=\d+/).text
+          return true
+        else
+          return false
+        end
+      rescue
+        return false
+      end
     end
   end
   alias_method :exists?, :exist?

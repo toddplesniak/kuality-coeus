@@ -1,0 +1,3 @@
+class ProposalLookup < Lookups
+
+end
