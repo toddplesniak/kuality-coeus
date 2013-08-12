@@ -2,7 +2,6 @@ class ComplianceQuestionsObject
 
   include Foundry
   include DataFactory
-  include StringFactory
   include DateFactory
   include Navigation
 
@@ -41,20 +40,8 @@ class ComplianceQuestionsObject
   # Nav Aids...
 
   def navigate
-    open_document unless on_document?
-    on(Proposal).questions unless on_page?
-  end
-
-  def on_page?
-    # Note, the rescue clause should be
-    # removed when the Selenium bug with
-    # firefox elements gets fixed. This is
-    # still broken in selenium-webdriver 2.29
-    begin
-      on(Questions).questions_header.exist?
-    rescue
-      false
-    end
+    open_document @doc_type
+    on(Proposal).questions unless on_page?(on(Questions).questions_header)
   end
 
 end

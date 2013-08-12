@@ -7,7 +7,7 @@ class SpecialReviewObject
 
   attr_accessor :type, :approval_status, :document_id, :protocol_number,
                 :application_date, :approval_date, :expiration_date,
-                :exemption_number
+                :exemption_number, :doc_type
 
   def initialize(browser, opts={})
     @browser = browser
@@ -18,7 +18,7 @@ class SpecialReviewObject
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id
+    requires :document_id, :doc_type
   end
 
   def create
@@ -52,20 +52,8 @@ class SpecialReviewObject
   # =======
 
   def navigate
-    open_document unless on_document?
-    on(Proposal).special_review unless on_page?
-  end
-
-  def on_page?
-    # Note, the rescue clause should be
-    # removed when the Selenium bug with
-    # firefox elements gets fixed. This is
-    # still broken in selenium-webdriver 2.29
-    begin
-      on(SpecialReview).type.exist?
-    rescue
-      false
-    end
+    open_document @doc_type
+    on(Proposal).special_review unless on_page?(on(SpecialReview).type)
   end
 
 end # SpecialReviewObject

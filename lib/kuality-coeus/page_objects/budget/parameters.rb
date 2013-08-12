@@ -6,6 +6,7 @@ class Parameters < BudgetDocument
   element(:total_direct_cost_limit) { |b| b.frm.text_field(name: 'document.budget.totalDirectCostLimit') }
   element(:on_off_campus) { |b| b.frm.select(name: 'document.budget.onOffCampusFlag') }
   element(:comments) { |b| b.frm.text_field(name: 'document.budget.comments') }
+  element(:budget_status) { |b| b.frm.select(name: 'document.budget.budgetStatus') }
   element(:final) { |b| b.frm.checkbox(name: 'document.budget.finalVersionFlag') }
   element(:modular_budget) { |b| b.frm.checkbox(name: 'document.budget.modularBudgetFlag') }
   element(:residual_funds) { |b| b.frm.text_field(name: 'document.budget.residualFunds') }
@@ -39,16 +40,26 @@ class Parameters < BudgetDocument
   action(:direct_cost_limit_period) { |period, b| b.frm.text_field(id: "document.budget.budgetPeriods[#{period-1}].directCostLimit") }
   action(:delete_period) { |period, b| b.frm.button(name: "methodToCall.deleteBudgetPeriod.line#{period-1}.anchor12").click }
 
+  value(:period_count) { |b| b.frm.text_fields(title: 'Period Start Date').size-1 }
+
   action(:recalculate) { |b| b.frm.button(name: 'methodToCall.recalculateBudgetPeriod.anchorBudgetPeriodsTotals').click }
 
-  action(:generate_all_periods) { |b| b.frm.button(name: 'methodToCall.generateAllPeriods').click }
-  action(:calculate_all_periods) { |b| b.frm.button(name: 'methodToCall.questionCalculateAllPeriods').click }
-  action(:default_periods) { |b| b.frm.button(name: 'methodToCall.defaultPeriods').click }
+  element(:warnings) do |b|
+    warns = []
+    b.tab_containers.each do |div|
+      if div.li.exist?
+        warns << div.lis.collect{ |li| li.text }
+      end
+    end
+    warns.flatten
+  end
 
   # =======
   private
   # =======
 
   element(:bo_table) { |b| b.frm.div(id: 'tab-BudgetOverview-div').table }
+
+  element(:tab_containers) { |b| b.divs(class: 'tab-container') }
 
 end

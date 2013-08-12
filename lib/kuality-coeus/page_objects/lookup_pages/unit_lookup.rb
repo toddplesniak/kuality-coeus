@@ -1,0 +1,3 @@
+class UnitLookup < Lookups
+
+end

@@ -1,14 +1,14 @@
 class ProposalActions < ProposalDevelopmentDocument
 
   proposal_header_elements
+  route_log
+  tiny_buttons
+  validation_elements
+
+  glbl 'Submit To Sponsor', 'Submit To S2S', 'Send AdHoc Requests'
 
   # Data Validation
   element(:data_validation_header) { |b| b.frm.h2(text: 'Data Validation') }
-
-  element(:validation_button) { |b| b.frm.button(name: 'methodToCall.activate') }
-  action(:show_data_validation) { |b| b.frm.button(id: 'tab-DataValidation-imageToggle').click; b.validation_button.wait_until_present }
-  action(:turn_on_validation) { |b| b.validation_button.click; b.key_personnel_button.wait_until_present }
-
   element(:key_personnel_errors_button) { |b| b.frm.button(name: 'methodToCall.toggleTab.tabKeyPersonnelInformationValidationErrors') }
   action(:show_key_personnel_errors) { |b| b.key_personnel_button.click }
   element(:key_personnel_errors) { |b| b.frm.tbody(id: 'tab-KeyPersonnelInformationValidationErrors-div').tds(width: '94%') }
@@ -30,6 +30,11 @@ class ProposalActions < ProposalDevelopmentDocument
   value(:unit_business_rules_errors) { |b| b.frm.td(text: 'Unit Business Rules Errors').parent.parent.td(class: 'datacell').text }
   value(:unit_business_rules_warnings) { |b| b.frm.td(text: 'Unit Business Rules Warnings').parent.parent.td(class: 'datacell').text }
 
+  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
+  element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
+  element(:disapprove_button) { |b| b.frm.button(name: 'methodToCall.disapprove') }
+  element(:reject_button) { |b| b.frm.button(name: 'methodToCall.reject') }
+
   # Proposal Hierarchy
 
   element(:link_child_proposal) { |b| b.frm.text_field(id: 'newHierarchyProposalNumber') }
@@ -47,31 +52,11 @@ class ProposalActions < ProposalDevelopmentDocument
   element(:name) { |b| b.frm.text_field(name: 'newAdHocRouteWorkgroup.recipientName') }
   action(:add_group_request) { |b| b.frm.button(name: 'methodToCall.insertAdHocRouteWorkgroup').click }
 
-  # Route Log
-  element(:route_log_iframe) { |b| b.frm.frame(name: 'routeLogIFrame') }
-  element(:actions_taken_table) { |b| b.route_log_iframe.div(id: 'tab-ActionsTaken-div').table }
-
-  value(:actions_taken) { |b| (b.actions_taken_table.rows.collect{ |row| row[1].text }.compact.uniq).reject{ |action| action==''} }
-
-  element(:pnd_act_req_table) { |b| b.route_log_iframe.div(id: 'tab-PendingActionRequests-div').table }
-
-  value(:action_requests) { |b| (b.pnd_act_req_table.rows.collect{ |row| row[1].text}).reject{ |action| action==''} }
-
-  action(:show_future_action_requests) { |b| b.route_log_iframe.h2(text: 'Future Action Requests').parent.parent.image(title: 'show').click }
-  element(:future_actions_table) { |b| b.route_log_iframe.div(id: 'tab-FutureActionRequests-div').table }
-
-  action(:requested_action_for) { |name, b| b.future_actions_table.tr(text: /#{name}/).td(index: 2).text }
-  
-  def validation_errors_and_warnings
-    errs = []
-      validation_err_war_fields.each { |field| errs << field.html[/(?<=>).*(?=<)/] }
-    errs
-  end
-
   # =======
   private
   # =======
 
-  element(:validation_err_war_fields) { |b| b.frm.tds(width: '94%') }
+  #Notifications: People look up
+  action(:employee_search) { |b| b.frm.button(name: /org.kuali.kra.bo.KcPerson/).click }
 
 end
