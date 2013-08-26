@@ -23,11 +23,11 @@ end
 
 When /^I? ?initiate a proposal but miss a required field$/ do
   # Pick a field at random for the test...
-  @required_field = ['Description', 'Proposal Type', 'Lead Unit', 'Activity Type',
+  @required_field = ['Description', 'Proposal Type', 'Activity Type',
            'Project Title', 'Sponsor Code', 'Project Start Date', 'Project End Date'
           ].sample
   # Properly set the nil value depending on the field type...
-  @required_field=~/Type/ || @required_field=='Lead Unit' ? value='select' : value=''
+  @required_field=~/Type/ ? value='select' : value=''
   # Transform the field name to the appropriate symbol...
   field = snake_case(@required_field)
   @proposal = create ProposalDevelopmentObject, field=>value
@@ -138,13 +138,6 @@ And /^I? ?add and mark complete all the required attachments for an NSF proposal
       @proposal.add_personnel_attachment person: person.full_name, type: type, file_name: 'test.pdf'
     end
   end
-end
-
-When /^I? ?add and mark complete all the required attachments for an NIH proposal$/ do
-  %w{Equipment Bibliography BudgetJustification ProjectSummary Narrative Facilities
-     PHS_ResearchPlan_SpecificAims PHS_ResearchPlan_ResearchStrategy}
-  .shuffle.each { |type| @proposal.add_proposal_attachment type: type, file_name: 'test.pdf', status: 'Complete' }
-  @proposal.key_personnel.each { |person| @proposal.add_personnel_attachment person: person.full_name, type: 'Biosketch', file_name: 'test.pdf' }
 end
 
 Then /^I should see an error that says the field is required$/ do

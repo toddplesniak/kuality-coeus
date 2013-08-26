@@ -1,6 +1,7 @@
 And /^I? ?add the (.*) user as an? (.*) to the key personnel proposal roles$/ do |user_role, proposal_role|
   user = get(user_role)
   @proposal.add_key_person first_name: user.first_name, last_name: user.last_name, role: proposal_role
+  @proposal.set_valid_credit_splits
 end
 
 When /^I? ?add (.*) as a Key Person with a role of (.*)$/ do |user_name, kp_role|
@@ -35,10 +36,13 @@ Then /^a key personnel error should say (.*)$/ do |error|
             'to select a valid unit' => 'Please select a valid Unit.',
             'a key person role is required' => 'Key Person Role is a required field.',
             'the credit split is not a valid percentage' => 'Credit Split is not a valid percentage.',
-            'the co-investigator requires at least one unit' => "At least one Unit is required for #{@proposal.key_personnel.co_investigator.full_name}.",
             'only one PI is allowed' => 'Only one proposal role of Principal Investigator is allowed.'
   }
   on(KeyPersonnel).errors.should include errors[error]
+end
+
+Then /^a key personnel error should appear, saying the co-investigator requires at least one unit$/ do
+  on(KeyPersonnel).errors.should include "At least one Unit is required for #{@proposal.key_personnel.co_investigator.full_name}."
 end
 
 When /^I? ?add a principal investigator$/ do
@@ -69,6 +73,11 @@ end
 When /^the (.*) user approves the proposal$/ do |role|
   get(role).sign_in
   @proposal.open_proposal
+
+
+sleep 20
+
+
   on(ProposalSummary).approve
   on(Confirmation).yes
 end

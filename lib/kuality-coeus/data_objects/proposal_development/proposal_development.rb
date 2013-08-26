@@ -73,6 +73,7 @@ class ProposalDevelopmentObject
     on Proposal do |edit|
       edit.proposal
       edit.expand_all
+      edit.project_title.fit opts[:project_title]
       edit.project_start_date.fit opts[:project_start_date]
       edit.opportunity_id.fit opts[:opportunity_id]
       edit.proposal_type.fit opts[:proposal_type]
@@ -185,15 +186,16 @@ class ProposalDevelopmentObject
     end
   end
 
-  def recall(type, reason=random_alphanums)
-    types={:revision=>:recall_to_action_list, :cancel=>:recall_and_cancel}
+  def recall(reason=random_alphanums)
     @recall_reason=reason
     open_proposal
     on(Proposal).recall
     on Confirmation do |conf|
       conf.reason.set @recall_reason
-      conf.send(types[type])
+      conf.yes
     end
+    open_proposal
+    @status=on(Proposal).document_status
   end
 
   def close
@@ -203,8 +205,8 @@ class ProposalDevelopmentObject
 
   def view(tab)
     open_proposal
-    unless @status=='CANCELED' || on(Proposal).send((tab.to_s+'_button').to_sym).parent.class_name=~/tabcurrent$/
-      on(Proposal).send(tab)
+    unless @status=='CANCELED' || on(Proposal).send(StringFactory.damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
+      on(Proposal).send(StringFactory.damballa(tab.to_s))
     end
   end
 

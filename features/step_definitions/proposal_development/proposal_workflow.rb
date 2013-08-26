@@ -21,14 +21,6 @@ When /^I? ?send a notification to the (.*) users?$/ do |role|
   on(NotificationEditor).send_fyi
 end
 
-When /^I? ?recall the proposal for revisions$/ do
-  @proposal.recall :revisions
-end
-
-When /^I? ?recall and cancel the proposal$/ do
-  @proposal.recall :cancel
-end
-
 Then /^the proposal status should be (.*)$/ do |status|
   @proposal.status.should == status
 end
@@ -62,13 +54,6 @@ Then /^I can acknowledge the requested action list item$/ do
 end
 
 When /^I? ?submit the routed proposal to the sponsor$/ do
-
-
-
-sleep 30
-
-
-
   @proposal.submit :to_sponsor
 end
 

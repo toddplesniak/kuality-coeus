@@ -13,7 +13,8 @@ class BudgetVersionsObject
                 # Stuff on the Parameters page...
                 :project_start_date, :project_end_date, :total_direct_cost_limit,
                 :budget_periods, :unrecovered_fa_rate_type, :f_and_a_rate_type,
-                :submit_cost_sharing, :residual_funds, :total_cost_limit
+                :submit_cost_sharing, :residual_funds, :total_cost_limit,
+                :subaward_budgets, :personnel
 
 
   def initialize(browser, opts={})
@@ -23,7 +24,9 @@ class BudgetVersionsObject
       name:              random_alphanums_plus(40),
       cost_sharing:      '0.00',
       f_and_a:           '0.00',
-      budget_periods:    BudgetPeriodsCollection.new
+      budget_periods:    BudgetPeriodsCollection.new,
+      subaward_budgets:  SubawardBudgetCollection.new,
+      personnel:         BudgetPersonnelCollection.new
     }
 
     set_options(defaults.merge(opts))
@@ -65,7 +68,6 @@ class BudgetVersionsObject
 
   def add_period opts={}
     defaults={
-        document_id: @document_id,
         budget_name: @name,
         doc_type: @doc_header
     }
@@ -92,10 +94,13 @@ class BudgetVersionsObject
   # Use it for editing the Budget Version while on the Proposal, but not the Periods
   def edit opts={}
     navigate
-    on BudgetVersions do |edit|
-      edit.final(@name).fit opts[:final]
-      edit.budget_status(@name).fit opts[:budget_status]
-      # TODO: More here as needed...
+    on(BudgetVersions).open @name
+    confirmation
+    on Parameters do |edit|
+      edit.final.fit opts[:final]
+      edit.budget_status.fit opts[:budget_status]
+      edit.total_direct_cost_limit.fit opts[:total_direct_cost_limit]
+      # TODO: More to add here...
       edit.save
     end
     set_options(opts)
@@ -141,6 +146,22 @@ class BudgetVersionsObject
     end
     @budget_periods.clear
     get_budget_periods
+  end
+
+  def add_subaward_budget(opts={})
+    open_budget
+    on(Parameters).budget_actions
+    sab = make SubawardBudgetObject, opts
+    sab.create
+    @subaward_budgets << sab
+  end
+
+  def add_project_personnel(opts={})
+    open_budget
+    on(Parameters).personnel
+    person = make BudgetPersonnelObject, opts
+    person.create
+    @personnel << person
   end
 
   # =======
