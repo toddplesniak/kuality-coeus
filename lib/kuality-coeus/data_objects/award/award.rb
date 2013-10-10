@@ -22,15 +22,15 @@ class AwardObject
       award_title:           random_alphanums,
       activity_type:         '::random::',
       award_type:            '::random::',
-      project_start_date:    right_now, # Note how this is the date hash, for increased flexibility of validations or tests, if necessary
-      project_end_date:      in_a_year, # Same goes for this variable. It's the entire date hash
+      project_start_date:    right_now[:date_w_slashes],
+      project_end_date:      in_a_year[:date_w_slashes],
       sponsor_id:            '::random::',
       lead_unit:             '::random::',
-      obligation_start_date: right_now, # Date hash, again
-      obligation_end_date:   in_a_year, # and again
+      obligation_start_date: right_now[:date_w_slashes],
+      obligation_end_date:   in_a_year[:date_w_slashes],
       anticipated_amount:    '1000000',
       obligated_amount:      '1000000',
-      transactions:       TransactionCollection.new
+      transactions:          collection('Transaction')
     }
 
     set_options(defaults.merge(opts))
@@ -42,11 +42,9 @@ class AwardObject
     on Award do |create|
       create.expand_all
       fill_out create, :description, :transaction_type, :award_status, :award_title,
-               :activity_type, :award_type, :obligated_amount, :anticipated_amount
-      create.project_start_date.fit @project_start_date[:date_w_slashes]
-      create.project_end_date.fit @project_end_date[:date_w_slashes]
-      create.obligation_start_date.fit @obligation_start_date[:date_w_slashes]
-      create.obligation_end_date.fit @obligation_end_date[:date_w_slashes]
+               :activity_type, :award_type, :obligated_amount, :anticipated_amount,
+               :project_start_date, :project_end_date, :obligation_start_date,
+               :obligation_end_date
       set_sponsor_id
       set_lead_unit
       create.save
@@ -66,10 +64,7 @@ class AwardObject
 
   def add_transaction opts={}
     defaults={award_id: @award_id}
-    options = defaults.merge(opts)
-    trans = make AwardTransactionObject, options
-    trans.create
-    @transactions << trans
+    @transactions.add defaults.merge(opts)
   end
 
   # ========
@@ -105,6 +100,10 @@ class AwardObject
       @lead_unit=on(Award).lead_unit_ro
     end
   end
+
+  # ==========
+  private
+  # ==========
 
   def navigate
     doc_search unless on_award?

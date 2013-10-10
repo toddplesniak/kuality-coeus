@@ -4,9 +4,6 @@ Feature: Proposal Workflows and Routing
   take actions against a proposal that will navigate it through various routes
   in workflow.
 
-#=================
-# Proposal Actions
-#=================
   Scenario Outline: Proposal is successfully routed to PI for action
     Given users exist with the following roles: OSPApprover, Proposal Creator, Unassigned
     And   I log in with the Proposal Creator user
@@ -55,7 +52,7 @@ Feature: Proposal Workflows and Routing
     And   I submit a new development proposal into routing
     When  I blanket approve the proposal
     Then  the proposal status should be Approval Granted
-  @test
+
   Scenario: Aggregator successfully recalls a routed proposal
     Given a user exists with the system role: 'Proposal Creator'
     And   I log in with the Proposal Creator user
@@ -63,9 +60,6 @@ Feature: Proposal Workflows and Routing
     When  I recall the proposal
     Then  the proposal status should be Revisions Requested
 
-#=================
-# Notifications
-#=================
   Scenario: Successful delivery of an FYI from a development proposal
     Given users exist with the following roles: Proposal Creator, OSPApprover
     And   I log in with the Proposal Creator user

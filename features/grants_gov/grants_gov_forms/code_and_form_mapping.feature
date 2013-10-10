@@ -11,7 +11,7 @@ Feature: Opportunity Code and S2S Form Mapping
     Given a user exists with the system role: 'Proposal Creator'
     And   I log in with the Proposal Creator user
     And   initiate a proposal with NIH as the sponsor
-  @test
+
   Scenario Outline: Selecting opportunities brings different forms
     Given I initiate a proposal with NIH as the sponsor
     When  I add the Grants.Gov opportunity id of <Opportunity> to the proposal

@@ -15,12 +15,12 @@ Feature: Submitting Proposals via s2s to Grants.gov
     And   add the <Provider> user as the proposal's PI
     And   set valid credit splits for the proposal
     And   add and mark complete all the required attachments
-    And   create, finalize, and mark complete a budget version for the proposal
+    And   create a final and complete budget version for the proposal
     And   complete the required custom fields on the proposal
     And   answer the S2S questions
     And   submit the proposal
-    And   log in with the AOR user
-    When  I submit the proposal to S2S
+    When  I log in with the AOR user
+    And   submit the proposal to S2S
     Then  the S2S tab's submission details will say the proposal is submitted
     And   within a couple minutes the submission status will be updated
 
@@ -31,3 +31,6 @@ Feature: Submitting Proposals via s2s to Grants.gov
     | Grants.Gov | DOD-Agency        | CAL-TEST-DOD2            |
     | Grants.Gov | DOD-Agency        | CSS-120809-SF424RR-V12   |
     | Grants.Gov | NASA - Washington | RR-FORMFAMILY-004-2010   |
+
+
+

@@ -2,8 +2,7 @@ class CentralAdmin < BasePage
 
   page_url "#{$base_url}portal.do?selectedTab=portalCentralAdminBody"
 
-  links 'Create Committee'
-
-  action(:create_award) { |b| b.frm.link(title: 'Award').click; b.loading }
+  green_buttons create_award: 'Award', create_proposal_log: 'Proposal Log',
+                create_institutional_proposal: 'Institutional Proposal'
 
 end

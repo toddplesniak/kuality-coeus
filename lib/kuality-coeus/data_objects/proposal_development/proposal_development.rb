@@ -29,26 +29,18 @@ class ProposalDevelopmentObject
       sponsor_deadline_date: next_week[:date_w_slashes],
       mail_by:               '::random::',
       mail_type:             '::random::',
-      key_personnel:         KeyPersonnelCollection.new,
-      special_review:        SpecialReviewCollection.new,
-      budget_versions:       BudgetVersionsCollection.new,
-      personnel_attachments: PersonnelAttachmentsCollection.new,
-      proposal_attachments:  ProposalAttachmentsCollection.new
+      key_personnel:         collection('KeyPersonnel'),
+      special_review:        collection('SpecialReview'),
+      budget_versions:       collection('BudgetVersions'),
+      personnel_attachments: collection('PersonnelAttachments'),
+      proposal_attachments:  collection('ProposalAttachments')
     }
 
     set_options(defaults.merge(opts))
   end
     
   def create
-    on BasePage do |page|
-      if page.windows.size > 1 && page.portal_window.exists?
-        page.return_to_portal
-        page.close_children
-      elsif page.windows.size > 1
-        page.use_new_tab
-        page.close_parents
-      end
-    end
+    window_cleanup
     visit(Researcher).create_proposal
     on Proposal do |doc|
       @doc_header=doc.doc_title
@@ -84,7 +76,7 @@ class ProposalDevelopmentObject
   end
 
   def add_key_person opts={}
-    @key_personnel << prep(KeyPersonObject, opts)
+    @key_personnel.add merge_settings(opts)
   end
   # This alias is recommended only for when
   # using this method with no options.
@@ -123,12 +115,12 @@ class ProposalDevelopmentObject
   end
 
   def add_special_review opts={}
-    @special_review << prep(SpecialReviewObject, opts)
+    @special_review.add merge_settings(opts)
   end
 
   def add_budget_version opts={}
     opts[:version] ||= (@budget_versions.size+1).to_s
-    @budget_versions << prep(BudgetVersionsObject, opts)
+    @budget_versions.add merge_settings(opts)
   end
 
   def add_custom_data opts={}
@@ -136,17 +128,11 @@ class ProposalDevelopmentObject
   end
 
   def add_proposal_attachment opts={}
-    merge_settings(opts)
-    p_a = make ProposalAttachmentObject, opts
-    p_a.add
-    @proposal_attachments << p_a
+    @proposal_attachments.add merge_settings(opts)
   end
 
   def add_personnel_attachment opts={}
-    merge_settings(opts)
-    p_a = make PersonnelAttachmentObject, opts
-    p_a.add
-    @personnel_attachments << p_a
+    @personnel_attachments.add merge_settings(opts)
   end
 
   def complete_s2s_questionnaire opts={}
@@ -167,14 +153,22 @@ class ProposalDevelopmentObject
          proposal_type: @proposal_type,
          activity_type: @activity_type,
          project_title: @project_title,
-         project_personnel: Marshal::load(Marshal.dump(@key_personnel)),
          special_review: Marshal::load(Marshal.dump(@special_review)),
          custom_data: Marshal::load(Marshal.dump(@custom_data))
-         # TODO: Add more here as needed...
+    @key_personnel.each do |person|
+      project_person = make ProjectPersonnelObject, full_name: person[:full_name],
+                            first_name: person[:first_name], last_name: person[:last_name],
+                            lead_unit: person[:home_unit], role: person[:role],
+                            project_role: person[:key_person_role], units: person[:units],
+                            responsibility: person[:responsibility], space: person[:space],
+                            financial: person[:financial], recognition: person[:recognition]
+      ip.project_personnel << project_person
+    end
+    # TODO: Add more here as needed...
   end
 
   def delete
-    proposal_actions
+    view 'Proposal Actions'
     on(ProposalActions).delete_proposal
     on(Confirmation).yes
     # Have to update the data object's status value
@@ -198,6 +192,10 @@ class ProposalDevelopmentObject
     @status=on(Proposal).document_status
   end
 
+  def reject
+    # TODO - Coeus is buggy right now
+  end
+
   def close
     open_proposal
     on(Proposal).close
@@ -213,7 +211,7 @@ class ProposalDevelopmentObject
   def submit(type=:s)
     types={:s=>:submit, :ba=>:blanket_approve,
            :to_sponsor=>:submit_to_sponsor, :to_s2s=>:submit_to_s2s}
-    proposal_actions
+    view 'Proposal Actions'
     on(ProposalActions).send(types[type])
     if type==:to_sponsor
       on NotificationEditor do |page|
@@ -223,6 +221,7 @@ class ProposalDevelopmentObject
         page.send_fyi
       end
     elsif type == :to_s2s
+      view :s2s
       on S2S do |page|
         @status=page.document_status
       end
@@ -243,6 +242,7 @@ class ProposalDevelopmentObject
     on(Proposal).save
   end
 
+  # TODO: Make this private. Step defs should use #view!
   def open_proposal
     open_document @doc_header
   end
@@ -286,11 +286,6 @@ class ProposalDevelopmentObject
         @lead_unit=prop.lead_unit_ro
       end
     end
-  end
-
-  def proposal_actions
-    open_proposal
-    on(Proposal).proposal_actions
   end
 
   def prep(object_class, opts)

@@ -2,7 +2,8 @@ class BasePage < PageFactory
 
   action(:use_new_tab) { |b| b.windows.last.use }
   action(:return_to_portal) { |b| b.portal_window.use }
-  action(:close_children) { |b| b.windows[1..-1].each{ |w| w.close} }
+  action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
+  action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
   action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
   element(:logout_button) { |b| b.button(title: 'Click to logout.') }
@@ -31,11 +32,15 @@ class BasePage < PageFactory
       alias_method :disposition, :initiator
       value(:last_updated) {|p| p.headerinfo_table[1][3].text }
       alias_method :created, :last_updated
+      alias_method :submission_status, :last_updated
       value(:committee_id) { |p| p.headerinfo_table[2][1].text }
       alias_method :sponsor_name, :committee_id
       alias_method :budget_name, :committee_id
+      alias_method :protocol_number, :committee_id
       value(:committee_name) { |p| p.headerinfo_table[2][3].text }
       alias_method :pi, :committee_name
+      alias_method :expiration_date, :committee_name
+
     end
 
     # Included here because this is such a common field in KC
@@ -74,14 +79,17 @@ class BasePage < PageFactory
     def search_results_table
       element(:results_table) { |b| b.frm.table(id: 'row') }
 
-      action(:edit_item) { |match, p| p.results_table.row(text: /#{match}/m).link(text: 'edit').click; b.use_new_tab; b.close_parents }
+      action(:edit_item) { |match, p| p.results_table.row(text: /#{match}/m).link(text: 'edit').click; p.use_new_tab; p.close_parents }
       alias_method :edit_person, :edit_item
+
+      action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
 
       action(:item_row) { |match, b| b.results_table.row(text: /#{match}/m) }
       action(:open_item) { |match, b| b.item_row(match).link(text: /#{match}/).click; b.use_new_tab; b.close_parents }
       action(:delete_item) { |match, p| p.item_row(match).link(text: 'delete').click; p.use_new_tab; p.close_parents }
 
       action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
+      action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
       action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
     end
@@ -133,13 +141,13 @@ class BasePage < PageFactory
 
       action(:add) { |b| b.frm.button(name: 'methodToCall.addSpecialReview.anchorSpecialReview').click }
 
-      element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
+      element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') } # TODO: Remove. This doesn't belong here!
     end
 
     def custom_data
       element(:graduate_student_count) { |b| b.target_row('Graduate Student Count').text_field }
       element(:billing_element) { |b| b.target_row('Billing Element').text_field }
-      element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
+      element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') } # TODO: Remove. This doesn't belong here!
       element(:asdf_tab) { |b| b.frm.div(id: 'tab-asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf-div') }
       action(:target_row) { |text, b| b.frm.trs(class: 'datatable').find { |row| row.text.include? text } }
     end
@@ -188,15 +196,28 @@ class BasePage < PageFactory
       element(:validation_err_war_fields) { |b| b.frm.tds(width: '94%') }
     end
 
+    # ========
+    private
+    # ========
+
     def links(*links_text)
       links_text.each { |link| elementate(:link, link) }
     end
 
     def buttons(*buttons_text)
-     buttons_text.each { |button| elementate(:button, button) }
+      buttons_text.each { |button| elementate(:button, button) }
     end
 
-    private
+    # Use this to define methods to click on the green
+    # buttons on the page, all of which can be identified
+    # by the title tag. The method takes a hash, where the key
+    # will become the method name, and the value is the string
+    # that matches the green button's link title tag.
+    def green_buttons(links={})
+      links.each_pair do |name, title|
+        action(name) { |b| b.frm.link(title: title).click; b.loading }
+      end
+    end
 
     # A helper method that converts the passed string into snake case. See the StringFactory
     # module for more info.

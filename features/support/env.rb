@@ -3,7 +3,7 @@ require 'yaml'
 @config = YAML.load_file("#{File.dirname(__FILE__)}/config.yml")[:basic]
 
 $base_url = @config[:url]
-$file_folder = @config[:files]
+$file_folder = "#{File.dirname(__FILE__)}/../../lib/resources/"
 
 if @config[:browser]==:saucelabs
   sauce = YAML.load_file("#{File.dirname(__FILE__)}/config.yml")[:saucelabs]
@@ -26,10 +26,25 @@ World DateFactory
 World Utilities
 
 kuality = Kuality.new @config[:browser]
+$users = Users.instance
 
 Before do
   @browser = kuality.browser
+  $users.clear
+  # Add the admin user to the Users...
+  $users << UserObject.new(@browser)
+end
+
+After do |scenario|
+
+  if scenario.failed?
+    @browser.screenshot.save 'screenshot.png'
+    embed 'screenshot.png', 'image/png'
+  end
+
+  $users.current_user.sign_out unless $users.current_user==nil
+
 end
 
 # Comment out to help with debugging...
-# at_exit { kuality.browser.close }
+at_exit { kuality.browser.close }

@@ -1,14 +1,21 @@
+# We need this step def because of the special case of
+# the admin user. Its data object is already created
+# and added to the Users collection at the start of the
+# scripts.
+Given /^I'm( signed)? in as the admin$/ do |x|
+  $users.admin.sign_in
+end
+
 # Note the difference between the following three
 # step definitions...
 
-# This step definition
+# This step definition is a bit dangerous
 # 1) Assumes that the user already exists in the system
 # 2) Assumes the user object does not exist, so it creates it, sticking it into
 #    a class instance variable based on the username
 # 3) Logs that user in (if they're not already)...
 Given /^I'm logged in with (.*)$/ do |username|
-  user = make_user username
-  user.sign_in
+  make_user(user: username).sign_in
 end
 
 # Whereas, this step def
@@ -26,7 +33,7 @@ end
 # 2) Creates the user in the system if they don't exist already,
 #    by first logging in with the admin user
 Given /^a user exists with the user name (.*)$/ do |username|
-  user = make_user username
+  user = make_user user: username
   user.create unless user.exists?
 end
 
@@ -36,7 +43,7 @@ end
 # them if they don't exist in the system (again by first
 # logging in with the admin user to do the creation).
 Given /^a user exists with the system role: '(.*)'$/ do |role|
-  user = make_role role
+  user = make_user role: role
   user.create unless user.exists?
 end
 
@@ -46,20 +53,46 @@ end
 
 Given /^users exist with the following roles: (.*)$/ do |roles|
   roles.split(', ').each do |r|
-    user = make_role r
+    user = make_user role: r
     user.create unless user.exists?
   end
 end
 
 Given /^a user exists that can be a PI for Grants.gov proposals$/ do
-  # TODO: Make this more robust when we really know what it takes
-  # to be a grants.gov PI...
-  @grants_gov_pi = make_user UserObject::USERS.era_commons_user('grantsgov')
-  @grants_gov_pi.create unless @grants_gov_pi.exists?
+  make_user(user: UserObject::USERS.grants_gov_pi, type: 'Grants.gov PI')
+  $users[-1].create unless $users[-1].exists?
 end
 
 Given /^an AOR user exists$/ do
-  # TODO: Using the quickstart user here is cheating. Fix this.
-  @aor = make_user 'quickstart'
+  # TODO: Using the username here is cheating. Fix this.
+  @aor = make_user(user: 'warrens', type: 'AOR')
   @aor.create unless @aor.exists?
+end
+
+When /^I? ?create an? '(.*)' user$/ do |type|
+  $users << create(UserObject, type: type)
+end
+
+Given /^I? ?create a user with an? (.*) role in the (.*) unit$/ do |role, unit|
+  role_num = RoleObject::ROLES[role]
+  $users << create(UserObject, rolez: [{ id: role_num, name: role, qualifiers: [{:unit=>unit}] }] )
+end
+
+Given /^I? ?log in as the user with the (.*) role in (.*)$/ do |role, unit|
+  $users.with_role_in_unit(role, unit).sign_in
+end
+
+When /^I? ?log in with that user$/ do
+  $users[-1].sign_in
+end
+
+And /^I add the (.*) role in the (.*) unit to that user$/ do |role, unit|
+  role_num = RoleObject::ROLES[role]
+  $users[-1].add_role id: role_num, name: role, qualifiers: [{:unit=>unit}], user_name: $users[-1].user_name
+end
+
+# Use this step def when you know the role doesn't take a qualifier
+And /^I add the (.*) role to that user$/ do |role|
+  role_num = RoleObject::ROLES[role]
+  $users[-1].add_role id: role_num, name: role, qualifiers: [], user_name: $users[-1].user_name
 end

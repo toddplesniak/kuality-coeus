@@ -20,13 +20,13 @@ Feature: Permissions in a Proposal
     And   their proposal permissions allow them to <Permissions>
 
     Examples:
-    | Role                     | Permissions                    |
-    | Aggregator               | edit all parts of the proposal |
-    | Budget Creator           | only update the budget         |
-    | Delete Proposal          | delete the proposal            |
-    | Viewer                   | only read the proposal         |
+    | Role                 | Permissions                          |
+    | Aggregator           | edit all parts of the proposal       |
+    | Budget Creator       | update the budget, not the narrative |
+    | Delete Proposal      | delete the proposal                  |
+    | Viewer               | only read the proposal               |
 
-  Scenario: Narrative Writers can't see budget details
+  Scenario: Narrative Writers can't edit budget details
     Given I create a budget version for the proposal
     And   a user exists with the system role: 'Unassigned'
     When  I assign the Unassigned user as a Narrative Writer in the proposal permissions
@@ -47,30 +47,3 @@ Feature: Permissions in a Proposal
     | Aggregator       |
     | approver         |
     | Delete Proposal  |
-
-  Scenario Outline: Users who are assigned the Aggregator role cannot be assigned additional roles
-    Given a user exists with the system role: '<Role>'
-    And   I assign the <Role> user as an aggregator in the proposal permissions
-    When  I attempt to add an additional proposal role to the <Role> user
-    Then  there should be an error message that says not to select other roles alongside aggregator
-
-  Examples:
-    | Role             |
-    | Unassigned       |
-    | Proposal Creator |
-
-  Scenario Outline: Users with the appropriate permissions can edit proposals that have been recalled for revisions
-    Given a user exists with the system role: 'Unassigned'
-    And   assign the Unassigned user as a <Role> in the proposal permissions
-    And   complete the proposal
-    And   submit the proposal
-    When  I recall the proposal
-    Then  the Unassigned user can access the proposal
-    And   their proposal permissions allow them to <Permissions>
-
-  Examples:
-    | Role                | Permissions                                    |
-    | Aggregator          | edit all parts of the proposal                 |
-    | Budget Creator      | only update the budget                         |
-    | Delete Proposal     | delete the proposal                            |
-    | Viewer              | only read the proposal                         |

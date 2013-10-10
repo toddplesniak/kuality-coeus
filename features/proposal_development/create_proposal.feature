@@ -1,4 +1,4 @@
-Feature: Creating proposals
+Feature: Creating a proposal development document
 
   As a researcher I want the ability to create a proposal,
   so that I can get funding for my research.
@@ -18,10 +18,3 @@ Feature: Creating proposals
   Scenario: Successful initiation of proposal with federal sponsor type
     When  I initiate a proposal with a 'Federal' sponsor type
     Then  The S2S tab should become available
-
-  Scenario: Successful submission of a Private Profit proposal document into routing
-    When  I complete a valid simple proposal for a 'Private Profit' organization
-    And   submit the proposal
-    Then  The proposal should immediately have a status of 'Approval Pending'
-    And   The proposal route log's 'Actions Taken' should include 'COMPLETED'
-    And   The proposal's 'Future Action Requests' should include 'PENDING APPROVE' for the principal investigator

@@ -1,0 +1,655 @@
+admin:
+  :first_name: admin
+  :last_name:  admin
+unassigneduser: # AKA: "Principal Name
+  :user_name:        unassigneduser
+  :description:      creating user with 'unassigned' role
+  :affiliation_type: Student
+  :campus_code:      'UN - UNIVERSITY'
+  :first_name:       PleaseDoNot
+  :last_name:        AddOrEditRoles
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+    - :type:    Work
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :clear
+  :phones:
+    - :type:    Home
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  602-597-5350
+      :default: :clear
+  :rolez:
+    - :id:   '106'
+      :name: Unassigned
+      :qualifiers:
+        - :unit: '000001'
+poolej: # AKA: "Principal Name
+  :user_name:        poolej
+  :description:      User who can submit to grants.gov
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      poolej
+  :employee_status:  Active
+  :employee_type:    Professional
+  :primary_department_code: '000001'
+  :base_salary:      '180'
+  :first_name:       Jeyne
+  :last_name:        Poole
+  :primary_title:    Director RSmart College of Science
+  :directory_title:  Principal Investigator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: grantsgov
+  :directory_department:  Biology
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+    - :type:    Work
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :clear
+  :phones:
+    - :type:    Work
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  602-597-5350
+      :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :id:   '107'
+      :name: Viewer
+      :qualifiers:
+        - :unit: '000001'
+    - :id:   '110'
+      :name: Aggregator
+      :qualifiers:
+        - '000001'
+    - :id:   '109'
+      :name: Narrative Writer
+      :qualifiers:
+        - :unit: '000001'
+    - :id:   '108'
+      :name: Budget Creator
+      :qualifiers:
+        - :unit: '000001'
+cleganeg:  # AKA: "Principal Name"
+  :user_name:        cleganeg
+  :description:      creating osp approver
+  :affiliation_type: Faculty
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      ospapprover
+  :employee_status:  Active
+  :employee_type:    Other
+  :base_salary:      '180'
+  :first_name:       Gregor
+  :last_name:        Clegane
+  :primary_title:    Director RSmart College of Science
+  :directory_title:  Principal Investigator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: qwperoiu
+  :directory_department:  Chemistry
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+    - :type:    Work
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :clear
+  :phones:
+    - :type:    Work
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  602-597-5350
+      :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :id:   '100'
+      :name: OSPApprover
+      :qualifiers:
+        -
+starka:  # AKA: "Principal Name"
+  :user_name:        starka
+  :description:      creating test user with manager permissions
+  :affiliation_type: Other Academic Group
+  :campus_code:      'UN - UNIVERSITY'
+  :first_name:       Arya
+  :last_name:        Stark
+  :primary_title:    Director RSmart College of Science
+  :directory_title:  Principal Investigator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: pqowiuth
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+    - :type:    Work
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :clear
+  :phones:
+    - :type:    Work
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  602-597-5350
+      :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :id:   '98'
+      :name: Manager
+      :qualifiers:
+        -
+    - :id:   '110'
+      :name: Aggregator
+      :qualifiers:
+        - :unit: '000001'
+    - :id:   '111'
+      :name: Proposal Creator
+      :qualifiers:
+        - :unit: '000001'
+martelld:  # AKA: "Principal Name"
+  :user_name:        martelld
+  :description:      creating test user with aggregator permissions
+  :affiliation_type: Other Academic Group
+  :campus_code:      'UN - UNIVERSITY'
+  :first_name:       Doran
+  :last_name:        Martell
+  :primary_title:    Director RSmart College of Science
+  :directory_title:  Principal Investigator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: 98ygwrgw
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+    - :type:    Work
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :clear
+  :phones:
+    - :type:    Work
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  602-597-5350
+      :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :id:   '110'
+      :name: Aggregator
+      :qualifiers:
+        - :unit: '000001'
+warrens:  # AKA: "Principal Name"
+  :user_name:        warrens
+  :description:      creating test aor user
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      '00001'
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      123456.78
+  :primary_department_code: 'OSP'
+  :first_name:       Sean
+  :last_name:        Warren
+  :primary_title:    OSP Superuser
+  :directory_title:  OSP Superuser
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: swarren
+  :directory_department:  Humanities
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+  :phones:
+    - :type:    Facsimile
+      :number:  555-555-5555
+      :default: :clear
+      :country: United States
+    - :type:    Work
+      :number:  480-555-1212
+      :default: :set
+      :country: United States
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :groups:
+    - '2002' # OSP Superuser
+    - '2003' # ProposalAdmin
+  :rolez:
+    - :id:   '100'
+      :name: OSPApprover
+      :qualifiers:
+        -
+    - :id:   '131'
+      :name: OSP Administrator
+      :qualifiers:
+        - :unit: '000001'
+          :descends_hierarchy: :clear
+    - :id:   '110'
+      :name: Aggregator
+      :qualifiers:
+        - :unit: '000001'
+lannister:  # AKA: "Principal Name"
+  :user_name:        lannister
+  :description:      OSP Administrator
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      lannister
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      234567.89
+  :primary_department_code: '000001'
+  :first_name:       Tyrion
+  :last_name:        Lannister
+  :primary_title:    OSP Administrator
+  :directory_title:  OSP Administrator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: lannister
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Work
+      :line_1:  475 N scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+  :phones:
+    - :type:    Work
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  555-555-5555
+      :default: :clear
+      :country: United States
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :id:  '131'
+      :name: OSP Administrator
+      :qualifiers:
+        - :unit: '000001'
+          :descends_hierarchy: :clear
+wcoyne: # AKA: "Principal Name"
+  :user_name:        wcoyne
+  :description:      IRB & IACUC Protocol Creator
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      wcoyne
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      234567.89
+  :primary_department_code: '000001'
+  :first_name:       Wayne
+  :last_name:        Coyne
+  :primary_title:    Protocol Creator
+  :directory_title:  Protocol Creator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: wcoyne
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  555-555-5555
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '129'
+     :name: Protocol Creator
+     :qualifiers:
+       - :unit: '000001'
+         :descends_hierarchy: :clear
+   - :id:   '104'
+     :name: Protocol Viewer
+     :qualifiers:
+       - '000001'
+   - :id:   '105'
+     :name: Protocol Aggregator
+     :qualifiers:
+       - :unit: '000001'
+mlinkous: # AKA: "Principal Name"
+  :user_name:        mlinkous
+  :description:      IRB Protocol Reviewer/Approver
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      mlinkous
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      234567.89
+  :primary_department_code: '000001'
+  :first_name:       Mark
+  :last_name:        Linkous
+  :primary_title:    Protocol Approver
+  :directory_title:  Protocol Approver
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: mlinkous
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  555-555-5555
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '127'
+     :name: IRB Reviewer
+     :qualifiers:
+       - :unit: '000001'
+         :descends_hierarchy: :clear
+   - :id:   '99'
+     :name: IRB Approver
+     :qualifiers:
+       -
+   - :id:   '149'
+     :name: IRBApprover-Nested
+     :qualifiers:
+       -
+smalkmus: # AKA: "Principal Name"
+  :user_name:        smalkmus
+  :description:      IRB Protocol Administrator
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      smalkmus
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      234567.89
+  :primary_department_code: '000001'
+  :first_name:       Stephen
+  :last_name:        Malkmus
+  :primary_title:    Protocol Admin
+  :directory_title:  Protocol Admin
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: smalkmus
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  555-555-5555
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '99'
+     :name: IRB Approver
+     :qualifiers:
+       -
+   - :id:   '104'
+     :name: Protocol Viewer
+     :qualifiers:
+       - :unit: '000001'
+   - :id:   '105'
+     :name: Protocol Aggregator
+     :qualifiers:
+       - :unit: '000001'
+   - :id:   '128'
+     :name: IRB Administrator
+     :qualifiers:
+       - :unit: '000001'
+         :descends_hierarchy: :clear
+   - :id:   '129'
+     :name: Protocol Creator
+     :qualifiers:
+       - :unit: '000001'
+         :descends_hierarchy: :clear
+   - :id:   '149'
+     :name: Protocol Approver
+     :qualifiers:
+       -
+   - :id:   '1651'
+     :name: IACUC Approver
+     :qualifiers:
+       - :unit: '000001'
+         :descends_hierarchy: :clear
+kwagner: # AKA: "Principal Name"
+  :user_name:        kwagner
+  :description:      Award Creator
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      kwagner
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      234567.89
+  :primary_department_code: '000001'
+  :first_name:       Kurt
+  :last_name:        Wagner
+  :primary_title:    Award Creator
+  :directory_title:  Award Creator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: kwagner
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  555-555-5555
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '126'
+     :name: Award Modifier
+     :qualifiers:
+       - :unit: '000001'
+vchesnutt: # AKA: "Principal Name"
+  :user_name:        vchesnutt
+  :description:      Award Budget Modifier
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      vchesnutt
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      234567.89
+  :primary_department_code: '000001'
+  :first_name:       Vic
+  :last_name:        Chesnutt
+  :primary_title:    Award Budget Modifier
+  :directory_title:  Award Budget Modifier
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: vchesnutt
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  555-555-5555
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '02'
+     :name: Award Budget Modifier
+     :qualifiers:
+       - :unit: '000001'
+dkensrue: # AKA: "Principal Name"
+  :user_name:        dkensrue
+  :description:      Proposal Log Creator
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      dkensrue
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      234567.89
+  :primary_department_code: '000001'
+  :first_name:       Dustin
+  :last_name:        Kensrue
+  :primary_title:    Proposal Log Creator
+  :directory_title:  Proposal Log Creator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: dkensrue
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  555-555-5555
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '140'
+     :name: Create Proposal Log
+     :qualifiers:
+       - :unit: '000001'
