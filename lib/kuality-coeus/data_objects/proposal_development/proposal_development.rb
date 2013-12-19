@@ -35,7 +35,7 @@ class ProposalDevelopmentObject < DataObject
       personnel_attachments: collection('PersonnelAttachments'),
       proposal_attachments:  collection('ProposalAttachments')
     }
-
+    @lookup_class=ProposalDevelopmentDocumentLookup
     set_options(defaults.merge(opts))
   end
     
@@ -55,12 +55,13 @@ class ProposalDevelopmentObject < DataObject
       set_lead_unit
       doc.save
       @proposal_number=doc.proposal_number
-      @permissions = make PermissionsObject, document_id: @document_id, aggregators: [@initiator]
+      @search_key={ proposal_number: @proposal_number }
+      @permissions = make PermissionsObject, merge_settings(aggregators: [@initiator])
     end
   end
 
   def edit opts={}
-    open_proposal
+    open_document
     on Proposal do |edit|
       edit.proposal
       edit.expand_all
@@ -163,13 +164,13 @@ class ProposalDevelopmentObject < DataObject
 
   def recall(reason=random_alphanums)
     @recall_reason=reason
-    open_proposal
+    open_document
     on(Proposal).recall
     on Confirmation do |conf|
       conf.reason.set @recall_reason
       conf.yes
     end
-    open_proposal
+    open_document
     @status=on(Proposal).document_status
   end
 
@@ -178,12 +179,12 @@ class ProposalDevelopmentObject < DataObject
   end
 
   def close
-    open_proposal
+    open_document
     on(Proposal).close
   end
 
   def view(tab)
-    open_proposal
+    open_document
     unless @status=='CANCELED' || on(Proposal).send(StringFactory.damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
       on(Proposal).send(StringFactory.damballa(tab.to_s))
     end
@@ -238,15 +239,13 @@ class ProposalDevelopmentObject < DataObject
   private
   # =======
 
-  # Step defs should use #view!
-  def open_proposal
-    open_document @doc_header
-  end
-
   def merge_settings(opts)
     defaults = {
         document_id: @document_id,
-        doc_type: @doc_header
+        doc_header: @doc_header,
+        proposal_number: @proposal_number,
+        lookup_class: @lookup_class,
+        search_key: @search_key
     }
     opts.merge!(defaults)
   end

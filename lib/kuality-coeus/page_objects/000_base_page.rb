@@ -96,6 +96,12 @@ class BasePage < PageFactory
       action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
       action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
+
+      # Used as the catch-all "document opening" method for conditional navigation,
+      # when we can't know whether the current user will have edit permissions.
+      # Note: The assumption is that there is only one item returned in the search,
+      # so the method needs no identifying parameter...
+      action(:medusa) { |b| b.frm.link(text: 'medusa').click; b.use_new_tab; b.close_parents }
     end
 
     def budget_header_elements

@@ -44,8 +44,6 @@ class InstitutionalProposalObject < DataObject
       look.select_item @proposal_number
     end
     on InstitutionalProposal do |create|
-      @doc_type=create.doc_title
-      @document_id=create.document_id
       create.expand_all
       @proposal_number=create.institutional_proposal_number
       create.description.set random_alphanums
@@ -124,7 +122,7 @@ sleep 45
 
   def merge_settings(opts)
     defaults = {
-        document_id: @document_id,
+        proposal_number: @proposal_number,
         doc_type: @doc_type
     }
     opts.merge!(defaults)
