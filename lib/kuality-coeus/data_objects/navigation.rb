@@ -21,7 +21,25 @@ module Navigation
   #               search parameter to use, and the value what gets searched
 
   def open_document
-    navigate unless on_document?
+    if on_document?
+      puts 'true'
+    else
+      puts 'false'
+
+
+
+
+#sleep 15
+
+
+
+
+
+
+
+      navigate
+    end
+    #navigate unless on_document?
   end
 
   def navigate
@@ -36,6 +54,9 @@ module Navigation
 
   def on_document?
     begin
+      puts @document_id.inspect
+      puts @doc_header.inspect
+      puts @browser.frm.div(id: 'headerarea').h1.text.inspect
       on(DocumentHeader).document_id==@document_id && @browser.frm.div(id: 'headerarea').h1.text==@doc_header
     rescue Watir::Exception::UnknownObjectException, Selenium::WebDriver::Error::StaleElementReferenceError
       false

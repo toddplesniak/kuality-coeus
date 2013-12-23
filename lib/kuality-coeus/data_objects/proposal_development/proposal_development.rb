@@ -54,7 +54,7 @@ class ProposalDevelopmentObject < DataObject
                     :sponsor_deadline_date, :mail_by, :mail_type, :nsf_science_code
       set_lead_unit
       doc.save
-      @proposal_number=doc.proposal_number
+      @proposal_number=doc.proposal_number.strip
       @search_key={ proposal_number: @proposal_number }
       @permissions = make PermissionsObject, merge_settings(aggregators: [@initiator])
     end
@@ -70,11 +70,6 @@ class ProposalDevelopmentObject < DataObject
       edit.save
     end
     update_options(opts)
-  end
-
-  def add_per_sit_loc(name)
-    on Prolpaps
-    @performance_site_locations << name
   end
 
   def add_key_person opts={}
@@ -267,6 +262,9 @@ class ProposalDevelopmentObject < DataObject
     object
   end
 
+  # TODO: Consider changing this to a
+  # class instance variable created in the
+  # initialize
   def page_class
     Proposal
   end
