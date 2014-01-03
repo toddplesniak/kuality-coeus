@@ -54,16 +54,6 @@ class KeyPersonObject < DataObject
       @user_name=person.user_name @full_name
       @home_unit=person.home_unit @full_name
       set_up_units
-
-
-
-
-puts @units.inspect
-
-
-
-
-
       break if person.unit_details_errors_div(@full_name).present?
       # If it's a key person without units then they won't have credit splits,
       # otherwise, the person will, so fill them out...
