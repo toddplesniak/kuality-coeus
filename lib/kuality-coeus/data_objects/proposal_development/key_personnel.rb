@@ -54,6 +54,16 @@ class KeyPersonObject < DataObject
       @user_name=person.user_name @full_name
       @home_unit=person.home_unit @full_name
       set_up_units
+
+
+
+
+puts @units.inspect
+
+
+
+
+
       break if person.unit_details_errors_div(@full_name).present?
       # If it's a key person without units then they won't have credit splits,
       # otherwise, the person will, so fill them out...
@@ -62,11 +72,14 @@ class KeyPersonObject < DataObject
       end
 
       # Proposal Person Certification
+      unless @key_person_role==nil
+        person.include_certification_questions(@full_name)
+        person.show_proposal_person_certification(@full_name) if person.show_prop_pers_cert_button(@full_name).present?
+      end
       if @certified
-        person.include_certification_questions(@full_name) unless @key_person_role==nil
         cert_questions.each { |q| person.send(q, full_name, get(q)) }
       else
-         cert_questions.each { |q| set(q, nil) }
+        cert_questions.each { |q| set(q, nil) }
       end
 
       # Add gathering/setting of more attributes here as needed

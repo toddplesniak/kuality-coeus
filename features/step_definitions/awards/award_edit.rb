@@ -7,6 +7,11 @@ Given /^I? ?add a PI to the Award$/ do
   @award.add_pi if @award.key_personnel.principal_investigator.nil?
 end
 
+Given /adds the Funding Proposal's PI as the Award's PI/ do
+  p_i = @institutional_proposal.key_personnel.principal_investigator
+  @award.add_pi first_name: p_i.first_name, last_name: p_i.last_name
+end
+
 Given /I? ?add a key person to the Award$/ do
   @award.add_key_person
 end
