@@ -1,7 +1,5 @@
-class PersonnelAttachmentObject
+class PersonnelAttachmentObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include Navigation
 
@@ -19,7 +17,7 @@ class PersonnelAttachmentObject
   end
 
   def create
-    navigate
+    view
     on AbstractsAndAttachments do |attach|
       attach.expand_all
       fill_out attach, :person
@@ -30,10 +28,8 @@ class PersonnelAttachmentObject
     end
   end
 
-  private
-
-  def navigate
-    open_document @doc_type
+  def view
+    open_document
     on(Proposal).abstracts_and_attachments unless on_page?(on(AbstractsAndAttachments).proposal_attachment_type)
   end
 

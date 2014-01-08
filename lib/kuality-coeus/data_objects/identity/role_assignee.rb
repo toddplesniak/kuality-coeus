@@ -1,8 +1,5 @@
-class RoleAssigneeObject
+class RoleAssigneeObject < DataObject
 
-  include Foundry
-  include DataFactory
-  include Navigation
   include StringFactory
 
   attr_accessor :type_code, :member_identifier, :unit_number

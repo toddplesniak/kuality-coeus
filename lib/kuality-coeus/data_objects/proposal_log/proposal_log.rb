@@ -1,12 +1,11 @@
-class ProposalLogObject
+class ProposalLogObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include Navigation
 
   attr_accessor :number, :log_type, :log_status, :proposal_type, :title,
-                :principal_investigator, :lead_unit, :sponsor_id
+                :principal_investigator, :lead_unit, :sponsor_id, :status,
+                :pi_full_name
 
   def initialize(browser, opts={})
     @browser= browser
@@ -28,12 +27,20 @@ class ProposalLogObject
       create.expand_all
       @number=create.proposal_number.strip
       @log_status=create.proposal_log_status.strip
+      @status=create.document_status
       create.description.set random_alphanums
       create.proposal_log_type.pick! @log_type
       fill_out create, :proposal_type, :title, :lead_unit
     end
     set_sponsor_code
-    on(ProposalLog).blanket_approve
+    on(ProposalLog).save
+  end
+
+  def submit
+    on ProposalLog do |page|
+      page.submit
+      @proposal_number=page.proposal_number
+    end
   end
 
   # =========
@@ -53,6 +60,7 @@ class ProposalLogObject
     else
       on(ProposalLog).principal_investigator_employee.set @principal_investigator
     end
+    @pi_full_name=on(ProposalLog).pi_full_name
   end
 
   def set_sponsor_code

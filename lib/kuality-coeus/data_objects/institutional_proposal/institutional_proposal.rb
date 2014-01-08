@@ -1,15 +1,15 @@
-class InstitutionalProposalObject
+class InstitutionalProposalObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include DateFactory
   include Navigation
+  include DocumentUtilities
 
   attr_accessor :document_id, :proposal_number, :dev_proposal_number, :project_title,
                 :doc_status, :sponsor_id, :activity_type, :proposal_type, :proposal_status,
                 :project_personnel, :custom_data, :special_review, :cost_sharing,
-                :award_id, :initiator, :proposal_log, :doc_header, :unrecovered_fa
+                :award_id, :initiator, :proposal_log, :unrecovered_fa,
+                :key_personnel, :nsf_science_code
 
   def initialize(browser, opts={})
     @browser = browser
@@ -31,6 +31,13 @@ class InstitutionalProposalObject
       defaults[:project_personnel] << pi
     end
     set_options(defaults.merge(opts))
+    @key_personnel = @project_personnel
+    @lookup_class=InstitutionalProposalLookup
+    # Unfortunately this has to be hard-coded because
+    # most of the time this object's #make will not also
+    # run the #create
+    @doc_header='KC Institutional Proposal '
+    @search_key={ institutional_proposal_number: @proposal_number }
   end
 
   # This method is appropriate only in the context of creating an
@@ -38,20 +45,25 @@ class InstitutionalProposalObject
   def create
     visit(CentralAdmin).create_institutional_proposal
     on ProposalLogLookup do |look|
-      look.proposal_number.set @proposal_log.number
+      look.proposal_number.set @proposal_number
       look.search
-      look.select_item @proposal_log.number
+      look.select_item @proposal_number
     end
     on InstitutionalProposal do |create|
-      @doc_header=create.doc_title
-      @document_id=create.document_id
       create.expand_all
+      @document_id=create.document_id
+      @doc_header=create.doc_title
       @proposal_number=create.institutional_proposal_number
       create.description.set random_alphanums
       fill_out create, :proposal_type, :award_id, :activity_type, :project_title
       set_sponsor_code
       create.save
     end
+  end
+
+  def view(tab)
+    open_document
+    on(InstitutionalProposal).send(StringFactory.damballa(tab.to_s))
   end
 
   def add_custom_data opts={}
@@ -64,6 +76,24 @@ class InstitutionalProposalObject
 
   def add_unrecovered_fa opts={}
     @unrecovered_fa.add merge_settings(opts)
+  end
+
+  def add_project_personnel opts={}
+    @project_personnel.add merge_settings(opts)
+  end
+
+  def unlock_award(award_id)
+    view :institutional_proposal
+    on InstitutionalProposal do |page|
+      page.edit
+      page.institutional_proposal_actions
+    end
+    on InstitutionalProposalActions do |page|
+      page.expand_all
+      page.funded_award(award_id).set
+      page.unlock_selected
+      confirmation
+    end
   end
 
   # =========
@@ -87,8 +117,8 @@ class InstitutionalProposalObject
 
   def merge_settings(opts)
     defaults = {
-        document_id: @document_id,
-        doc_type: @doc_header
+        proposal_number: @proposal_number,
+        doc_header: @doc_header
     }
     opts.merge!(defaults)
   end

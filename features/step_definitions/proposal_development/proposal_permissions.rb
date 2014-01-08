@@ -1,4 +1,4 @@
-When /^I? ?visit the proposal's (.*) page$/ do |page|
+When /^I? ?visit the Proposal's (.*) page$/ do |page|
   @proposal.view page
 end
 
@@ -12,9 +12,9 @@ When /^I? ?assign the (.*) user as an? (.*) in the proposal permissions$/ do |sy
   @proposal.permissions.assign
 end
 
-Then /^the (.*) user can access the proposal$/ do |role|
+Then /^the (.*) user can access the Proposal$/ do |role|
   get(role).sign_in
-  @proposal.open_proposal
+  @proposal.view 'Proposal'
   on(Researcher).error_table.should_not be_present
 end
 
@@ -24,7 +24,7 @@ Then /^their proposal permissions do not allow them to edit budget details$/ do
   expect{@budget_version.edit(total_direct_cost_limit: '100')}.should raise_error(Watir::Exception::UnknownObjectException, /unable to locate element/)
 end
 
-And /^their proposal permissions allow them to edit all parts of the proposal$/ do
+And /^their proposal permissions allow them to edit all parts of the Proposal$/ do
   on Proposal do |page|
     page.save_button.should be_present
     page.abstracts_and_attachments
@@ -54,14 +54,14 @@ And /^their proposal permissions allow them to edit all parts of the proposal$/ 
   end
 end
 
-And /^their proposal permissions allow them to update the budget, not the narrative$/ do
+And /^their proposal permissions allow them to update the Budget, not the narrative$/ do
   expect{
     @proposal.add_proposal_attachment file_name: 'test.pdf', type: 'Narrative'
   }.should raise_error
   expect{@proposal.add_budget_version}.not_to raise_error
 end
 
-And /^their proposal permissions allow them to only read the proposal$/ do
+And /^their proposal permissions allow them to only read the Proposal$/ do
   on Proposal do |page|
     page.save_button.should_not be_present
     page.abstracts_and_attachments
@@ -91,7 +91,7 @@ And /^their proposal permissions allow them to only read the proposal$/ do
   end
 end
 
-And /^their proposal permissions allow them to delete the proposal$/ do
+And /^their proposal permissions allow them to delete the Proposal$/ do
   on(Proposal).proposal_actions
   expect{@proposal.delete}.should_not raise_error
 end
@@ -118,7 +118,7 @@ When /^I? ?attempt to add an additional proposal role to the (.*) user$/ do |sys
   end
 end
 
-Then /^the (.*) user should not be listed as an? (.*) in the second proposal$/ do |system_role, role|
+Then /^the (.*) user should not be listed as an? (.*) in the second Proposal$/ do |system_role, role|
   user = get(system_role)
   @proposal2.view :permissions
   on Permissions do |page|
@@ -126,7 +126,7 @@ Then /^the (.*) user should not be listed as an? (.*) in the second proposal$/ d
   end
 end
 
-Then /^the user should be able to create a proposal$/ do
+Then /^the User should be able to create a proposal$/ do
   # Note that since this stepdef doesn't specify WHICH user, it's
   # assuming that the one to use is the last one that was
   # created/defined.

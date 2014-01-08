@@ -1,18 +1,17 @@
-class ProposalDevelopmentObject
+class ProposalDevelopmentObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include DateFactory
   include Navigation
+  include DocumentUtilities
   
   attr_accessor :proposal_type, :lead_unit, :activity_type, :project_title, :proposal_number,
-                :sponsor_code, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
+                :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
                 :status, :initiator, :created, :sponsor_deadline_date, :key_personnel,
                 :opportunity_id, # Maybe add competition_id and other stuff here...
                 :special_review, :budget_versions, :permissions, :s2s_questionnaire, :proposal_attachments,
                 :proposal_questions, :compliance_questions, :kuali_u_questions, :custom_data, :recall_reason,
-                :personnel_attachments, :mail_by, :mail_type
+                :personnel_attachments, :mail_by, :mail_type, :institutional_proposal_number, :nsf_science_code
 
   def initialize(browser, opts={})
     @browser = browser
@@ -22,11 +21,12 @@ class ProposalDevelopmentObject
       lead_unit:             '::random::',
       activity_type:         '::random::',
       project_title:         random_alphanums,
-      sponsor_code:          '::random::',
+      sponsor_id:            '::random::',
       sponsor_type_code:     '::random::',
+      nsf_science_code:      '::random::',
       project_start_date:    next_week[:date_w_slashes], # TODO: Think about using the date object here, and not the string
       project_end_date:      next_year[:date_w_slashes],
-      sponsor_deadline_date: next_week[:date_w_slashes],
+      sponsor_deadline_date: next_year[:date_w_slashes],
       mail_by:               '::random::',
       mail_type:             '::random::',
       key_personnel:         collection('KeyPersonnel'),
@@ -35,12 +35,11 @@ class ProposalDevelopmentObject
       personnel_attachments: collection('PersonnelAttachments'),
       proposal_attachments:  collection('ProposalAttachments')
     }
-
+    @lookup_class=ProposalDevelopmentDocumentLookup
     set_options(defaults.merge(opts))
   end
     
   def create
-    window_cleanup
     visit(Researcher).create_proposal
     on Proposal do |doc|
       @doc_header=doc.doc_title
@@ -49,26 +48,24 @@ class ProposalDevelopmentObject
       @initiator=doc.initiator
       @created=doc.created
       doc.expand_all
+      set_sponsor_code
       fill_out doc, :proposal_type, :activity_type,
                     :project_title, :project_start_date, :project_end_date,
-                    :sponsor_deadline_date, :mail_by, :mail_type#, :description
-      set_sponsor_code
+                    :sponsor_deadline_date, :mail_by, :mail_type, :nsf_science_code
       set_lead_unit
       doc.save
-      @proposal_number=doc.proposal_number
-      @permissions = make PermissionsObject, document_id: @document_id, aggregators: [@initiator]
+      @proposal_number=doc.proposal_number.strip
+      @search_key={ proposal_number: @proposal_number }
+      @permissions = make PermissionsObject, merge_settings(aggregators: [@initiator])
     end
   end
 
   def edit opts={}
-    open_proposal
+    open_document
     on Proposal do |edit|
       edit.proposal
       edit.expand_all
-      edit.project_title.fit opts[:project_title]
-      edit.project_start_date.fit opts[:project_start_date]
-      edit.opportunity_id.fit opts[:opportunity_id]
-      edit.proposal_type.fit opts[:proposal_type]
+      edit_fields opts, edit, :project_title, :project_start_date, :opportunity_id, :proposal_type
       # TODO: Add more stuff here as necessary
       edit.save
     end
@@ -81,38 +78,6 @@ class ProposalDevelopmentObject
   # This alias is recommended only for when
   # using this method with no options.
   alias_method :add_principal_investigator, :add_key_person
-
-
-  # This method simply sets all the credit splits to
-  # equal values based on how many persons and units
-  # are attached to the Proposal. If more complicated
-  # credit splits are needed, these will have to be
-  # coded in the step def, accessing the key person
-  # objects directly.
-  def set_valid_credit_splits
-    # calculate a "person" split value that will work
-    # based on the number of people attached...
-    split = (100.0/@key_personnel.with_units.size).round(2)
-
-    # Now make a hash to use for editing the person's splits...
-    splits = {responsibility: split, financial: split, recognition: split, space: split}
-
-    # Now we update the KeyPersonObjects' instance variables
-    # for their own splits as well as for their units
-    @key_personnel.with_units.each do |person|
-      person.edit splits
-      units_split = (100.0/person.units.size).round(2)
-      # Make a temp container for the units we're updating...
-      units = []
-      person.units.each { |unit| units << {:number=>unit[:number]} }
-      # Iterate through the units, updating their credit splits with the
-      # valid split amount...
-      units.each do |unit|
-        [:responsibility, :financial, :recognition, :space].each { |item| unit[item]=units_split }
-      end
-      person.update_unit_credit_splits units
-    end
-  end
 
   def add_special_review opts={}
     @special_review.add merge_settings(opts)
@@ -149,22 +114,34 @@ class ProposalDevelopmentObject
 
   def make_institutional_proposal
     # TODO: Write any preparatory web site functional steps and page scraping code
+    visit(Researcher).search_institutional_proposals
+    on InstitutionalProposalLookup do |look|
+      fill_out look, :institutional_proposal_number
+      look.search
+      look.open @institutional_proposal_number
+    end
+    doc_id = on(InstitutionalProposal).document_id
     ip = make InstitutionalProposalObject, dev_proposal_number: @proposal_number,
          proposal_type: @proposal_type,
          activity_type: @activity_type,
          project_title: @project_title,
-         special_review: Marshal::load(Marshal.dump(@special_review)),
-         custom_data: Marshal::load(Marshal.dump(@custom_data))
+         special_review: @special_review.copy,
+         custom_data: @custom_data.data_object_copy,
+         document_id: doc_id,
+         proposal_number: @institutional_proposal_number,
+         nsf_science_code: @nsf_science_code,
+         sponsor_id: @sponsor_id
     @key_personnel.each do |person|
-      project_person = make ProjectPersonnelObject, full_name: person[:full_name],
-                            first_name: person[:first_name], last_name: person[:last_name],
-                            lead_unit: person[:home_unit], role: person[:role],
-                            project_role: person[:key_person_role], units: person[:units],
-                            responsibility: person[:responsibility], space: person[:space],
-                            financial: person[:financial], recognition: person[:recognition]
+      project_person = make ProjectPersonnelObject, full_name: person.full_name,
+                            first_name: person.first_name, last_name: person.last_name,
+                            lead_unit: person.home_unit, role: person.role,
+                            project_role: person.key_person_role, units: person.units,
+                            responsibility: person.responsibility, space: person.space,
+                            financial: person.financial, recognition: person.recognition,
+                            document_id: doc_id
       ip.project_personnel << project_person
     end
-    # TODO: Add more here as needed...
+    ip
   end
 
   def delete
@@ -182,13 +159,13 @@ class ProposalDevelopmentObject
 
   def recall(reason=random_alphanums)
     @recall_reason=reason
-    open_proposal
+    open_document
     on(Proposal).recall
     on Confirmation do |conf|
       conf.reason.set @recall_reason
       conf.yes
     end
-    open_proposal
+    open_document
     @status=on(Proposal).document_status
   end
 
@@ -197,12 +174,12 @@ class ProposalDevelopmentObject
   end
 
   def close
-    open_proposal
+    open_document
     on(Proposal).close
   end
 
   def view(tab)
-    open_proposal
+    open_document
     unless @status=='CANCELED' || on(Proposal).send(StringFactory.damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
       on(Proposal).send(StringFactory.damballa(tab.to_s))
     end
@@ -218,6 +195,7 @@ class ProposalDevelopmentObject
         # A breaking of the design pattern, here,
         # but we have no alternative...
         @status=page.document_status
+        @institutional_proposal_number=page.institutional_proposal_number
         page.send_fyi
       end
     elsif type == :to_s2s
@@ -242,14 +220,15 @@ class ProposalDevelopmentObject
     on(Proposal).save
   end
 
-  # TODO: Make this private. Step defs should use #view!
-  def open_proposal
-    open_document @doc_header
-  end
-
   def blanket_approve
     submit :ba
   end
+
+  def approve
+    on(ProposalSummary).approve
+  end
+
+  alias :sponsor_code :sponsor_id
 
   # =======
   private
@@ -258,24 +237,12 @@ class ProposalDevelopmentObject
   def merge_settings(opts)
     defaults = {
         document_id: @document_id,
-        doc_type: @doc_header
+        doc_header: @doc_header,
+        proposal_number: @proposal_number,
+        lookup_class: @lookup_class,
+        search_key: @search_key
     }
     opts.merge!(defaults)
-  end
-
-  def set_sponsor_code
-    if @sponsor_code=='::random::'
-      on(Proposal).find_sponsor_code
-      on SponsorLookup do |look|
-        look.sponsor_type_code.pick! @sponsor_type_code
-        look.search
-        look.page_links[rand(look.page_links.length)].click if look.page_links.size > 0
-        look.return_random
-      end
-      @sponsor_code=on(Proposal).sponsor_code.value
-    else
-      on(Proposal).sponsor_code.fit @sponsor_code
-    end
   end
 
   def set_lead_unit
@@ -293,6 +260,13 @@ class ProposalDevelopmentObject
     object = make object_class, opts
     object.create
     object
+  end
+
+  # TODO: Consider changing this to a
+  # class instance variable created in the
+  # initialize
+  def page_class
+    Proposal
   end
 
 end

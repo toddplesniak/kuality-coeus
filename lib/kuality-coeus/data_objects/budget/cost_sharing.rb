@@ -1,9 +1,6 @@
-class CostSharingObject
+class CostSharingObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
-  include Navigation
 
   attr_accessor :project_period, :percentage, :source_account, :amount, :index
 

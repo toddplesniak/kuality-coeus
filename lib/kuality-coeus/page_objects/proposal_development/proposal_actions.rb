@@ -1,5 +1,7 @@
 class ProposalActions < ProposalDevelopmentDocument
 
+  expected_element :data_validation_header
+
   proposal_header_elements
   route_log
   tiny_buttons
@@ -34,6 +36,7 @@ class ProposalActions < ProposalDevelopmentDocument
   element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
   element(:disapprove_button) { |b| b.frm.button(name: 'methodToCall.disapprove') }
   element(:reject_button) { |b| b.frm.button(name: 'methodToCall.reject') }
+  element(:submit_to_sponsor_button) { |b| b.frm.button(name: 'methodToCall.submitToSponsor') }
 
   # Proposal Hierarchy
 

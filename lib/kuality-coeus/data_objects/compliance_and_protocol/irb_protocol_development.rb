@@ -1,7 +1,5 @@
-class IRBProtocolDevelopmentObject
+class IRBProtocolDevelopmentObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include DateFactory
   include Navigation
@@ -20,7 +18,7 @@ class IRBProtocolDevelopmentObject
         title:          random_alphanums,
         lead_unit:      '::random::',
     }
-
+    # TODO: Needs a @lookup_class and @search_key defined
     set_options(defaults.merge(opts))
   end
 
@@ -29,6 +27,7 @@ class IRBProtocolDevelopmentObject
     visit(Researcher).create_irb_protocol
     on ProtocolOverview do |doc|
       @document_id=doc.document_id
+      @doc_header=doc.doc_title
       @status=doc.document_status
       @initiator=doc.initiator
       @submission_status=doc.submission_status
@@ -49,7 +48,7 @@ class IRBProtocolDevelopmentObject
   def merge_settings(opts)
     defaults = {
         document_id: @document_id,
-        doc_type: @doc_header
+        doc_header: @doc_header
     }
     opts.merge!(defaults)
   end

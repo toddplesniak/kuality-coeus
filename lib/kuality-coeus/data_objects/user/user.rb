@@ -16,6 +16,10 @@ class Users < Array
     self.find { |user| user.type == type }
   end
 
+  def with_role(role_name)
+    self.find { |user| user.roles.detect{|r| r.name==role_name} }
+  end
+
   def with_role_in_unit(role_name, unit)
     roles = self.map{ |user| user.roles }
     self.user(roles.flatten!.find { |role| role.name==role_name && role.qualifiers.detect{ |q| q[:unit]==unit } }.user_name)
@@ -27,10 +31,10 @@ class Users < Array
 
   def grants_gov_pi
     self.find { |user|
-                  !user[:primary_department_code].nil? &&
-                  !user[:phones].find{|phone| phone[:type]=='Work'}.nil? &&
-                  !user[:emails].find{|email| email[:type]=='Work'}.nil? &&
-                  !user[:era_commons_user_name].nil?
+                  !user.primary_department_code.nil? &&
+                  !user.phones.find{|phone| phone[:type]=='Work'}.nil? &&
+                  !user.emails.find{|email| email[:type]=='Work'}.nil? &&
+                  !user.era_commons_user_name.nil?
     }
   end
 
@@ -44,7 +48,34 @@ class UserYamlCollection < Hash
   # The array is shuffled so that #have_role('role name')[0] will be a random selection
   # from the list of matching users.
   def have_role(role)
-    self.find_all{|user| user[1][:rolez] != nil && user[1][:rolez].detect{|r| r[:name]==role}}.shuffle
+    users = self.find_all{|user| user[1][:rolez].detect{|r| r[:name]==role}}.shuffle
+    raise "No users have the role #{role}. Please add one or fix your parameter." if users.empty?
+    users
+  end
+
+  # Returns an array of all users with the specified role in the specified unit. Takes
+  # the role and unit names as strings.
+  # The array is shuffled so that #have_role_in_unit('role name', 'unit name')[0]
+  # will be a random selection from the list of matching users.
+  def have_role_in_unit(role, unit)
+    users = self.find_all{ |user|
+      user[1][:rolez].detect{ |r|
+                             r[:name]==role &&
+                             r[:qualifiers].detect{ |q|
+                                                     q[:unit]==unit }
+                                                      }
+    }.shuffle
+    raise "No users have the role #{role} in the unit #{unit}. Please add one or fix your parameter(s)." if users.empty?
+    users
+  end
+
+  # TODO: Does this need the third parameter?  Maybe we just look for "yes" and make another method for "no"...
+  def have_hierarchical_role_in_unit(role, unit, hier)
+    users = self.find_all{ |user|
+      user[1][:rolez].find{ |r| r[:name]==role && r[:qualifiers].detect{ |q| q[:unit]==unit && q[:descends_hierarchy]==hier } }
+    }.shuffle
+    raise "No users have a hierarchical role #{role} in the unit #{unit}. Please add one or fix your parameter(s)." if users.empty?
+    users
   end
 
   # Returns an array of all users with the specified campus code. Takes the code as a string.
@@ -93,7 +124,7 @@ class UserObject
                 :description, :affiliation_type, :campus_code,
                 :employee_id, :employee_status, :employee_type, :base_salary, :primary_department_code,
                 :groups, :roles, :role_qualifiers, :addresses, :phones, :emails,
-                :primary_title, :directory_title, :citizenship_type,
+                :primary_title, :directory_title, :citizenship_type, :role,
                 :era_commons_user_name, :graduate_student_count, :billing_element,
                 :directory_department,
                 :session_status, :type
@@ -126,17 +157,21 @@ class UserObject
     defaults.merge!(opts)
     @roles = collection('UserRoles')
 
-    @user_name=case
-               when opts.empty?
-                 'admin'
-               when opts.key?(:user)
-                 opts[:user]
-               when opts.key?(:role)
-                 USERS.have_role(opts[:role])[0][0]
-               else
-                 :not_nil
-               end
-    options = USERS[@user_name].nil? ? defaults : USERS[@user_name].merge(opts)
+    if opts.empty? # then we want to make the admin user...
+      options = {user_name: 'admin', first_name: 'admin', last_name: 'admin'}
+    else # if we're passing options then we want to make a particular user...
+      @user_name=case
+                 when opts.key?(:user)
+                   opts[:user]
+                 when opts.key?(:unit)
+                   USERS.have_role_in_unit(opts[:role], opts[:unit])[0][0]
+                 when opts.key?(:role)
+                   USERS.have_role(opts[:role])[0][0]
+                 else
+                   :not_nil
+                 end
+      options = USERS[@user_name].nil? ? defaults : USERS[@user_name].merge(opts)
+    end
 
     set_options options
     @rolez.each { |role| role[:user_name]=@user_name; @roles << make(UserRoleObject, role) } unless @rolez.nil?
@@ -254,9 +289,6 @@ class UserObject
   #   original window
   def sign_in
     $users.logged_in_user.sign_out unless $users.current_user==nil
-    # This line is required because visiting the login page doesn't
-    # actually work when you're currently logged in.
-    #s_o.click if s_o.present?
     visit Login do |log_in|
       log_in.username.set @user_name
       log_in.login
@@ -281,7 +313,7 @@ class UserObject
       search.search
       begin
         if search.item_row(@user_name).present?
-          # FIXME!
+          # TODO!
           # This is a coding abomination to include
           # this here, but it's here until I can come
           # up with a better solution...

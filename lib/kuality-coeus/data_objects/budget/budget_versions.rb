@@ -1,7 +1,5 @@
-class BudgetVersionsObject
+class BudgetVersionsObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include Navigation
 
@@ -28,11 +26,12 @@ class BudgetVersionsObject
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id, :doc_type
+    requires :document_id, :lookup_class
   end
 
   def create
-    navigate
+    open_document
+    on(Proposal).budget_versions unless on_page?(on(BudgetVersions).name)
     on BudgetVersions do |add|
       @doc_header=add.doc_title
       add.name.set @name
@@ -67,7 +66,10 @@ class BudgetVersionsObject
   def add_period opts={}
     defaults={
         budget_name: @name,
-        doc_type: @doc_header
+        doc_header: @doc_header,
+        lookup_class: @lookup_class,
+        search_key: @search_key,
+        start_date: @project_start_date
     }
     @budget_periods.add defaults.merge(opts)
     return if on(Parameters).errors.size > 0 # No need to continue the method if we have an error
@@ -85,16 +87,12 @@ class BudgetVersionsObject
     @budget_periods.number!
   end
 
-  # Please note, this method is for VERY basic editing...
-  # Use it for editing the Budget Version while on the Proposal, but not the Periods
   def edit opts={}
-    navigate
-    on(BudgetVersions).open @name
-    confirmation
+    open_budget
     on Parameters do |edit|
-      edit.final.fit opts[:final]
+      edit.parameters unless edit.parameters_button.parent.class_name=='tabright tabcurrent'
+      edit_fields opts, edit, :final, :total_direct_cost_limit
       edit.budget_status.fit opts[:status]
-      edit.total_direct_cost_limit.fit opts[:total_direct_cost_limit]
       # TODO: More to add here...
       edit.save
     end
@@ -102,19 +100,21 @@ class BudgetVersionsObject
   end
 
   def open_budget
-    navigate
-    on BudgetVersions do |page|
-      page.open @name
+    unless on(DocumentHeader).budget_name==@name
+      open_document
+      on(Proposal).budget_versions unless on_page?(on(BudgetVersions).name)
+      on(BudgetVersions).open(@name) unless on(DocumentHeader).budget_name==@name
+      #TODO: This needs to be dealt with more intelligently.
+      # It's clear that we need to learn more about how to set up
+      # sponsors better, so that we can predict when this dialog
+      # will show up and when it won't...
+      confirmation
     end
-    #TODO: This needs to be dealt with more intelligently.
-    # It's clear that we need to learn more about how to set up
-    # sponsors better, so that we can predict when this dialog
-    # will show up and when it won't...
-    confirmation
   end
 
   def copy_all_periods(new_name)
-    navigate
+    open_document
+    on(Proposal).budget_versions unless on_page?(on(BudgetVersions).name)
     new_version_number='x'
     on(BudgetVersions).copy @name
     on(Confirmation).copy_all_periods
@@ -175,6 +175,7 @@ class BudgetVersionsObject
 
   def get_budget_periods
     on Parameters do |page|
+      @doc_header=page.doc_title
       1.upto(page.period_count) do |number|
         period = make BudgetPeriodObject, document_id: @document_id,
                       budget_name: @name, start_date: page.start_date_period(number).value,
@@ -185,31 +186,13 @@ class BudgetVersionsObject
                       unrecovered_f_and_a: page.unrecovered_fa_period(number).value.groom,
                       cost_sharing: page.cost_sharing_period(number).value.groom,
                       cost_limit: page.cost_limit_period(number).value.groom,
-                      direct_cost_limit: page.direct_cost_limit_period(number).value.groom
+                      direct_cost_limit: page.direct_cost_limit_period(number).value.groom,
+                      lookup_class: @lookup_class,
+                      doc_header: @doc_header
         @budget_periods << period
       end
     end
     @budget_periods.number!
-  end
-
-  # Nav Aids...
-
-  def navigate
-    @doc_header ||= @doc_type
-    open_document @doc_header
-    on(Proposal).budget_versions unless on_page?(on(BudgetVersions).name)
-  end
-
-  # Use this if the confirmation dialog may appear
-  # due to missing rates...
-  def confirmation
-    begin
-      on(Confirmation) do |conf|
-        conf.yes if conf.yes_button.present?
-      end
-    rescue
-      # do nothing because the dialog isn't there
-    end
   end
 
 end # BudgetVersionsObject

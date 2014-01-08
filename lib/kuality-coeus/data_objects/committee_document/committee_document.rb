@@ -1,7 +1,5 @@
-class CommitteeDocumentObject
+class CommitteeDocumentObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include Navigation
 
@@ -26,7 +24,7 @@ class CommitteeDocumentObject
       areas_of_research:      [],
       schedule:               collection('CommitteeSchedule')
     }
-
+    #TODO: Class needs a @lookup_class and a @search_key defined
     set_options(defaults.merge(opts))
   end
     
@@ -35,6 +33,7 @@ class CommitteeDocumentObject
     on(CentralAdmin).add_irb_committee
     on Committee do |comm|
       @document_id=comm.document_id
+      @doc_header=comm.doc_title
       @initiator=comm.initiator
       @status=comm.status
       fill_out comm, :description, :committee_id, :committee_name,
@@ -45,7 +44,7 @@ class CommitteeDocumentObject
   end
 
   def submit
-    navigate
+    #navigate
     on(Committee).submit
   end
 
@@ -55,10 +54,6 @@ class CommitteeDocumentObject
 
   # Nav Aids...
 
-  def navigate
-    open_document 'Committee Document' # TODO: Does this really need to be hard coded?
-    on(Committee).committee unless on_page?(on(Committee).committee_id_field)
-  end
 
 end
     

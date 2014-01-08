@@ -1,12 +1,11 @@
-class PHSFellowshipQuestionnaireObject
+class PHSFellowshipQuestionnaireObject < DataObject
 
   YN_QUESTIONS = [:indefinite_human_subjects, :clinical_trial, :phase_3_trial, :indefinite_vertebrates,
                   :human_stem_cells, :specific_cell_line, :seeking_degree_during_proposed_award,
                   :have_kirchstein_support, :have_kirschstein_support_start_date, :have_kirschstein_support_end_date,
                   :have_nih_grant_number, :have_additional_kirschstein_support, :previous_submission,
                   :senior_fellowship_application, :supplement_funding]
-  include Foundry
-  include DataFactory
+
   include StringFactory
   include Navigation
   include Utilities
@@ -43,11 +42,11 @@ class PHSFellowshipQuestionnaireObject
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id, :doc_type
+    requires :document_id, :doc_header
   end
 
   def create
-    navigate
+    open_s2s
     on(S2S).questions
     on(Questions).expand_all
     on PHSFellowshipQuestionnaire do |phs_fellowship|
@@ -80,10 +79,11 @@ class PHSFellowshipQuestionnaireObject
 
   # Nav Aids...
 
-  def navigate
-    open_document @doc_type
+  def open_s2s
+    open_document
     on(Proposal).questions unless on_page?(on(Questions).questions_header)
   end
+
 end
 
 

@@ -1,7 +1,5 @@
-class PermissionsObject
+class PermissionsObject < DataObject
 
-  include Foundry
-  include DataFactory
   include Navigation
 
   attr_accessor :document_id, :aggregators, :budget_creators, :narrative_writers,
@@ -19,7 +17,7 @@ class PermissionsObject
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id, :aggregators
+    requires :document_id, :aggregators, :doc_header, :search_key, :lookup_class
   end
 
   # It's important to realize that this method assigns
@@ -29,7 +27,7 @@ class PermissionsObject
   # an accurate reflection of what exists in the site,
   # if that's important to the test.
   def assign
-    navigate
+    open_permissions
     on Permissions do |add|
       # See the roles method defined below...
       roles.each do |inst_var, role|
@@ -62,7 +60,7 @@ class PermissionsObject
   # role and you need to assign them more roles.
   def add_roles(username, *roles)
     # get to the right page...
-    navigate
+    open_permissions
     on Permissions do |page|
       # click the edit role button for the right user...
       page.edit_role username
@@ -86,7 +84,7 @@ class PermissionsObject
   end
 
   def delete username
-    navigate
+    open_permissions
     on(Permissions).delete username
     roles.each do |role|
       get(role).delete_if { |name| name==username }
@@ -99,9 +97,13 @@ class PermissionsObject
 
   # Nav Aids...
 
-  def navigate
-    open_document @doc_type
+  def open_permissions
+    open_document
     on(Proposal).permissions unless on_page?(on(Permissions).user_name)
+  end
+
+  def lookup_class
+    ProposalDevelopmentDocumentLookup
   end
 
   # Add/Remove roles here, as needed...

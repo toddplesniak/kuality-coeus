@@ -1,9 +1,7 @@
-class GroupAssigneeObject
+class GroupAssigneeObject < DataObject
 
-  include Foundry
-  include DataFactory
-  include Navigation
   include StringFactory
+  include Navigation
 
   attr_accessor :type_code, :member_identifier
 
@@ -26,12 +24,6 @@ class GroupAssigneeObject
       page.blanket_approve
     end
   end
-
-  # =========
-  private
-  # =========
-
-
 
 end
 

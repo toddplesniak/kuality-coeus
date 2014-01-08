@@ -1,6 +1,3 @@
-admin:
-  :first_name: admin
-  :last_name:  admin
 unassigneduser: # AKA: "Principal Name
   :user_name:        unassigneduser
   :description:      creating user with 'unassigned' role
@@ -88,7 +85,7 @@ poolej: # AKA: "Principal Name
     - :id:   '110'
       :name: Aggregator
       :qualifiers:
-        - '000001'
+        - :unit: '000001'
     - :id:   '109'
       :name: Narrative Writer
       :qualifiers:
@@ -145,7 +142,7 @@ cleganeg:  # AKA: "Principal Name"
     - :id:   '100'
       :name: OSPApprover
       :qualifiers:
-        -
+        - :unit:
 starka:  # AKA: "Principal Name"
   :user_name:        starka
   :description:      creating test user with manager permissions
@@ -186,10 +183,6 @@ starka:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '98'
-      :name: Manager
-      :qualifiers:
-        -
     - :id:   '110'
       :name: Aggregator
       :qualifiers:
@@ -289,7 +282,7 @@ warrens:  # AKA: "Principal Name"
     - :id:   '100'
       :name: OSPApprover
       :qualifiers:
-        -
+        - :unit:
     - :id:   '131'
       :name: OSP Administrator
       :qualifiers:
@@ -392,7 +385,7 @@ wcoyne: # AKA: "Principal Name"
    - :id:   '104'
      :name: Protocol Viewer
      :qualifiers:
-       - '000001'
+       - :unit: '000001'
    - :id:   '105'
      :name: Protocol Aggregator
      :qualifiers:
@@ -445,11 +438,11 @@ mlinkous: # AKA: "Principal Name"
    - :id:   '99'
      :name: IRB Approver
      :qualifiers:
-       -
+       - :unit:
    - :id:   '149'
      :name: IRBApprover-Nested
      :qualifiers:
-       -
+       - :unit:
 smalkmus: # AKA: "Principal Name"
   :user_name:        smalkmus
   :description:      IRB Protocol Administrator
@@ -515,7 +508,7 @@ smalkmus: # AKA: "Principal Name"
    - :id:   '149'
      :name: Protocol Approver
      :qualifiers:
-       -
+       - :unit:
    - :id:   '1651'
      :name: IACUC Approver
      :qualifiers:
@@ -565,6 +558,8 @@ kwagner: # AKA: "Principal Name"
      :name: Award Modifier
      :qualifiers:
        - :unit: '000001'
+         :descends_hierarchy: :set
+       - :unit: BL-BL
 vchesnutt: # AKA: "Principal Name"
   :user_name:        vchesnutt
   :description:      Award Budget Modifier
@@ -653,3 +648,207 @@ dkensrue: # AKA: "Principal Name"
      :name: Create Proposal Log
      :qualifiers:
        - :unit: '000001'
+   - :id:   '131'
+     :name: OSP Administrator
+     :qualifiers:
+       - :unit: '000001'
+   - :id:   '117'
+     :name: Institutional Proposal Maintainer
+     :qualifiers:
+       - :unit: '000001'
+   - :id:   '100'
+     :name: OSPApprover
+     :qualifiers:
+       - :unit: '000001'
+dbowie: # AKA: "Principal Name"
+  :user_name:        dbowie
+  :description:      Proposal Log PI
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      dbowie
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      98765.43
+  :primary_department_code: '000001'
+  :first_name:       David
+  :last_name:        Bowie
+  :primary_title:    Proposal Log PI
+  :directory_title:  Proposal Log PI
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: dbowie
+  :directory_department:  Liberal Arts
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  543-525-1234
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '137'
+     :name: Proposal Log PI
+     :qualifiers:
+       - :unit: '000001'
+mtwain: # AKA: "Principal Name"
+  :user_name:        mtwain
+  :description:      Award Budget Aggregator
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      mtwain
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      98765.43
+  :primary_department_code: '000001'
+  :first_name:       Mark
+  :last_name:        Twain
+  :primary_title:    Award Budget Aggregator
+  :directory_title:  Award Budget Aggregator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: mtwain
+  :directory_department:  Liberal Arts
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3876
+     :default: :set
+   - :type:    Facsimile
+     :number:  543-525-1234
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '113'
+     :name: Award Budget Aggregator
+     :qualifiers:
+       - :unit: '000001'
+jamesr: # AKA: "Principal Name"
+  :user_name:        jamesr
+  :description:      Time and Money Modifier
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      jamesr
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      8765.43
+  :primary_department_code: '000001'
+  :first_name:       Richard
+  :last_name:        James
+  :primary_title:    Time and Money Modifier
+  :directory_title:  Time and Money Modifier
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: jamesr
+  :directory_department:  Accounting
+  :graduate_student_count: '0'
+  :billing_element:  goo goo gah joob
+  :addresses:
+   - :type:    Work
+     :line_1:  475 N scottsdale rd
+     :city:    scottsdale
+     :state:   ARIZONA
+     :country: United States
+     :zip:     85257
+     :default: :set
+  :phones:
+   - :type:    Work
+     :number:  602-228-3476
+     :default: :set
+   - :type:    Facsimile
+     :number:  543-525-4321
+     :default: :clear
+     :country: United States
+  :emails:
+   - :email:   kc-qa-notify@rsmart.com
+     :type:    Work
+     :default: :set
+  :rolez:
+   - :id:   '154'
+     :name: Time And Money Modifier
+     :qualifiers:
+       - :unit: '000001'
+         :descends_hierarchy: :set
+   - :id:   '123'
+     :name: Award Viewer
+     :qualifiers:
+       - :unit: '000001'
+         :descends_hierarchy: :set
+dbyrne:  # AKA: "Principal Name"
+  :user_name:        dbyrne
+  :description:      creating user who can submit pd docs to sponsors
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      '00001'
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      123456.78
+  :primary_department_code: 'OSP'
+  :first_name:       David
+  :last_name:        Byrne
+  :primary_title:    OSP IP User
+  :directory_title:  OSP IP User
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name: dbyrne
+  :directory_department:  Humanities
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+  :phones:
+    - :type:    Facsimile
+      :number:  555-555-5555
+      :default: :clear
+      :country: United States
+    - :type:    Work
+      :number:  480-555-1212
+      :default: :set
+      :country: United States
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :id:   '100'
+      :name: OSPApprover
+      :qualifiers:
+        - :unit:
+    - :id:   '131'
+      :name: OSP Administrator
+      :qualifiers:
+        - :unit: '000001'
+          :descends_hierarchy: :clear
+    - :id:   '117'
+      :name: Institutional Proposal Maintainer
+      :qualifiers:
+        - :unit: '000001'

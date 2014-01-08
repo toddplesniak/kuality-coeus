@@ -1,4 +1,4 @@
-class S2SQuestionnaireObject
+class S2SQuestionnaireObject < DataObject
 
   # Convenient gathering of all Yes/No questions. Makes it possible to
   # do simple iterations through them.
@@ -11,8 +11,6 @@ class S2SQuestionnaireObject
                  :international_activities, :other_agencies, :subject_to_review,
                  :novice_applicants]
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include Navigation
   include Utilities
@@ -74,11 +72,11 @@ class S2SQuestionnaireObject
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id, :doc_type
+    requires :document_id, :doc_header
   end
 
   def create
-    navigate
+    view
     on Questions do |s2s|
       s2s.expand_all
 
@@ -115,14 +113,8 @@ class S2SQuestionnaireObject
     end
   end
 
-  # =======
-  private
-  # =======
-
-  # Nav Aids...
-
-  def navigate
-    open_document @doc_type
+  def view
+    open_document
     on(Proposal).questions unless on_page?(on(Questions).questions_header)
   end
 

@@ -25,9 +25,9 @@ class BasePage < PageFactory
     def document_header_elements
       value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text }
       element(:headerinfo_table) { |b| b.frm.div(id: 'headerarea').table(class: 'headerinfo') }
-      value(:document_id) { |p| p.headerinfo_table[0][1].text }
+      value(:document_id) { |p| p.headerinfo_table[0].text[/\d{4}/] }
       alias_method :doc_nbr, :document_id
-      value(:document_status) { |p| p.headerinfo_table[0][3].text }
+      value(:document_status) { |p| p.headerinfo_table[0][3].text[/(?<=:)?.+$/] }
       value(:initiator) { |p| p.headerinfo_table[1][1].text }
       alias_method :disposition, :initiator
       value(:last_updated) {|p| p.headerinfo_table[1][3].text }
@@ -53,11 +53,12 @@ class BasePage < PageFactory
            'Delete Proposal', 'approve', 'disapprove',
            'Generate All Periods', 'Calculate All Periods', 'Default Periods',
            'Calculate Current Period', 'submit', 'Send Notification'
-      action(:save) { |b| b.frm.button(name: 'methodToCall.save').click; b.loading }
+      action(:save) { |b| b.frm.button(name: 'methodToCall.save', title: 'save').click; b.loading }
       # Explicitly defining the "recall" button to keep the method name at "recall" instead of "recall_current_document"...
       element(:recall_button) { |b| b.frm.button(class: 'globalbuttons', title: 'Recall current document') }
       action(:recall) { |b| b.recall_button.click; b.loading }
-      action(:edit) { |b| b.frm.button(name: 'methodToCall.editOrVersion').click; b.loading }
+      action(:edit) { |b| b.edit_button.click; b.loading }
+      element(:edit_button) { |b| b.frm.button(name: 'methodToCall.editOrVersion') }
       action(:delete_selected) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.deletePerson').click; b.loading }
       element(:send_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.sendNotification', title: 'send') }
       action(:send_fyi) { |b| b.send_button.click; b.loading }
@@ -85,13 +86,22 @@ class BasePage < PageFactory
       action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
 
       action(:item_row) { |match, b| b.results_table.row(text: /#{match}/m) }
-      action(:open_item) { |match, b| b.item_row(match).link(text: /#{match}/).click; b.use_new_tab; b.close_parents }
+      # Note: Use this when you need to click the "open" link on the target row
+      action(:open) { |match, p| p.results_table.row(text: /#{match}/m).link(text: 'open').click; p.use_new_tab; p.close_parents }
+      # Note: Use this when the link itself is the text you want to match
+      action(:open_item) { |match, b| b.frm.link(text: /#{match}/).click; b.use_new_tab; b.close_parents }
       action(:delete_item) { |match, p| p.item_row(match).link(text: 'delete').click; p.use_new_tab; p.close_parents }
 
       action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
       action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
       action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
+
+      # Used as the catch-all "document opening" method for conditional navigation,
+      # when we can't know whether the current user will have edit permissions.
+      # Note: The assumption is that there is only one item returned in the search,
+      # so the method needs no identifying parameter...
+      action(:medusa) { |b| b.frm.link(text: /medusa|edit|view/).click; b.use_new_tab; b.close_parents }
     end
 
     def budget_header_elements
@@ -165,7 +175,7 @@ class BasePage < PageFactory
 
     # Gathers all errors on the page and puts them in an array called "errors"
     def error_messages
-      element(:errors) do |b|
+      value(:errors) do |b|
         errs = []
         b.left_errmsg_tabs.each do |div|
           if div.div.div.exist?
@@ -194,6 +204,22 @@ class BasePage < PageFactory
       action(:turn_on_validation) { |b| b.validation_button.click; b.special_review_button.wait_until_present }
       element(:validation_errors_and_warnings) { |b| errs = []; b.validation_err_war_fields.each { |field| errs << field.html[/(?<=>).*(?=<)/] }; errs }
       element(:validation_err_war_fields) { |b| b.frm.tds(width: '94%') }
+    end
+
+    def combined_credit_splits
+      {
+          'recognition'=>1,
+          'responsibility'=>2,
+          'space'=>3,
+          'financial'=>4
+      }.each do |key, value|
+        # Makes methods for the person's 4 credit splits (doesn't have to take the full name of the person to work)
+        # Example: page.responsibility('Joe Schmoe').set '100.00'
+        action(key.to_sym) { |name, b| b.credit_split_div_table.row(text: /#{name}/)[value].text_field }
+        # Makes methods for the person's units' credit splits
+        # Example: page.unit_financial('Jane Schmoe', 'Unit').set '50.0'
+        action("unit_#{key}".to_sym) { |full_name, unit_name, p| p.target_unit_row(full_name, unit_name)[value].text_field }
+      end
     end
 
     # ========
@@ -232,6 +258,17 @@ class BasePage < PageFactory
       act_name=damballa(text)
       element(el_name) { |b| b.frm.send(type, identifiers[type]=>text) }
       action(act_name) { |b| b.frm.send(type, identifiers[type]=>text).click }
+    end
+
+    # Used for getting rid of the space in the full name
+    def nsp(string)
+      string.gsub(' ', '')
+    end
+
+    # Used to add an extra space in the full name (because some
+    # elements have that, annoyingly!)
+    def twospace(string)
+      string.gsub(' ', '  ')
     end
 
   end # self

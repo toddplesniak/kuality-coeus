@@ -1,7 +1,5 @@
-class SpecialReviewObject
+class SpecialReviewObject < DataObject
 
-  include Foundry
-  include DataFactory
   include StringFactory
   include Navigation
 
@@ -18,11 +16,11 @@ class SpecialReviewObject
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id, :doc_type
+    requires :document_id, :doc_header
   end
 
   def create
-    navigate
+    view
     on SpecialReview do |add|
       add.add_type.pick! @type
       case(@type)
@@ -43,17 +41,14 @@ class SpecialReviewObject
   end
 
   def edit opts={}
+    view
     # TODO
     set_options(opts)
   end
 
-  # =======
-  private
-  # =======
-
-  def navigate
-    open_document @doc_type
-    on(Proposal).special_review unless on_page?(on(SpecialReview).type)
+  def view
+    open_document
+    on(Proposal).special_review unless on_page?(on(SpecialReview).add_type)
   end
 
 end # SpecialReviewObject

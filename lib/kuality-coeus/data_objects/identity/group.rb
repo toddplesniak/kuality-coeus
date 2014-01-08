@@ -1,9 +1,7 @@
-class GroupObject
+class GroupObject < DataObject
 
-  include Foundry
-  include DataFactory
-  include Navigation
   include StringFactory
+  include Navigation
 
   attr_accessor :id, :namespace, :name, :type,
                 :principal_name, :assignees
@@ -45,11 +43,5 @@ class GroupObject
       page.edit_item @name
     end
   end
-
-  # =========
-  private
-  # =========
-
-
 
 end
