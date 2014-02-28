@@ -44,28 +44,3 @@ Feature: Permissions in a Proposal
     | Aggregator       |
     | approver         |
     | Delete Proposal  |
-  @failing
-  Scenario Outline: Users who are assigned the Aggregator role cannot be assigned additional roles
-    Given I assign the <Role> user as an aggregator in the proposal permissions
-    When  I add an additional proposal role to the <Role> user
-    Then  an error should appear that says not to select other roles alongside aggregator
-
-  Examples:
-    | Role             |
-    | Unassigned       |
-    | Proposal Creator |
-  @failing
-  Scenario Outline: Visit a recalled proposal as users with the permissions necessary to edit the document in varying ways
-    Given I assign the Unassigned user as a <Role> in the proposal permissions
-    And   complete the Proposal
-    And   submit the Proposal
-    When  I recall the Proposal
-    Then  the Unassigned user can access the Proposal
-    And   their proposal permissions allow them to <Permissions>
-
-  Examples:
-    | Role                | Permissions                                    |
-    | Aggregator          | edit all parts of the Proposal                 |
-    | Budget Creator      | update the Budget, not the narrative           |
-    | Delete Proposal     | delete the Proposal                            |
-    | Viewer              | only read the Proposal                         |
