@@ -1,3 +1,4 @@
+# coding: UTF-8
 #----------------------#
 #Key Personnel
 #----------------------#
@@ -36,7 +37,7 @@ end
 #----------------------#
 #Subawards
 #----------------------#
-Given /^I? ?add a subaward to the Award$/ do
+Given /^I? ?adds? a subaward to the Award$/ do
   @award.add_subaward
 end
 
@@ -44,6 +45,9 @@ Given /I? ?add a \$(.*) Subaward for (.*) to the Award$/ do |amount, organizatio
   @award.add_subaward organization, amount
 end
 
+And /adds the same organization as a subaward again to the Award$/ do
+  @award.add_subaward @award.subawards[0][:org_name]
+end
 
 #----------------------#
 #Contacts
@@ -105,19 +109,28 @@ When /completes? the Award requirements$/ do
   }
 end
 
-When /^I? ?(?:creates? an Award for the Funding Proposal)|(?:links? the Funding Proposal to an Award)$/ do
+When /^the Funding Proposal is linked to a new Award$/ do
   @award = create AwardObject
   @award.add_funding_proposal @institutional_proposal.proposal_number, '::random::'
 end
 
-When /^the (.*) tries to fund an Award with the new Institutional Proposal$/ do |role_name|
+# Don't parameterize this until it's necessary
+And /^the Award Modifier links the Funding Proposal to a new Award$/ do
+  steps %q{
+    * I log in with the Award Modifier user
+    * the Funding Proposal is linked to a new Award
+  }
+end
+
+When /^the (.*) adds the Institutional Proposal to the Award$/ do |role_name|
   steps %{ Given I log in with the #{role_name} user }
   @award = create AwardObject
   @award.add_funding_proposal @institutional_proposal.proposal_number, '::random::'
 end
 
+# Don't parameterize until needed!
 And /^the Institutional Proposal Maintainer can unlink the proposal$/ do
-  steps 'Given I log in with the Institutional Proposal Maintainer user'
+  steps %q{ * I log in with the Institutional Proposal Maintainer user }
   expect{
     @institutional_proposal.unlock_award(@award.id)
   }.not_to raise_error
@@ -128,4 +141,30 @@ Then /^the Institutional Proposal Maintainer cannot unlink the proposal$/ do
   steps 'Given I log in with the Institutional Proposal Maintainer user'
   @institutional_proposal.unlock_award(@award.id)
   on(InstitutionalProposalActions).errors.size.should > 0
+end
+
+# Don't parameterize until needed!
+And /^the Institutional Proposal Maintainer unlinks the proposal$/ do
+  steps %q{ * I log in with the Institutional Proposal Maintainer user }
+  @institutional_proposal.unlock_award(@award.id)
+end
+
+When /^data validation is turned on for the Award$/ do
+  @award.view :award_actions
+  on AwardActions do |page|
+    page.expand_all
+    page.turn_on_validation
+  end
+end
+
+When /^an Account ID with special characters is added to the Award details$/ do
+  @award.edit account_id: random_string(6, %w{~ ! @ # $ % ^ &}.sample)
+end
+
+When /^the Award's title is updated to include invalid characters$/ do
+  @award.edit award_title: random_high_ascii(100)
+end
+
+When /^the Award's title is made more than (\d+) characters long$/ do |arg|
+  @award.edit award_title: random_high_ascii(arg.to_i+1)
 end

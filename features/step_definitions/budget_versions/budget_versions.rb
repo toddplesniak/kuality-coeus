@@ -1,9 +1,10 @@
-When /^I? ?creates? a Budget Version for the Proposal$/ do
+When /^(the (.*) user |)creates a Budget Version for the Proposal$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text==''
   @proposal.add_budget_version
   @budget_version = @proposal.budget_versions[0]
 end
 
-When /^I? ?add a subaward budget to the Budget Version$/ do
+When /^I add a subaward budget to the Budget Version$/ do
   @budget_version.add_subaward_budget
 end
 
@@ -17,7 +18,8 @@ When /^correcting the Budget Version date will remove the warning$/ do
   on(Parameters).warnings.size.should be 0
 end
 
-Given /^I? ?creates? a final and complete Budget Version for the Proposal$/ do
+Given /^(the (.*) user |)creates a final and complete Budget Version for the Proposal$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text ==''
   @proposal.add_budget_version status: 'Complete', final: :set
 end
 
@@ -36,21 +38,22 @@ end
 Then /^the copied budget's values are all as expected$/ do
   @copied_budget_version.open_budget
   @copied_budget_version.budget_periods.each do |period|
+    n = period.number
     on Parameters do |page|
-      page.start_date_period(period.number).value.should==period.start_date
-      page.end_date_period(period.number).value.should==period.end_date
-      page.total_sponsor_cost_period(period.number).value.should==(period.direct_cost.to_f+period.f_and_a_cost.to_f).commas
-      page.direct_cost_period(period.number).value.should==period.direct_cost.to_f.commas
-      page.fa_cost_period(period.number).value.should==period.f_and_a_cost.to_f.commas
-      page.unrecovered_fa_period(period.number).value.should==period.unrecovered_f_and_a.to_f.commas
-      page.cost_sharing_period(period.number).value.should==period.cost_sharing.to_f.commas
-      page.cost_limit_period(period.number).value.should==period.cost_limit.to_f.commas
-      page.direct_cost_limit_period(period.number).value.should==period.direct_cost_limit.to_f.commas
+      page.start_date_period(n).value.should==period.start_date
+      page.end_date_period(n).value.should==period.end_date
+      page.total_sponsor_cost_period(n).value.should==(period.direct_cost.to_f+period.f_and_a_cost.to_f).commas
+      page.direct_cost_period(n).value.should==period.direct_cost.to_f.commas
+      page.fa_cost_period(n).value.should==period.f_and_a_cost.to_f.commas
+      page.unrecovered_fa_period(n).value.should==period.unrecovered_f_and_a.to_f.commas
+      page.cost_sharing_period(n).value.should==period.cost_sharing.to_f.commas
+      page.cost_limit_period(n).value.should==period.cost_limit.to_f.commas
+      page.direct_cost_limit_period(n).value.should==period.direct_cost_limit.to_f.commas
     end
   end
 end
 
-When /^I? ?deletes? one of the budget periods$/ do
+When /deletes? one of the budget periods$/ do
   @budget_version.delete_period(rand(@budget_version.budget_periods.size)+1)
 end
 
@@ -89,21 +92,45 @@ Then /^all budget periods get recreated, zeroed, and given default date ranges$/
   end
 end
 
-When /^I? ?finalizes? the Budget Version$/ do
+When /finalizes? the Budget Version$/ do
   @budget_version.edit final: :set
 end
 
-When /^I? ?marks? the Budget Version complete$/ do
+When /marks? the Budget Version complete$/ do
   @budget_version.edit status: 'Complete'
 end
 
-Then /^I? ?sees? an error that only one version can be final$/ do
-  on(BudgetVersions).errors.should include 'Only one Budget Version can be marked "Final".'
-end
-
-When /^I? ?creates? a Budget Version with cost sharing for the Proposal$/ do
+When /^(the (.*) user |)creates a Budget Version with cost sharing for the Proposal$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text==''
   @proposal.add_budget_version
   @budget_version = @proposal.budget_versions[0]
-  @budget_version.edit_period(1, cost_sharing: random_dollar_value(1000000).to_f)
-  @budget_version.budget_periods.period(1).cost_sharing_distribution_list[0].edit source_account: random_alphanums
+  @budget_version.edit_period(1, cost_sharing: random_dollar_value(1000000))
+  @budget_version.budget_periods.period(1).cost_sharing_distribution_list.each do |cs|
+    cs.edit source_account: random_alphanums
+  end
+end
+
+And /^(the (.*) user |)creates a Budget Version with unrecovered F&A for the Proposal$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text==''
+  @proposal.add_budget_version
+  @budget_version = @proposal.budget_versions[0]
+  steps %q{ * add unrecovered F&A to the first period of the Budget Version }
+end
+
+And /adds? unrecovered F&A to the first period of the Budget Version$/ do
+  total_allocated = random_dollar_value(1000000).to_f
+  first_amount = (total_allocated/4).round(2)
+  amounts = [ first_amount.to_s, (total_allocated - first_amount).round(2).to_s ]
+  @budget_version.edit_period(1, unrecovered_f_and_a: total_allocated)
+  @budget_version.budget_periods.period(1).unrecovered_fa_dist_list.each_with_index do |ufna, index|
+    ufna.edit source_account: random_alphanums, amount: amounts[index]
+  end
+end
+
+And /^adds another item to the budget period's cost sharing distribution list$/ do
+  @budget_version.budget_periods.period(1).add_item_to_cost_share_dl
+end
+
+And /^adjusts the budget period's cost sharing amount so all funds are allocated$/ do
+  @budget_version.budget_periods.period(1).edit cost_sharing: @budget_version.budget_periods.period(1).cost_sharing_distribution_list.total_funds.to_s
 end

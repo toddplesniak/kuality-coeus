@@ -1,7 +1,5 @@
 class Proposal < ProposalDevelopmentDocument
 
-  proposal_header_elements
-
   value(:feedback) { |b| b.frm.div(class: 'left-errmsg').text }
 
   # Required fields
@@ -16,7 +14,6 @@ class Proposal < ProposalDevelopmentDocument
   element(:project_end_date) { |b| b.frm.text_field(id: 'document.developmentProposalList[0].requestedEndDateInitial') }
   element(:activity_type) { |b| b.frm.select(id: 'document.developmentProposalList[0].activityTypeCode') }
   element(:project_title) { |b| b.frm.text_field(id: 'document.developmentProposalList[0].title') }
-  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
 
   # Institutional fields
 

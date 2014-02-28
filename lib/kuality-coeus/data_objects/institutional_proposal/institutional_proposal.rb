@@ -20,7 +20,8 @@ class InstitutionalProposalObject < DataObject
         project_personnel: collection('ProjectPersonnel'),
         special_review:    collection('SpecialReview'),
         cost_sharing:      collection('IPCostSharing'),
-        unrecovered_fa:    collection('IPUnrecoveredFA')
+        unrecovered_fa:    collection('IPUnrecoveredFA'),
+        description:       random_alphanums
     }
     unless opts[:proposal_log].nil?
       defaults[:proposal_type]=opts[:proposal_log].proposal_type
@@ -54,10 +55,20 @@ class InstitutionalProposalObject < DataObject
       @document_id=create.document_id
       @doc_header=create.doc_title
       @proposal_number=create.institutional_proposal_number
-      create.description.set random_alphanums
-      fill_out create, :proposal_type, :award_id, :activity_type, :project_title
+      fill_out create, :proposal_type, :award_id, :activity_type, :project_title, :description
       set_sponsor_code
       create.save
+    end
+  end
+
+  def edit opts={}
+    view :institutional_proposal
+    on InstitutionalProposal do |edit|
+      edit.edit if edit.edit_button.present?
+      edit.expand_all
+      edit_fields opts, edit, :proposal_type, :award_id, :activity_type, :project_title, :description
+      edit.save
+      @document_id=edit.document_id
     end
   end
 
@@ -67,7 +78,13 @@ class InstitutionalProposalObject < DataObject
   end
 
   def add_custom_data opts={}
-    @custom_data = prep(CustomDataObject, opts)
+    view :custom_data
+    defaults = {
+        document_id: @document_id,
+        doc_header: @doc_header
+    }
+    @custom_data = make CustomDataObject, defaults.merge(opts)
+    @custom_data.create
   end
 
   def add_cost_sharing opts={}
@@ -75,6 +92,7 @@ class InstitutionalProposalObject < DataObject
   end
 
   def add_unrecovered_fa opts={}
+    opts.store(:index, )
     @unrecovered_fa.add merge_settings(opts)
   end
 
@@ -93,6 +111,8 @@ class InstitutionalProposalObject < DataObject
       page.funded_award(award_id).set
       page.unlock_selected
       confirmation
+      page.save
+      @document_id=page.document_id
     end
   end
 

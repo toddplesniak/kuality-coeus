@@ -1,4 +1,4 @@
-# This is a collection class for UserObjects.
+# This is the UserObject collection class, stored in $users.
 class Users < Array
 
   include Singleton
@@ -14,6 +14,10 @@ class Users < Array
 
   def type(type)
     self.find { |user| user.type == type }
+  end
+
+  def all_with_role(role_name)
+    self.find_all { |user| user.roles.detect{|r| r.name==role_name} }
   end
 
   def with_role(role_name)
@@ -38,6 +42,10 @@ class Users < Array
     }
   end
 
+  def full_names
+    self.collect { |user| user.full_name }
+  end
+
 end # Users
 
 # This is a special collection class that inherits from Hash and contains
@@ -59,12 +67,12 @@ class UserYamlCollection < Hash
   # will be a random selection from the list of matching users.
   def have_role_in_unit(role, unit)
     users = self.find_all{ |user|
-      user[1][:rolez].detect{ |r|
-                             r[:name]==role &&
-                             r[:qualifiers].detect{ |q|
-                                                     q[:unit]==unit }
-                                                      }
-    }.shuffle
+                            user[1][:rolez].detect{ |r|
+                                                     r[:name]==role &&
+                                                     r[:qualifiers].detect{ |q|
+                                                                             q[:unit]==unit }
+                                                  }
+                         }.shuffle
     raise "No users have the role #{role} in the unit #{unit}. Please add one or fix your parameter(s)." if users.empty?
     users
   end
@@ -120,7 +128,7 @@ class UserObject
   include StringFactory
 
   attr_accessor :user_name, :principal_id,
-                :first_name, :last_name,
+                :first_name, :last_name, :full_name,
                 :description, :affiliation_type, :campus_code,
                 :employee_id, :employee_status, :employee_type, :base_salary, :primary_department_code,
                 :groups, :roles, :role_qualifiers, :addresses, :phones, :emails,
@@ -176,12 +184,19 @@ class UserObject
     set_options options
     @rolez.each { |role| role[:user_name]=@user_name; @roles << make(UserRoleObject, role) } unless @rolez.nil?
     @rolez=nil
-
+    @full_name = "#{@first_name} #{@last_name}"
   end
 
   def create
     visit(SystemAdmin).person
-    on(PersonLookup).create
+    begin
+      on(PersonLookup).create
+    rescue Watir::Exception::UnknownObjectException
+      $users.logged_in_user.sign_out
+      $users.admin.log_in
+      visit(SystemAdmin).person
+      on(PersonLookup).create
+    end
     on Person do |add|
       add.expand_all
       add.principal_name.set @user_name

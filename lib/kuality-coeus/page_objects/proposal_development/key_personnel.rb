@@ -1,6 +1,5 @@
 class KeyPersonnel < ProposalDevelopmentDocument
 
-  proposal_header_elements
   combined_credit_splits
 
   action(:employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.KcPerson!!).(((personId:newPersonId))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
@@ -9,8 +8,6 @@ class KeyPersonnel < ProposalDevelopmentDocument
   element(:key_person_role) { |b| b.frm.text_field(id: 'newProposalPerson.projectRole') }
   action(:add_person) { |b| b.frm.button(name: 'methodToCall.insertProposalPerson').click }
   action(:clear) { |b| b.frm.button(name: 'methodToCall.clearProposalPerson').click }
-
-  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
 
   value(:person_name) { |b| b.frm.table(class: 'grid')[0][1].text }
 
@@ -78,6 +75,10 @@ class KeyPersonnel < ProposalDevelopmentDocument
     :excluded_from_transactions=>4,
     :familiar_with_pla=>5
   }.each { |key, value| action(key) { |full_name, answer, p| p.questions_div(full_name).table(data_kc_questionindex: value.to_s).radio(value: answer).set } }
+
+  # IMPORTANT NOTE: This field does not actually exist on this page. However, we have it defined here
+  # anyway because it's needed for the Personnel Module...
+  element(:lead_unit_radio_button) { |b| b.frm.radio(name: 'selectedLeadUnit') }
 
   # =======
   private

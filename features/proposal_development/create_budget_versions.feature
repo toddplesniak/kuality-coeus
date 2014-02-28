@@ -5,9 +5,13 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
 
   Background: Create a Budget Version for a 5-year proposal
     * a User exists with the role: 'Proposal Creator'
-    * I log in with the Proposal Creator user
-    * I create a 5-year project Proposal
-    * create a Budget Version for the Proposal
+    * the Proposal Creator creates a 5-year project Proposal
+    * creates a Budget Version for the Proposal
+
+  Scenario: System warns about budget periods when proposal dates change
+    When  I push the Proposal's project start date ahead a year
+    Then  opening the Budget Version will display a warning about the date change
+    And   correcting the Budget Version date will remove the warning
 
   Scenario: Copied budget periods have expected values
     Given I enter dollar amounts for all the budget periods
@@ -24,4 +28,4 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
   Scenario: Only one budget version can be 'final'
     Given I finalize the Budget Version
     When  I copy the Budget Version (all periods)
-    Then  I see an error that only one version can be final
+    Then  an error should appear that says only one version can be final

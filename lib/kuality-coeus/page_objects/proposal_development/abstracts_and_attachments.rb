@@ -1,7 +1,5 @@
 class AbstractsAndAttachments < ProposalDevelopmentDocument
 
-  proposal_header_elements
-
   # Proposal Attachments
   element(:proposal_attachment_type) { |b| b.frm.select(id: 'newNarrative.narrativeTypeCode') }
   element(:attachment_status) { |b| b.frm.select(id: 'newNarrative.moduleStatusCode') }
@@ -17,8 +15,6 @@ class AbstractsAndAttachments < ProposalDevelopmentDocument
 
   action(:show_proposal_attachment) { |type, b| b.frm.button(alt: /#{type}/).click }
   action(:proposal_attachment_div) { |type, b| b.frm.div(id: /tab-ProposalAttachments..#{type}Incomplete-div/) }
-
-  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
 
   # Personnel Attachments
   element(:person) { |b| b.frm.select(name: 'newPropPersonBio.proposalPersonNumber') }

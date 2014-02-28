@@ -2,7 +2,8 @@
 #Create and Save
 #Note: Units are specified to match the initiator's unit.
 #----------------------#
-When /^I? ?creates? an Award$/ do
+When /^the (.*) creates an Award$/ do |role_name|
+  steps %{ * I log in with the #{role_name} user }
   # Implicit in this step is that the Award creator
   # is creating the Award in the unit they have
   # rights to. This is why this step specifies what the
@@ -20,29 +21,21 @@ end
 #Award Validations Based on Errors During Creation
 #----------------------#
 When /^I ? ?creates? an Award with a missing required field$/ do
-  @required_field = ['Description', 'Transaction Type', 'Award Status', 'Award Title',
-                     'Activity Type', 'Award Type', 'Project Start Date', 'Project End Date',
-                     'Lead Unit', 'Obligation Start Date', 'Obligation End Date',
-                     'Anticipated Amount', 'Obligated Amount', 'Transactions'
+  @required_field = ['Description', 'Transaction Type', 'Award Status',
+                     'Award Title', 'Activity Type', 'Award Type',
+                     'Project End Date', 'Lead Unit'
   ].sample
-  @required_field=~/Type/ ? value='select' : value=''
-  field = snake_case(@required_field)
-  @proposal = create AwardObject, field=>value
+  @required_field=~/(Type|Status)/ ? value='select' : value=' '
+  field = damballa(@required_field)
+  @award = create AwardObject, field=>value
 end
 
-Given /^the Award Modifier creates an Award$/ do
-  steps %q{
-Given I log in with the Award Modifier user
-And I create an Award
-}
+When /^the Award Modifier creates an Award with more obligated than anticipated amounts$/ do
+  steps '* I log in with the Award Modifier user'
+  @award = create AwardObject, anticipated_amount: '9999.99', obligated_amount: '10000.00'
 end
 
 Given /^the Award Modifier creates an Award including an Account ID, Account Type, Prime Sponsor, and CFDA Number$/ do
-  steps 'Given I log in with the Award Modifier user'
+  steps '* I log in with the Award Modifier user'
   @award = create AwardObject
-end
-
-Then /^a new Institutional Proposal should be generated$/ do
-  #TODO: Finish this step
-  raise "This is not a finished step!!!"
 end

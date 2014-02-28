@@ -8,7 +8,7 @@ end
 
 When /^I? ?assign the (.*) user as an? (.*) in the proposal permissions$/ do |system_role, role|
   make_user role: system_role
-  @proposal.permissions.send(snake_case(role+'s')) << get(system_role).user_name
+  @proposal.permissions.send(damballa(role+'s')) << get(system_role).user_name
   @proposal.permissions.assign
 end
 
@@ -96,11 +96,7 @@ And /^their proposal permissions allow them to delete the Proposal$/ do
   expect{@proposal.delete}.should_not raise_error
 end
 
-Then /^there should be an error message that says not to select other roles alongside aggregator$/ do
-  on(Roles).errors.should include 'Do not select other roles when Aggregator is selected.'
-end
-
-When /^I? ?attempt to add an additional proposal role to the (.*) user$/ do |system_role|
+When /^I? ?add an additional proposal role to the (.*) user$/ do |system_role|
   if system_role=='Proposal Creator'
     role='aggregator'
   else
@@ -134,7 +130,8 @@ Then /^the User should be able to create a proposal$/ do
   expect{create ProposalDevelopmentObject}.not_to raise_error
 end
 
-Then /^I? ?can override the cost sharing amount$/ do
+Then /^the OSP Administrator can override the cost sharing amount$/ do
+  steps '* I log in with the OSP Administrator user'
   @proposal.view 'Proposal Actions'
   on ProposalActions do |page|
     page.expand_all

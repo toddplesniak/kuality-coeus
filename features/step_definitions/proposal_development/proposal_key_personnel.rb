@@ -42,15 +42,11 @@ When /^I? ?add a key person with an invalid unit type$/ do
                            units: [{number: 'invalid'}]
 end
 
-Then /^a key personnel error should appear, saying the co-investigator requires at least one unit$/ do
-  on(KeyPersonnel).errors.should include "At least one Unit is required for #{@proposal.key_personnel.co_investigator.full_name}."
-end
-
 When /^I? ?adds? a principal investigator to the Proposal$/ do
   @proposal.add_principal_investigator
 end
 
-Given /^I? ?add the Grants.Gov user as the Proposal's PI$/ do
+Given /^I? ?adds? the Grants.Gov user as the Proposal's PI$/ do
   @proposal.add_principal_investigator last_name: $users.grants_gov_pi.last_name, first_name: $users.grants_gov_pi.first_name
 end
 
@@ -58,17 +54,14 @@ When /^I? ?sets? valid credit splits for the Proposal$/ do
   @proposal.set_valid_credit_splits
 end
 
-Then /^there should be an error that says the (.*) user already holds investigator role$/ do |role|
-  on(KeyPersonnel).errors.should include "#{get(role).first_name} #{get(role).last_name} already holds Investigator role."
-end
-
-And(/^the (.*) button appears on the Proposal Summary and Proposal Action pages$/) do |action|
-  button = "#{action.downcase}_button".to_sym
-  on ProposalSummary do |page|
-    page.send(button).should exist
-    page.proposal_actions
+And /^the approval buttons appear on the Proposal Summary and Proposal Action pages$/ do
+  [:approve_button, :disapprove_button, :reject_button].each do |button|
+    on ProposalSummary do |page|
+      page.send(button).should exist
+      page.proposal_actions
+    end
+    on(ProposalActions).send(button).should exist
   end
-  on(ProposalActions).send(button).should exist
 end
 
 When /^the (.*) user approves the Proposal$/ do |role|
@@ -78,7 +71,20 @@ When /^the (.*) user approves the Proposal$/ do |role|
   on(Confirmation).yes
 end
 
-When(/^I try to add the (.*) user as a (.*) to the key personnel Proposal roles$/) do |user_role, proposal_role|
+When /^I try to add the (.*) user as a (.*) to the key personnel Proposal roles$/ do |user_role, proposal_role|
   user = get(user_role)
   @proposal.add_key_person first_name: user.first_name, last_name: user.last_name, role: proposal_role
+end
+
+When /^I add the same person to the Proposal as a PI and Co-Investigator$/ do
+  visit PersonLookup do |page|
+    page.search
+    names = page.returned_full_names
+    index = rand(names.size)
+    @user_name = page.returned_principal_names[index]
+    @last_name = names[index][/^.+(?=,)/]
+    @first_name = names[index][/(?<=, ).+$/]
+  end
+  @proposal.add_principal_investigator last_name: @last_name, first_name: @first_name
+  @proposal.add_key_person role: 'Co-Investigator', last_name: @last_name, first_name: @first_name
 end

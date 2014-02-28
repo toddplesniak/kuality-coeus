@@ -6,6 +6,7 @@ class BasePage < PageFactory
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
   action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
+  action(:awaiting_doc) { |b| b.frm.button(name: 'methodToCall.returnToPortal').wait_while_present }
   element(:logout_button) { |b| b.button(title: 'Click to logout.') }
   action(:logout) { |b| b.logout_button.click }
 
@@ -13,6 +14,11 @@ class BasePage < PageFactory
 
   action(:form_tab) { |name, b| b.frm.h2(text: /#{name}/) }
   action(:form_status) { |name, b| b.form_tab(name).text[/(?<=\()\w+/] }
+  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
+  value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
+
+  value(:htm) { |b| b.frm.html }
+  value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
 
   class << self
 
@@ -23,8 +29,8 @@ class BasePage < PageFactory
     end
 
     def document_header_elements
-      value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text }
-      element(:headerinfo_table) { |b| b.frm.div(id: 'headerarea').table(class: 'headerinfo') }
+      value(:doc_title) { |b| b.noko.div(id: 'headerarea').h1.text }
+      value(:headerinfo_table) { |b| b.noko.div(id: 'headerarea').table(class: 'headerinfo') }
       value(:document_id) { |p| p.headerinfo_table[0].text[/\d{4}/] }
       alias_method :doc_nbr, :document_id
       value(:document_status) { |p| p.headerinfo_table[0][3].text[/(?<=:)?.+$/] }
@@ -40,7 +46,6 @@ class BasePage < PageFactory
       value(:committee_name) { |p| p.headerinfo_table[2][3].text }
       alias_method :pi, :committee_name
       alias_method :expiration_date, :committee_name
-
     end
 
     # Included here because this is such a common field in KC
@@ -50,10 +55,12 @@ class BasePage < PageFactory
 
     def global_buttons
       glbl 'Reject', 'blanket approve', 'close', 'cancel', 'reload',
-           'Delete Proposal', 'approve', 'disapprove',
+           'Delete Proposal', 'disapprove',
            'Generate All Periods', 'Calculate All Periods', 'Default Periods',
            'Calculate Current Period', 'submit', 'Send Notification'
       action(:save) { |b| b.frm.button(name: 'methodToCall.save', title: 'save').click; b.loading }
+      element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
+      action(:approve) { |b| b.approve_button.click; b.loading; b.awaiting_doc }
       # Explicitly defining the "recall" button to keep the method name at "recall" instead of "recall_current_document"...
       element(:recall_button) { |b| b.frm.button(class: 'globalbuttons', title: 'Recall current document') }
       action(:recall) { |b| b.recall_button.click; b.loading }
@@ -61,7 +68,7 @@ class BasePage < PageFactory
       element(:edit_button) { |b| b.frm.button(name: 'methodToCall.editOrVersion') }
       action(:delete_selected) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.deletePerson').click; b.loading }
       element(:send_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.sendNotification', title: 'send') }
-      action(:send_fyi) { |b| b.send_button.click; b.loading }
+      action(:send_fyi) { |b| b.send_button.click; b.loading; b.awaiting_doc }
     end
 
     def tab_buttons
@@ -97,10 +104,13 @@ class BasePage < PageFactory
       action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
 
+      p_value(:docs_w_status) { |status, b| array = []; (b.results_table.rows.find_all{|row| row[3].text==status}).each { |row| array << row[0].text }; array }
+
       # Used as the catch-all "document opening" method for conditional navigation,
       # when we can't know whether the current user will have edit permissions.
       # Note: The assumption is that there is only one item returned in the search,
-      # so the method needs no identifying parameter...
+      # so the method needs no identifying parameter. If more items are returned hopefully
+      # you want the automation to click on the first item listed...
       action(:medusa) { |b| b.frm.link(text: /medusa|edit|view/).click; b.use_new_tab; b.close_parents }
     end
 
@@ -151,13 +161,16 @@ class BasePage < PageFactory
 
       action(:add) { |b| b.frm.button(name: 'methodToCall.addSpecialReview.anchorSpecialReview').click }
 
-      element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') } # TODO: Remove. This doesn't belong here!
+      p_element(:type_code) { |index, b| b.frm.select(id: /specialReviews\[#{index}\].specialReviewTypeCode/) }
+      p_element(:approval_status)  { |index, b| b.frm.select(name: /specialReviews\[#{index}\].approvalTypeCode/) }
+
+      value(:types) { |b| b.frm.selects(id: /specialReviewTypeCode/).map{ |field| field.selected_options[0].text }.delete_at(0) }
+
     end
 
     def custom_data
       element(:graduate_student_count) { |b| b.target_row('Graduate Student Count').text_field }
       element(:billing_element) { |b| b.target_row('Billing Element').text_field }
-      element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') } # TODO: Remove. This doesn't belong here!
       element(:asdf_tab) { |b| b.frm.div(id: 'tab-asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf-div') }
       action(:target_row) { |text, b| b.frm.trs(class: 'datatable').find { |row| row.text.include? text } }
     end
@@ -193,9 +206,9 @@ class BasePage < PageFactory
         end
         errs.flatten
       end
-      element(:left_errmsg_tabs) { |b| b.frm.divs(class: 'left-errmsg-tab') }
-      element(:left_errmsg) { |b| b.frm.divs(class: 'left-errmsg') }
-      element(:error_messages_div) { |b| b.frm.div(class: 'error') }
+      value(:left_errmsg_tabs) { |b| b.noko.divs(class: 'left-errmsg-tab') }
+      value(:left_errmsg) { |b| b.noko.divs(class: 'left-errmsg') }
+      value(:error_messages_div) { |b| b.noko.div(class: 'error') }
     end
 
     def validation_elements
@@ -243,13 +256,6 @@ class BasePage < PageFactory
       links.each_pair do |name, title|
         action(name) { |b| b.frm.link(title: title).click; b.loading }
       end
-    end
-
-    # A helper method that converts the passed string into snake case. See the StringFactory
-    # module for more info.
-    #
-    def damballa(text)
-      StringFactory::damballa(text)
     end
 
     def elementate(type, text)

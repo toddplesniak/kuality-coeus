@@ -1,3 +1,4 @@
+# coding: UTF-8
 class AwardObject < DataObject
 
   include Navigation
@@ -25,7 +26,7 @@ class AwardObject < DataObject
     defaults = {
       description:           random_alphanums,
       transaction_type:      '::random::',
-      award_status:          'Active', # Needs to be this way because we don't want it to pick a status of 'Closed'
+      award_status:          %w{Active Hold Pending}.sample, # Needs to be this way because we don't want it to pick a status of, e.g., 'Closed'
       award_title:           random_alphanums,
       activity_type:         '::random::',
       award_type:            '::random::',
@@ -67,9 +68,11 @@ class AwardObject < DataObject
                :project_start_date, :project_end_date, :obligation_start_date,
                :obligation_end_date, :nsf_science_code, :account_id, :account_type,
                :cfda_number
-      set_sponsor_id
-      set_prime_sponsor
-      set_lead_unit
+    end
+    set_sponsor_id
+    set_prime_sponsor
+    set_lead_unit
+    on Award do |create|
       @funding_proposals.each do |prop|
         create.institutional_proposal_number.fit prop[:ip_number]
         create.proposal_merge_type.pick prop[:merge_type]
@@ -89,7 +92,15 @@ class AwardObject < DataObject
   end
 
   def edit opts={}
-    #TODO
+    view :award
+    on Award do |edit|
+      edit_fields opts, edit, :description, :transaction_type, :award_status, :award_title,
+                  :activity_type, :award_type, :obligated_amount, :anticipated_amount,
+                  :project_start_date, :project_end_date, :obligation_start_date,
+                  :obligation_end_date, :nsf_science_code, :account_id, :account_type,
+                  :cfda_number
+      edit.save
+    end
     set_options(opts)
   end
 
@@ -100,7 +111,7 @@ class AwardObject < DataObject
       page.institutional_proposal_number.fit ip_number
       page.proposal_merge_type.pick merge_type
       page.add_proposal
-      page.save
+      page.save if page.errors.empty?
     end
     @funding_proposals << {ip_number: ip_number, merge_type: merge_type}
   end

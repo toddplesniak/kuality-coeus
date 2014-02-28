@@ -35,7 +35,7 @@ class ProposalDevelopmentObject < DataObject
       personnel_attachments: collection('PersonnelAttachments'),
       proposal_attachments:  collection('ProposalAttachments')
     }
-    @lookup_class=ProposalDevelopmentDocumentLookup
+    @lookup_class=DocumentSearch
     set_options(defaults.merge(opts))
   end
     
@@ -55,7 +55,7 @@ class ProposalDevelopmentObject < DataObject
       set_lead_unit
       doc.save
       @proposal_number=doc.proposal_number.strip
-      @search_key={ proposal_number: @proposal_number }
+      @search_key={ document_id: @document_id }
       @permissions = make PermissionsObject, merge_settings(aggregators: [@initiator])
     end
   end
@@ -113,7 +113,6 @@ class ProposalDevelopmentObject < DataObject
   end
 
   def make_institutional_proposal
-    # TODO: Write any preparatory web site functional steps and page scraping code
     visit(Researcher).search_institutional_proposals
     on InstitutionalProposalLookup do |look|
       fill_out look, :institutional_proposal_number
@@ -131,6 +130,29 @@ class ProposalDevelopmentObject < DataObject
          proposal_number: @institutional_proposal_number,
          nsf_science_code: @nsf_science_code,
          sponsor_id: @sponsor_id
+    @budget_versions.complete.budget_periods.each do |period|
+      period.cost_sharing_distribution_list.each do |cost_share|
+        cs_item = make IPCostSharingObject,
+                  percentage: cost_share.percentage,
+                  source_account: cost_share.source_account,
+                  project_period: cost_share.project_period,
+                  amount: cost_share.amount,
+                  index: cost_share.index,
+                  type: 'funded'
+        ip.cost_sharing << cs_item
+        period.unrecovered_fa_dist_list.each do |fna|
+          f_n_a = make IPUnrecoveredFAObject,
+                  fiscal_year: fna.fiscal_year,
+                  index: fna.index,
+                  applicable_rate: fna.applicable_rate,
+                  rate_type: @budget_versions.complete.unrecovered_fa_rate_type,
+                  on_campus_contract: Transforms::YES_NO.invert[fna.campus],
+                  source_account: fna.source_account,
+                  amount: fna.amount
+          ip.unrecovered_fa << f_n_a
+        end unless period.unrecovered_fa_dist_list.empty?
+      end
+    end unless @budget_versions.empty?
     @key_personnel.each do |person|
       project_person = make ProjectPersonnelObject, full_name: person.full_name,
                             first_name: person.first_name, last_name: person.last_name,
@@ -225,6 +247,23 @@ class ProposalDevelopmentObject < DataObject
   end
 
   def approve
+    view 'Proposal Summary'
+    on ProposalSummary do |page|
+      page.approve
+    end
+    view 'Proposal Summary'
+    on ProposalSummary do |page|
+    @status=page.document_status
+    end
+  end
+
+  def approve_from_action_list
+    visit(ActionList).filter
+    on ActionListFilter do |page|
+      page.document_title.set @project_title
+      page.filter
+    end
+    on(ActionList).open_item(@document_id)
     on(ProposalSummary).approve
   end
 
@@ -233,6 +272,15 @@ class ProposalDevelopmentObject < DataObject
   # =======
   private
   # =======
+
+  def navigate
+    visit DocumentSearch do |search|
+      search.close_parents
+      search.document_id.set @document_id
+      search.search
+      search.open_doc @document_id
+    end
+  end
 
   def merge_settings(opts)
     defaults = {
@@ -262,9 +310,6 @@ class ProposalDevelopmentObject < DataObject
     object
   end
 
-  # TODO: Consider changing this to a
-  # class instance variable created in the
-  # initialize
   def page_class
     Proposal
   end

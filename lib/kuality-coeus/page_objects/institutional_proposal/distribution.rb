@@ -1,7 +1,5 @@
 class Distribution < KCInstitutionalProposal
 
-  inst_prop_header_elements
-
   element(:add_cost_share_project_period) { |b| b.frm.text_field(name: 'institutionalProposalCostShareBean.newInstitutionalProposalCostShare.projectPeriod') }
   element(:add_cost_share_type) { |b| b.frm.select(name: 'institutionalProposalCostShareBean.newInstitutionalProposalCostShare.costShareTypeCode') }
   element(:add_cost_share_percentage) { |b| b.frm.text_field(name: 'institutionalProposalCostShareBean.newInstitutionalProposalCostShare.costSharePercentage') }
@@ -16,5 +14,7 @@ class Distribution < KCInstitutionalProposal
   element(:add_fa_source_account) { |b| b.frm.text_field(name: 'institutionalProposalUnrecoveredFandABean.newInstitutionalProposalUnrecoveredFandA.sourceAccount') }
   element(:add_fa_amount) { |b| b.frm.text_field(name: 'institutionalProposalUnrecoveredFandABean.newInstitutionalProposalUnrecoveredFandA.underrecoveryOfIndirectcost') }
   action(:add_unrecovered_f_a) { |b| b.frm.button(name: 'methodToCall.addUnrecoveredFandA.anchorUnrecoveredFA').click; b.loading }
+
+  value(:cost_share_table) { |b| b.frm.table(id: 'cost-share-table') }
 
 end

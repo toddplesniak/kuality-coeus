@@ -1,24 +1,11 @@
 class ActionList < BasePage
 
-  page_url "#{$base_url}portal.do?channelTitle=Action List&channelUrl=#{$base_url[/^.+com/]+':'+$base_url[/(?<=com)(\/.+\/)$/]}kew/ActionList.do"
+  page_url "#{$base_url}portal.do?channelTitle=Action List&channelUrl=#{$base_url[/^.+(com|org)/]+':'+$base_url[/(?<=(com|org))(\/.+\/)$/]}kew/ActionList.do"
 
   search_results_table
 
-  # TD Count for Columns in results table
-  SHOW_BUTTON = 0
-  ITEM_ID = 1
-  TYPE = 2
-  TITLE = 3
-  ROUTE_STATUS = 4
-  ACTION_REQUESTED = 5
-  DELEGATOR = 6
-  DATE_CREATED = 7
-  GROUP_REQUEST = 8
-  ACTIONS = 9
-  LOG = 10
-
-  p_value(:action_requested) { |item_id, b| b.item_row(item_id).tds[ACTION_REQUESTED].text }
-  p_value(:route_status) { |item_id, b| b.item_row(item_id).tds[ROUTE_STATUS].text }
+  p_value(:action_requested) { |item_id, b| b.item_row(item_id).tds[b.action_requested_column].text }
+  p_value(:route_status) { |item_id, b| b.item_row(item_id).tds[b.route_status_column].text }
   action(:filter) { |b| b.frm.button(name: 'methodToCall.viewFilter').click; b.loading }
   action(:take_actions) { |b| b.frm.link(id: 'takeMassActions').click; b.loading }
   p_element(:action) { |item_id, b| b.item_row(item_id).select(name: /actionTakenCd/) }
@@ -31,6 +18,9 @@ class ActionList < BasePage
   action(:default_action) { |b| b.frm.select(name: 'defaultActionToTake') }
   action(:apply_default_action) { |b| b.frm.link(align: 'absmiddle').click }
 
+  private
 
+  value(:action_requested_column) { |b| b.results_table.tr(index: 0).ths.find_index{|th| th.text=='Action Requested'} }
+  value(:route_status_column) { |b| results_table.tr(index: 0).ths.find_index{|th| th.text=='Route Status'} }
 
 end

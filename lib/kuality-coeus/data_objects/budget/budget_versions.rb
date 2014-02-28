@@ -5,6 +5,8 @@ class BudgetVersionsObject < DataObject
 
   attr_accessor :name, :document_id, :status,
                 # Stuff on Budget Versions page...
+                # TODO: Because of their location in the UI, these are barely useful.
+                # Need to decide what to do with them...
                 :version, :direct_cost, :f_and_a, :on_off_campus,
                 :total, :final, :residual_funds, :cost_sharing, :unrecovered_fa,
                 :comments, :f_and_a_rate_type, :last_updated, :last_updated_by,
@@ -19,10 +21,10 @@ class BudgetVersionsObject < DataObject
     @browser = browser
 
     defaults = {
-      name:                           random_alphanums_plus(40),
-      budget_periods:                 collection('BudgetPeriods'),
-      subaward_budgets:               collection('SubawardBudget'),
-      personnel:                      collection('BudgetPersonnel')
+      name:              random_alphanums_plus(40),
+      budget_periods:    collection('BudgetPeriods'),
+      subaward_budgets:  collection('SubawardBudget'),
+      personnel:         collection('BudgetPersonnel')
     }
 
     set_options(defaults.merge(opts))
@@ -55,6 +57,8 @@ class BudgetVersionsObject < DataObject
       fill_out parameters, :comments, :modular_budget,
                :residual_funds, :total_cost_limit, :unrecovered_fa_rate_type,
                :f_and_a_rate_type, :submit_cost_sharing
+      @unrecovered_fa_rate_type=parameters.unrecovered_fa_rate_type.selected_options[0].text if @unrecovered_fa_rate_type.nil?
+      @f_and_a_rate_type=parameters.f_and_a_rate_type.selected_options[0].text if @f_and_a_rate_type.nil?
       parameters.on_off_campus.fit @on_off_campus
       parameters.alert.ok if parameters.alert.exists?
       parameters.save
@@ -188,7 +192,8 @@ class BudgetVersionsObject < DataObject
                       cost_limit: page.cost_limit_period(number).value.groom,
                       direct_cost_limit: page.direct_cost_limit_period(number).value.groom,
                       lookup_class: @lookup_class,
-                      doc_header: @doc_header
+                      doc_header: @doc_header,
+                      search_key: @search_key
         @budget_periods << period
       end
     end
@@ -207,6 +212,10 @@ class BudgetVersionsCollection < CollectionsFactory
 
   def copy_all_periods(name, new_name)
     self << self.budget(name).copy_all_periods(new_name)
+  end
+
+  def complete
+    self.find { |budget| budget.status=='Complete' }
   end
 
 end # BudgetVersionsCollection

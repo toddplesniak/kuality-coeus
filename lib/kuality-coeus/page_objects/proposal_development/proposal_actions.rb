@@ -2,12 +2,11 @@ class ProposalActions < ProposalDevelopmentDocument
 
   expected_element :data_validation_header
 
-  proposal_header_elements
   route_log
   tiny_buttons
   validation_elements
 
-  glbl 'Submit To Sponsor', 'Submit To S2S', 'Send AdHoc Requests'
+  glbl 'Submit To S2S', 'Send AdHoc Requests'
 
   # Data Validation
   element(:data_validation_header) { |b| b.frm.h2(text: 'Data Validation') }
@@ -32,11 +31,10 @@ class ProposalActions < ProposalDevelopmentDocument
   value(:unit_business_rules_errors) { |b| b.frm.td(text: 'Unit Business Rules Errors').parent.parent.td(class: 'datacell').text }
   value(:unit_business_rules_warnings) { |b| b.frm.td(text: 'Unit Business Rules Warnings').parent.parent.td(class: 'datacell').text }
 
-  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
-  element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
   element(:disapprove_button) { |b| b.frm.button(name: 'methodToCall.disapprove') }
   element(:reject_button) { |b| b.frm.button(name: 'methodToCall.reject') }
   element(:submit_to_sponsor_button) { |b| b.frm.button(name: 'methodToCall.submitToSponsor') }
+  action(:submit_to_sponsor) { |b| b.submit_to_sponsor_button.click; b.loading; b.awaiting_doc }
 
   # Proposal Hierarchy
 
