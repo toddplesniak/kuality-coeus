@@ -1,8 +1,6 @@
 # coding: UTF-8
 class PersonLookup < Lookups
 
-  url_info 'Person','rice.kim.api.identity.Person'
-
   element(:principal_name) { |b| b.frm.text_field(id: 'principalName') }
   element(:principal_id) { |b| b.frm.text_field(id: 'principalId') }
 

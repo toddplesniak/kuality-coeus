@@ -1,7 +1,5 @@
 class InstitutionalProposalLookup < Lookups
 
-  url_info 'Institutional%20Proposal','kra.institutionalproposal.home.InstitutionalProposal'
-
   STATUS = 4
 
   element(:institutional_proposal_number) { |b| b.frm.text_field(name: 'proposalNumber') }

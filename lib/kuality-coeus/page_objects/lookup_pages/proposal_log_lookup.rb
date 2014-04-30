@@ -1,7 +1,5 @@
 class ProposalLogLookup < Lookups
 
-  url_info 'Proposal%20Log','kra.institutionalproposal.proposallog.ProposalLog'
-
   PROPOSAL_LOG_STATUS = 3
 
   element(:proposal_number) { |b| b.frm.text_field(name: 'proposalNumber') }

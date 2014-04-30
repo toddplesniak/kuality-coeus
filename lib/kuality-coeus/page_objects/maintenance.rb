@@ -1,6 +1,4 @@
-class Maintenance < BasePage
-
-  page_url "#{$base_url}portal.do?selectedTab=portalMaintenanceBody"
+class MaintenanceMenu < BasePage
 
   links 'Institute Rate', 'Sponsor', 'Unit Administrator', 'Budget Editable Columns'
 

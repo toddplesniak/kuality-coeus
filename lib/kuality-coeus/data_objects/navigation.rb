@@ -85,11 +85,11 @@ module Navigation
 
   # This overrides the method in the TestFactory.
   # We need this here because of the special way that
-  # KC defines radio buttons. See below...
+  # KC defines radio buttons and Multi-Selects. See below...
   def parse_fields(opts, name, page, *fields)
     watir_methods=[ lambda{|n, p, f, v| p.send(*[f, n].compact).fit(v) }, # Text & Checkbox
                     lambda{|n, p, f, v| p.send(*[f, n].compact).pick!(v) }, # Select
-                    lambda{|n, p, f, v| p.send(*[f, n].compact, v) } # Radio
+                    lambda{|n, p, f, v| p.send(*[f, n].compact, v) } # Radio, Multi-Select
     ]
     fields.each do |field|
       # This rescue is here because the radio button

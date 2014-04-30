@@ -1,21 +1,11 @@
 class BasePage < PageFactory
 
-  action(:use_new_tab) { |b| b.windows.last.use }
-  action(:return_to_portal) { |b| b.portal_window.use }
-  action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
-  action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
-  action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
-  action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
-  action(:awaiting_doc) { |b| b.frm.button(name: 'methodToCall.returnToPortal').wait_while_present }
-  element(:logout_button) { |b| b.button(title: 'Click to logout.') }
-  action(:logout) { |b| b.logout_button.click }
 
-  element(:portal_window) { |b| b.windows(title: 'Kuali Portal Index')[0] }
 
-  action(:form_tab) { |name, b| b.frm.h2(text: /#{name}/) }
-  action(:form_status) { |name, b| b.form_tab(name).text[/(?<=\()\w+/] }
-  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
-  value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
+
+
+
+  # ==================================
 
   value(:htm) { |b| b.frm.html }
   value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
@@ -249,6 +239,19 @@ class BasePage < PageFactory
       buttons_text.each { |button| elementate(:button, button) }
     end
 
+    def selects(*labels)
+      labels.each do |label|
+        element("#{damballa(label)}_element") { |b| b.div(data_label: label).select }
+        value("#{damballa(label)}_options") { |b| b.div(data_label: label).select.options.map{ |opt| opt.html[/(?<=>).*(?=<)/].strip }[1..-1] }
+        value("#{damballa(label)}_values") { |b| b.div(data_label: label).select.options.map(&:value)[1..-1] }
+        p_action("#{damballa(label)}") { |selection, b|
+          selection.replace(b.send("#{damballa(label)}_options").sample) if selection=='::random::'
+          b.div(data_label: label).button.click
+          b.span(text: selection).click
+        }
+      end
+    end
+
     # Use this to define methods to click on the green
     # buttons on the page, all of which can be identified
     # by the title tag. The method takes a hash, where the key
@@ -256,16 +259,15 @@ class BasePage < PageFactory
     # that matches the green button's link title tag.
     def green_buttons(links={})
       links.each_pair do |name, title|
-        action(name) { |b| b.frm.link(title: title).click; b.loading }
+        action(name) { |b| b.link(title: title).click; b.loading }
       end
     end
 
     def elementate(type, text)
-      identifiers={:link=>:text, :button=>:value}
       el_name=damballa("#{text}_#{type}")
       act_name=damballa(text)
-      element(el_name) { |b| b.frm.send(type, identifiers[type]=>text) }
-      action(act_name) { |b| b.frm.send(type, identifiers[type]=>text).click }
+      element(el_name) { |b| b.send(type, :text=>text) }
+      action(act_name) { |b| b.send(type, :text=>text).click }
     end
 
     # Used for getting rid of the space and comma in the full name

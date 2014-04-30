@@ -41,23 +41,31 @@ class ProposalDevelopmentObject < DataFactory
   end
     
   def create
-    visit(Researcher).create_proposal
-    on Proposal do |doc|
-      @doc_header=doc.doc_title
-      @document_id=doc.document_id
-      @status=doc.document_status
-      @initiator=doc.initiator
-      @created=doc.created
-      doc.expand_all
-      set_sponsor_code
-      fill_out doc, :proposal_type, :activity_type,
-                    :project_title, :project_start_date, :project_end_date,
-                    :sponsor_deadline_date, :mail_by, :mail_type, :nsf_science_code
-      set_lead_unit
-      doc.save
-      @proposal_number=doc.proposal_number.strip
-      @search_key={ document_id: @document_id }
-      @permissions = make PermissionsObject, merge_settings(aggregators: [@initiator])
+    on(Header).researcher
+    on(ResearcherMenu).create_proposal
+    on CreateProposal do |doc|
+      #@doc_header=doc.doc_title
+      #@document_id=doc.document_id
+      #@status=doc.document_status
+      #@initiator=doc.initiator
+      #@created=doc.created
+      #doc.expand_all
+      #set_sponsor_code
+
+      # DEBUG
+      doc.unit_number @lead_unit
+      fill_out doc, :proposal_type, :activity_type, :project_title,
+               :project_start_date, :project_end_date
+
+      puts @proposal_type
+      puts @activity_type
+      puts @lead_unit
+      exit
+
+      sleep 10
+      doc.save_and_continue
+
+      sleep 10
     end
   end
 

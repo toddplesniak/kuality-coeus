@@ -313,14 +313,13 @@ class UserObject < DataFactory
       log_in.username.set @user_name
       log_in.login
     end
-    on(Researcher).logout_button.wait_until_present
+    on(Header).doc_search_link.wait_until_present
     @session_status='logged in'
   end
   alias_method :log_in, :sign_in
 
   def sign_out
-    visit(Login).close_extra_windows
-    s_o.click if s_o.present?
+    # TODO
     @session_status='logged out'
   end
   alias_method :log_out, :sign_out
@@ -385,12 +384,8 @@ class UserObject < DataFactory
   private
   #========
 
-  def s_o
-    @browser.button(value: 'Logout')
-  end
-
   def login_info_div
-    @browser.div(id: 'login-info')
+    @browser.ul(class: 'uif-listLayout nav pull-right')
   end
 
   def username_field
