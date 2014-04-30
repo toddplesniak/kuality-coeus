@@ -231,6 +231,7 @@ class BasePage < PageFactory
     private
     # ========
 
+
     def links(*links_text)
       links_text.each { |link| elementate(:link, link) }
     end
@@ -239,6 +240,11 @@ class BasePage < PageFactory
       buttons_text.each { |button| elementate(:button, button) }
     end
 
+    def select(method_name, attrib, value)
+      element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}); b.select(attrib => value) }
+    end
+
+    # TODO: Probably can trash this code...
     def selects(*labels)
       labels.each do |label|
         element("#{damballa(label)}_element") { |b| b.div(data_label: label).select }

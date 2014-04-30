@@ -1,7 +1,11 @@
 class CreateProposal < BasePage
 
   buttons 'Cancel', 'Save and continue'
-  selects 'Proposal Type', 'Unit Number', 'Activity Type'
+  #selects 'Unit Number', 'Activity Type'
+  select(:proposal_type, :name, 'document.developmentProposal.proposalTypeCode')
+  select(:unit_number, :name, 'document.developmentProposal.ownedByUnitNumber')
+  select(:activity_type, :name, 'document.developmentProposal.activityTypeCode')
+
 
   element(:project_start_date) { |b| b.text_field(name: 'document.developmentProposal.requestedStartDateInitial') }
   element(:project_end_date) { |b| b.text_field(name: 'document.developmentProposal.requestedEndDateInitial') }

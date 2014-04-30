@@ -52,20 +52,19 @@ class ProposalDevelopmentObject < DataFactory
       #doc.expand_all
       #set_sponsor_code
 
-      # DEBUG
-      doc.unit_number @lead_unit
+      doc.unit_number.pick! @lead_unit
       fill_out doc, :proposal_type, :activity_type, :project_title,
                :project_start_date, :project_end_date
 
+      # DEBUG
       puts @proposal_type
       puts @activity_type
       puts @lead_unit
-      exit
 
       sleep 10
+      exit
       doc.save_and_continue
 
-      sleep 10
     end
   end
 
