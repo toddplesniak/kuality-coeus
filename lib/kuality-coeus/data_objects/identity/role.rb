@@ -1,9 +1,9 @@
-class RoleObject < DataObject
+class RoleObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :id, :name, :type, :namespace, :description,
+  attr_reader :id, :name, :type, :namespace, :description,
                 :permissions, :save_type
 
   ROLES = {
@@ -27,6 +27,7 @@ class RoleObject < DataObject
       'Maintain IRB Questionnaire'      => '161',
       'Maintain Proposal Questionnaire' => '162',
       'Manager'                         =>  '98',
+      'Modify Subaward'                 => '1427',
       'Narrative Writer'                => '109',
       'Negotiation Creator'             => '1399',
       'OSP Administrator'               => '131',
@@ -47,9 +48,9 @@ class RoleObject < DataObject
     @browser = browser
 
     defaults = {
-        description:      random_alphanums,
+        description:      random_alphanums_plus,
         type:             'Unit',
-        name:             random_alphanums,
+        name:             random_alphanums_plus,
         namespace:        'KC-UNT - Kuali Coeus - Department',
         assignees:        collection('RoleAssignees'),
         permissions:      [],

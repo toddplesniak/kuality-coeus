@@ -1,33 +1,33 @@
 # coding: UTF-8
-class AwardObject < DataObject
+class AwardObject < DataFactory
 
   include Navigation
   include DateFactory
   include StringFactory
   include DocumentUtilities
 
-  attr_accessor :description, :transaction_type, :id, :award_status,
-                :award_title, :lead_unit, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
-                :nsf_science_code, :account_id, :account_type, :prime_sponsor, :cfda_number,
-                :project_start_date, :project_end_date, :obligation_start_date,
-                :obligation_end_date, :anticipated_amount, :obligated_amount, :document_id,
-                :document_status,
-                :creation_date, :key_personnel, :cost_sharing, :fa_rates,
-                :funding_proposals, :subawards, #TODO: Add Benefits rates and preaward auths...
-                :time_and_money,
-                :budget_versions, :sponsor_contacts, :payment_and_invoice, :terms, :reports,
-                :custom_data,
-                :parent, :children
+  attr_reader :award_status,
+              :award_title, :lead_unit, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
+              :nsf_science_code, :account_id, :account_type, :prime_sponsor, :cfda_number,
+              :version, :prior_versions,
+              :creation_date, :key_personnel, :cost_sharing, :fa_rates,
+              :funding_proposals, #TODO: Add Benefits rates and preaward auths...
+              :budget_versions, :sponsor_contacts, :payment_and_invoice, :terms, :reports,
+              :approved_equipment,
+              :children
+  attr_accessor :document_status, :document_id, :subawards, :transaction_type, :id, :anticipated_amount, :obligated_amount,
+                :custom_data, :description, :project_start_date, :project_end_date, :obligation_start_date,
+                :obligation_end_date, :time_and_money, :parent
 
-  def initialize(browser, opts={})
+                def initialize(browser, opts={})
     @browser = browser
     amount = random_dollar_value(1000000)
 
     defaults = {
-      description:           random_alphanums,
+      description:           random_alphanums_plus,
       transaction_type:      '::random::',
       award_status:          %w{Active Hold Pending}.sample, # Needs to be this way because we don't want it to pick a status of, e.g., 'Closed'
-      award_title:           random_alphanums,
+      award_title:           random_alphanums_plus,
       activity_type:         '::random::',
       award_type:            '::random::',
       project_start_date:    right_now[:date_w_slashes],
@@ -49,7 +49,11 @@ class AwardObject < DataObject
       key_personnel:         collection('AwardKeyPersonnel'),
       cost_sharing:          collection('AwardCostSharing'),
       fa_rates:              collection('AwardFARates'),
+      reports:               collection('AwardReports'),
+      approved_equipment:    collection('ApprovedEquipment'),
       children:              [], # Contains the ids of any child Awards.
+      version:               '1',
+      prior_versions:        {} # Contains the version number and document ids of prior versions
       #budget_versions:       collection('BudgetVersions'), # This is not yet verified to work with Awards.
 
     }
@@ -85,7 +89,7 @@ class AwardObject < DataObject
       end
       create.save
       @document_id = create.header_document_id
-      @id = create.header_award_id.strip
+      @id = create.award_id.strip
       @search_key = { award_id: @id }
       @document_status = create.header_status
     end
@@ -94,6 +98,13 @@ class AwardObject < DataObject
   def edit opts={}
     view :award
     on Award do |edit|
+      if edit.edit_button.present?
+        edit.edit
+        @prior_versions.store(@version, @document_id)
+        @version = edit.version
+        @document_id = edit.header_document_id
+        # TODO: update child objects with new @document_id value!
+      end
       edit_fields opts, edit, :description, :transaction_type, :award_status, :award_title,
                   :activity_type, :award_type, :obligated_amount, :anticipated_amount,
                   :project_start_date, :project_end_date, :obligation_start_date,
@@ -131,31 +142,43 @@ class AwardObject < DataObject
     view :award
     on Award do |page|
       page.expand_all
-      if name=='random'
-        page.search_organization
-        on OrganizationLookup do |search|
-          search.search
-          search.return_random
-        end
-        name=page.add_organization_name.value
-      else
-        page.add_organization_name.fit name
+      page.search_organization
+    end
+    if name=='random'
+      on OrganizationLookup do |page|
+        page.search
+        page.return_random
       end
+      name = on(Award).add_organization_name.value
+    else
+      on OrganizationLookup do |page|
+        page.organization_name.set name
+        page.search
+        page.return_value name
+      end
+    end
+    on Award do |page|
       page.add_subaward_amount.fit amount
       page.add_subaward
-      page.save
+      page.save unless page.errors.size > 0
     end
     @subawards << {org_name: name, amount: amount}
   end
 
   def add_pi opts={}
+    defaults = {
+        document_id: @document_id,
+        doc_header: @doc_header,
+        lookup_class: @lookup_class
+    }
     view :contacts
-    @key_personnel.add opts
+    @key_personnel.add defaults.merge(opts)
   end
   alias_method :add_principal_investigator, :add_pi
 
   def add_key_person opts={}
-    defaults={project_role: 'Key Person', key_person_role: random_alphanums}
+    defaults={project_role: 'Key Person',
+              key_person_role: random_alphanums}
     add_pi defaults.merge(opts)
   end
 
@@ -176,6 +199,16 @@ class AwardObject < DataObject
     @sponsor_contacts << s_c
   end
 
+  def add_cost_share opts={}
+    view :commitments
+    @cost_sharing.add(opts)
+  end
+
+  def add_fna_rate opts={}
+    view :commitments
+    @fa_rates.add(opts)
+  end
+
   def add_payment_and_invoice opts={}
     raise "You already created a Payment & Invoice in your scenario.\nYou want to interact with that item directly, now." unless @payment_and_invoice.nil?
     view :payment_reports__terms
@@ -183,11 +216,11 @@ class AwardObject < DataObject
     @payment_and_invoice.create
   end
 
-  def add_reports opts={}
-    raise "You already created a Reports item in your scenario.\nYou want to interact with it directly, now." unless @reports.nil?
+  def add_report opts={}
+    opts[:report] ||= %w{Financial IntellectualProperty Procurement Property ProposalsDue TechnicalManagement}.sample
+    defaults = {award_id: @id, number: (@reports.count_of(opts[:report])+1).to_s}
     view :payment_reports__terms
-    @reports = make AwardReportsObject, opts
-    @reports.create
+    @reports.add defaults.merge(opts)
   end
 
   def add_terms opts={}
@@ -197,22 +230,36 @@ class AwardObject < DataObject
     @terms.create
   end
 
+  def add_approved_equipment opts={}
+    view :payment_reports__terms
+    @approved_equipment.add(opts)
+  end
+
   def add_custom_data opts={}
     view :custom_data
     defaults = {
         document_id: @document_id,
         doc_header: @doc_header,
-        lookup_class: @lookup_class
+        lookup_class: @lookup_class,
+        search_key: @search_key
     }
-    @custom_data = make CustomDataObject, defaults.merge(opts)
-    @custom_data.create
+    if @custom_data.nil?
+      @custom_data = make CustomDataObject, defaults.merge(opts)
+      @custom_data.create
+    end
   end
 
   def initialize_time_and_money
     open_document
     on(Award).time_and_money
     # Set up to only create the instance variable if it doesn't exist, yet
-    @time_and_money ||= make TimeAndMoneyObject, id: on(TimeAndMoney).header_document_id
+    if @time_and_money.nil?
+      @time_and_money = make TimeAndMoneyObject, document_id: on(TimeAndMoney).header_document_id,
+                             award_number: @id
+      @time_and_money.create
+    else
+      @time_and_money.check_status
+    end
   end
 
   def view(tab)
@@ -225,9 +272,10 @@ class AwardObject < DataObject
   def submit
     view :award_actions
     on AwardActions do |page|
+      page.expand_all
+      page.award_hierarchy_link.wait_until_present
       page.submit
-
-      # TODO: Code for intelligently handling the appearance of this
+      # TODO: Code for intelligently handling the appearance of this (It's a screen about validation warnings)
       confirmation
 
       page.t_m_button.wait_until_present
@@ -331,6 +379,13 @@ class AwardObject < DataObject
     award
   end
 
+  def cancel
+    view :award
+    on Award do |page|
+      page.cancel
+    end
+  end
+
   # ========
   private
   # ========
@@ -375,10 +430,17 @@ class AwardObject < DataObject
     visit @lookup_class do |page|
       page.award_id.set @id
       page.search
-      page.medusa
+      # TODO: Remove this when document search issues are resolved
+      begin
+        page.medusa
+      rescue Watir::Exception::UnknownObjectException
+        visit DocumentSearch do |search|
+          search.document_id.set @document_id
+          search.search
+          search.open_item @document_id
+        end
+      end
     end
-    # Must update the document id, now:
-    @document_id=on(Award).header_document_id
   end
 
   def on_award?

@@ -1,12 +1,12 @@
-class AwardKeyPersonObject < DataObject
+class AwardKeyPersonObject < DataFactory
 
   include Navigation
   include Personnel
 
-  attr_accessor :employee_user_name, :non_employee_id, :project_role,
-                :key_person_role, :units, :first_name, :last_name, :full_name,
-                :lead_unit, :type, :responsibility, :financial, :recognition,
-                :space
+  attr_reader :employee_user_name, :non_employee_id, :project_role,
+              :key_person_role, :units, :first_name, :last_name, :full_name,
+              :lead_unit, :type, :responsibility, :financial, :recognition,
+              :space
 
   def initialize(browser, opts={})
     @browser = browser
@@ -14,11 +14,12 @@ class AwardKeyPersonObject < DataObject
     defaults = {
         type:         'employee',
         project_role: 'Principal Investigator',
-        units:        []
+        units:        [] # Contains Hashes with Keys... :number, :name, :recognition, :responsibility, :space, :financial
     }
 
     set_options(defaults.merge(opts))
-    @full_name="#{@first_name} #{@last_name}"
+    @full_name = @type=='employee' ? "#{@first_name} #{@last_name}" : "#{@last_name}, #{@first_name}"
+
   end
 
   # Navigation done by parent object...
@@ -29,7 +30,7 @@ class AwardKeyPersonObject < DataObject
       # TODO: Need to add code that sets the user name or id
     else
       # TODO: Need to add conditional code for
-      # if you have a user id but not a name
+      # when you have a user id but not a name
     end
     on AwardContacts do |create|
       # This conditional exists to deal with the fact that
@@ -43,6 +44,9 @@ class AwardKeyPersonObject < DataObject
       end
       fill_out create, :key_person_role
       create.add_key_person
+      # Note: This break is here for testing for an
+      # error when attempting to add 2 PIs to the Award...
+      break if create.errors.size > 0
       create.expand_all
       set_up_units
       create.save
@@ -100,6 +104,10 @@ class AwardKeyPersonObject < DataObject
       delete_unit.save
     end
     @units.delete(unit_number)
+  end
+
+  def update_from_parent(id)
+    @document_id=id
   end
 
   # ===========

@@ -1,4 +1,4 @@
-class InstituteRateObject < DataObject
+class InstituteRateObject < DataFactory
 
   include StringFactory
   include DateFactory
@@ -97,7 +97,7 @@ class InstituteRateObject < DataObject
       'Other'=>{class: '9', type: '1'}
   }
 
-  attr_accessor :activity_type, :activity_type_code, :fiscal_year, :on_off_campus_flag,
+  attr_reader :activity_type, :activity_type_code, :fiscal_year, :on_off_campus_flag,
                 :rate_type, :rate_class_code, :rate_type_code, :start_date, :unit_number,
                 :rate, :active, :description, :save_type
 
@@ -105,7 +105,7 @@ class InstituteRateObject < DataObject
     @browser = browser
 
     defaults = {
-      description: random_alphanums,
+      description: random_alphanums_plus,
       fiscal_year: right_now[:year],
       activity_type: 'Instruction',
       on_off_campus_flag: :set,

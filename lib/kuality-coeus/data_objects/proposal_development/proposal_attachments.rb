@@ -1,8 +1,8 @@
-class ProposalAttachmentObject < DataObject
+class ProposalAttachmentObject < DataFactory
 
   include Navigation
 
-  attr_accessor :type, :file_name, :status, :description, :document_id, :doc_type
+  attr_reader :type, :file_name, :status, :description, :document_id, :doc_type
 
   def initialize(browser, opts={})
     @browser = browser
@@ -26,6 +26,10 @@ class ProposalAttachmentObject < DataObject
   def view
     open_document
     on(Proposal).abstracts_and_attachments unless on_page?(on(AbstractsAndAttachments).proposal_attachment_type)
+  end
+
+  def update_from_parent(id)
+    @document_id=id
   end
 
 end

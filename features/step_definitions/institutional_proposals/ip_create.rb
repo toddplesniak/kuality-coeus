@@ -26,15 +26,24 @@ When /^I merge the permanent proposal log with the institutional proposal$/ do
   pending
 end
 
-When /^(the (.*) |)user creates an institutional proposal with a missing required field$/ do |text, role_name|
-  steps %{ * I log in with the #{role_name} user } unless text == ''
+When /^the Create Proposal Log user creates an institutional proposal with a missing required field$/ do
+  # Note that this step implicitly requires creation of a Proposal Log first...
+  steps %q{ * I log in with the Create Proposal Log user }
   # Pick a field at random for the test...
-  @required_field = ['Project Title', 'Description','Activity Type','Sponsor ID', 'Proposal Type'
+  field_name = ['Project Title','Description','Activity Type','Sponsor ID','Proposal Type'
   ].sample
   # Properly set the nil value depending on the field type...
-  @required_field=~/Type/ ? value='select' : value=' '
+  field_name=~/Type/ ? value='select' : value=' '
   # Transform the field name to the appropriate symbol...
-  field = damballa(@required_field)
-  @institutional_proposal = create InstitutionalProposalObject, proposal_number: @proposal_log.number,
-                                   field=>value
+  field = damballa(field_name)
+  @institutional_proposal = create InstitutionalProposalObject, field=>value
+  text = ' is a required field.'
+  error_text = {
+      project_title: "Project Title (Title)#{text}",
+      description:   "Document Description (Description)#{text}",
+      activity_type: "Activity Type (Activity)#{text}",
+      sponsor_id:    "Sponsor ID  (Sponsor ID)#{text}",
+      proposal_type: "Proposal Type (Proposal Type Code)#{text}"
+  }
+  @required_field_error = error_text[field]
 end

@@ -4,7 +4,11 @@ class Commitments < KCAwards
   element(:new_cost_sharing_percentage) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.costSharePercentage') }
   element(:new_cost_sharing_type) { |b| b.frm.select(name: 'costShareFormHelper.newAwardCostShare.costShareTypeCode') }
   element(:new_cost_sharing_project_period) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.projectPeriod') }
+  element(:new_cost_sharing_source) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.source') }
+  element(:new_cost_sharing_destination) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.destination') }
   element(:new_cost_sharing_commitment_amount) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.commitmentAmount') }
+  element(:new_cost_sharing_met) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.costShareMet') }
+  element(:new_cost_sharing_verification_date) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.verificationDate') }
   action(:add_cost_sharing) { |b| b.frm.button(name: 'methodToCall.addCostShare.anchor').click; b.loading }
 
   p_element(:cost_sharing_percentage) { |index, b| b.frm.text_field(name: "document.awardList[0].awardCostShares[#{index}].costSharePercentage") }
@@ -21,7 +25,11 @@ class Commitments < KCAwards
   element(:new_rate_type) { |b| b.frm.select(name: 'newAwardFandaRate.fandaRateTypeCode') }
   element(:new_rate_fiscal_year) { |b| b.frm.text_field(name: 'newAwardFandaRate.fiscalYear') }
   element(:new_rate_start_date) { |b| b.frm.text_field(name: 'newAwardFandaRate.startDate') }
+  element(:new_rate_end_date) { |b| b.frm.text_field(name: 'newAwardFandaRate.endDate') }
   element(:new_rate_campus) { |b| b.frm.select(name: 'newAwardFandaRate.onCampusFlag') }
+  element(:new_rate_source) { |b| b.frm.text_field(name: 'newAwardFandaRate.sourceAccount') }
+  element(:new_rate_destination) { |b| b.frm.text_field(name: 'newAwardFandaRate.destinationAccount') }
+  element(:new_rate_unrecovered_fa) { |b| b.frm.text_field(name: 'newAwardFandaRate.underrecoveryOfIndirectCost') }
   action(:add_rate) { |b| b.frm.button(name: 'methodToCall.addFandaRate.anchorRates').click; b.loading }
 
   p_element(:fna_rate) { |index, b| b.frm.text_field(name: /document.awardList\[0\].awardFandaRate\[#{index}\].applicableFandaRate/) }
@@ -36,6 +44,9 @@ class Commitments < KCAwards
 
   value(:fna_sources) { |b| b.noko.div(id: 'tab-Rates:FARates-div').text_fields(title: 'Source').collect{ |field| field.value }[1..-1] }
   value(:unrecovered_fna_total) { |b| b.fa_rates_table.trs[-2].td(index: 1).text }
+
+  element(:fna_delete_buttons) { |b| b.frm.buttons(name: /deleteFandaRate/) }
+  element(:fna_source_fields) { |b| b.fa_rates_table.text_fields(title: 'Source') }
 
   # Benefits Rates
   element(:on_campus) { |b| b.frm.text_field(name: 'document.awardList[0].specialEbRateOnCampus') }

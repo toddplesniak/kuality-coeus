@@ -29,7 +29,7 @@ class BasePage < PageFactory
     end
 
     def document_header_elements
-      value(:doc_title) { |b| b.noko.div(id: 'headerarea').h1.text }
+      value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text.strip }
       value(:headerinfo_table) { |b| b.noko.div(id: 'headerarea').table(class: 'headerinfo') }
       value(:document_id) { |p| p.headerinfo_table[0].text[/\d{4}/] }
       alias_method :doc_nbr, :document_id
@@ -57,8 +57,9 @@ class BasePage < PageFactory
       glbl 'Reject', 'blanket approve', 'close', 'cancel', 'reload',
            'Delete Proposal', 'disapprove',
            'Generate All Periods', 'Calculate All Periods', 'Default Periods',
-           'Calculate Current Period', 'submit', 'Send Notification'
-      action(:save) { |b| b.frm.button(name: 'methodToCall.save', title: 'save').click; b.loading }
+           'Calculate Current Period', 'Send Notification'
+      action(:save) { |b| b.save_button.click; b.loading }
+      action(:submit){ |b| b.frm.button(title: 'submit').click; b.loading; b.awaiting_doc }
       element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
       action(:approve) { |b| b.approve_button.click; b.loading; b.awaiting_doc }
       # Explicitly defining the "recall" button to keep the method name at "recall" instead of "recall_current_document"...
@@ -116,7 +117,8 @@ class BasePage < PageFactory
 
     def budget_header_elements
       action(:return_to_proposal) { |b| b.frm.button(name: 'methodToCall.returnToProposal').click; b.loading }
-      buttons 'Budget Version', 'Parameters', 'Rates', 'Summary', 'Personnel', 'Non-Personnel',
+      action(:return_to_award) { |b| b.frm.button(name: 'methodToCall.returnToAward').click; b.loading }
+      buttons 'Budget Versions', 'Parameters', 'Rates', 'Summary', 'Personnel', 'Non-Personnel',
               'Distribution & Income', 'Budget Actions'
       # Need the _tab suffix because of method collisions
       action(:modular_budget_tab) { |b| b.frm.button(value: 'Modular Budget').click }
@@ -215,7 +217,7 @@ class BasePage < PageFactory
       element(:validation_button) { |b| b.frm.button(name: 'methodToCall.activate') }
       action(:show_data_validation) { |b| b.frm.button(id: 'tab-DataValidation-imageToggle').click; b.validation_button.wait_until_present }
       action(:turn_on_validation) { |b| b.validation_button.click; b.special_review_button.wait_until_present }
-      element(:validation_errors_and_warnings) { |b| errs = []; b.validation_err_war_fields.each { |field| errs << field.html[/(?<=>).*(?=<)/] }; errs }
+      element(:validation_errors_and_warnings) { |b| errs = []; b.validation_err_war_fields.each { |field| errs << onespace(field.html[/(?<=>).*(?=<)/]) }; errs }
       element(:validation_err_war_fields) { |b| b.frm.tds(width: '94%') }
     end
 
@@ -266,15 +268,19 @@ class BasePage < PageFactory
       action(act_name) { |b| b.frm.send(type, identifiers[type]=>text).click }
     end
 
-    # Used for getting rid of the space in the full name
+    # Used for getting rid of the space and comma in the full name
     def nsp(string)
-      string.gsub(' ', '')
+      string.gsub(/[ ,]/, '')
     end
 
     # Used to add an extra space in the full name (because some
     # elements have that, annoyingly!)
     def twospace(string)
       string.gsub(' ', '  ')
+    end
+
+    def onespace(string)
+      string.gsub('  ', ' ')
     end
 
   end # self

@@ -1,9 +1,9 @@
-class CommitteeDocumentObject < DataObject
+class CommitteeDocumentObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :description, :committee_id, :document_id, :status, :committee_name,
+  attr_reader :description, :committee_id, :document_id, :status, :committee_name,
                 :home_unit, :min_members_for_quorum, :maximum_protocols,
                 :adv_submission_days, :review_type, :last_updated, :updated_user,
                 :initiator, :members, :areas_of_research, :type
@@ -12,10 +12,10 @@ class CommitteeDocumentObject < DataObject
     @browser = browser
     
     defaults = {
-      description:            random_alphanums,
-      committee_id:           random_alphanums,
+      description:            random_alphanums_plus,
+      committee_id:           random_alphanums_plus,
       home_unit:              '000001',
-      committee_name:         random_alphanums,
+      committee_name:         random_alphanums_plus,
       min_members_for_quorum: rand(100).to_s,
       maximum_protocols:      rand(100).to_s,
       adv_submission_days:    rand(365).to_s,

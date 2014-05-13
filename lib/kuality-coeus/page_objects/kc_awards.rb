@@ -7,7 +7,7 @@ class KCAwards < BasePage
   buttons 'Award', 'Contacts', 'Commitments', 'Budget Versions',
           'Payment, Reports & Terms', 'Special Review', 'Custom Data',
           'Comments, Notes & Attachments', 'Award Actions', 'Medusa'
-  value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text }
+  value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text.strip }
   action(:time_and_money) { |b| b.t_m_button.click; b.loading }
   element(:t_m_button) { |b| b.frm.button(name: 'methodToCall.timeAndMoney') }
   element(:headerinfo_table) { |b| b.frm.div(id: 'headerarea').table(class: 'headerinfo') }
@@ -22,19 +22,6 @@ class KCAwards < BasePage
   value(:header_last_update) { |b| b.headerinfo_table[2][3].text }
 
   class << self
-
-    def report_types *types
-      types.each_with_index do |type, index|
-        # This line is here because the field values inexplicably skip the number 2.
-        i = index > 1 ? index+1 : index
-        name=damballa(type)
-        tag=type.gsub(/([\s\/])/,'')
-        element("#{name}_report_type".to_sym) { |b| b.reports_div.select(name: "awardReportsBean.newAwardReportTerms[#{i}].reportCode") }
-        element("#{name}_frequency".to_sym) { |b| b.reports_div.select(name: "awardReportsBean.newAwardReportTerms[#{i}].frequencyCode") }
-        element("#{name}_frequency_base".to_sym) { |b| b.reports_div.select(name: "awardReportsBean.newAwardReportTerms[#{i}].frequencyBaseCode") }
-        action("add_#{name}_report".to_sym) { |b| b.reports_div.button(name: /anchorReportClasses:#{tag}$/).click; b.loading }
-      end
-    end
 
     def terms *terms
       terms.each_with_index do |term, index|

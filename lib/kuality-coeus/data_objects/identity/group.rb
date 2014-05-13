@@ -1,9 +1,9 @@
-class GroupObject < DataObject
+class GroupObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :id, :namespace, :name, :type,
+  attr_reader :id, :namespace, :name, :type,
                 :principal_name, :assignees, :save_type
 
   def initialize(browser, opts={})
@@ -12,7 +12,7 @@ class GroupObject < DataObject
     defaults = {
       type:       'Default',
       namespace:  'KC-UNT - Kuali Coeus - Department',
-      name:       random_alphanums,
+      name:       random_alphanums_plus,
       assignees:  collection('GrAssignees'),
       save_type: :blanket_approve
     }

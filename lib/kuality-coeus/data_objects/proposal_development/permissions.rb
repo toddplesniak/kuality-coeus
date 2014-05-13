@@ -1,9 +1,9 @@
-class PermissionsObject < DataObject
+class PermissionsObject < DataFactory
 
   include Navigation
 
-  attr_accessor :document_id, :aggregators, :budget_creators, :narrative_writers,
-                :viewers, :approvers, :delete_proposals
+  attr_reader :document_id, :aggregators, :budget_creators, :narrative_writers,
+              :viewers, :approvers, :delete_proposals
 
   def initialize(browser, opts={})
     @browser = browser
@@ -89,6 +89,11 @@ class PermissionsObject < DataObject
     roles.each do |role|
       get(role).delete_if { |name| name==username }
     end
+  end
+
+  def update_doc_id(id)
+    @document_id=id
+    @search_key[:document_id]=id
   end
 
   # =======

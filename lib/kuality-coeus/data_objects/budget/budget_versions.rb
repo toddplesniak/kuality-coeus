@@ -1,13 +1,13 @@
-class BudgetVersionsObject < DataObject
+class BudgetVersionsObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :name, :document_id, :status,
+  attr_reader :document_id, :status,
                 # Stuff on Budget Versions page...
                 # TODO: Because of their location in the UI, these are barely useful.
                 # Need to decide what to do with them...
-                :version, :direct_cost, :f_and_a, :on_off_campus,
+                :direct_cost, :f_and_a, :on_off_campus,
                 :total, :final, :residual_funds, :cost_sharing, :unrecovered_fa,
                 :comments, :f_and_a_rate_type, :last_updated, :last_updated_by,
                 # Stuff on the Parameters page...
@@ -15,7 +15,7 @@ class BudgetVersionsObject < DataObject
                 :budget_periods, :unrecovered_fa_rate_type, :f_and_a_rate_type,
                 :submit_cost_sharing, :residual_funds, :total_cost_limit,
                 :subaward_budgets, :personnel
-
+  attr_accessor :name, :version
 
   def initialize(browser, opts={})
     @browser = browser
@@ -116,6 +116,11 @@ class BudgetVersionsObject < DataObject
     end
   end
 
+  def view(tab)
+    open_budget
+    on(Parameters).send(damballa(tab.to_s))
+  end
+
   def copy_all_periods(new_name)
     open_document
     on(Proposal).budget_versions unless on_page?(on(BudgetVersions).name)
@@ -161,6 +166,10 @@ class BudgetVersionsObject < DataObject
     person = make BudgetPersonnelObject, opts
     person.create
     @personnel << person
+  end
+
+  def update_from_parent(id)
+    @document_id=id
   end
 
   # =======

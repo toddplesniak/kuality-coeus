@@ -1,19 +1,24 @@
-class BudgetPeriodObject < DataObject
+class BudgetPeriodObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :number, :start_date, :end_date, :total_sponsor_cost,
-                :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,
-                :cost_sharing, :cost_limit, :direct_cost_limit, :datified,
-                :budget_name, :cost_sharing_distribution_list, :unrecovered_fa_dist_list
+  attr_reader :start_date, :end_date, :total_sponsor_cost,
+              :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,
+              :cost_sharing, :cost_limit, :direct_cost_limit, :datified,
+              :budget_name, :cost_sharing_distribution_list, :unrecovered_fa_dist_list,
+              :participant_support,
+              #TODO: Add support for this:
+              :number_of_participants
+  attr_accessor :number
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
       cost_sharing_distribution_list: collection('CostSharing'),
-      unrecovered_fa_dist_list:       collection('UnrecoveredFA')
+      unrecovered_fa_dist_list:       collection('UnrecoveredFA'),
+      participant_support:            collection('ParticipantSupport')
     }
 
     set_options(defaults.merge(opts))
@@ -62,6 +67,12 @@ class BudgetPeriodObject < DataObject
     }
     open_budget
     @cost_sharing_distribution_list.add defaults.merge(opts)
+  end
+
+  def add_participant_support opts={}
+    open_budget
+    on(Parameters).non_personnel
+    @participant_support.add opts
   end
 
   def delete

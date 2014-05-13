@@ -1,8 +1,8 @@
-class UserGroupObject < DataObject
+class UserGroupObject < DataFactory
 
   include StringFactory
 
-  attr_accessor :id, :user_name
+  attr_reader :id, :user_name
 
   def initialize(browser, opts={})
     @browser = browser

@@ -161,11 +161,13 @@ And /^the Award\'s F&A data are from both Proposals$/ do
       page.fna_source(i).value.should==unrecfna.source_account
       page.fna_amount(i).value.groom.to_s.should==unrecfna.amount
     end
-    page.unrecovered_fna_total.groom.should==ufna.total
+    # Rounded total used because of https://jira.kuali.org/browse/KRACOEUS-3991
+    # When that is fixed then test scenarios using this will fail...
+    page.unrecovered_fna_total.groom.should==ufna.rounded_total
   end
 end
 
-And /^the Award\'s F&A data are from the first Proposal$/ do
+And /^the Award's F&A data are from the first Proposal$/ do
   @award.view :commitments
   on Commitments do |page|
     page.expand_all
@@ -181,7 +183,9 @@ And /^the Award\'s F&A data are from the first Proposal$/ do
     @ips[1].unrecovered_fa.each do |fna|
       page.fna_sources.should_not include fna.source_account
     end
-    page.unrecovered_fna_total.groom.should==@ips[0].unrecovered_fa.total
+    # Rounded total used because of https://jira.kuali.org/browse/KRACOEUS-3991
+    # When that is fixed then test scenarios using this will fail...
+    page.unrecovered_fna_total.groom.should==@ips[0].unrecovered_fa.rounded_total
   end
 end
 
@@ -201,4 +205,29 @@ And(/^the Award's version number is '(\d+)'$/) do |version|
     page.expand_all
     page.version.should==version
   end
+end
+
+Then /^the default start and end dates are based on the F&A rate's fiscal year$/ do
+  fna = @award.fa_rates[0]
+  f_y = fna.fiscal_year.to_i
+  fna.start_date.should=="07/01/#{f_y-1}"
+  fna.end_date.should=="06/30/#{f_y}"
+end
+
+Then /^the deleted F&A rates are restored to the Award$/ do
+  @award.fa_rates.each do |fna|
+    on(Commitments).fna_sources.should include fna.source
+  end
+end
+
+And /^returning to the Award goes to the new, pending version$/ do
+  on(TimeAndMoney).return_to_award
+  on Award do |page|
+    page.header_status.should == 'SAVED'
+    page.header_document_id.should == @award.document_id
+  end
+end
+
+And /opens the Award$/ do
+  @award.view :award
 end

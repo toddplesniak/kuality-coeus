@@ -1,8 +1,8 @@
-class CostSharingObject < DataObject
+class CostSharingObject < DataFactory
 
   include StringFactory
 
-  attr_accessor :project_period, :percentage, :source_account, :amount,
+  attr_reader :project_period, :percentage, :source_account, :amount,
                 # Note: Indexing is zero-based!
                 :index
 
@@ -11,7 +11,7 @@ class CostSharingObject < DataObject
 
     defaults = {
         percentage:     '0.00',
-        source_account: random_alphanums
+        source_account: random_alphanums_plus
     }
     set_options(defaults.merge(opts))
   end

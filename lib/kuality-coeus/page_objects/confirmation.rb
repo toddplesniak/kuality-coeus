@@ -1,7 +1,9 @@
 class Confirmation < BasePage
 
   global_buttons
+  document_header_elements
 
+  value(:message) { |b| b.frm.table.tr.div(align: 'center').text }
   element(:yes_button) { |b| b.frm.button(name: 'methodToCall.processAnswer.button0', class: 'confirm') }
   element(:reason) { |b| b.frm.text_field(name: 'reason') }
   alias_method :recall_reason, :reason

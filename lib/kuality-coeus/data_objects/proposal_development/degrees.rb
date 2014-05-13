@@ -1,8 +1,8 @@
-class DegreeObject < DataObject
+class DegreeObject < DataFactory
 
   include StringFactory
 
-  attr_accessor :type, :description, :graduation_year, :school,
+  attr_reader :type, :description, :graduation_year, :school,
                 :document_id, :person
 
   def initialize(browser, opts={})
@@ -26,6 +26,10 @@ class DegreeObject < DataObject
       fill_out_item @person, degrees, :graduation_year, :school
       degrees.add_degree(@person)
     end
+  end
+
+  def update_from_parent doc_id
+    @document_id=doc_id
   end
 
 end

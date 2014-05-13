@@ -1,16 +1,16 @@
-class PersonnelAttachmentObject < DataObject
+class PersonnelAttachmentObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :person, :type, :file_name, :description, :document_id, :doc_type
+  attr_reader :person, :type, :file_name, :description, :document_id, :doc_type
 
   def initialize(browser, opts={})
     @browser = browser
     defaults = {
         person:      '::random::',
         type:        '::random::',
-        description: random_alphanums(30)
+        description: random_alphanums_plus(30)
     }
     set_options defaults.merge(opts)
     requires :document_id, :file_name
@@ -31,6 +31,10 @@ class PersonnelAttachmentObject < DataObject
   def view
     open_document
     on(Proposal).abstracts_and_attachments unless on_page?(on(AbstractsAndAttachments).proposal_attachment_type)
+  end
+
+  def update_from_parent(id)
+    @document_id=id
   end
 
 end

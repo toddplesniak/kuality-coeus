@@ -26,7 +26,11 @@ class Users < Array
 
   def with_role_in_unit(role_name, unit)
     roles = self.map{ |user| user.roles }
-    self.user(roles.flatten!.find { |role| role.name==role_name && role.qualifiers.detect{ |q| q[:unit]==unit } }.user_name)
+    begin
+      self.user(roles.flatten!.find { |role| role.name==role_name && role.qualifiers.detect{ |q| q[:unit]==unit } }.user_name)
+    rescue NoMethodError
+      nil
+    end
   end
 
   def admin
@@ -120,14 +124,12 @@ class UserYamlCollection < Hash
 
 end # UserYamlCollection
 
-class UserObject
+class UserObject < DataFactory
 
-  include Foundry
-  include DataFactory
   include Navigation
   include StringFactory
 
-  attr_accessor :user_name, :principal_id,
+  attr_reader :user_name, :principal_id,
                 :first_name, :last_name, :full_name,
                 :description, :affiliation_type, :campus_code,
                 :employee_id, :employee_status, :employee_type, :base_salary, :primary_department_code,
@@ -303,6 +305,9 @@ class UserObject
   #   tabs/windows and return to the
   #   original window
   def sign_in
+    if $users.logged_in_user.nil?
+      sign_out
+    end
     $users.logged_in_user.sign_out unless $users.current_user==nil
     visit Login do |log_in|
       log_in.username.set @user_name

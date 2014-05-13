@@ -1,10 +1,11 @@
-class IPCostSharingObject < DataObject
+class IPCostSharingObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :project_period, :percentage, :type,
-                :source_account, :amount, :index
+  attr_reader :project_period, :percentage, :type,
+                :source_account, :amount
+  attr_accessor :index
 
   def initialize(browser, opts={})
     @browser = browser
@@ -13,7 +14,7 @@ class IPCostSharingObject < DataObject
         project_period: '1',
         percentage:     '100.00',
         type:           '::random::',
-        source_account: random_alphanums,
+        source_account: random_alphanums_plus,
         amount:         random_dollar_value(1000)
     }
     set_options(defaults.merge(opts))
@@ -46,6 +47,10 @@ class IPCostSharingObject < DataObject
       page.save
     end
     update_options(opts)
+  end
+
+  def update(id)
+    @document_id=id
   end
 
 end

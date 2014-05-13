@@ -13,7 +13,8 @@ When /^the (.*) creates an Award$/ do |role_name|
   @award = create AwardObject, lead_unit: lead_unit
 end
 
-Given /^I? ?creates? an Award with (.*) as the Lead Unit$/ do |lead_unit|
+Given /^the Award Modifier creates? an Award with (.*) as the Lead Unit$/ do |lead_unit|
+  steps '* I log in with the Award Modifier user'
   @award = create AwardObject, lead_unit: lead_unit
 end
 
@@ -21,13 +22,20 @@ end
 #Award Validations Based on Errors During Creation
 #----------------------#
 When /^I ? ?creates? an Award with a missing required field$/ do
-  @required_field = ['Description', 'Transaction Type', 'Award Status',
-                     'Award Title', 'Activity Type', 'Award Type',
-                     'Project End Date', 'Lead Unit'
+  required_field = ['Description','Transaction Type', 'Award Status',
+                    'Award Title', 'Activity Type', 'Award Type',
+                    'Project End Date', 'Lead Unit'
   ].sample
-  @required_field=~/(Type|Status)/ ? value='select' : value=' '
-  field = damballa(@required_field)
+  required_field=~/(Type|Status)/ ? value='select' : value=' '
+  field = damballa(required_field)
   @award = create AwardObject, field=>value
+  text = ' is a required field.'
+  @required_field_error = case(required_field)
+                            when 'Description'
+                              "Document #{required_field} (#{required_field})#{text}"
+                            when 'Transaction Type', 'Award Status', 'Award Title', 'Activity Type', 'Award Type', 'Project End Date', 'Lead Unit'
+                              "#{required_field} (#{required_field})#{text}"
+                            end
 end
 
 When /^the Award Modifier creates an Award with more obligated than anticipated amounts$/ do
@@ -38,4 +46,14 @@ end
 Given /^the Award Modifier creates an Award including an Account ID, Account Type, Prime Sponsor, and CFDA Number$/ do
   steps '* I log in with the Award Modifier user'
   @award = create AwardObject
+end
+
+Given /^the Award Modifier creates an Award with an obligated amount and blank project start date$/ do
+  steps '* I log in with the Award Modifier user'
+  @award = create AwardObject, project_start_date: ''
+end
+
+When /^the Award Modifier creates an Award with a project start date later than the obligation start date$/ do
+  steps '* I log in with the Award Modifier user'
+  @award = create AwardObject, project_start_date: next_week[:date_w_slashes]
 end

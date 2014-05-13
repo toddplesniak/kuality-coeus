@@ -1,8 +1,8 @@
-class RoleAssigneeObject < DataObject
+class RoleAssigneeObject < DataFactory
 
   include StringFactory
 
-  attr_accessor :type_code, :member_identifier, :unit_number, :save_type
+  attr_reader :type_code, :member_identifier, :unit_number, :save_type
 
   def initialize(browser, opts={})
     @browser = browser

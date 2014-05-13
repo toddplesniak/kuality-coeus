@@ -1,11 +1,11 @@
-class ProposalLogObject < DataObject
+class ProposalLogObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :number, :log_type, :log_status, :proposal_type, :title,
-                :principal_investigator, :lead_unit, :sponsor_id, :status,
-                :pi_full_name
+  attr_reader :number, :log_type, :log_status, :proposal_type, :title,
+              :principal_investigator, :lead_unit, :sponsor_id, :status,
+              :pi_full_name
 
   def initialize(browser, opts={})
     @browser= browser
@@ -14,8 +14,9 @@ class ProposalLogObject < DataObject
         log_type:               'Permanent',
         proposal_type:          '::random::',
         sponsor_id:             '::random::',
-        title:                  random_alphanums,
+        title:                  random_alphanums_plus,
         lead_unit:              '000001',
+        save_type:              :submit
     }
     set_options(defaults.merge(opts))
   end
@@ -33,14 +34,11 @@ class ProposalLogObject < DataObject
       fill_out create, :proposal_type, :title, :lead_unit
     end
     set_sponsor_code
-    on(ProposalLog).save
+    on(ProposalLog).send(@save_type)
   end
 
   def submit
-    on ProposalLog do |page|
-      page.submit
-      @proposal_number=page.proposal_number
-    end
+    on(ProposalLog).submit
   end
 
   # =========

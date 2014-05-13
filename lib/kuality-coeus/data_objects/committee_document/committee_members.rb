@@ -1,6 +1,6 @@
-class CommitteeMemberObject < DataObject
+class CommitteeMemberObject < DataFactory
 
-  attr_accessor :document_id, :name, :membership_type, :paid_member, :term_start_date, :term_end_date,
+  attr_reader :document_id, :name, :membership_type, :paid_member, :term_start_date, :term_end_date,
                 :roles
 
   def initialize(browser, opts={})

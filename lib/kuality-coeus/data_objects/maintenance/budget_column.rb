@@ -1,9 +1,9 @@
-class BudgetColumnObject < DataObject
+class BudgetColumnObject < DataFactory
 
   include StringFactory
   include Navigation
 
-  attr_accessor :name, :has_lookup, :lookup_argument, :lookup_return, :save_type
+  attr_reader :name, :has_lookup, :lookup_argument, :lookup_return, :save_type
 
   def initialize(browser, opts={})
     @browser = browser

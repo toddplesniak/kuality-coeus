@@ -1,11 +1,12 @@
-class IPUnrecoveredFAObject < DataObject
+class IPUnrecoveredFAObject < DataFactory
 
   include StringFactory
   include DateFactory
   include Navigation
 
-  attr_accessor :fiscal_year, :rate_type, :applicable_rate,
-                :on_campus_contract, :source_account, :amount, :index
+  attr_reader :fiscal_year, :rate_type, :applicable_rate,
+                :on_campus_contract, :source_account, :amount
+  attr_accessor :index
 
   def initialize(browser, opts={})
     @browser = browser
@@ -14,7 +15,7 @@ class IPUnrecoveredFAObject < DataObject
         fiscal_year:        right_now[:year],
         rate_type:          '::random::',
         on_campus_contract: :set,
-        source_account:     random_alphanums,
+        source_account:     random_alphanums_plus,
         amount:             random_dollar_value(1000)
     }
     set_options(defaults.merge(opts))
@@ -51,6 +52,10 @@ class IPUnrecoveredFAObject < DataObject
     update_options(opts)
   end
 
+  def update(id)
+    @document_id=id
+  end
+
 end
 
 class IPUnrecoveredFACollection < CollectionsFactory
@@ -59,6 +64,12 @@ class IPUnrecoveredFACollection < CollectionsFactory
 
   def total
     self.collect{ |item| item.amount.to_f }.inject(0, :+).round(2)
+  end
+
+  # Used because of https://jira.kuali.org/browse/KRACOEUS-3991
+  # When that is fixed then test scenarios using this will fail...
+  def rounded_total
+    self.collect{ |item| item.amount.to_i }.inject(0, :+).round(2)
   end
 
   def reindex

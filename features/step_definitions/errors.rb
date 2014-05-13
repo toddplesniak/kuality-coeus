@@ -7,6 +7,8 @@ Then /^an error should appear that says (.*)$/ do |error|
             'a key person role is required' => 'Key Person Role is a required field.',
             'the credit split is not a valid percentage' => 'Credit Split is not a valid percentage.',
             'only one PI is allowed' => 'Only one proposal role of Principal Investigator is allowed.',
+            'the Award has no PI' => 'There is no Principal Investigator selected. Please enter a Principal Investigator',
+            'only one PI is allowed in the Contacts' => 'Only one Principal Investigator is allowed',
             'the IP can not be added because it\'s not fully approved' => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
             'the approval should occur later than the application' => 'Approval Date should be the same or later than Application Date.',
             'not to select other roles alongside aggregator' => 'Do not select other roles when Aggregator is selected.',
@@ -19,8 +21,13 @@ Then /^an error should appear that says (.*)$/ do |error|
             'a valid sponsor is required' => 'A valid Sponsor Code (Sponsor) must be selected.',
             'the Account ID may only contain letters or numbers' => 'The Account ID (Account ID) may only consist of letters or digits.',
             'the Award\'s title contains invalid characters' => 'The Award Title (Title) may only consist of visible characters, spaces, or tabs.',
-            'the Award\'s title can\'t be longer than 200 characters' => 'Must be at most 200 characters',
-            'the anticipated amount must be equal to or more than obligated' => 'The Anticipated Amount must be greater than or equal to Obligated Amount.'
+            'the Award\'s title can\'t be longer than 200 characters' => 'The specified Award Title (Title) must not be longer than 200 characters.',
+            'the anticipated amount must be equal to or more than obligated' => 'The Anticipated Amount must be greater than or equal to Obligated Amount.',
+            'the project period has a typo' => 'Project Period is not formatted correctly.',
+            'cost share type is required' => 'Cost Share Type Code is a required field.',
+            'the fiscal year is not valid' => 'Fiscal Year is not formatted correctly.',
+            'the approved equipment can\'t have duplicates' => 'Approved Equipment Vendor, Model and Item must be unique',
+            'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.'
   }
   $current_page.errors.should include errors[error]
 end
@@ -36,7 +43,10 @@ end
 Then /^an error is shown that says (.*)$/ do |error|
   errors = { 'there are duplicate organizations' => 'There is a duplicate organization name.',
              'there is no principal investigator' => 'There is no Principal Investigator selected. Please enter a Principal Investigator.',
-             'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.'
+             'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.',
+             'a project start date is required for the T&M Document' => 'Project Start Date is required when creating a Time &amp; Money document',
+             'there are duplicate cost share lines' => 'A duplicate row has been entered.',
+             'the subaward\'s amount can\'t be zero' => 'Approved Subaward amount must be greater than zero.'
   }
   $current_page.validation_errors_and_warnings.should include errors[error]
 end
@@ -47,72 +57,70 @@ Then /^errors about the missing terms are shown$/ do
   .each { |term| $current_page.validation_errors_and_warnings.should include "There must be at least one #{term} Terms defined." }
 end
 
+# TODO: Move to the big step def.
 Then /^an error is shown that indicates the lead unit code is invalid$/ do
-  $current_page.errors.should include "Lead Unit is invalid."
+  $current_page.errors.should include 'Lead Unit is invalid.'
 end
 
 Then /^an error is shown that indicates the user is already an investigator$/ do
   $current_page.errors.should include %|#{@first_name} #{@last_name} already holds Investigator role.|
 end
 
+Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
+  @award.view :contacts
+  on AwardContacts do |page|
+    Transforms::CREDIT_SPLITS.values.each do |type|
+      page.errors.should include "The Project Personnel #{type} Credit Split does not equal 100%"
+      page.errors.should include "The Unit #{type} Credit Split for #{@award.key_personnel.principal_investigator.full_name} does not equal 100%"
+    end
+  end
+end
+
 #-----------------------#
 # Award                 #
 #-----------------------#
-Then /^an error should appear indicating the field is required$/ do
-  error = case @required_field
-            when 'Lead Unit ID'
-              'Lead Unit ID is a required field.'
-            when 'Description'
-              "Document Description is a required field."
-            else
-              "#{@required_field} is a required field."
-          end
-  $current_page.errors.should include error
+
+Then /^the Award should show an error saying the project start date can't be later than the obligation date$/ do
+  $current_page.errors.should include "Award #{@award.id} Project Start Date must be before or equal to Obligation Start Date."
+end
+
+Then /^the Award should throw an error saying (.*)/ do |error|
+  errors = {
+    'they are already in the Award Personnel' => "#{@award.key_personnel.principal_investigator.full_name} is already added to the Award Project Personnel",
+    'the Award\'s PI requires at least one unit' => "At least one Unit is required for #{@award.key_personnel.principal_investigator.full_name}"
+  }
+  $current_page.errors.should include errors[error]
+end
+
+Then /^an error should say that the (cost share|F&A rate) percentage can only have 2 decimal places$/ do |type|
+  items = {
+      'cost share' => [:cost_sharing, :percentage],
+      'F&A rate'   => [:fa_rates, :rate]
+  }
+  $current_page.errors.should include "Invalid value #{@award.send(items[type][0])[0].send(items[type][1])}: at most 2 digits may follow the decimal point."
+end
+
+#-----------------------#
+# Subaward              #
+#-----------------------#
+Then /^an error should appear on the Subaward saying the person is already added to the contacts$/ do
+  on(Subaward).errors.should include "#{@subaward.contacts[0][:name]} is already added to the Subaward Contacts"
 end
 
 #------------------------#
-# Institutional Proposal #
+# Required Fields        #
 #------------------------#
-Then /^an error notification should appear to indicate the field is required$/ do
-  error = case @required_field
-            when 'Activity Type'
-              'Activity Type (Activity) is a required field.'
-            when 'Proposal Type'
-              'Proposal Type (Proposal Type Code) is a required field.'
-            when 'Project Title'
-              'Project Title (Title) is a required field.'
-            when 'Description'
-              "Document #{@required_field} is a required field."
-            else
-              "#{@required_field} (#{@required_field}) is a required field."
-          end
-  $current_page.errors.should include error
+Then /^an error should appear saying the field is required$/ do
+  $current_page.errors.should include @required_field_error
 end
 
 #------------------------#
-# Proposal Log           #
+# Miscellaneous          #
 #------------------------#
-Then /^an error should appear on the page to indicate the field is required$/ do
-  error = case @required_field
-            when 'Description'
-              "Document #{@required_field} (Description) is a required field."
-            when 'Principal Investigator'
-              "A Principal Investigator (employee or non-employee) is required."
-            else
-              "#{@required_field} (#{@required_field}) is a required field."
-          end
-  $current_page.errors.should include error
+Then /^a confirmation screen asks if you want to edit the existing pending version$/ do
+  on(Confirmation).message.should == 'A Pending version already exists. Do you want to edit the Pending version?'
 end
 
-#------------------------#
-# Proposal Development   #
-#------------------------#
-Then /^an error notification appears to indicate the field is required$/ do
-  error = case @required_field
-            when 'Sponsor ID'
-              'A valid Sponsor Code (Sponsor) must be selected.'
-            else
-              "#{@required_field} is a required field."
-          end
-  $current_page.errors.should include error
+Then /^there are no errors on the page$/ do
+  $current_page.errors.size.should==0
 end

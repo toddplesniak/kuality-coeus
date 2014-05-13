@@ -23,23 +23,35 @@ module Personnel
     on(page_class).send("#{@type}_search")
     on lookup_page do |page|
       if @last_name.nil?
-        page.search
+        if @type=='non_employee'
+          results=false
+          until results do
+            page.state.pick '::random::'
+            page.search
+            results = true if page.results_table.present?
+          end
+        else
+          page.search
+        end
+
         # We need to exclude the set of test users from the list
         # of names we'll randomly select from...
         names = page.returned_full_names - $users.full_names
         @last_name=names.sample[/\w+$/]
         @first_name=$~.pre_match.strip
-        @full_name="#{@first_name} #{@last_name}"
+        @full_name = @type=='employee' ? "#{@first_name} #{@last_name}" : "#{@last_name}, #{@first_name}"
       else
         fill_out page, :first_name, :last_name
         page.search
       end
-      page.return_value @full_name
+      item = @type=='employee' ? @full_name : "#{@first_name} #{@last_name}"
+      page.return_value item
     end
   end
 
   def set_up_units
     on page_class do |page|
+      page.expand_all
       if @units.empty? # No units in @units, so we're not setting units
                        # ...so, get the units from the UI:
         @units=page.units @full_name if @key_person_role.nil?
@@ -86,7 +98,6 @@ module Personnel
   # Example:
   # [{:number=>"UNIT NUMBER", :responsibility=>"33.33"}]
   def update_unit_credit_splits(units=@units)
-    splits=[:responsibility, :financial, :recognition, :space]
     units.each do |unit|
       on page_class do |update|
         update.unit_space(@full_name, unit[:number]).fit unit[:space]
@@ -95,30 +106,15 @@ module Personnel
         update.unit_recognition(@full_name, unit[:number]).fit unit[:recognition]
         update.save
       end
-      splits.each do |split|
+      # This updates the @units variable, in case
+      # it was not the passed parameter...
+      Transforms::CREDIT_SPLITS.keys.each do |split|
         unless unit[split]==nil
           @units[@units.find_index{|u| u[:number]==unit[:number]}][split]=unit[split]
         end
       end
 
     end
-  end
-
-  def edit opts={}
-    navigate
-    on page_class do |update|
-      update.expand_all
-      # TODO: This will eventually need to be fixed...
-      # Note: This is a dangerous short cut, as it may not
-      # apply to every field that could be edited with this
-      # method...
-
-      opts.each do |field, value|
-        update.send(field, @full_name).fit value
-      end
-      update.save
-    end
-    update_options(opts)
   end
 
 end # Personnel
