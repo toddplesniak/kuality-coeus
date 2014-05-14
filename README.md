@@ -11,7 +11,7 @@ Requirements
 
 * Ruby 1.9.3 or newer
 * TestFactory 0.4.6 or newer
-* Watir-webdriver 0.6.4
+* Watir-webdriver 0.6.4 or newer
 
 In order for the scripts to actually run successfully, you will need to add a `config.yml` file in your /features/support directory.
 
