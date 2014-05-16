@@ -10,7 +10,7 @@ Requirements
 ------------
 
 * Ruby 1.9.3 or newer
-* TestFactory 0.4.6 or newer
+* TestFactory 0.4.7 or newer
 * Watir-webdriver 0.6.4 or newer
 
 In order for the scripts to actually run successfully, you will need to add a `config.yml` file in your /features/support directory.
@@ -19,8 +19,12 @@ The contents of that file should be as follows:
 
 ```ruby
 :basic:
-  :url: https://<your.kuali.test.server.address.goes.here>/kc-dev/
+  :url: https://<your.kuali.test.server.address.goes.here>/
+  :context: <any context value that appears prior to query string>/
   :browser: :ff # ... or :chrome, :safari, etc.
+:headless: no # or yes, if you're running in headless mode
+:cas: no # or yes, if there is a CAS login page
+:cas_context: <the context string for the CAS login page URL>/
 ```
 
 Contribute to the Project
