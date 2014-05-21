@@ -1,7 +1,6 @@
-class IRBProtocolDevelopmentObject < DataFactory
+class IRBProtocolObject < DataFactory
 
   include StringFactory
-  include DateFactory
   include Navigation
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
@@ -13,9 +12,9 @@ class IRBProtocolDevelopmentObject < DataFactory
     @browser = browser
 
     defaults = {
-        description:    random_alphanums,
+        description:    random_alphanums_plus,
         protocol_type:  '::random::',
-        title:          random_alphanums,
+        title:          random_alphanums_plus,
         lead_unit:      '::random::',
     }
     # TODO: Needs a @lookup_class and @search_key defined

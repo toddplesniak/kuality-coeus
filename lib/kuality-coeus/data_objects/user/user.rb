@@ -305,7 +305,7 @@ class UserObject < DataFactory
   #   tabs/windows and return to the
   #   original window
   def sign_in
-    $users.logged_in_user.sign_out unless $users.current_user==nil
+    $users.current_user.sign_out unless $users.current_user==nil
     visit login_class do |log_in|
       log_in.username.set @user_name
       log_in.login
@@ -321,7 +321,9 @@ class UserObject < DataFactory
       @browser.goto "#{$base_url}#{$cas_context}logout"
     else
       visit(login_class).close_extra_windows if @browser.windows.size > 1
-      s_o.click if s_o.present?
+      on BasePage do |page|
+        page.logout if page.logout_button.present?
+      end
     end
     @session_status='logged out'
   end
@@ -386,10 +388,6 @@ class UserObject < DataFactory
   #========
   private
   #========
-
-  def s_o
-    @browser.button(value: 'Logout')
-  end
 
   def login_info_div
     @browser.div(id: 'login-info')

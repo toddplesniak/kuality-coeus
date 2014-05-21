@@ -1,5 +1,6 @@
 class CommitteeDocument < BasePage
 
-  buttons 'Committee', 'Members', 'Schedule'
+  global_buttons
+  buttons 'Committee', 'Members', 'Schedule', 'Actions'
 
 end
