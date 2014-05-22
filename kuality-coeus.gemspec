@@ -10,5 +10,6 @@ spec = Gem::Specification.new do |s|
   s.homepage = 'https://github.com/rSmart'
   s.add_dependency 'test-factory', '>= 0.4.5'
   s.add_dependency 'nokogiri', '>= 1.6.1'
+  s.add_dependency 'headless'
   s.required_ruby_version = '>= 1.9.3'
 end
