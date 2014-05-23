@@ -18,6 +18,7 @@ class IRBProtocolObject < DataFactory
         lead_unit:      '::random::',
     }
     # TODO: Needs a @lookup_class and @search_key defined
+    @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
   end
 
@@ -30,6 +31,7 @@ class IRBProtocolObject < DataFactory
       @initiator=doc.initiator
       @submission_status=doc.submission_status
       @expiration_date=doc.expiration_date
+      @search_key = { protocol_number: @protocol_number }
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title
     end
@@ -39,6 +41,11 @@ class IRBProtocolObject < DataFactory
       doc.save
       @protocol_number=doc.protocol_number
     end
+  end
+
+  def view(tab)
+    open_document
+    on(ProtocolOverview).send(damballa(tab.to_s))
   end
 
   # =======

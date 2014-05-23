@@ -25,7 +25,7 @@ class CommitteeDocumentObject < DataFactory
       schedule:               collection('CommitteeSchedule'),
       save_type:              :save
     }
-    #TODO: Class needs a @lookup_class and a @search_key defined
+    @lookup_class=CommitteeLookup
     set_options(defaults.merge(opts))
   end
     
@@ -36,6 +36,7 @@ class CommitteeDocumentObject < DataFactory
       @doc_header=comm.doc_title
       @initiator=comm.initiator
       @status=comm.status
+      @search_key = { committee_id: @committee_id }
       comm.committee_id_field.set @committee_id
       comm.committee_name_field.set @name
       fill_out comm, :description, :home_unit, :min_members_for_quorum,
@@ -45,8 +46,13 @@ class CommitteeDocumentObject < DataFactory
   end
 
   def submit
-    #navigate
+    open_document
     on(Committee).submit
+  end
+
+  def view(tab)
+    open_document
+    on(Committee).send(damballa(tab).to_sym)
   end
 
   # =======

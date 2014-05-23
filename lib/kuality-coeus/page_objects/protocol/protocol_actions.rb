@@ -12,8 +12,8 @@ class ProtocolActions < KCProtocol
 
   p_element(:reviewer_type) { |name, b| b.reviewers_row.td(text: /#{name}/).parent.select(name: /actionHelper.protocolSubmitAction.reviewer\[\d+\].reviewerTypeCode/) }
 
-  private
-
   element(:reviewers_row) { |b| b.frm.tr(id: 'reviewers') }
+  element(:expedited_review_checklist) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }
+  element(:exempt_studies_checklist) { |b| b.frm.tr(id: 'exemptStudiesCheckList') }
 
 end
