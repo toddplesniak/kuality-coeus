@@ -18,6 +18,7 @@ class Members < CommitteeDocument
   p_element(:add_role_start_date) { |name, b| b.member_area(name).text_field(title: '* Start Date') }
   p_element(:add_role_end_date) { |name, b| b.member_area(name).text_field(title: '* End Date') }
   p_action(:add_role) { |name, b| b.member_area(name).button(name: /methodToCall.addCommitteeMembershipRole.document.committeeList/).click }
+  p_action(:lookup_expertise) { |name, b| b.member_area(name).button(alt: 'Multiple Value Search on ').click }
 
   private
   p_element(:member_area) { |name, b| b.frm.h3(text: /#{name}/).parent }

@@ -97,11 +97,11 @@ class BasePage < PageFactory
       # Note: Use this when you need to click the "open" link on the target row
       action(:open) { |match, p| p.results_table.row(text: /#{match}/m).link(text: 'open').click; p.use_new_tab; p.close_parents }
       # Note: Use this when the link itself is the text you want to match
-      action(:open_item) { |match, b| b.frm.link(text: /#{match}/).click; b.use_new_tab; b.close_parents }
-      action(:delete_item) { |match, p| p.item_row(match).link(text: 'delete').click; p.use_new_tab; p.close_parents }
+      p_action(:open_item) { |match, b| b.frm.link(text: /#{match}/).click; b.use_new_tab; b.close_parents }
+      p_action(:delete_item) { |match, p| p.item_row(match).link(text: 'delete').click; p.use_new_tab; p.close_parents }
 
-      action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
-      action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
+      p_action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
+      p_action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
       action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
 
@@ -113,6 +113,13 @@ class BasePage < PageFactory
       # so the method needs no identifying parameter. If more items are returned hopefully
       # you want the automation to click on the first item listed...
       action(:medusa) { |b| b.frm.link(text: /medusa|edit|view/).click; b.use_new_tab; b.close_parents }
+    end
+
+    def results_multi_select
+      action(:select_all_from_all_pages) { |b| b.frm.button(title: 'Select all rows from all pages').click }
+      action(:select_all_from_this_page) { |b| b.frm.button(title: 'Select all rows from this page').click }
+      action(:return_selected) { |b| b.frm.button(title: 'Return selected results').click; b.loading }
+      p_action(:check_item) { |item, b| b.item_row(item).checkbox.set }
     end
 
     def budget_header_elements

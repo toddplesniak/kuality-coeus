@@ -52,7 +52,34 @@ class CommitteeMemberObject < DataFactory
         page.add_role_end_date(@name).fit role[:end_date]
         page.add_role(@name)
       }
-      page.save
+    end
+    if @expertise.empty?
+      add_expertise
+    else
+      @expertise.each do |area|
+        # TODO: Write this code
+      end
+    end
+    on(Members).save
+  end
+
+  private
+
+  def add_expertise(item=nil)
+    if item
+      # TODO: Write this code
+    else
+      on Members do |page|
+        page.expand_all
+        page.lookup_expertise(@name)
+      end
+      on ResearchAreasLookup do |page|
+        page.search
+        research_description = page.research_descriptions.sample
+        page.check_item(research_description)
+        page.return_selected
+        @expertise << research_description
+      end
     end
   end
 
