@@ -55,6 +55,13 @@ class CommitteeDocumentObject < DataFactory
     on(Committee).send(damballa(tab).to_sym)
   end
 
+  def add_member opts={}
+    defaults = {document_id: @document_id}
+    open_document
+    on(Committee).members
+    @members.add defaults.merge(opts)
+  end
+
   # =======
   private
   # =======
