@@ -6,7 +6,7 @@ class CommitteeDocumentObject < DataFactory
   attr_reader :description, :committee_id, :document_id, :status, :committee_name,
                 :home_unit, :min_members_for_quorum, :maximum_protocols,
                 :adv_submission_days, :review_type, :last_updated, :updated_user,
-                :initiator, :members, :areas_of_research, :type
+                :initiator, :members, :areas_of_research, :type, :schedule
   
   def initialize(browser, opts={})
     @browser = browser
@@ -60,6 +60,13 @@ class CommitteeDocumentObject < DataFactory
     open_document
     on(Committee).members
     @members.add defaults.merge(opts)
+  end
+
+  def add_event opts={}
+    defaults = {document_id: @document_id}
+    open_document
+    on(Committee).schedule
+    @schedule.add defaults.merge(opts)
   end
 
   # =======
