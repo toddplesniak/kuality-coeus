@@ -13,12 +13,12 @@ class CommitteeDocumentObject < DataFactory
     
     defaults = {
       description:            random_alphanums_plus,
-      committee_id:           random_alphanums_plus(15),
+      committee_id:           random_alphanums(15), # Restricted character set until this is fixed: https://jira.kuali.org/browse/KRAFDBCK-10718
       home_unit:              '000001',
       name:                   random_alphanums_plus(60),
       min_members_for_quorum: rand(100).to_s,
       maximum_protocols:      rand(100).to_s,
-      adv_submission_days:    rand(365).to_s,
+      adv_submission_days:    rand(90).to_s,
       review_type:            'Full',
       members:                collection('CommitteeMember'),
       areas_of_research:      [],
@@ -68,13 +68,6 @@ class CommitteeDocumentObject < DataFactory
     on(Committee).schedule
     @schedule.add defaults.merge(opts)
   end
-
-  # =======
-  private
-  # =======
-
-  # Nav Aids...
-
 
 end
     
