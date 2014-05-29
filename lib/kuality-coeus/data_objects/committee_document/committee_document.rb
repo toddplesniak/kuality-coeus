@@ -25,7 +25,7 @@ class CommitteeDocumentObject < DataFactory
       schedule:               collection('CommitteeSchedule'),
       save_type:              :save
     }
-    #TODO: Class needs a @lookup_class and a @search_key defined
+    @lookup_class = CommitteeLookup
     set_options(defaults.merge(opts))
   end
     
@@ -42,18 +42,17 @@ class CommitteeDocumentObject < DataFactory
                :maximum_protocols, :adv_submission_days, :review_type
       comm.send(@save_type)
     end
+    @search_key = { committee_name: @name }
   end
 
   def submit
-    #navigate
+    open_document
     on(Committee).submit
   end
 
   # =======
   private
   # =======
-
-  # Nav Aids...
 
 
 end
