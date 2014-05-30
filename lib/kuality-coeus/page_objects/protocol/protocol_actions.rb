@@ -16,4 +16,6 @@ class ProtocolActions < KCProtocol
   element(:expedited_review_checklist) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }
   element(:exempt_studies_checklist) { |b| b.frm.tr(id: 'exemptStudiesCheckList') }
 
+  action(:submit_for_review) { |b| b.frm.button(name: 'methodToCall.submitForReview.anchor:SubmitforReview').click }
+
 end
