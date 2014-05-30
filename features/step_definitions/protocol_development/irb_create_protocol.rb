@@ -28,3 +28,8 @@ And /the Protocol Creator creates an IRB Protocol in the Committee's home unit/ 
   steps '* I log in with the Protocol Creator user'
   @irb_protocol = create IRBProtocolObject, lead_unit: @committee.home_unit
 end
+
+And /the Protocol Creator creates another IRB Protocol in the Committee's home unit/ do
+  steps '* I log in with the Protocol Creator user'
+  @irb_protocol2 = create IRBProtocolObject, lead_unit: @committee.home_unit
+end

@@ -16,8 +16,8 @@ end
 
 And /^submits the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
+end
 
-  # DEBUG
-  sleep 30
-
+When /the second Protocol is submitted to the Committee for review on the same date/ do
+  @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date
 end
