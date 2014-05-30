@@ -23,3 +23,8 @@ When /^the Protocol Creator creates an IRB Protocol but misses a required field$
   }
   @required_field_error = errors[field]
 end
+
+And /the Protocol Creator creates an IRB Protocol in the Committee's home unit/ do
+  steps '* I log in with the Protocol Creator user'
+  @irb_protocol = create IRBProtocolObject, lead_unit: @committee.home_unit
+end

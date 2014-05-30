@@ -1,5 +1,7 @@
 class NonOrgAddressBookLookup < Lookups
 
+  results_multi_select
+
   alias_method :select_person, :check_item
 
   value(:returned_full_names) { |b|

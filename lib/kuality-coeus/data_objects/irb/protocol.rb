@@ -6,7 +6,9 @@ class IRBProtocolObject < DataFactory
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                  :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
                  :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
-                 :protocol_number, :status, :submission_status, :expiration_date
+                 :protocol_number, :status, :submission_status, :expiration_date,
+                 # Submit for review...
+                 :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
 
   def initialize(browser, opts={})
     @browser = browser
@@ -18,6 +20,7 @@ class IRBProtocolObject < DataFactory
         lead_unit:      '::random::',
     }
     # TODO: Needs a @lookup_class and @search_key defined
+    @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
   end
 
@@ -30,6 +33,7 @@ class IRBProtocolObject < DataFactory
       @initiator=doc.initiator
       @submission_status=doc.submission_status
       @expiration_date=doc.expiration_date
+      @search_key = { protocol_number: @protocol_number }
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title
     end
@@ -38,6 +42,28 @@ class IRBProtocolObject < DataFactory
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
+    end
+  end
+
+  def view(tab)
+    open_document
+    on(ProtocolOverview).send(damballa(tab.to_s))
+  end
+
+  def submit_for_review opts={}
+    defaults = {
+        submission_type: '::random::',
+        submission_review_type: '::random::',
+        type_qualifier: '::random::',
+        committee: '::random::',
+        schedule_date: '::random::'
+    }
+    set_options(defaults.merge(opts))
+    view :protocol_actions
+    on ProtocolActions do |page|
+      fill_out page, :submission_type, :submission_review_type, :type_qualifier,
+               :committee
+      page.schedule_date.pick! @schedule_date
     end
   end
 

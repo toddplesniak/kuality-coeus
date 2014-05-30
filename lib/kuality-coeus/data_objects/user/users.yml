@@ -514,11 +514,6 @@ smalkmus: # AKA: "Principal Name"
      :name: Protocol Approver
      :qualifiers:
        - :unit:
-   - :id:   '1651'
-     :name: IACUC Approver
-     :qualifiers:
-       - :unit: '000001'
-         :descends_hierarchy: :clear
 kwagner: # AKA: "Principal Name"
   :user_name:        kwagner
   :description:      Award Modifier Who Can Create Awards

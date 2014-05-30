@@ -206,7 +206,7 @@ class ProposalDevelopmentObject < DataFactory
   def view(tab)
     open_document
     unless @status=='CANCELED' || on(Proposal).send(StringFactory.damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
-      on(Proposal).send(StringFactory.damballa(tab.to_s))
+      on(Proposal).send(damballa(tab.to_s))
     end
   end
 

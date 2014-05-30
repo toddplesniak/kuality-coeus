@@ -1,5 +1,7 @@
 class ToBeNamedPersonsLookup < Lookups
 
+  results_multi_select
+
   element(:person_name) { |b| b.frm.text_field(id: 'personName') }
 
   alias_method :select_person, :check_item
