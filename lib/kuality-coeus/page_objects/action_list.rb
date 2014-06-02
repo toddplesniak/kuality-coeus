@@ -1,10 +1,5 @@
 class ActionList < BasePage
 
-  page_url "#{$base_url+$context
-             }portal.do?channelTitle=Action List&channelUrl=#{
-              $base_url+':/'+$context
-             }kew/ActionList.do"
-
   search_results_table
 
   p_value(:action_requested) { |item_id, b| b.item_row(item_id).tds[b.action_requested_column].text }

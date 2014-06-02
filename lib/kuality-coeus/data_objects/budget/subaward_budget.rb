@@ -4,7 +4,7 @@ class SubawardBudgetObject < DataFactory
   include Navigation
 
   attr_reader :organization_name, :organization_id, :file_name, :direct_cost,
-                :f_and_a_cost, :cost_sharing, :total_cost
+              :f_and_a_cost, :cost_sharing, :total_cost
 
   def initialize(browser, opts={})
     @browser = browser

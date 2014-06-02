@@ -3,7 +3,7 @@ class DegreeObject < DataFactory
   include StringFactory
 
   attr_reader :type, :description, :graduation_year, :school,
-                :document_id, :person
+              :document_id, :person
 
   def initialize(browser, opts={})
     @browser = browser

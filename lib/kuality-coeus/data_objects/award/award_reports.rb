@@ -1,10 +1,10 @@
 class AwardReportsObject < DataFactory
 
   attr_reader :award_id, :report, :type, :frequency,
-                :frequency_base, :osp_file_copy,
-                :due_date, :recipients, :details,
-                # :number is used for field identification in the list
-                :number
+              :frequency_base, :osp_file_copy,
+              :due_date, :recipients, :details,
+              # :number is used for field identification in the list
+              :number
 
   def initialize(browser, opts={})
     @browser = browser

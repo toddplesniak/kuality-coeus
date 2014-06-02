@@ -11,14 +11,14 @@ class PHSFellowshipQuestionnaireObject < DataFactory
   include Utilities
 
   attr_reader :indefinite_human_subjects, :clinical_trial, :phase_3_trial, :indefinite_vertebrates,
-                :human_stem_cells, :specific_cell_line, :field_of_training, :seeking_degree_during_proposed_award,
-                :expected_degree_completion_date, :type_of_degree_during_proposed_award, :have_kirchstein_support,
-                :kirschstein_support_level, :kirschstein_support_recipient, :have_kirschstein_support_start_date,
-                :kirschstein_support_start_date, :have_kirschstein_support_end_date, :kirschstein_support_end_date,
-                :have_nih_grant_number, :nih_grant_number, :additional_kirschstein_support, :previous_submission,
-                :former_institution, :senior_fellowship_application, :present_institutional_base_salary, :salary_period,
-                :supplement_funding, :supplemental_funding_amount, :supplemental_funding_receipt_period, :supplemental_funding_type,
-                :supplemental_funding_source
+              :human_stem_cells, :specific_cell_line, :field_of_training, :seeking_degree_during_proposed_award,
+              :expected_degree_completion_date, :type_of_degree_during_proposed_award, :have_kirchstein_support,
+              :kirschstein_support_level, :kirschstein_support_recipient, :have_kirschstein_support_start_date,
+              :kirschstein_support_start_date, :have_kirschstein_support_end_date, :kirschstein_support_end_date,
+              :have_nih_grant_number, :nih_grant_number, :additional_kirschstein_support, :previous_submission,
+              :former_institution, :senior_fellowship_application, :present_institutional_base_salary, :salary_period,
+              :supplement_funding, :supplemental_funding_amount, :supplemental_funding_receipt_period, :supplemental_funding_type,
+              :supplemental_funding_source
   # More instance variable definitions.
   # These make instance variables such as:
   # @stem_cell_line_1 (up to 20)

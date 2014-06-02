@@ -3,8 +3,8 @@ class CostSharingObject < DataFactory
   include StringFactory
 
   attr_reader :project_period, :percentage, :source_account, :amount,
-                # Note: Indexing is zero-based!
-                :index
+              # Note: Indexing is zero-based!
+              :index
 
   def initialize(browser, opts={})
     @browser = browser

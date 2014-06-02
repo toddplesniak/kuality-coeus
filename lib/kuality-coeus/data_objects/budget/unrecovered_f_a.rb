@@ -5,8 +5,8 @@ class UnrecoveredFAObject < DataFactory
   include Navigation
 
   attr_reader :fiscal_year, :applicable_rate, :campus, :source_account, :amount,
-                # Note: Indexing is zero-based!
-                :index
+              # Note: Indexing is zero-based!
+              :index
 
   def initialize(browser, opts={})
     @browser = browser

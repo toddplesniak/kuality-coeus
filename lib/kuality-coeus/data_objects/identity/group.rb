@@ -4,7 +4,7 @@ class GroupObject < DataFactory
   include Navigation
 
   attr_reader :id, :namespace, :name, :type,
-                :principal_name, :assignees, :save_type
+              :principal_name, :assignees, :save_type
 
   def initialize(browser, opts={})
     @browser = browser

@@ -5,11 +5,11 @@ class BudgetPersonnelObject < DataFactory
   include Utilities
 
   attr_reader :type, :full_name, :job_code, :appointment_type, :base_salary,
-                :salary_effective_date, :salary_anniversary_date,
-                # TODO: Some day we are going to have to allow for multiple codes and periods, here...
-                :object_code_name, :start_date, :end_date, :percent_effort, :percent_charged,
-                :period_type, :requested_salary, :calculated_fringe
-                #TODO: Add more variables here - "apply inflation", "submit cost sharing", etc.
+              :salary_effective_date, :salary_anniversary_date,
+              # TODO: Some day we are going to have to allow for multiple codes and periods, here...
+              :object_code_name, :start_date, :end_date, :percent_effort, :percent_charged,
+              :period_type, :requested_salary, :calculated_fringe
+              #TODO: Add more variables here - "apply inflation", "submit cost sharing", etc.
 
   def initialize(browser, opts={})
     @browser = browser

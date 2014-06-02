@@ -6,13 +6,13 @@ class ProposalDevelopmentObject < DataFactory
   include DocumentUtilities
   
   attr_reader :proposal_type, :lead_unit, :activity_type, :project_title, :proposal_number,
-                :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
-                :status, :initiator, :created, :sponsor_deadline_date, :key_personnel,
-                :opportunity_id, # Maybe add competition_id and other stuff here...
-                :special_review, :budget_versions, :permissions, :s2s_questionnaire, :proposal_attachments,
-                :proposal_questions, :compliance_questions, :kuali_u_questions, :custom_data, :recall_reason,
-                :personnel_attachments, :mail_by, :mail_type, :institutional_proposal_number, :nsf_science_code,
-                :original_ip_id
+              :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
+              :status, :initiator, :created, :sponsor_deadline_date, :key_personnel,
+              :opportunity_id, # Maybe add competition_id and other stuff here...
+              :special_review, :budget_versions, :permissions, :s2s_questionnaire, :proposal_attachments,
+              :proposal_questions, :compliance_questions, :kuali_u_questions, :custom_data, :recall_reason,
+              :personnel_attachments, :mail_by, :mail_type, :institutional_proposal_number, :nsf_science_code,
+              :original_ip_id
 
   def initialize(browser, opts={})
     @browser = browser
@@ -175,7 +175,8 @@ class ProposalDevelopmentObject < DataFactory
     on(Confirmation).yes
     # Have to update the data object's status value
     # in a valid way (getting it from the system)
-    visit DocumentSearch do |search|
+    visit(Researcher).doc_search
+    on DocumentSearch do |search|
       search.document_id.set @document_id
       search.search
       @status=search.doc_status @document_id
@@ -282,7 +283,8 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def approve_from_action_list
-    visit(ActionList).filter
+    visit(Researcher).action_list
+    on(ActionList).filter
     on ActionListFilter do |page|
       page.document_title.set @project_title
       page.filter
@@ -325,7 +327,8 @@ class ProposalDevelopmentObject < DataFactory
   # =======
 
   def navigate
-    visit DocumentSearch do |search|
+    visit(Researcher).doc_search
+    on DocumentSearch do |search|
       search.close_parents
       search.document_id.set @document_id
       search.search

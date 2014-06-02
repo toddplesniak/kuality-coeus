@@ -59,7 +59,8 @@ And /edits the finalized Award$/ do
 end
 
 When /^the original Award is edited again$/ do
-  visit DocumentSearch do |search|
+  visit(Researcher).doc_search
+  on DocumentSearch do |search|
     search.document_id.set @award.prior_versions['1']
     search.search
     search.open_doc @award.prior_versions['1']

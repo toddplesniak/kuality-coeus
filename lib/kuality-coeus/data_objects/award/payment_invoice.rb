@@ -6,8 +6,8 @@ class PaymentInvoiceObject < DataFactory
   include StringFactory
 
   attr_reader :payment_basis, :payment_method, #:document_funding_id,
-                :payment_and_invoice_requirements, :award_payment_schedule,
-                :invoice_instructions
+              :payment_and_invoice_requirements, :award_payment_schedule,
+              :invoice_instructions
 
   def initialize(browser, opts={})
     @browser = browser

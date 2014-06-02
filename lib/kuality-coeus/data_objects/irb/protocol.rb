@@ -3,12 +3,12 @@ class IRBProtocolObject < DataFactory
   include StringFactory
   include Navigation
 
-  attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
-                 :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
-                 :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
-                 :protocol_number, :status, :submission_status, :expiration_date, :principal_investigator,
-                 # Submit for review...
-                 :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
+  attr_reader :description, :organization_document_number, :protocol_type, :title, :lead_unit,
+              :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
+              :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
+              :protocol_number, :status, :submission_status, :expiration_date, :principal_investigator,
+              # Submit for review...
+              :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
 
   def initialize(browser, opts={})
     @browser = browser

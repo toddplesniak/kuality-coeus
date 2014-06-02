@@ -1,6 +1,6 @@
 When /^I visit the action list outbox$/ do
-
-  visit(ActionList).outbox
+  visit(Researcher).action_list
+  on(ActionList).outbox
 end
 
 Then /^the (principal investigator|OSPApprover) can access the Proposal from their action list$/ do |user|
@@ -20,7 +20,8 @@ Then /^the (principal investigator|OSPApprover) can access the Proposal from the
 end
 
 When /^I filter the action list to find the Award$/  do
-  visit(ActionList).filter
+  visit(Researcher).action_list
+  on(ActionList).filter
   on ActionListFilter do |page|
     page.document_title.set "KC Award - #{@award.description}"
     page.filter

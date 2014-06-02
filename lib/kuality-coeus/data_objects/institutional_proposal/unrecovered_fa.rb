@@ -5,7 +5,7 @@ class IPUnrecoveredFAObject < DataFactory
   include Navigation
 
   attr_reader :fiscal_year, :rate_type, :applicable_rate,
-                :on_campus_contract, :source_account, :amount
+              :on_campus_contract, :source_account, :amount
   attr_accessor :index
 
   def initialize(browser, opts={})
