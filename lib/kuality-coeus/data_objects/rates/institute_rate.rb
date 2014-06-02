@@ -98,8 +98,8 @@ class InstituteRateObject < DataFactory
   }
 
   attr_reader :activity_type, :activity_type_code, :fiscal_year, :on_off_campus_flag,
-                :rate_type, :rate_class_code, :rate_type_code, :start_date, :unit_number,
-                :rate, :active, :description, :save_type
+              :rate_type, :rate_class_code, :rate_type_code, :start_date, :unit_number,
+              :rate, :active, :description, :save_type
 
   def initialize(browser, opts={})
     @browser = browser

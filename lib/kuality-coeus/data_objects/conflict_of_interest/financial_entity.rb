@@ -4,8 +4,8 @@ class FinancialEntityObject < DataFactory
   include Navigation
 
   attr_reader :entity_name, :type, :sponsor_code, :status_code, :held,
-                :address_line_1, :sponsor_research, :city, :country, :postal_code,
-                :principal_activity
+              :address_line_1, :sponsor_research, :city, :country, :postal_code,
+              :principal_activity
 
   def initialize(browser, opts={})
     @browser=browser

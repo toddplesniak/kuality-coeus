@@ -4,7 +4,7 @@ class RoleObject < DataFactory
   include Navigation
 
   attr_reader :id, :name, :type, :namespace, :description,
-                :permissions, :save_type
+              :permissions, :save_type
 
   ROLES = {
       # Add roles here as needed for testing...

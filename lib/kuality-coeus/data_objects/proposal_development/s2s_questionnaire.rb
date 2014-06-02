@@ -16,15 +16,15 @@ class S2SQuestionnaireObject < DataFactory
   include Utilities
 
   attr_reader :document_id, :civil_service, :total_ftes, :potential_effects, :explain_potential_effects,
-                :international_support, :explain_support, :pi_in_govt, :pis_us_govt_agency, :total_amount_requested,
-                :pi_foreign_employee, :change_in_pi, :former_pi, :change_in_institution, :former_institution,
-                :renewal_application, :inventions_conceived, :previously_reported, :disclose_title,
-                :clinical_trial, :phase_3_trial, :human_stem_cells, :specific_cell_line,
-                :pi_new_investigator, :proprietary_info, :environmental_impact, :explain_environmental_impact,
-                :authorized_exemption, :explain_exemption, :site_historic, :explain_historic_designation,
-                :international_activities, :identify_countries, :explain_international_activities,
-                :other_agencies, :submitted_to_govt_agency, :application_date, :subject_to_review,
-                :novice_applicants, :program
+              :international_support, :explain_support, :pi_in_govt, :pis_us_govt_agency, :total_amount_requested,
+              :pi_foreign_employee, :change_in_pi, :former_pi, :change_in_institution, :former_institution,
+              :renewal_application, :inventions_conceived, :previously_reported, :disclose_title,
+              :clinical_trial, :phase_3_trial, :human_stem_cells, :specific_cell_line,
+              :pi_new_investigator, :proprietary_info, :environmental_impact, :explain_environmental_impact,
+              :authorized_exemption, :explain_exemption, :site_historic, :explain_historic_designation,
+              :international_activities, :identify_countries, :explain_international_activities,
+              :other_agencies, :submitted_to_govt_agency, :application_date, :subject_to_review,
+              :novice_applicants, :program
   # More instance variable definitions.
   # These make instance variables such as:
   # @year_2 (up to year 6)

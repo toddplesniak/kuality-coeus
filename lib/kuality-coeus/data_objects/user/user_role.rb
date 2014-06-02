@@ -3,7 +3,7 @@ class UserRoleObject < DataFactory
   include StringFactory
 
   attr_reader :id, :namespace, :name, :type, :qualifiers,
-                :user_name
+              :user_name
 
   def initialize(browser, opts={})
     @browser = browser

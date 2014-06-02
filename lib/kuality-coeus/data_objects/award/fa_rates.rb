@@ -4,7 +4,7 @@ class AwardFARatesObject < DataFactory
   include StringFactory
 
   attr_reader :rate, :type, :fiscal_year, :start_date, :end_date,
-                :campus, :source, :destination, :unrecovered_fa
+              :campus, :source, :destination, :unrecovered_fa
 
   def initialize(browser, opts={})
     @browser = browser

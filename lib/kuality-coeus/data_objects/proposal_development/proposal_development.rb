@@ -6,13 +6,13 @@ class ProposalDevelopmentObject < DataFactory
   include DocumentUtilities
   
   attr_reader :proposal_type, :lead_unit, :activity_type, :project_title, :proposal_number,
-                :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
-                :status, :initiator, :created, :sponsor_deadline_date, :key_personnel,
-                :opportunity_id, # Maybe add competition_id and other stuff here...
-                :special_review, :budget_versions, :permissions, :s2s_questionnaire, :proposal_attachments,
-                :proposal_questions, :compliance_questions, :kuali_u_questions, :custom_data, :recall_reason,
-                :personnel_attachments, :mail_by, :mail_type, :institutional_proposal_number, :nsf_science_code,
-                :original_ip_id
+              :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
+              :status, :initiator, :created, :sponsor_deadline_date, :key_personnel,
+              :opportunity_id, # Maybe add competition_id and other stuff here...
+              :special_review, :budget_versions, :permissions, :s2s_questionnaire, :proposal_attachments,
+              :proposal_questions, :compliance_questions, :kuali_u_questions, :custom_data, :recall_reason,
+              :personnel_attachments, :mail_by, :mail_type, :institutional_proposal_number, :nsf_science_code,
+              :original_ip_id
 
   def initialize(browser, opts={})
     @browser = browser

@@ -5,11 +5,11 @@
   include Personnel
 
   attr_reader :first_name, :last_name, :type, :role, :document_id, :key_person_role,
-                :full_name, :user_name, :home_unit, :units, :responsibility,
-                :financial, :recognition, :certified, :certify_info_true,
-                :potential_for_conflicts, :submitted_financial_disclosures,
-                :lobbying_activities, :excluded_from_transactions, :familiar_with_pla,
-                :space, :other_key_persons, :era_commons_name, :degrees
+              :full_name, :user_name, :home_unit, :units, :responsibility,
+              :financial, :recognition, :certified, :certify_info_true,
+              :potential_for_conflicts, :submitted_financial_disclosures,
+              :lobbying_activities, :excluded_from_transactions, :familiar_with_pla,
+              :space, :other_key_persons, :era_commons_name, :degrees
 
   # Note that you must pass in both first and last names (or neither).
   def initialize(browser, opts={})

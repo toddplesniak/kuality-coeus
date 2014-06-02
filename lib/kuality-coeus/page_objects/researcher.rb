@@ -6,5 +6,6 @@ class Researcher < BasePage
         'Search Institutional Proposals'
 
   element(:error_table) { |b| b.frm.table(class: 'container2') }
-  
+
+
 end

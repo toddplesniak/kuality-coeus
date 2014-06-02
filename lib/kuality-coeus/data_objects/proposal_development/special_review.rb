@@ -4,8 +4,8 @@ class SpecialReviewObject < DataFactory
   include Navigation
 
   attr_reader :type, :approval_status, :document_id, :protocol_number,
-                :application_date, :approval_date, :expiration_date,
-                :exemption_number, :doc_type
+              :application_date, :approval_date, :expiration_date,
+              :exemption_number, :doc_type
 
   def initialize(browser, opts={})
     @browser = browser

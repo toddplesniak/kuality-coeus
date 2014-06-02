@@ -3,7 +3,7 @@ class CommitteeMemberObject < DataFactory
   include DateFactory
 
   attr_reader :document_id, :name, :membership_type, :paid_member, :term_start_date, :term_end_date,
-                :roles, :expertise
+              :roles, :expertise
 
   def initialize(browser, opts={})
     @browser = browser
