@@ -57,7 +57,8 @@ When /^the Modify Subaward user submits version 2 of the Subaward$/ do
 end
 
 Then /Version 1 of the Subaward is no longer editable/ do
-  visit DocumentSearch do |page|
+  visit(Researcher).doc_search
+  on DocumentSearch do |page|
     page.document_id.set @subaward.prior_versions['1']
     page.search
     page.open_item @subaward.prior_versions['1']
@@ -67,7 +68,8 @@ end
 
 When /^the Modify Subaward user edits version one of the Subaward again$/ do
   steps '* log in with the Modify Subaward user'
-  visit DocumentSearch do |page|
+  visit(Researcher).doc_search
+  on DocumentSearch do |page|
     page.document_id.set @subaward.prior_versions['1']
     page.search
     page.open_item @subaward.prior_versions['1']
@@ -89,7 +91,8 @@ Then /^the Subaward's requisitioner can approve or disapprove the invoice$/ do
     page.username.set @subaward.requisitioner
     page.login
   end
-  visit(ActionList).filter
+  visit(Researcher).action_list
+  on(ActionList).filter
   on ActionListFilter do |page|
     page.document_title.set @subaward.invoices[0].description
     page.filter

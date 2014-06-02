@@ -175,7 +175,8 @@ class ProposalDevelopmentObject < DataFactory
     on(Confirmation).yes
     # Have to update the data object's status value
     # in a valid way (getting it from the system)
-    visit DocumentSearch do |search|
+    visit(Researcher).doc_search
+    on DocumentSearch do |search|
       search.document_id.set @document_id
       search.search
       @status=search.doc_status @document_id
@@ -325,7 +326,8 @@ class ProposalDevelopmentObject < DataFactory
   # =======
 
   def navigate
-    visit DocumentSearch do |search|
+    visit(Researcher).doc_search
+    on DocumentSearch do |search|
       search.close_parents
       search.document_id.set @document_id
       search.search

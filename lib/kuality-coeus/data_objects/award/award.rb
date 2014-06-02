@@ -434,7 +434,8 @@ class AwardObject < DataFactory
       begin
         page.medusa
       rescue Watir::Exception::UnknownObjectException
-        visit DocumentSearch do |search|
+        visit(Researcher).doc_search
+        on DocumentSearch do |search|
           search.document_id.set @document_id
           search.search
           search.open_item @document_id

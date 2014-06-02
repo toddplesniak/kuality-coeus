@@ -27,7 +27,12 @@ module Navigation
 
   def navigate
     on(BasePage).close_extra_windows
-    visit @lookup_class do |page|
+    if @lookup_class == DocumentSearch
+      visit(Researcher).doc_search
+    else
+      visit @lookup_class
+    end
+    on @lookup_class do |page|
       page.send(@search_key.keys[0]).set @search_key.values[0]
       page.search
       # This rescue is a sad necessity, due to
@@ -36,7 +41,8 @@ module Navigation
       begin
         page.results_table.wait_until_present(5)
       rescue Watir::Wait::TimeoutError
-        visit DocumentSearch do |search|
+        visit(Researcher).doc_search
+        on DocumentSearch do |search|
           search.document_id.set @document_id
           search.search
           search.open_doc @document_id
