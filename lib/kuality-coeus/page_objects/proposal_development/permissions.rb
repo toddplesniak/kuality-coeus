@@ -21,7 +21,7 @@ class Permissions < ProposalDevelopmentDocument
   # Note this is the table in the Users tab on the page...
   element(:user_roles_table) { |b| b.frm.table(id: 'user-roles') }
 
-  action(:user_row) { |user, b| b.user_roles_table.row(text: /#{user}/) }
+  action(:user_row) { |user, b| b.user_roles_table.row(text: /#{Regexp.escape(user)}/) }
 
 end
 

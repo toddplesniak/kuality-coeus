@@ -12,11 +12,11 @@ class TimeAndMoney < KCAwards
   element(:current) { |b| b.frm.radio(name: 'currentOrPendingView', value: '0') }
   element(:pending) { |b| b.frm.radio(name: 'currentOrPendingView', value: '1') }
 
-  action(:obligation_start_date) { |award_id, b| b.hierarchy_table.row(text: /#{award_id}/).text_field(name: /currentFundEffectiveDate/) }
-  action(:obligation_end_date) { |award_id, b| b.hierarchy_table.row(text: /#{award_id}/).text_field(name: /obligationExpirationDate/) }
-  action(:project_end) { |award_id, b| b.hierarchy_table.row(text: /#{award_id}/).text_field(name: /finalExpirationDate/) }
-  action(:obligated) { |award_id, b| b.hierarchy_table.row(text: /#{award_id}/).text_field(name: /amountObligatedToDate/) }
-  action(:anticipated) { |award_id, b| b.hierarchy_table.row(text: /#{award_id}/).text_field(name: /anticipatedTotalAmount/) }
+  action(:obligation_start_date) { |award_id, b| b.hierarchy_table.row(text: /#{Regexp.escape(award_id)}/).text_field(name: /currentFundEffectiveDate/) }
+  action(:obligation_end_date) { |award_id, b| b.hierarchy_table.row(text: /#{Regexp.escape(award_id)}/).text_field(name: /obligationExpirationDate/) }
+  action(:project_end) { |award_id, b| b.hierarchy_table.row(text: /#{Regexp.escape(award_id)}/).text_field(name: /finalExpirationDate/) }
+  action(:obligated) { |award_id, b| b.hierarchy_table.row(text: /#{Regexp.escape(award_id)}/).text_field(name: /amountObligatedToDate/) }
+  action(:anticipated) { |award_id, b| b.hierarchy_table.row(text: /#{Regexp.escape(award_id)}/).text_field(name: /anticipatedTotalAmount/) }
 
   # Transactions
 

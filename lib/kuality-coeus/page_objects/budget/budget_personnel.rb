@@ -40,9 +40,9 @@ class BudgetPersonnel < BudgetDocument
   # ========
 
   element(:project_personnel_table) { |b| b.frm.table(id: 'budget-personnel-table') }
-  action(:pp_row) { |person, b| b.project_personnel_table.row(text: /#{person}/) }
+  action(:pp_row) { |person, b| b.project_personnel_table.row(text: /#{Regexp.escape(person)}/) }
   element(:budget_overview_table) { |b| b.frm.div(id: /tab-BudgetOverviewPeriod\d+-div/).div(class: 'tab-container').table }
   element(:personnel_detail_tab) { |b| b.frm.div(id: /tab-PersonnelDetailPeriod\d+-div/) }
-  action(:pd_row) { |person, b| b.personnel_detail_tab.div(id: /tab-\d+-div/).tr(text: /#{person}/) }
+  action(:pd_row) { |person, b| b.personnel_detail_tab.div(id: /tab-\d+-div/).tr(text: /#{Regexp.escape(person)}/) }
 
 end
