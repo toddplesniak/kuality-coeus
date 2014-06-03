@@ -14,6 +14,7 @@ end
 
 And /the IRB Admin submits a Committee that allows a maximum of 1 protocol/ do
   steps '* log in with the IRB Administrator user'
-  @committee = create CommitteeDocumentObject, maximum_protocols: '1'
+  @committee = create CommitteeDocumentObject, maximum_protocols: '1', adv_submission_days: '0'
+  @committee.add_schedule
   @committee.submit
 end
