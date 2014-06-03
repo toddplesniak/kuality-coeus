@@ -3,12 +3,12 @@ class IRBProtocolObject < DataFactory
   include StringFactory
   include Navigation
 
-  attr_reader :description, :organization_document_number, :protocol_type, :title, :lead_unit,
-              :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
-              :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
-              :protocol_number, :status, :submission_status, :expiration_date, :principal_investigator,
-              # Submit for review...
-              :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
+  attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
+               :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
+               :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
+               :protocol_number, :status, :submission_status, :expiration_date,
+               # Submit for review...
+               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
 
   def initialize(browser, opts={})
     @browser = browser
@@ -53,7 +53,7 @@ class IRBProtocolObject < DataFactory
   def submit_for_review opts={}
     defaults = {
         submission_type: '::random::',
-        submission_review_type: ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
+        submission_review_type: '::random::',
         type_qualifier: '::random::',
         committee: '::random::',
         schedule_date: '::random::'
@@ -61,11 +61,9 @@ class IRBProtocolObject < DataFactory
     set_options(defaults.merge(opts))
     view :protocol_actions
     on ProtocolActions do |page|
-      page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
                :committee
       page.schedule_date.pick! @schedule_date
-      page.submit_for_review
     end
   end
 
@@ -95,16 +93,11 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  # TODO: Need to add support for non-employees...
   def set_pi
     on(ProtocolOverview).pi_employee_search
-    on KcPersonLookup do |look|
+    on PersonLookup do |look|
       look.search
-      # We need to exclude the set of test users from the list
-      # of names we'll randomly select from...
-      names = look.returned_full_names - $users.full_names
-      @principal_investigator = names.sample
-      look.return_value @principal_investigator
+      look.return_random
     end
   end
 

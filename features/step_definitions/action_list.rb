@@ -10,7 +10,8 @@ Then /^the (principal investigator|OSPApprover) can access the Proposal from the
     steps '* I log in with the principal investigator'
   end
   expect {
-    visit(ActionList).filter
+    visit(Researcher).action_list
+    on(ActionList).filter
     on ActionListFilter do |page|
       page.document_title.set @proposal.project_title
       page.filter
