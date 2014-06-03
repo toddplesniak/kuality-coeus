@@ -1,5 +1,7 @@
 class InstitutionalProposalLookup < Lookups
 
+  expected_element :institutional_proposal_number
+
   url_info 'Institutional%20Proposal','kra.institutionalproposal.home.InstitutionalProposal'
 
   STATUS = 4
@@ -14,10 +16,5 @@ class InstitutionalProposalLookup < Lookups
   # This returns an array containing whatever institutional proposal
   # numbers were returned in the search...
   value(:institutional_proposal_numbers) { |b| b.target_column(2).map{ |td| td.text } }
-  # Remove this when IP tests are validated working...
-       # array = []
-       # b.results_table.rows.each { |row| array << row[1].text }
-      #  array[1..-1]
-    #}
 
 end

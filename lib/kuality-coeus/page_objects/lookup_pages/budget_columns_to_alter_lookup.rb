@@ -1,5 +1,7 @@
 class BudgetColumnsToAlterLookup < Lookups
 
+  expected_element :column_name
+
   url_info 'Budget%20Editable%20Columns','kra.proposaldevelopment.budget.bo.BudgetColumnsToAlter'
 
   element(:column_name) { |b| b.frm.select(name: 'columnName') }

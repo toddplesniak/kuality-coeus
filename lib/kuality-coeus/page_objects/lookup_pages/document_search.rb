@@ -1,5 +1,7 @@
 class DocumentSearch < Lookups
 
+  expected_element :document_id
+
   element(:document_id) { |b| b.frm.text_field(id: 'documentId') }
   element(:date_created_from) { |b| b.frm.text_field(name: 'rangeLowerBoundKeyPrefix_dateCreated') }
 

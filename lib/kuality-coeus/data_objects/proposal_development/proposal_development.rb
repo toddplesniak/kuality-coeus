@@ -283,7 +283,8 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def approve_from_action_list
-    visit(ActionList).filter
+    visit(Researcher).action_list
+    on(ActionList).filter
     on ActionListFilter do |page|
       page.document_title.set @project_title
       page.filter

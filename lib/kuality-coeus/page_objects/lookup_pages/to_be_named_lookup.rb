@@ -1,5 +1,7 @@
 class ToBeNamedPersonsLookup < Lookups
 
+  expected_element :person_name
+
   results_multi_select
 
   element(:person_name) { |b| b.frm.text_field(id: 'personName') }

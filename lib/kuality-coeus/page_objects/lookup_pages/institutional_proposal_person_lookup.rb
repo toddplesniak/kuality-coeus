@@ -1,3 +1,3 @@
-class InstitutionalProposalPersonLookup < Lookups
+class IPPersonLookup < Lookups
 
 end

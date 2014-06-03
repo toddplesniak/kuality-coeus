@@ -1,6 +1,8 @@
 # coding: UTF-8
 class KcPersonLookup < Lookups
 
+  expected_element :kcperson_id
+
   element(:kcperson_id) { |b| b.frm.text_field(name:'personId') }
 
   # Please note the 'space' in the .delete_if clause is NOT a space. It's some

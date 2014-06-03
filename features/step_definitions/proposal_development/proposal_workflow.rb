@@ -28,16 +28,14 @@ end
 
 And /^the principal investigator approves the Proposal$/ do
   $users.logged_in_user.sign_out unless $users.current_user==nil
-  visit Login do |log_in|
-    log_in.username.set @proposal.key_personnel.principal_investigator.user_name
-    log_in.login
-  end
+  @proposal.key_personnel.principal_investigator.log_in
   @proposal.approve_from_action_list
   visit(Researcher).logout
 end
 
 And /^the (.*) approves the Proposal (with|without) future approval requests$/ do |role_name, future_requests|
   steps %{* I log in with the #{role_name} user }
+  # Move to Transforms???
   conf = {'with' => :yes, 'without' => :no}
   @proposal.approve_from_action_list
   on(Confirmation).send(conf[future_requests])
