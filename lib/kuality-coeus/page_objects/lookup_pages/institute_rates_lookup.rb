@@ -1,5 +1,7 @@
 class InstituteRatesLookup < Lookups
 
+  expected_element :activity_type_code
+
   url_info 'Institute%20Rate','kra.bo.InstituteRate'
 
   element(:activity_type_code) { |b| b.frm.text_field(name: 'activityTypeCode') }

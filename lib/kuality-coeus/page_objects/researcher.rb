@@ -9,5 +9,5 @@ class Researcher < BasePage
 
   action(:action_list) { |b| b.frm.link(title: 'Action List').click }
   action(:doc_search) { |b| b.frm.link(title: 'Document Search').click }
-  
+
 end

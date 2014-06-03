@@ -2,6 +2,8 @@
 # Contains methods useful across various Personnel classes.
 module Personnel
 
+  include Utilities
+
   def role_value
     {
         'Principal Investigator' => 'PI',
@@ -114,6 +116,16 @@ module Personnel
         end
       end
 
+    end
+  end
+
+  # Note that this method doesn't care whether any $user is
+  # set as the #current_user, so be careful with how you
+  # use this...
+  def log_in
+    visit($cas ? CASLogin : Login)do |log_in|
+      log_in.username.set @user_name
+      log_in.login
     end
   end
 

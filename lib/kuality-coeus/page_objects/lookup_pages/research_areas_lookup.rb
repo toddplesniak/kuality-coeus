@@ -1,5 +1,7 @@
 class ResearchAreasLookup < Lookups
 
+  expected_element :research_area_code
+
   results_multi_select
 
   element(:research_area_code) { |b| b.frm.text_field(name: 'researchAreaCode') }

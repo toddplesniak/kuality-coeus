@@ -15,7 +15,7 @@ class CommitteeDocumentObject < DataFactory
       description:            random_alphanums_plus,
       committee_id:           random_alphanums(15), # Restricted character set until this is fixed: https://jira.kuali.org/browse/KRAFDBCK-10718
       home_unit:              '000001',
-      name:                   random_alphanums(60), # Restricted character set until this is fixed: https://jira.kuali.org/browse/KRAFDBCK-10768
+      committee_name:         random_alphanums_plus,
       min_members_for_quorum: rand(100).to_s,
       maximum_protocols:      rand(100).to_s,
       adv_submission_days:    (rand(76)+14).to_s, # Defaults to a minimum of 14 days
@@ -30,7 +30,8 @@ class CommitteeDocumentObject < DataFactory
   end
     
   def create
-    visit(CentralAdmin).create_irb_committee
+    visit(Research).central_admin
+    on(CentralAdmin).add_irb_committee
     on Committee do |comm|
       @document_id=comm.document_id
       @doc_header=comm.doc_title

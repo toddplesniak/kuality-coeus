@@ -102,10 +102,7 @@ And /^the Proposal Creator copies the Proposal, generating a new version of the 
   @new_proposal_version.approve_from_action_list
   on(Confirmation).send(:no)
   $users.logged_in_user.sign_out
-  visit Login do |log_in|
-    log_in.username.set @new_proposal_version.key_personnel.principal_investigator.user_name
-    log_in.login
-  end
+  @new_proposal_version.key_personnel.principal_investigator.log_in
   @new_proposal_version.approve_from_action_list
   visit(Researcher).logout
   steps '* I log in with the OSP Administrator user'

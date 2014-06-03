@@ -1,5 +1,7 @@
 class ProposalLogLookup < Lookups
 
+  expected_element :proposal_number
+
   url_info 'Proposal%20Log','kra.institutionalproposal.proposallog.ProposalLog'
 
   PROPOSAL_LOG_STATUS = 3

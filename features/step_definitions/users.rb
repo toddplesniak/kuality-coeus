@@ -146,8 +146,5 @@ end
 
 When /^I log in with the principal investigator$/ do
   $users.logged_in_user.sign_out unless $users.current_user==nil
-  visit Login do |log_in|
-    log_in.username.set @proposal.key_personnel.principal_investigator.user_name
-    log_in.login
-  end
+  @proposal.key_personnel.principal_investigator.log_in
 end

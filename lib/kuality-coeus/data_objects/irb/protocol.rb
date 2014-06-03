@@ -53,7 +53,7 @@ class IRBProtocolObject < DataFactory
   def submit_for_review opts={}
     defaults = {
         submission_type: '::random::',
-        submission_review_type: '::random::',
+        submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
         type_qualifier: '::random::',
         committee: '::random::',
         schedule_date: '::random::'
@@ -61,9 +61,11 @@ class IRBProtocolObject < DataFactory
     set_options(defaults.merge(opts))
     view :protocol_actions
     on ProtocolActions do |page|
+      page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
                :committee
       page.schedule_date.pick! @schedule_date
+      page.submit_for_review
     end
   end
 
@@ -95,9 +97,13 @@ class IRBProtocolObject < DataFactory
 
   def set_pi
     on(ProtocolOverview).pi_employee_search
-    on PersonLookup do |look|
+    on KcPersonLookup do |look|
       look.search
-      look.return_random
+      # We need to exclude the set of test users from the list
+      # of names we'll randomly select from...
+      names = look.returned_full_names - $users.full_names
+      @principal_investigator = names.sample
+      look.return_value @principal_investigator
     end
   end
 
