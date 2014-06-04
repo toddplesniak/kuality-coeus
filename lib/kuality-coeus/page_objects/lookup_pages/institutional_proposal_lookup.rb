@@ -2,7 +2,7 @@ class InstitutionalProposalLookup < Lookups
 
   expected_element :institutional_proposal_number
 
-  url_info 'Institutional%20Proposal','kra.institutionalproposal.home.InstitutionalProposal'
+  url_info 'Search%20Institutional%20Proposals','kra.institutionalproposal.home.InstitutionalProposal'
 
   STATUS = 4
 

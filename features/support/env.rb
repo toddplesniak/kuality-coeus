@@ -7,6 +7,7 @@ basic = config[:basic]
 
 $base_url = basic[:url]
 $context = basic[:context]
+$port = basic[:port].to_s
 $file_folder = "#{File.dirname(__FILE__)}/../../lib/resources/"
 
 $cas = config[:cas]
