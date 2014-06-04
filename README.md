@@ -21,6 +21,7 @@ The contents of that file should be as follows:
 :basic:
   :url: https://<your.kuali.test.server.address.goes.here>/
   :context: <any.context.value.that.appears.prior.to.query.string>/
+  :port: 80 # Use only if the URL includes a port number after the domain. Leave blank, otherwise
   :browser: :ff # ... or :chrome, :safari, etc.
 :headless: no # or yes, if you're running in headless mode
 :cas: no # or yes, if there is a CAS login page
