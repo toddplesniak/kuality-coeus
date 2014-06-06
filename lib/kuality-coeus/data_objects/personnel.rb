@@ -129,6 +129,10 @@ module Personnel
     end
   end
 
+  def log_out
+    visit(Researcher).logout
+  end
+
 end # Personnel
 
 # Contains methods useful in Personnel Collection classes

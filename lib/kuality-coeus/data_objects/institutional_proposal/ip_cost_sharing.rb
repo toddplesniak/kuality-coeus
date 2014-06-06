@@ -5,7 +5,6 @@ class IPCostSharingObject < DataFactory
 
   attr_reader :project_period, :percentage, :type,
               :source_account, :amount
-  attr_accessor :index
 
   def initialize(browser, opts={})
     @browser = browser

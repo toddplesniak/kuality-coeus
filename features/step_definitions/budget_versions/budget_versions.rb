@@ -132,6 +132,12 @@ And /^adds another item to the budget period's cost sharing distribution list$/ 
   @budget_version.budget_periods.period(1).add_item_to_cost_share_dl
 end
 
+And /^adds (\d+) more items to the budget period's cost sharing distribution list$/ do |count|
+  count.to_i.times do
+    steps %{ * adds another item to the budget period's cost sharing distribution list }
+  end
+end
+
 And /^adjusts the budget period's cost sharing amount so all funds are allocated$/ do
   @budget_version.budget_periods.period(1).edit cost_sharing: @budget_version.budget_periods.period(1).cost_sharing_distribution_list.total_funds.to_s
 end

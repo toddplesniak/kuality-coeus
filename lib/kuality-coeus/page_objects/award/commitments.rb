@@ -11,9 +11,9 @@ class Commitments < KCAwards
   element(:new_cost_sharing_verification_date) { |b| b.frm.text_field(name: 'costShareFormHelper.newAwardCostShare.verificationDate') }
   action(:add_cost_sharing) { |b| b.frm.button(name: 'methodToCall.addCostShare.anchor').click; b.loading }
 
-  p_element(:cost_sharing_percentage) { |index, b| b.frm.text_field(name: "document.awardList[0].awardCostShares[#{index}].costSharePercentage") }
-  p_element(:cost_sharing_source) { |index, b| b.frm.text_field(name: "document.awardList[0].awardCostShares[#{index}].source") }
-  p_element(:cost_sharing_commitment_amount) { |index, b| b.frm.text_field(name: "document.awardList[0].awardCostShares[#{index}].commitmentAmount") }
+  p_element(:cost_sharing_percentage) { |source, amount, b| b.target_cost_sharing_item(source, amount).text_field(title: 'Cost Share Percentage') }
+  p_element(:cost_sharing_source) { |source, amount, b| b.target_cost_sharing_item(source, amount).text_field(title: 'Source') }
+  p_element(:cost_sharing_commitment_amount) { |source, amount, b| b.target_cost_sharing_item(source, amount).text_field(title: '* Commitment Amount') }
 
   element(:cost_sharing_comments) { |b| b.frm.text_field(name: 'document.awardList[0].awardCostShareComment.comments') }
 
@@ -61,6 +61,7 @@ class Commitments < KCAwards
   private
   
   element(:cost_sharing_table) { |b| b.frm.table(id: 'cost-share-table') }
+  p_element(:target_cost_sharing_item) { |source, amount, b| b.cost_sharing_table.rows.find { |row| row.text_field(title: 'Source', value: source).exists? && row.text_field(title: '* Commitment Amount', value: amount.to_f.commas).exists? } }
   element(:fa_rates_table) { |b| b.frm.div(id: 'tab-Rates:FARates-div').table }
   
 end

@@ -20,7 +20,7 @@ Feature: Linking an Institutional Proposal to a KC Award
   Scenario: KC-TS-1181 Funding Proposal Cost Share Amounts appear in Awards
     Given the Proposal Creator creates a Proposal
     And   creates a Budget Version with cost sharing for the Proposal
-    And   adds another item to the budget period's cost sharing distribution list
+    And   adds 3 more items to the budget period's cost sharing distribution list
     And   adjusts the budget period's cost sharing amount so all funds are allocated
     And   finalizes the Budget Version
     And   marks the Budget Version complete
@@ -31,10 +31,9 @@ Feature: Linking an Institutional Proposal to a KC Award
     And   the OSPApprover approves the Proposal without future approval requests
     And   the principal investigator approves the Proposal
     And   the OSP Administrator submits the Proposal to its sponsor
-    And   the Award Modifier creates an Award
-    When  the Funding Proposal is linked to a new Award
+    When  the Award Modifier links the Funding Proposal to a new Award
     Then  the Award inherits the Cost Sharing data from the Funding Proposal
-
+  @test
   Scenario: KC-TS-1143 Can Link Multiple Versions of One Institutional Proposal
     Given 1 Approved Institutional Proposal exists
     And   the Award Modifier links the Funding Proposal to a new Award

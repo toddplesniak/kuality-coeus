@@ -45,7 +45,7 @@ After do |scenario|
     embed 'screenshot.png', 'image/png'
   end
   # Log out if not already
-  $users.current_user.sign_out unless $users.current_user==nil
+  @browser.goto "#{$base_url+$context}logout.do"
 end
 
 at_exit { kuality.browser.close }
