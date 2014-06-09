@@ -130,7 +130,7 @@ class UserObject < DataFactory
   include StringFactory
 
   attr_reader :user_name, :principal_id,
-              :first_name, :last_name, :full_name,
+              :first_name, :last_name, :full_name, :middle_name,
               :description, :affiliation_type, :campus_code,
               :employee_id, :employee_status, :employee_type, :base_salary, :primary_department_code,
               :groups, :roles, :role_qualifiers, :addresses, :phones, :emails,

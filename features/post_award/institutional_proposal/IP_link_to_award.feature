@@ -1,3 +1,4 @@
+@aok
 Feature: Linking an Institutional Proposal to a KC Award
 
   To be written.
@@ -33,7 +34,7 @@ Feature: Linking an Institutional Proposal to a KC Award
     And   the OSP Administrator submits the Proposal to its sponsor
     When  the Award Modifier links the Funding Proposal to a new Award
     Then  the Award inherits the Cost Sharing data from the Funding Proposal
-  @test
+
   Scenario: KC-TS-1143 Can Link Multiple Versions of One Institutional Proposal
     Given 1 Approved Institutional Proposal exists
     And   the Award Modifier links the Funding Proposal to a new Award

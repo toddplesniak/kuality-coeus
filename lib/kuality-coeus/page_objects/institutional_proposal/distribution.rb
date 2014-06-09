@@ -19,8 +19,11 @@ class Distribution < KCInstitutionalProposal
   private
 
   value(:cost_share_table) { |b| b.frm.table(id: 'cost-share-table') }
-  p_element(:target_cost_sharing_item) { |source, amount, b| b.cost_share_table.rows.find { |row| row.text_field(title: 'Source Account', value: source).exists? && row.text_field(title: 'Amount', value: amount.to_f.commas).exists? } }
-
-
+  p_element(:target_cost_sharing_item) { |source, amount, b|
+    b.cost_share_table.rows.find { |row|
+      row.text_field(title: 'Source Account', value: source).exists? &&
+          row.text_field(title: 'Amount', value: amount.to_f.commas).exists?
+    }
+  }
 
 end

@@ -17,7 +17,6 @@ class AwardContacts < KCAwards
   p_element(:project_role) { |name, b| b.key_personnel_table.row(text: /#{Regexp.escape(name)}/).select(name: /contactRoleCode/) }
   value(:key_personnel) { |b| b.key_personnel_table.hiddens(name: /award_person.identifier_\d+/).map { |hid| hid.parent.text.strip } }
 
-
   # Person Details
 
   # Unit Details
@@ -26,7 +25,7 @@ class AwardContacts < KCAwards
   action(:add_unit) { |name, b| b.person_units(name).button(title: 'Add Contact').click }
   # This returns an array of hashes, like so:
   # [{:name=>"Unit1 Name", :number=>"Unit1 Number"}, {:name=>"Unit2 Name", :number=>"Unit2 Number"}]
-  action(:units) { |name, b| un=[]; b.person_units(name).to_a[2..-1].each { |row| un << {name: row[2].strip, number: row[3].strip } }; un }
+  action(:units) { |name, b| b.person_units(name).to_a[2..-1].map{ |row| {name: row[2].strip, number: row[3].strip } } }
 
   p_element(:unit_details_errors_div) { |name, p| p.target_key_person_div(name).div(class: 'left-errmsg-tab').div }
   p_value(:unit_details_errors) { |name, p| p.unit_details_errors_div(name).divs.collect { |div| div.text } }
@@ -59,7 +58,7 @@ class AwardContacts < KCAwards
   private
   # ===========
   
-  p_element(:target_key_person_div) { |name, b| b.frm.div(id: "tab-#{nsp(Regexp.escape(name))}:UnitDetails-div") }
+  p_element(:target_key_person_div) { |name, b| b.frm.div(id: "tab-#{nsp(name)}:UnitDetails-div") }
   p_element(:person_units) { |name, b| b.target_key_person_div(name).table(summary: 'Project Personnel Units') }
   p_element(:person_unit_row) { |name, unit, b| b.person_units(name).row(text: /#{unit}/) }
   element(:key_personnel_table) { |b| b.frm.table(id: 'contacts-table') }

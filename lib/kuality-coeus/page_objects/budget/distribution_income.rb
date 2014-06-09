@@ -29,7 +29,12 @@ class DistributionAndIncome < BudgetDocument
 
   private
 
-  element(:cost_sharing_table) { |b| b.frm.table(id: 'budget-cost-share-table') }
-  p_element(:target_cost_sharing_item) { |source, amount, b| b.cost_sharing_table.rows.find { |row| row.text_field(title: 'Source Account', value: source).exists? && row.text_field(title: 'Share Amount', value: amount.to_f.commas).exists? } }
+  element(:cost_sharing_table) { |b| b.frm.table(id: 'budget-cost-sharing-table') }
+  p_element(:target_cost_sharing_item) { |source, amount, b|
+    b.cost_sharing_table.rows.find { |row|
+      row.text_field(title: 'Source Account', value: source).exists? &&
+          row.text_field(title: 'Share Amount', value: amount.to_f.commas).exists?
+    }
+  }
 
 end
