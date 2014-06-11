@@ -7,6 +7,10 @@ Then /^the Award's Lead Unit is changed to (.*)$/ do |unit|
   on(Award).lead_unit_ro.should=~/^#{unit}/
 end
 
+Then /^the Award's title is trimmed to the first 200 characters$/ do
+  on(Award).award_title.value.should==@award.award_title[0..199]
+end
+
 Then /^a warning appears saying tracking details won't be added until there's a PI$/ do
   on(PaymentReportsTerms).errors.should include 'Report tracking details won\'t be added until a principal investigator is set.'
 end

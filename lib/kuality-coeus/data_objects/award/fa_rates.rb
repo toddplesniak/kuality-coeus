@@ -34,8 +34,14 @@ class AwardFARatesObject < DataFactory
         page.new_rate_end_date.set @end_date
       else
         page.new_rate_fiscal_year.send_keys @fiscal_year.to_s
-        page.new_rate_fiscal_year.send_keys :tab
-        page.wait_until { page.new_rate_start_date.value != '' }
+        x = 0
+        while page.new_rate_start_date.value != ''
+          page.new_rate_fiscal_year.send_keys :tab
+          sleep 1
+          page.new_rate.focus
+          x+=1
+          raise 'The Date Fields are not auto-populating!' if x==5
+        end
         @start_date=page.new_rate_start_date.value
         @end_date=page.new_rate_end_date.value
       end

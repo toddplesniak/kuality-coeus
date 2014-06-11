@@ -4,7 +4,7 @@ Given /I? ?add a Sponsor Contact to the Award$/ do
 end
 
 When /^an Account ID with special characters is added to the Award details$/ do
-  @award.edit account_id: random_string(6, %w{~ ! @ # $ % ^ &}.sample)
+  @award.edit account_id: random_string(5, %w{~ ! @ # $ % ^ & ž}.sample)
 end
 
 When /^the Award's title is updated to include invalid characters$/ do
@@ -12,7 +12,7 @@ When /^the Award's title is updated to include invalid characters$/ do
 end
 
 When /^the Award's title is made more than (\d+) characters long$/ do |arg|
-  @award.edit award_title: random_high_ascii(arg.to_i+1)
+  @award.edit award_title: random_string(arg.to_i+1)
 end
 
 When /I? ?adds? the required Custom Data to the Award$/ do
