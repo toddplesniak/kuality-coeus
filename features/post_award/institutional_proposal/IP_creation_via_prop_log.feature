@@ -1,3 +1,4 @@
+@aok
 Feature: Creating an Institutional Proposal from a Proposal Log
 
   In order to avoid the KC Proposal Development and Budget Module,
@@ -12,7 +13,7 @@ Feature: Creating an Institutional Proposal from a Proposal Log
   Scenario: Attempt to create a Funding Proposal document w/o a required field
     Given the Create Proposal Log user creates an institutional proposal with a missing required field
     Then  an error should appear saying the field is required
-  @test
+
   Scenario: Attempt to merge a temporary Proposal Log with an Institutional Proposal
     Given 1 Approved Institutional Proposal exists
     When  the Create Proposal Log user submits a new Temporary Proposal Log

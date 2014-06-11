@@ -195,9 +195,9 @@ Then /^the Award inherits the Cost Sharing data from the Funding Proposal$/ do
   on Commitments do |page|
     page.expand_all
     page.cost_sharing_comments.value.should=="Added Cost Shares from Proposal Number #{@institutional_proposal.proposal_number}"
-    cs_list.each { |cost_share|
-      page.cost_sharing_commitment_amount(cost_share.index).value.groom.should==cost_share.amount.to_f
-      page.cost_sharing_source(cost_share.index).value.should==cost_share.source_account
+    cs_list.each { |c_s|
+      page.cost_sharing_commitment_amount(c_s.source_account, c_s.amount).value.groom.should==c_s.amount.to_f
+      page.cost_sharing_source(c_s.source_account, c_s.amount).value.should==c_s.source_account
     }
   end
 end
@@ -209,10 +209,8 @@ Then /the Award Modifier can merge the new version of the Institutional Proposal
   }.not_to raise_error
 end
 
-
 When /^the Funding Proposal is linked to a new Award$/ do
-  @award = create AwardObject
-  @award.add_funding_proposal @institutional_proposal.proposal_number, '::random::'
+  @award = create AwardObject, funding_proposals: [{ip_number: @institutional_proposal.proposal_number, merge_type: 'Initial Funding'}]
 end
 
 # Don't parameterize this until it's necessary

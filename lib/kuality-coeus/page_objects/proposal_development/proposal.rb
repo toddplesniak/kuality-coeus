@@ -3,17 +3,18 @@ class Proposal < ProposalDevelopmentDocument
   value(:feedback) { |b| b.frm.div(class: 'left-errmsg').text }
 
   # Required fields
-  value(:proposal_number) { |b| b.frm.div(id: 'tab-RequiredFieldsforSavingDocument-div').table[0][1].text }
+  value(:proposal_number) { |b| b.required_fields_div.table[0][1].text }
   element(:sponsor_code) { |b| b.frm.text_field(id: 'document.developmentProposalList[0].sponsorCode') }
   alias_method :sponsor_id, :sponsor_code
   action(:lookup_sponsor) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.Sponsor!!).(((sponsorCode:document.developmentProposalList[0].sponsorCode,sponsorName:document.developmentProposalList[0].sponsor.sponsorName))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchorRequiredFieldsforSavingDocument').click }
   element(:proposal_type) { |b| b.frm.select(id: 'document.developmentProposalList[0].proposalTypeCode') }
   element(:lead_unit) { |b| b.frm.select(id: 'document.developmentProposalList[0].ownedByUnitNumber') }
-  value(:lead_unit_ro) { |b| b.frm.div(id: 'tab-RequiredFieldsforSavingDocument-div').table[2][1].text }
+  value(:lead_unit_ro) { |b| b.required_fields_div.table[2][1].text }
   element(:project_start_date) { |b| b.frm.text_field(id: 'document.developmentProposalList[0].requestedStartDateInitial') }
   element(:project_end_date) { |b| b.frm.text_field(id: 'document.developmentProposalList[0].requestedEndDateInitial') }
   element(:activity_type) { |b| b.frm.select(id: 'document.developmentProposalList[0].activityTypeCode') }
   element(:project_title) { |b| b.frm.text_field(id: 'document.developmentProposalList[0].title') }
+  element(:required_fields_div) { |b| b.frm.div(id: 'tab-RequiredFieldsforSavingDocument-div') }
 
   # Institutional fields
   element(:award_id) { |b| b.frm.text_field(name: 'document.developmentProposalList[0].currentAwardNumber') }

@@ -13,8 +13,8 @@ class AbstractsAndAttachments < ProposalDevelopmentDocument
 
   action(:edit_status) { |type, p| p.proposal_attachment_div(type).select(name: /moduleStatusCode/) }
 
-  action(:show_proposal_attachment) { |type, b| b.frm.button(alt: /#{type}/).click }
-  action(:proposal_attachment_div) { |type, b| b.frm.div(id: /tab-ProposalAttachments..#{type}Incomplete-div/) }
+  action(:show_proposal_attachment) { |type, b| b.frm.button(alt: /#{Regexp.escape(type)}/).click }
+  action(:proposal_attachment_div) { |type, b| b.frm.div(id: /tab-ProposalAttachments..#{Regexp.escape(type)}Incomplete-div/) }
 
   # Personnel Attachments
   element(:person) { |b| b.frm.select(name: 'newPropPersonBio.proposalPersonNumber') }

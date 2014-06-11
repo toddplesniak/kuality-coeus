@@ -35,6 +35,7 @@ class BudgetVersionsObject < DataFactory
     open_document
     on(Proposal).budget_versions unless on_page?(on(BudgetVersions).name)
     on BudgetVersions do |add|
+      add.name.wait_until_present
       @doc_header=add.doc_title
       add.name.set @name
       add.add

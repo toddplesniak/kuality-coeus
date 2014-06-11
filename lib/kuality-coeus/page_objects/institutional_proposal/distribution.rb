@@ -16,6 +16,14 @@ class Distribution < KCInstitutionalProposal
   action(:add_unrecovered_f_a) { |b| b.add_unrecovered_f_a_button.click; b.loading }
   element(:add_unrecovered_f_a_button) { |b| b.frm.button(name: 'methodToCall.addUnrecoveredFandA.anchorUnrecoveredFA') }
 
+  private
+
   value(:cost_share_table) { |b| b.frm.table(id: 'cost-share-table') }
+  p_element(:target_cost_sharing_item) { |source, amount, b|
+    b.cost_share_table.rows.find { |row|
+      row.text_field(title: 'Source Account', value: source).exists? &&
+          row.text_field(title: 'Amount', value: amount.to_f.commas).exists?
+    }
+  }
 
 end

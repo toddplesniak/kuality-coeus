@@ -27,7 +27,8 @@ Then /^an error should appear that says (.*)$/ do |error|
             'cost share type is required' => 'Cost Share Type Code is a required field.',
             'the fiscal year is not valid' => 'Fiscal Year is not formatted correctly.',
             'the approved equipment can\'t have duplicates' => 'Approved Equipment Vendor, Model and Item must be unique',
-            'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.'
+            'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.',
+            'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.'
   }
   $current_page.errors.should include errors[error]
 end
@@ -105,6 +106,16 @@ end
 #-----------------------#
 Then /^an error should appear on the Subaward saying the person is already added to the contacts$/ do
   on(Subaward).errors.should include "#{@subaward.contacts[0][:name]} is already added to the Subaward Contacts"
+end
+
+#------------------------#
+# Institutional Proposal #
+#------------------------#
+
+Then /^(errors|an error) should appear warning that the field contents are not valid$/ do |x|
+  @errors.each do |err|
+    $current_page.errors.should include err
+  end
 end
 
 #------------------------#

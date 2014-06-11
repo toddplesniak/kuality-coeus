@@ -4,17 +4,17 @@ class Lookups < BasePage
   search_results_table
 
   def self.url_info(title, class_name)
-    page_url "#{
+    page_url %|#{
                 $base_url+$context
               }portal.do?channelTitle=#{
                 title
               }&channelUrl=#{
-                $base_url[/.*(?=\/$)/]+':/'+$context
+                $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
               }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
                class_name
               }&docFormKey=88888888&includeCustomActionUrls=true&returnLocation=#{
-               $base_url[/.*(?=\/$)/]+':/'+$context
-              }portal.do&hideReturnLink=true"
+               $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
+              }portal.do&hideReturnLink=true|
   end
 
   element(:last_name) { |b| b.frm.text_field(id: 'lastName') }

@@ -52,6 +52,6 @@ class Award < KCAwards
 
   private
 
-  p_action(:target_funding_row) { |match, b| b.current_funding_proposals_table.row(text: /#{match}/) }
+  p_action(:target_funding_row) { |match, b| b.current_funding_proposals_table.row(text: /#{Regexp.escape(match)}/) }
 
 end

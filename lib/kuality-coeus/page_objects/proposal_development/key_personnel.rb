@@ -88,7 +88,7 @@ class KeyPersonnel < ProposalDevelopmentDocument
 
   action(:target_unit_row) do |full_name, unit_number, p|
     trows = p.credit_split_div_table.rows
-    index = trows.find_index { |row| row.text=~/#{full_name}/ }
+    index = trows.find_index { |row| row.text=~/#{Regexp.escape(full_name)}/ }
     trows[index..-1].find { |row| row.text=~/#{unit_number}/ }
   end
 
