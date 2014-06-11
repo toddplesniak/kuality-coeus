@@ -1,8 +1,8 @@
+@aok
 Feature: Copying Awards
 
   Summary to be written
 
-  # Broken until 5.21 because of T&M Modifier permissions--they can't view Awards
   Background:
     * a User exists with the role 'Time And Money Modifier' in unit '000001' (descends hierarchy)
     * a User exists with the role 'Award Modifier' in unit 'BL-BL'
@@ -10,7 +10,7 @@ Feature: Copying Awards
     * adds a subaward to the Award
     * completes the Award requirements
     * the Time & Money Modifier submits the Award's T&M document
-    * the Award Modifier user submits the Award
+    * the Award Modifier submits the Award
 
   Scenario: Award copied as new Parent
     When I copy the Award to a new parent Award

@@ -324,9 +324,7 @@ class AwardObject < DataFactory
           # TODO: Determine if this is all we want, here...
           award.description = random_alphanums
           page.description.set award.description
-
           page.project_end_date.set @project_end_date
-
           page.save
           award.document_status=page.header_status
         end
@@ -375,7 +373,6 @@ class AwardObject < DataFactory
         award.parent = parent
 
     end
-
     award
   end
 
