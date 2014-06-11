@@ -1,5 +1,7 @@
 class ProposalDevelopmentDocument < BasePage
 
+  expected_element(:headerarea, 3)
+
   document_header_elements
   tab_buttons
   global_buttons

@@ -20,7 +20,7 @@ The contents of that file should be as follows:
 ```yaml
 :basic:
   :url: https://<your.kuali.test.server.address.goes.here>/
-  :context: <any.context.value.that.appears.prior.to.query.string>/
+  :context: <any.context.value.that.appears.prior.to.query.string.in.the.URL>/
   :port: 80 # Use only if the URL includes a port number after the domain. Leave blank, otherwise
   :browser: :ff # ... or :chrome, :safari, etc.
 :headless: no # or yes, if you're running in headless mode

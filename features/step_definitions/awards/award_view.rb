@@ -78,12 +78,12 @@ And /^the Award's cost share data are from the (.*) Funding Proposal$/ do |cardi
   not_cs = @ips[n_i].cost_sharing
   on Commitments do |page|
     page.expand_all
-    cs_list.each { |cost_share|
-      page.cost_sharing_commitment_amount(cost_share.index).value.groom.should==cost_share.amount.to_f
-      page.cost_sharing_source(cost_share.index).value.should==cost_share.source_account
+    cs_list.each { |cs|
+      page.cost_sharing_commitment_amount(cs.source_account, cs.amount).value.groom.should==cs.amount.to_f
+      page.cost_sharing_source(cs.source_account, cs.amount).value.should==cs.source_account
     }
     not_cs.each { |not_cost_share|
-      page.sources.should_not include not_cost_share.source_account
+      page.cost_share_sources.should_not include not_cost_share.source_account
     }
   end
 end
@@ -91,18 +91,13 @@ end
 And /^the Award's cost share data are from both Proposals$/ do
   @award.view :commitments
   cs_list = []
-  index = 0
   # TODO: This can be cleaned up...
-  @ips.collect{ |ip| ip.cost_sharing }.flatten.each do |c_s|
-    c_s.index=index
-    cs_list << c_s
-    index += 1
-  end
+  cs_list = @ips.collect{ |ip| ip.cost_sharing }.flatten
   on Commitments do |page|
     page.expand_all
-    cs_list.each { |cost_share|
-      page.cost_sharing_commitment_amount(cost_share.index).value.groom.should==cost_share.amount.to_f
-      page.cost_sharing_source(cost_share.index).value.should==cost_share.source_account
+    cs_list.each { |cs|
+      page.cost_sharing_commitment_amount(cs.source_account, cs.amount).value.groom.should==cs.amount.to_f
+      page.cost_sharing_source(cs.source_account, cs.amount).value.should==cs.source_account
     }
   end
 end
@@ -161,9 +156,7 @@ And /^the Award\'s F&A data are from both Proposals$/ do
       page.fna_source(i).value.should==unrecfna.source_account
       page.fna_amount(i).value.groom.to_s.should==unrecfna.amount
     end
-    # Rounded total used because of https://jira.kuali.org/browse/KRACOEUS-3991
-    # When that is fixed then test scenarios using this will fail...
-    page.unrecovered_fna_total.groom.should==ufna.rounded_total
+    page.unrecovered_fna_total.groom.should==ufna.total
   end
 end
 
@@ -183,9 +176,7 @@ And /^the Award's F&A data are from the first Proposal$/ do
     @ips[1].unrecovered_fa.each do |fna|
       page.fna_sources.should_not include fna.source_account
     end
-    # Rounded total used because of https://jira.kuali.org/browse/KRACOEUS-3991
-    # When that is fixed then test scenarios using this will fail...
-    page.unrecovered_fna_total.groom.should==@ips[0].unrecovered_fa.rounded_total
+    page.unrecovered_fna_total.groom.should==@ips[0].unrecovered_fa.total
   end
 end
 

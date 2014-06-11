@@ -43,6 +43,7 @@ class ProposalDevelopmentObject < DataFactory
   def create
     visit(Researcher).create_proposal
     on Proposal do |doc|
+      doc.proposal_type.wait_until_present(10)
       @doc_header=doc.doc_title
       @document_id=doc.document_id
       @status=doc.document_status
@@ -206,15 +207,7 @@ class ProposalDevelopmentObject < DataFactory
 
   def view(tab)
     open_document
-
-    #DEBUG
-    begin
-      on(ProposalDevelopmentDocument).send(damballa(tab.to_s)) unless @status=='CANCELED' || on(ProposalDevelopmentDocument).send(damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
-    #DEBUG
-    rescue
-      sleep 240
-    end
-
+    on(ProposalDevelopmentDocument).send(damballa(tab.to_s)) unless @status=='CANCELED' || on(ProposalDevelopmentDocument).send(damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
   end
 
   def submit(type=:s)

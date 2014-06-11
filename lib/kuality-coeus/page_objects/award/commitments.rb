@@ -17,6 +17,8 @@ class Commitments < KCAwards
 
   element(:cost_sharing_comments) { |b| b.frm.text_field(name: 'document.awardList[0].awardCostShareComment.comments') }
 
+  value(:cost_share_sources) { |b| b.noko.table(id: 'cost-share-table').text_fields(title: 'Source').collect{ |field| field.value }[1..-1] }
+
   action(:recalculate) { |b| b.frm.button(name: 'methodToCall.recalculateCostShareTotal.anchor').click }
   action(:sync_to_template) { |b| b.frm.button(name: 'methodToCall.syncAwardTemplate.scopes:COST_SHARE.anchor').click }
 

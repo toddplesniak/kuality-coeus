@@ -1,5 +1,7 @@
 class DistributionAndIncome < BudgetDocument
 
+  expected_element :workarea
+
   element(:add_cost_share_period) { |b| b.frm.text_field(name: 'newBudgetCostShare.projectPeriod') }
   element(:add_cost_share_percentage) { |b| b.frm.text_field(name: 'newBudgetCostShare.sharePercentage') }
   element(:add_cost_share_source_account) { |b| b.frm.text_field(name: 'newBudgetCostShare.sourceAccount') }
@@ -18,9 +20,13 @@ class DistributionAndIncome < BudgetDocument
   element(:add_fa_amount) { |b| b.frm.text_field(name: 'newBudgetUnrecoveredFandA.amount') }
   action(:add_fa) { |b| b.frm.button(name: 'methodToCall.addUnrecoveredFandA').click; b.loading }
 
+  # TODO: Convert the elements below to this style...
+  p_element(:fna_source_account) { |source, amount, b| b.target_fna_item(source, amount).text_field(title: 'Source Account') }
+
   element(:existing_fna_rows) { |b| b.unrecovered_fna_table.rows[2..-3] }
   element(:unrecovered_fna_table) { |b| b.frm.table(id: 'budget-unrecovered-fna-table') }
 
+  # TODO: Convert this methods to the above style...
   p_element(:fiscal_year) { |index, b| b.frm.text_field(name: "document.budget.budgetUnrecoveredFandA[#{index}].fiscalYear") }
   p_element(:applicable_rate) { |index, b| b.frm.text_field(name: "document.budgets[0].budgetUnrecoveredFandAs[#{index}].applicableRate") }
   p_element(:campus) { |index, b| b.frm.select(name: "document.budget.budgetUnrecoveredFandA[#{index}].onCampusFlag") }
@@ -36,5 +42,14 @@ class DistributionAndIncome < BudgetDocument
           row.text_field(title: 'Share Amount', value: amount.to_f.commas).exists?
     }
   }
+
+  p_element(:target_fna_item) { |source, amount, b|
+    b.existing_fna_rows.find { |row|
+      row.text_field(title: 'Source Account', value: source).exists? &&
+          row.text_field(title: 'Amount', value: amount.to_f.commas).exists?
+    }
+  }
+
+  element(:workarea) { |b| b.frm.div(id: 'workarea') }
 
 end

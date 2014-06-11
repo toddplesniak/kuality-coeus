@@ -29,7 +29,7 @@ class BasePage < PageFactory
     end
 
     def document_header_elements
-      value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text.strip }
+      value(:doc_title) { |b| b.headerarea.h1.text.strip }
       value(:headerinfo_table) { |b| b.noko.div(id: 'headerarea').table(class: 'headerinfo') }
       value(:document_id) { |p| p.headerinfo_table[0].text[/\d{4}/] }
       alias_method :doc_nbr, :document_id
@@ -46,6 +46,7 @@ class BasePage < PageFactory
       value(:committee_name) { |p| p.headerinfo_table[2][3].text }
       alias_method :pi, :committee_name
       alias_method :expiration_date, :committee_name
+      element(:headerarea) { |b| b.frm.div(id: 'headerarea') }
     end
 
     # Included here because this is such a common field in KC
