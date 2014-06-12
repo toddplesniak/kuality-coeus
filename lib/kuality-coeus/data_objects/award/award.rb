@@ -100,6 +100,20 @@ class AwardObject < DataFactory
     on Award do |edit|
       if edit.edit_button.present?
         edit.edit
+
+
+
+
+        # DEBUG
+        sleep 200
+
+
+
+
+
+
+
+
         @prior_versions.store(@version, @document_id)
         @version = edit.version
         @document_id = edit.header_document_id

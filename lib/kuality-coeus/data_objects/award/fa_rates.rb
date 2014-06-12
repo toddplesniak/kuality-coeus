@@ -10,7 +10,7 @@ class AwardFARatesObject < DataFactory
     @browser = browser
 
     defaults = {
-        rate:           rand(101).to_s,
+        rate:           VALID_RATES.sample,
         type:           '::random::',
         fiscal_year:    date_factory(Time.random(year_range: 500))[:year],
         campus:         '::random::',
@@ -53,8 +53,13 @@ class AwardFARatesObject < DataFactory
       # Added this line for testing a blank start date field...
       page.new_rate_start_date.clear if @start_date==''
       page.add_rate
+      page.save
     end
   end
+
+  private
+
+  VALID_RATES = %w{0 10 11.11 12 13.3 14 15 17 17.8 18 19 20 25 40.7 999.99}
 
 end
 
