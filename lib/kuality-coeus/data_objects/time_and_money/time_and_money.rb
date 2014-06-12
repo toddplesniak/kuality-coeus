@@ -58,15 +58,6 @@ class TimeAndMoneyObject < DataFactory
 
   def submit
     on TimeAndMoney do |page|
-
-
-      # DEBUG
-      puts 'Pay attention!!!!'
-      sleep 50
-
-
-
-
       page.submit
       page.hierarchy_table.wait_until_present
       @status = page.header_status

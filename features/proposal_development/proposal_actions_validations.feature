@@ -1,3 +1,4 @@
+@aok
 Feature: Proposal Actions Validations
 
   As a researcher I want to know if my development proposal contains any errors

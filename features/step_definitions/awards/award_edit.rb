@@ -54,7 +54,8 @@ And /adds the same organization as a subaward again to the Award$/ do
   @award.add_subaward @award.subawards[0][:org_name]
 end
 
-And /edits the finalized Award$/ do
+And /the Award Modifier edits the finalized Award$/ do
+  steps '* log in with the Award Modifier user'
   @award.edit transaction_type: '::random::', anticipated_amount: '5', obligated_amount: '5'
 end
 
@@ -83,7 +84,7 @@ Then /^selecting 'no' on the confirmation screen creates a new version of the Aw
   end
 end
 
-When(/^the Award Modifier cancels the Award$/) do
+When /^the Award Modifier cancels the Award$/ do
   steps '* log in with the Award Modifier user'
   @award.cancel
 end

@@ -1,3 +1,4 @@
+@aok
 Feature: Basic validations for Development Proposals
 
   As a researcher I want the ability to see an error whenever I miss

@@ -15,13 +15,13 @@ end
 Then /^the (.*) user can access the Proposal$/ do |role|
   get(role).sign_in
   @proposal.view 'Proposal'
-  on(Researcher).error_table.should_not be_present
+  on(Proposal).required_fields_div.should be_present
 end
 
 Then /^their proposal permissions do not allow them to edit budget details$/ do
   expect{@proposal.edit(project_title: 'edit')}.not_to raise_error
   expect{@budget_version.open_budget}.not_to raise_error
-  expect{@budget_version.edit(total_direct_cost_limit: '100')}.not_to raise_error(Watir::Exception::UnknownObjectException, /unable to locate element/)
+  expect{@budget_version.edit(total_direct_cost_limit: '100')}.to raise_error(Watir::Exception::UnknownObjectException, /unable to locate element/)
 end
 
 And /^their proposal permissions allow them to edit all parts of the Proposal$/ do

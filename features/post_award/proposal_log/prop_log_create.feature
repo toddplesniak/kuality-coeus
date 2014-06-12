@@ -1,4 +1,3 @@
-@failing
 Feature: Creating Proposal Logs
 
   As a researcher I want the ability to create a Proposal Log document
@@ -17,7 +16,7 @@ Feature: Creating Proposal Logs
     When  the Create Proposal Log user creates a Proposal Log
     Then  the status of the Proposal Log should be INITIATED
     And   the Proposal Log status should be Pending
-
+  @remove_this_puppy
   Scenario: Merge a new Proposal Log with an existing Temporary Proposal Log
     And   I submit a new temporary Proposal Log with a particular PI
     When  the Create Proposal Log user submits a new permanent Proposal Log with the same PI into routing
