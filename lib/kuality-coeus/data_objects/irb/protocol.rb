@@ -8,16 +8,19 @@ class IRBProtocolObject < DataFactory
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date,
                # Submit for review...
-               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
+               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
+               :expedited_checklist, :amend
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
-        description:    random_alphanums_plus,
-        protocol_type:  '::random::',
-        title:          random_alphanums_plus,
-        lead_unit:      '::random::',
+        description:         random_alphanums_plus,
+        protocol_type:       '::random::',
+        title:               random_alphanums_plus,
+        lead_unit:           '::random::',
+        expedited_checklist: []
+
     }
     # TODO: Needs a @lookup_class and @search_key defined
     @lookup_class = ProtocolLookup
@@ -56,7 +59,7 @@ class IRBProtocolObject < DataFactory
         submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
         type_qualifier: '::random::',
         committee: '::random::',
-        schedule_date: '::random::'
+        schedule_date: '::random::',
     }
     set_options(defaults.merge(opts))
     view :protocol_actions
@@ -65,7 +68,40 @@ class IRBProtocolObject < DataFactory
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
                :committee
       page.schedule_date.pick! @schedule_date
+
+      @expedited_checklist.each do |item|
+        #needed to make a Hash because #{item} is passing in as an array
+        item_hash = Hash[*item.flatten]
+        #fetch gets the hash item pair
+        #hash.keys.sample gets the key which is then used to find the value defined in EXPEDITED_CHECKLIST
+        page.expedited_checklist(Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample)).set
+
+        puts 'hash sample'
+        puts Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample).inspect
+
+
+      end
+
       page.submit_for_review
+      page.processing_document
+
+    end
+  end
+
+  def create_amendment opts={}
+    defaults = {
+      amendment_summary: random_alphanums_plus,
+      amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers', 'Protocol Organizations',
+                'Subjects', 'Questionnaire', 'General Info', 'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
+    }
+    set_options(defaults.merge(opts))
+
+    on ProtocolActions do |page|
+      fill_out page, :amendment_summary
+      page.amend(:amend).set
+
+      page.create_amendment
+      page.processing_document
     end
   end
 
@@ -93,6 +129,7 @@ class IRBProtocolObject < DataFactory
     else
       on(ProtocolOverview).lead_unit.fit @lead_unit
     end
+
   end
 
   def set_pi
@@ -113,5 +150,7 @@ class IRBProtocolObject < DataFactory
     object.create
     object
   end
+
+
 
 end

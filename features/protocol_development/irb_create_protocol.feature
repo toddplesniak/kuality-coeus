@@ -28,3 +28,39 @@ Feature: Creating IRB Protocols
     And   the Protocol Creator creates another IRB Protocol in the Committee's home unit
     When  the second Protocol is submitted to the Committee for review on the same date
     Then  the system warns that the number of protocols exceeds the allowed maximum
+
+  @wip @KRAFDBCK-9927
+  Scenario: Return to PI for amendment updates with correct expiration date
+    Given a User exists with the role: 'IRB Administrator'
+    And log in with the IRB Administrator user
+    And I create a IRB Protocol with Expedited Submissions Review Type
+    And I submit a Expedited Approval with a date of last year
+#  (approval date + 364) leave action date as is (today's date)
+    And I create an Amendment
+#    Then Verify Expiration date is correct
+    When I assign to a reviewer
+
+      When I return the protocol to PI
+    #this is where a bug was
+    When I do a expedited resubmit
+    And Assign to Commmittee
+    Then the approval data and expiration date are not editable
+    And approval data should be first of the month
+    And expiration date should be last of the month
+#
+#    navigate to protocol actions
+#    select amendment + expedited + checkbox <submit>
+#    assign to committee + schedule <submit>
+#    NOTE: expiration date still shows 6/30/14
+#    select <return to PI>
+#    navigate to amendment protocol tab - expiration date is erased and system says it will generate upon approval (This is wrong, it should retain 6/30/14)
+#    navigate to protocol actions
+#    select resubmission + expedited + checkbox <submit>
+#    assign to committee + schedule <submit>
+#    assign to reviewer <submit>
+#    show expedited approval action
+#    The approval date and expiration date are not editable and default incorrectly.
+#    They should display the approval date of 7/1/13 and expiration date of 6/30/14. Even worse,
+#    when you approve the amendment it overwrites the initial protocol existing expiration date with the
+#    wrong information that defaulted from the amendment. No admin change can be done for the amendment
+#    once approved so incorrect correspondence is generated.

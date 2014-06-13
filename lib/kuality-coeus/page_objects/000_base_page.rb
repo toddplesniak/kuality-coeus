@@ -7,6 +7,8 @@ class BasePage < PageFactory
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
   action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
   action(:awaiting_doc) { |b| b.frm.button(name: 'methodToCall.returnToPortal').wait_while_present }
+  action(:processing_document) { |b| b.frm.div(text: /The document is being processed. You will be returned to the document once processing is complete./ ).wait_while_present }
+
   element(:logout_button) { |b| b.button(value: 'Logout') }
   action(:logout) { |b| b.logout_button.click }
 
@@ -74,6 +76,7 @@ class BasePage < PageFactory
     end
 
     def tab_buttons
+      element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
       action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').click; b.loading }
     end
 
