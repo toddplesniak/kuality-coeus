@@ -1,4 +1,3 @@
-@aok
 Feature: Copying Awards
 
   Summary to be written
