@@ -14,9 +14,8 @@ class AwardContacts < KCAwards
   element(:key_person_role) { |b| b.frm.text_field(name: 'projectPersonnelBean.newAwardContact.keyPersonRole') }
   action(:add_key_person) { |b| b.frm.button(name: 'methodToCall.addProjectPerson').click; b.loading }
 
-  p_element(:project_role) { |name, b| b.key_personnel_table.row(text: /#{name}/).select(name: /contactRoleCode/) }
+  p_element(:project_role) { |name, b| b.key_personnel_table.row(text: /#{Regexp.escape(name)}/).select(name: /contactRoleCode/) }
   value(:key_personnel) { |b| b.key_personnel_table.hiddens(name: /award_person.identifier_\d+/).map { |hid| hid.parent.text.strip } }
-
 
   # Person Details
 
@@ -26,7 +25,7 @@ class AwardContacts < KCAwards
   action(:add_unit) { |name, b| b.person_units(name).button(title: 'Add Contact').click }
   # This returns an array of hashes, like so:
   # [{:name=>"Unit1 Name", :number=>"Unit1 Number"}, {:name=>"Unit2 Name", :number=>"Unit2 Number"}]
-  action(:units) { |name, b| un=[]; b.person_units(name).to_a[2..-1].each { |row| un << {name: row[2].strip, number: row[3].strip } }; un }
+  action(:units) { |name, b| b.person_units(name).to_a[2..-1].map{ |row| {name: row[2].strip, number: row[3].strip } } }
 
   p_element(:unit_details_errors_div) { |name, p| p.target_key_person_div(name).div(class: 'left-errmsg-tab').div }
   p_value(:unit_details_errors) { |name, p| p.unit_details_errors_div(name).divs.collect { |div| div.text } }
@@ -68,7 +67,7 @@ class AwardContacts < KCAwards
 
   action(:target_unit_row) do |full_name, unit_number, p|
     trows = p.credit_split_div_table.rows
-    index = trows.find_index { |row| row.text=~/#{full_name}/ }
+    index = trows.find_index { |row| row.text=~/#{Regexp.escape(full_name)}/ }
     trows[index..-1].find { |row| row.text=~/#{unit_number}/ }
   end
 

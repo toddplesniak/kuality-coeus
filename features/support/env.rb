@@ -7,6 +7,7 @@ basic = config[:basic]
 
 $base_url = basic[:url]
 $context = basic[:context]
+$port = basic[:port].to_s
 $file_folder = "#{File.dirname(__FILE__)}/../../lib/resources/"
 
 $cas = config[:cas]
@@ -44,7 +45,7 @@ After do |scenario|
     embed 'screenshot.png', 'image/png'
   end
   # Log out if not already
-  $users.current_user.sign_out unless $users.current_user==nil
+  @browser.goto "#{$base_url+$context}logout.do"
 end
 
 at_exit { kuality.browser.close }

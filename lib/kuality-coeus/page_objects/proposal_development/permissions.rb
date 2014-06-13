@@ -21,7 +21,7 @@ class Permissions < ProposalDevelopmentDocument
   # Note this is the table in the Users tab on the page...
   element(:user_roles_table) { |b| b.frm.table(id: 'user-roles') }
 
-  action(:user_row) { |user, b| b.user_roles_table.row(text: /#{user}/) }
+  action(:user_row) { |user, b| b.user_roles_table.row(text: /#{Regexp.escape(user)}/) }
 
 end
 
@@ -34,15 +34,27 @@ class Roles < BasePage
   element(:set_roles_button) { |b| b.frm.button(name: 'methodToCall.setEditRoles') }
   action(:save) { |b| b.set_roles_button.click }
 
-  def self.chkbx(name, number)
-    element(name) { |b| b.frm.checkbox(name: "proposalUserEditRoles.roleStates[#{number}].state") }
+  class << self
+
+    def chkbx(name, number)
+      element(name) { |b| b.frm.checkbox(name: "proposalUserEditRoles.roleStates[#{number}].state") }
+    end
+
+    def delete_number
+      $base_url=~/kuali.org/ ? 9 : 7
+    end
+
+    def approver_number
+      $base_url=~/kuali.org/ ? 6 : 4
+    end
+
   end
 
   chkbx :viewer, 0
   chkbx :budget_creator, 1
   chkbx :narrative_writer, 2
   chkbx :aggregator, 3
-  chkbx :delete_proposal, 7
-  chkbx :approver, 4
+  chkbx :delete_proposal, delete_number
+  chkbx :approver, approver_number
 
 end

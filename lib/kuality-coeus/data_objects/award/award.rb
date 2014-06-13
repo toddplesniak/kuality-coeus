@@ -187,12 +187,15 @@ class AwardObject < DataFactory
     view :contacts
     on AwardContacts do |page|
       page.expand_all
+      x = 0
       while page.org_name==' '
         page.sponsor_non_employee_id.set s_c[:non_employee_id]
-        page.sponsor_project_role.pick! s_c[:project_role]
-        page.unit_employee_user_name.focus
-        sleep 0.5 # FIXME!
+        page.sponsor_non_employee_id.fire_event 'onblur'
+        sleep 1
+        x+=1
+        raise 'Sponsor Organization is not populating!' if x == 30
       end
+      page.sponsor_project_role.pick! s_c[:project_role]
       page.add_sponsor_contact
       page.save
     end
@@ -324,9 +327,7 @@ class AwardObject < DataFactory
           # TODO: Determine if this is all we want, here...
           award.description = random_alphanums
           page.description.set award.description
-
           page.project_end_date.set @project_end_date
-
           page.save
           award.document_status=page.header_status
         end
@@ -375,7 +376,6 @@ class AwardObject < DataFactory
         award.parent = parent
 
     end
-
     award
   end
 

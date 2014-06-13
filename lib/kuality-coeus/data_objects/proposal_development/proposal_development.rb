@@ -43,6 +43,7 @@ class ProposalDevelopmentObject < DataFactory
   def create
     visit(Researcher).create_proposal
     on Proposal do |doc|
+      doc.proposal_type.wait_until_present(10)
       @doc_header=doc.doc_title
       @document_id=doc.document_id
       @status=doc.document_status
@@ -122,12 +123,13 @@ class ProposalDevelopmentObject < DataFactory
       look.open @institutional_proposal_number
     end
     doc_id = on(InstitutionalProposal).document_id
+    @cd = @custom_data.data_object_copy if @custom_data
     ip = make InstitutionalProposalObject, dev_proposal_number: @proposal_number,
          proposal_type: @proposal_type,
          activity_type: @activity_type,
          project_title: @project_title,
          special_review: @special_review.copy,
-         custom_data: @custom_data.data_object_copy,
+         custom_data: @cd,
          document_id: doc_id,
          proposal_number: @institutional_proposal_number,
          nsf_science_code: @nsf_science_code,
@@ -139,7 +141,6 @@ class ProposalDevelopmentObject < DataFactory
                   source_account: cost_share.source_account,
                   project_period: cost_share.project_period,
                   amount: cost_share.amount,
-                  index: cost_share.index,
                   type: 'funded'
         ip.cost_sharing << cs_item
         period.unrecovered_fa_dist_list.each do |fna|
@@ -186,7 +187,7 @@ class ProposalDevelopmentObject < DataFactory
   def recall(reason=random_alphanums)
     @recall_reason=reason
     open_document
-    on(Proposal).recall
+    on(ProposalActions).recall
     on Confirmation do |conf|
       conf.reason.set @recall_reason
       conf.yes
@@ -206,9 +207,7 @@ class ProposalDevelopmentObject < DataFactory
 
   def view(tab)
     open_document
-    unless @status=='CANCELED' || on(Proposal).send(StringFactory.damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
-      on(Proposal).send(damballa(tab.to_s))
-    end
+    on(ProposalDevelopmentDocument).send(damballa(tab.to_s)) unless @status=='CANCELED' || on(ProposalDevelopmentDocument).send(damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
   end
 
   def submit(type=:s)
@@ -327,6 +326,8 @@ class ProposalDevelopmentObject < DataFactory
   # =======
 
   def navigate
+    visit(Researcher).doc_search
+    on DocumentSearch do |search|
     visit(Researcher).doc_search
     on DocumentSearch do |search|
       search.close_parents

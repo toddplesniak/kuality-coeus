@@ -59,6 +59,8 @@ class BudgetPeriodObject < DataFactory
     set_options(opts)
   end
 
+  # TODO: All this code is problematic when there are multiple
+  # Project periods. It needs some serious re-thinking for 6.0
   def add_item_to_cost_share_dl opts={}
     defaults = {
         amount: random_dollar_value(10000),

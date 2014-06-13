@@ -130,7 +130,7 @@ class UserObject < DataFactory
   include StringFactory
 
   attr_reader :user_name, :principal_id,
-              :first_name, :last_name, :full_name,
+              :first_name, :last_name, :full_name, :middle_name,
               :description, :affiliation_type, :campus_code,
               :employee_id, :employee_status, :employee_type, :base_salary, :primary_department_code,
               :groups, :roles, :role_qualifiers, :addresses, :phones, :emails,
@@ -317,10 +317,11 @@ class UserObject < DataFactory
 
   def sign_out
     if $cas
-      on(BasePage).close_extra_windows if @browser.windows.size > 1
-      @browser.goto "#{$base_url}#{$cas_context}logout"
+      on(BasePage).close_extra_windows
+      @browser.goto "#{$base_url+$cas_context}logout"
     else
-      visit(login_class).close_extra_windows if @browser.windows.size > 1
+      visit(Researcher)
+      visit(login_class).close_extra_windows
       on BasePage do |page|
         page.logout if page.logout_button.present?
       end

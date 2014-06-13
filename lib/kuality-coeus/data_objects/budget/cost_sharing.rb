@@ -2,16 +2,15 @@ class CostSharingObject < DataFactory
 
   include StringFactory
 
-  attr_reader :project_period, :percentage, :source_account, :amount,
-              # Note: Indexing is zero-based!
-              :index
+  attr_reader :project_period, :percentage, :source_account, :amount
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
         percentage:     '0.00',
-        source_account: random_alphanums_plus
+        source_account: random_alphanums_plus,
+        amount:         '0.00'
     }
     set_options(defaults.merge(opts))
   end
@@ -39,10 +38,10 @@ class CostSharingObject < DataFactory
     view
     on DistributionAndIncome do |page|
       page.expand_all
-      page.cost_sharing_project_period(@index).fit opts[:project_period]
-      page.cost_sharing_percentage(@index).fit opts[:percentage]
-      page.cost_sharing_source_account(@index).fit opts[:source_account]
-      page.cost_sharing_amount(@index).fit opts[:amount]
+      page.cost_sharing_project_period(@source_account, @amount).fit opts[:project_period]
+      page.cost_sharing_percentage(@source_account, @amount).fit opts[:percentage]
+      page.cost_sharing_source_account(@source_account, @amount).fit opts[:source_account]
+      page.cost_sharing_amount(@source_account, @amount).fit opts[:amount]
       page.save
     end
     update_options(opts)

@@ -29,7 +29,7 @@ class BasePage < PageFactory
     end
 
     def document_header_elements
-      value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text.strip }
+      value(:doc_title) { |b| b.headerarea.h1.text.strip }
       value(:headerinfo_table) { |b| b.noko.div(id: 'headerarea').table(class: 'headerinfo') }
       value(:document_id) { |p| p.headerinfo_table[0].text[/\d{4}/] }
       alias_method :doc_nbr, :document_id
@@ -46,6 +46,7 @@ class BasePage < PageFactory
       value(:committee_name) { |p| p.headerinfo_table[2][3].text }
       alias_method :pi, :committee_name
       alias_method :expiration_date, :committee_name
+      element(:headerarea) { |b| b.frm.div(id: 'headerarea') }
     end
 
     # Included here because this is such a common field in KC
@@ -88,16 +89,16 @@ class BasePage < PageFactory
     def search_results_table
       element(:results_table) { |b| b.frm.table(id: 'row') }
 
-      action(:edit_item) { |match, p| p.results_table.row(text: /#{match}/m).link(text: 'edit').click; p.use_new_tab; p.close_parents }
+      action(:edit_item) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'edit').click; p.use_new_tab; p.close_parents }
       alias_method :edit_person, :edit_item
 
       action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
 
-      action(:item_row) { |match, b| b.results_table.row(text: /#{match}/m) }
+      action(:item_row) { |match, b| b.results_table.row(text: /#{Regexp.escape(match)}/m) }
       # Note: Use this when you need to click the "open" link on the target row
-      action(:open) { |match, p| p.results_table.row(text: /#{match}/m).link(text: 'open').click; p.use_new_tab; p.close_parents }
+      action(:open) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'open').click; p.use_new_tab; p.close_parents }
       # Note: Use this when the link itself is the text you want to match
-      p_action(:open_item) { |match, b| b.frm.link(text: /#{match}/).click; b.use_new_tab; b.close_parents }
+      p_action(:open_item) { |match, b| b.frm.link(text: /#{Regexp.escape(match)}/).click; b.use_new_tab; b.close_parents }
       p_action(:delete_item) { |match, p| p.item_row(match).link(text: 'delete').click; p.use_new_tab; p.close_parents }
 
       p_action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
@@ -192,7 +193,7 @@ class BasePage < PageFactory
       value(:action_requests) { |b| (b.pnd_act_req_table.rows.collect{ |row| row[1].text}).reject{ |action| action==''} }
       action(:show_future_action_requests) { |b| b.route_log_iframe.h2(text: 'Future Action Requests').parent.parent.image(title: 'show').click }
       element(:future_actions_table) { |b| b.route_log_iframe.div(id: 'tab-FutureActionRequests-div').table }
-      action(:requested_action_for) { |name, b| b.future_actions_table.tr(text: /#{name}/).td(index: 2).text }
+      action(:requested_action_for) { |name, b| b.future_actions_table.tr(text: /#{Regexp.escape(name)}/).td(index: 2).text }
     end
 
     # Gathers all errors on the page and puts them in an array called "errors"
@@ -237,7 +238,7 @@ class BasePage < PageFactory
       }.each do |key, value|
         # Makes methods for the person's 4 credit splits (doesn't have to take the full name of the person to work)
         # Example: page.responsibility('Joe Schmoe').set '100.00'
-        action(key.to_sym) { |name, b| b.credit_split_div_table.row(text: /#{name}/)[value].text_field }
+        action(key.to_sym) { |name, b| b.credit_split_div_table.row(text: /#{Regexp.escape(name)}/)[value].text_field }
         # Makes methods for the person's units' credit splits
         # Example: page.unit_financial('Jane Schmoe', 'Unit').set '50.0'
         action("unit_#{key}".to_sym) { |full_name, unit_name, p| p.target_unit_row(full_name, unit_name)[value].text_field }

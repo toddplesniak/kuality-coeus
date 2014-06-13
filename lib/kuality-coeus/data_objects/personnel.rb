@@ -39,8 +39,12 @@ module Personnel
         # We need to exclude the set of test users from the list
         # of names we'll randomly select from...
         names = page.returned_full_names - $users.full_names
-        @last_name=names.sample[/\w+$/]
-        @first_name=$~.pre_match.strip
+        name = 'William Lloyd Garrison'
+        while name.scan(' ').size > 1
+          name = names.sample
+        end
+        @first_name = name[/^\w+/]
+        @last_name = name[/\w+$/]
         @full_name = @type=='employee' ? "#{@first_name} #{@last_name}" : "#{@last_name}, #{@first_name}"
       else
         fill_out page, :first_name, :last_name
@@ -57,7 +61,7 @@ module Personnel
       if @units.empty? # No units in @units, so we're not setting units
                        # ...so, get the units from the UI:
         @units=page.units @full_name if @key_person_role.nil?
-
+        @units.uniq!
       else # We have Units to add and update...
            # Temporarily store any existing units...
         page.add_unit_details(@full_name) unless @key_person_role.nil?
@@ -127,6 +131,10 @@ module Personnel
       log_in.username.set @user_name
       log_in.login
     end
+  end
+
+  def log_out
+    visit(Researcher).logout
   end
 
 end # Personnel

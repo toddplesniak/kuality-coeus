@@ -21,6 +21,6 @@ class Members < CommitteeDocument
   p_action(:lookup_expertise) { |name, b| b.member_area(name).button(alt: 'Multiple Value Search on ').click }
 
   private
-  p_element(:member_area) { |name, b| b.frm.h3(text: /#{name}/).parent }
+  p_element(:member_area) { |name, b| b.frm.h3(text: /#{Regexp.escape(name)}/).parent }
 
 end

@@ -76,7 +76,7 @@ class PaymentReportsTerms < KCAwards
   private
   # ========
 
-  p_element(:report_div) { |report, b| b.frm.div(id: "tab-ReportClasses:#{report}-div") }
+  p_element(:report_div) { |report, b| b.frm.div(id: "tab-ReportClasses:#{Regexp.escape(report)}-div") }
   p_element(:report_infoline) { |report, number, b| b.report_div(report).th(class: 'infoline', text: number) }
 
 end
