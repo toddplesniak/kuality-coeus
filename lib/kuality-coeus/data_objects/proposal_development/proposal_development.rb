@@ -187,7 +187,7 @@ class ProposalDevelopmentObject < DataFactory
   def recall(reason=random_alphanums)
     @recall_reason=reason
     open_document
-    on(Proposal).recall
+    on(ProposalActions).recall
     on Confirmation do |conf|
       conf.reason.set @recall_reason
       conf.yes
