@@ -328,8 +328,6 @@ class ProposalDevelopmentObject < DataFactory
   def navigate
     visit(Researcher).doc_search
     on DocumentSearch do |search|
-    visit(Researcher).doc_search
-    on DocumentSearch do |search|
       search.close_parents
       search.document_id.set @document_id
       search.search
