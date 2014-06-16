@@ -45,35 +45,36 @@ And /^I create a IRB Protocol with Expedited Submissions Review Type$/ do
 end
 
 And /^I submit a Expedited Approval with a date of last year$/ do
+  #Too many Protocols continue?
+  on(Confirmation).yes if on(Confirmation).yes_button.exists?
+  on(Confirmation).awaiting_doc
+
   on ProtocolActions do |page|
     page.expand_all_button.when_present.click
-    # page.expand_all
-    puts last_year[:date_w_slashes]
-    puts yesterday[:date_w_slashes]
     page.expedited_approval_date.when_present.focus
+    #PROBLEM when entering in date popup up appears saying wrong format.  Commenting out for now but needed for the test
     # page.expedited_approval_date.set ''
     # page.expedited_approval_date.set '06/12/2013'
-
     #"#{last_year[:date_w_slashes]}"
-
     # page.expedited_expiration_date.value.should == "#{yesterday[:date_w_slashes]}"
     page.submit_expedited_approval
-    page.processing_document
   end
+  on(Confirmation).awaiting_doc
 end
 
 
 And /^I create an Amendment$/ do
-  @irb_protocol.create_amendment
   on ProtocolActions do |page|
-    page.amendment_summary.fit 'hi made it here'
-
-    page.amend(@irb_protocol.amend.sample).set
-
-
-
+    page.expand_all_button.wait_until_present
+    page.expand_all
+    page.amendment_summary.set @irb_protocol.amendment_summary
+    page.amend(@irb_protocol.amend).set
+    page.create_amendment
   end
-
 end
 
+And /^I submit an Amendment of type Expedited for review$/ do
+  @irb_protocol.submit_for_review  submission_type: 'Amendment',
+                                   submission_review_type: 'Expedited'
+end
 

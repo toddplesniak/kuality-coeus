@@ -56,10 +56,9 @@ end
 
 And /^the approval buttons appear on the Proposal Summary and Proposal Action pages$/ do
   [:approve_button, :disapprove_button, :reject_button].each do |button|
-    on ProposalSummary do |page|
-      page.send(button).should exist
-      page.proposal_actions
-    end
+    @proposal.view :proposal_summary
+    on(ProposalSummary).send(button).should exist
+    @proposal.view :proposal_actions
     on(ProposalActions).send(button).should exist
   end
 end

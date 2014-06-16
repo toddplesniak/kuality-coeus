@@ -7,6 +7,10 @@ Then /^the Award's Lead Unit is changed to (.*)$/ do |unit|
   on(Award).lead_unit_ro.should=~/^#{unit}/
 end
 
+Then /^the Award's title is trimmed to the first 200 characters$/ do
+  on(Award).award_title.value.should==@award.award_title[0..199]
+end
+
 Then /^a warning appears saying tracking details won't be added until there's a PI$/ do
   on(PaymentReportsTerms).errors.should include 'Report tracking details won\'t be added until a principal investigator is set.'
 end
@@ -203,12 +207,6 @@ Then /^the default start and end dates are based on the F&A rate's fiscal year$/
   f_y = fna.fiscal_year.to_i
   fna.start_date.should=="07/01/#{f_y-1}"
   fna.end_date.should=="06/30/#{f_y}"
-end
-
-Then /^the deleted F&A rates are restored to the Award$/ do
-  @award.fa_rates.each do |fna|
-    on(Commitments).fna_sources.should include fna.source
-  end
 end
 
 And /^returning to the Award goes to the new, pending version$/ do

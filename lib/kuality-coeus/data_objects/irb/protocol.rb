@@ -9,7 +9,7 @@ class IRBProtocolObject < DataFactory
                :protocol_number, :status, :submission_status, :expiration_date,
                # Submit for review...
                :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
-               :expedited_checklist, :amend
+               :expedited_checklist, :amend, :amendment_summary
 
   def initialize(browser, opts={})
     @browser = browser
@@ -19,7 +19,10 @@ class IRBProtocolObject < DataFactory
         protocol_type:       '::random::',
         title:               random_alphanums_plus,
         lead_unit:           '::random::',
-        expedited_checklist: []
+        expedited_checklist: [],
+        amendment_summary: random_alphanums_plus,
+        amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers', 'Protocol Organizations',
+                'Subjects', 'Questionnaire', 'General Info', 'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
 
     }
     # TODO: Needs a @lookup_class and @search_key defined
@@ -76,11 +79,11 @@ class IRBProtocolObject < DataFactory
         #hash.keys.sample gets the key which is then used to find the value defined in EXPEDITED_CHECKLIST
         page.expedited_checklist(Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample)).set
 
-        puts 'hash sample'
-        puts Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample).inspect
-
+        # puts 'hash sample'
+        # puts Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample).inspect
 
       end
+
 
       page.submit_for_review
       page.processing_document
@@ -91,18 +94,21 @@ class IRBProtocolObject < DataFactory
   def create_amendment opts={}
     defaults = {
       amendment_summary: random_alphanums_plus,
-      amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers', 'Protocol Organizations',
-                'Subjects', 'Questionnaire', 'General Info', 'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
     }
     set_options(defaults.merge(opts))
 
-    on ProtocolActions do |page|
-      fill_out page, :amendment_summary
-      page.amend(:amend).set
-
-      page.create_amendment
-      page.processing_document
-    end
+    # on(KCProtocol).protocol_actions
+    # on ProtocolActions do |page|
+    #   page.expand_all
+    #
+    #   fill_out page, :amendment_summary
+    #   page.amend(@amend).set
+    #
+    #   sleep 30
+    #   page.create_amendment
+    #   # page.processing_document
+    #   puts 'why you no work?'
+    # end
   end
 
   # =======

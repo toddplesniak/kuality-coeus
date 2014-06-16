@@ -7,7 +7,7 @@ class ProtocolActions < KCProtocol
   element(:committee) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.committeeId') }
   element(:schedule_date) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.scheduleId') }
 
-
+  action(:protocol_actions_tab) { |b| b.frm.button(value: 'Protocol Actions').click}
 
   element(:expedited_review_checklist) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }
   p_element(:expedited_checklist) { |i, b| b.expedited_review_checklist.checkbox(name: "actionHelper.protocolSubmitAction.expeditedReviewCheckList[#{i}].checked") }
@@ -16,16 +16,14 @@ class ProtocolActions < KCProtocol
 
   action(:submit_for_review) { |b| b.frm.button(name: 'methodToCall.submitForReview.anchor:SubmitforReview').click; b.loading; b.awaiting_doc }
 
-
   #Expedited Approval
   element(:expedited_approval_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.approvalDate') }
   element(:expedited_expiration_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.expirationDate') }
 
-  #number 56 worries me about failing if that changes
-  action(:submit_expedited_approval) { |b| b.frm.button(name: 'methodToCall.grantExpeditedApproval.anchor56').click }
+  action(:submit_expedited_approval) { |b| b.frm.button(name: /^methodToCall.grantExpeditedApproval/).click }
 
-  value(:expedited_approval_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 1)[1].text
-  value(:expedited_expiration_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 2)[1].text
+  value(:expedited_approval_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 1)[1].text }
+  value(:expedited_expiration_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 2)[1].text }
 
   #Create Amendment
   element(:amendment_summary) { |b| b.frm.textarea(name: 'actionHelper.protocolAmendmentBean.summary') }
@@ -42,6 +40,5 @@ class ProtocolActions < KCProtocol
   value(:reviewers) { |b| b.reviewers_row.hiddens(name: /fullName/).map{|r| r.value} }
   p_element(:reviewer_type) { |name, b| b.reviewers_row.td(text: /#{name}/).parent.select(name: /actionHelper.protocolSubmitAction.reviewer\[\d+\].reviewerTypeCode/) }
   element(:reviewers_row) { |b| b.frm.tr(id: 'reviewers') }
-
 
 end

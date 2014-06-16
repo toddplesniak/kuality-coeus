@@ -6,7 +6,7 @@ When /^the Create Proposal Log user creates a Proposal Log but misses a required
   # Properly set the nil value depending on the field type...
   required_field=~/Type/ ? value='select' : value=''
   # Transform the field name to the appropriate symbol...
-  field = damballa(@required_field)
+  field = damballa(required_field)
   @proposal_log = create ProposalLogObject, field=>value
   @required_field_error = "#{required_field} (#{required_field}) is a required field."
 end

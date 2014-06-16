@@ -30,7 +30,7 @@ Feature: Basic Award Validations
   Scenario: Enter a title containing more than 200 characters
     Given the Award Modifier creates an Award
     When  the Award's title is made more than 200 characters long
-    Then  an error should appear that says the Award's title can't be longer than 200 characters
+    Then  the Award's title is trimmed to the first 200 characters
 
   Scenario: The anticipated amount is less than the obligated amount
     When  the Award Modifier creates an Award with more obligated than anticipated amounts
