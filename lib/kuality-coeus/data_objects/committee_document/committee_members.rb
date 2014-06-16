@@ -27,7 +27,7 @@ class CommitteeMemberObject < DataFactory
     # TODO: Support non-employee searching
     on(Members).employee_search
     if @name=='::random::'
-      on PersonLookup do |page|
+      on KcPersonLookup do |page|
         letter = %w{a r e o n}.sample
         page.first_name.set "*#{letter}*"
         page.search
