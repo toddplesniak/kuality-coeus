@@ -67,22 +67,15 @@ class BudgetColumnObject < DataFactory
     # TODO: This will need to be made more robust at some point because not every user will have permissions
     # To keep it simple for now, just be sure this code is run very early in scenarios.
     $users.admin.log_in if $users.current_user==nil
-    visit Maintenance do |page|
-      if Login.new(@browser).username.present?
-        UserObject.new(@browser).log_in
-      end
-      page.budget_editable_columns
-    end
+    visit(Maintenance).budget_editable_columns
     on BudgetColumnsToAlterLookup do |look|
       look.column_name.select @name
       look.search
-
       begin
-        look.results_table.present?
+        return look.results_table.present?
       rescue
         return false
       end
-
     end
   end
 

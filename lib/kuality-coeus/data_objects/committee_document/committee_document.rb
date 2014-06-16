@@ -45,6 +45,10 @@ class CommitteeDocumentObject < DataFactory
     end
   end
 
+  def edit opts={}
+    # TODO: Write this!
+  end
+
   def submit
     open_document
     on(Committee).submit
