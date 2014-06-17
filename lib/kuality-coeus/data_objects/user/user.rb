@@ -332,14 +332,7 @@ class UserObject < DataFactory
 
   def exist?
     $users.admin.log_in if $users.current_user==nil
-    x = 0
-    until @browser.frm.div(id: 'lookup').present? do
-      visit(SystemAdmin).person
-      sleep 1
-      break if x==20
-      x+=1
-    end
-    on PersonLookup do |search|
+    visit PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
       begin
