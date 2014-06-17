@@ -335,10 +335,10 @@ class UserObject < DataFactory
 
     visit(Researcher).create_proposal
 
-    frame = @browser.frame
+    frame = @browser.iframe
     puts
     puts frame.id.inspect
-    puts frame.frame.id.inspect
+    puts frame.iframe.id.inspect
     puts
 
     visit PersonLookup do |search|
