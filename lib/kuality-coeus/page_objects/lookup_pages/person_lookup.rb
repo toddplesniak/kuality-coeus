@@ -1,6 +1,8 @@
 # coding: UTF-8
 class PersonLookup < Lookups
 
+  expected_element :principal_name
+
   results_multi_select
 
   url_info 'Person','rice.kim.api.identity.Person'
