@@ -2,9 +2,9 @@ module Watir
   module Container
     def frm
       frames = [
-          frame(id: 'iframeportlet'),
-          frame(id: /easyXDM_default\d+_provider/).frame(id: 'iframeportlet'),
-          frame(id: /easyXDM_default\d+_provider/),
+          iframe(id: 'iframeportlet'),
+          iframe(id: /easyXDM_default\d+_provider/).iframe(id: 'iframeportlet'),
+          iframe(id: /easyXDM_default\d+_provider/),
           self ]
       i = 0
       until frames[i].exists? do
