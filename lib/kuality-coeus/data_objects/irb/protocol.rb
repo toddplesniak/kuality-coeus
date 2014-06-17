@@ -55,8 +55,7 @@ class IRBProtocolObject < DataFactory
         submission_type: '::random::',
         submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
         type_qualifier: '::random::',
-        committee: '::random::',
-        schedule_date: '::random::'
+        committee: '::random::'
     }
     set_options(defaults.merge(opts))
     view :protocol_actions
@@ -64,8 +63,38 @@ class IRBProtocolObject < DataFactory
       page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
                :committee
+      # If the test doesn't specify a particular schedule date then
+      # we want to pick the first selectable item
+      # so as to make it most likely that there
+      # will be active committee members available...
+      @schedule_date ||= page.schedule_date.options[1].text
       page.schedule_date.pick! @schedule_date
       page.submit_for_review
+
+
+      # DEBUG
+      puts page.reviewers.inspect
+      puts @schedule_date.inspect
+
+
+
+
+    end
+  end
+
+  def assign_reviewers
+    view :protocol_actions
+    on ProtocolActions do |page|
+      page.expand_all
+
+
+
+      # DEBUG
+      puts page.reviewers.inspect
+      sleep 500
+
+
+
     end
   end
 

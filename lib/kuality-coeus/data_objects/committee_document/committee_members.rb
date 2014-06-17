@@ -12,9 +12,9 @@ class CommitteeMemberObject < DataFactory
         name:            '::random::',
         membership_type: '::random::',
         term_start_date: right_now[:date_w_slashes],
-        term_end_date:   hours_from_now(10416)[:date_w_slashes],
+        term_end_date:   hours_from_now(20832)[:date_w_slashes],
         paid_member:     :clear,
-        roles:           [{role: '::random::', start_date: right_now[:date_w_slashes], end_date: hours_from_now(10416)[:date_w_slashes]}],
+        roles:           [{role: '::random::', start_date: right_now[:date_w_slashes], end_date: hours_from_now(20832)[:date_w_slashes]}],
         expertise:       []
     }
 

@@ -333,6 +333,8 @@ class UserObject < DataFactory
   def exist?
     $users.admin.log_in if $users.current_user==nil
     visit(SystemAdmin).person
+    # FIXME!
+    sleep 2
     on PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
