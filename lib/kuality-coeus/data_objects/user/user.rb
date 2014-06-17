@@ -339,6 +339,7 @@ class UserObject < DataFactory
     puts
     puts frame.id.inspect
     puts frame.iframe.id.inspect
+    puts @browser.frm.id.inspect
     puts
 
     visit PersonLookup do |search|
