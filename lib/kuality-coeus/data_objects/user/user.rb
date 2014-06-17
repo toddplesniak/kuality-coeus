@@ -332,6 +332,20 @@ class UserObject < DataFactory
 
   def exist?
     $users.admin.log_in if $users.current_user==nil
+
+
+
+    # DEBUG
+    visit(Researcher).create_proposal
+    on Proposal do |page|
+      puts page.sponsor_code.present?
+      puts page.required_fields_div.present?
+      puts page.errors.inspect
+    end
+
+
+
+
     visit PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
