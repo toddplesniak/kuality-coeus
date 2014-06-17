@@ -70,15 +70,6 @@ class IRBProtocolObject < DataFactory
       @schedule_date ||= page.schedule_date.options[1].text
       page.schedule_date.pick! @schedule_date
       page.submit_for_review
-
-
-      # DEBUG
-      puts page.reviewers.inspect
-      puts @schedule_date.inspect
-
-
-
-
     end
   end
 
@@ -91,7 +82,8 @@ class IRBProtocolObject < DataFactory
 
       # DEBUG
       puts page.reviewers.inspect
-      sleep 500
+      sleep 50
+
 
 
 

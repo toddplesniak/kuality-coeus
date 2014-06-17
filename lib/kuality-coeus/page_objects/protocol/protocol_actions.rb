@@ -12,7 +12,7 @@ class ProtocolActions < KCProtocol
   # Returns an array containing the names of the listed reviewers
   value(:reviewers) { |b|
                        # Note that this method works for both Submit for Review...
-                       if b.submit_for_review_div.present?
+                       if b.reviewers_row.present?
                          b.reviewers_row.hiddens(name: /fullName/).map{|r| r.value}
                        else
                        # ...or for Assign Reviewers

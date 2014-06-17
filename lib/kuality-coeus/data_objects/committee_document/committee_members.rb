@@ -12,9 +12,9 @@ class CommitteeMemberObject < DataFactory
         name:            '::random::',
         membership_type: '::random::',
         term_start_date: right_now[:date_w_slashes],
-        term_end_date:   hours_from_now(20832)[:date_w_slashes],
-        paid_member:     :clear,
-        roles:           [{role: '::random::', start_date: right_now[:date_w_slashes], end_date: hours_from_now(20832)[:date_w_slashes]}],
+        term_end_date:   hours_from_now(50000)[:date_w_slashes],
+        paid_member:     [:clear, :set].sample,
+        roles:           [{role: '::random::', start_date: right_now[:date_w_slashes], end_date: hours_from_now(50000)[:date_w_slashes]}],
         expertise:       []
     }
 
@@ -61,19 +61,33 @@ class CommitteeMemberObject < DataFactory
       end
     end
     on(Members).save
+
+
+
+
+    # DEBUG
+    sleep 45 if on(Members).errors.count > 0
+
+
+
+
+
+
+
   end
 
   private
 
   def add_expertise(item=nil)
+    on Members do |page|
+      page.expand_all
+      page.lookup_expertise(@name)
+    end
     if item
       # TODO: Write this code
     else
-      on Members do |page|
-        page.expand_all
-        page.lookup_expertise(@name)
-      end
       on ResearchAreasLookup do |page|
+        page.research_area_code.set "*#{rand(99)}*"
         page.search
         research_description = page.research_descriptions.sample
         page.check_item(research_description)
