@@ -332,19 +332,8 @@ class UserObject < DataFactory
 
   def exist?
     $users.admin.log_in if $users.current_user==nil
-    visit(SystemAdmin).person
-    on PersonLookup do |search|
-
-
-      # DEBUG
-      puts @browser.url.inspect
-      puts search.url.inspect
-
+    visit PersonLookup do |search|
       search.principal_name.set @user_name
-
-      # DEBUG
-      exit
-
       search.search
       begin
         if search.item_row(@user_name).present?

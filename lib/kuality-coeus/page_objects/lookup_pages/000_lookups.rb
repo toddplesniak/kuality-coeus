@@ -14,10 +14,16 @@ class Lookups < BasePage
                 $base_url[/.*(?=\/$)/]+':'+$port+'/'+riceify
               }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
                class_name
-              }&docFormKey=88888888&includeCustomActionUrls=true&returnLocation=#{
+              }&docFormKey=88888888&returnLocation=#{
                $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
               }portal.do&hideReturnLink=true|
   end
+
+  # &includeCustomActionUrls=true
+  #http://test.kc.kuali.org/kc-dly/portal.do?channelTitle=Person
+  #&channelUrl=http://test.kc.kuali.org:80/kr-dly/kr/lookup.do?
+  #methodToCall=start&businessObjectClassName=org.kuali.rice.kim.api.identity.Person
+  #&docFormKey=88888888&returnLocation=http://test.kc.kuali.org:80/kc-dly/portal.do&hideReturnLink=true
 
   element(:last_name) { |b| b.frm.text_field(id: 'lastName') }
   element(:first_name) { |b| b.frm.text_field(id: 'firstName') }
