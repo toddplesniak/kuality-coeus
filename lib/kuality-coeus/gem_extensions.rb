@@ -10,7 +10,11 @@ module Watir
       until frames[i].exists? do
         i=i+1
       end
+
+      # DEBUG
       puts i.inspect
+
+
       frames[i]
     end
   end
