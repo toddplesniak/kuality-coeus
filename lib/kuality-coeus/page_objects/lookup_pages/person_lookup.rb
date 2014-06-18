@@ -1,7 +1,7 @@
 # coding: UTF-8
 class PersonLookup < Lookups
 
-  expected_element :principal_name, 5
+  expected_element :principal_name, 8
 
   results_multi_select
 
