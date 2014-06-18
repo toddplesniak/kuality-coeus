@@ -4,12 +4,14 @@ class Lookups < BasePage
   search_results_table
 
   def self.url_info(title, class_name)
+    riceify = $context
+    riceify.gsub!('c','r') if class_name[/^rice/] && $base_url[/kuali/]
     page_url %|#{
                 $base_url+$context
               }portal.do?channelTitle=#{
                 title
               }&channelUrl=#{
-                $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
+                $base_url[/.*(?=\/$)/]+':'+$port+'/'+riceify
               }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
                class_name
               }&docFormKey=88888888&includeCustomActionUrls=true&returnLocation=#{
