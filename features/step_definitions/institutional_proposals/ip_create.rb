@@ -42,7 +42,7 @@ When /^the Create Proposal Log user creates an institutional proposal with a mis
       project_title: "Project Title (Title)#{text}",
       description:   "Document Description (Description)#{text}",
       activity_type: "Activity Type (Activity)#{text}",
-      sponsor_id:    "Sponsor ID  (Sponsor ID)#{text}",
+      sponsor_id:    "Sponsor ID (Sponsor ID)#{text}",
       proposal_type: "Proposal Type (Proposal Type Code)#{text}"
   }
   @required_field_error = error_text[field]

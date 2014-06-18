@@ -1,16 +1,5 @@
 class BasePage < PageFactory
 
-=begin
-  element(:frm) { |b|
-    if b.div(id: 'embedded').exist?
-      b.iframe.iframe
-    else
-      b.body
-    end
-  }
-=end
-
-
   action(:use_new_tab) { |b| b.windows.last.use }
   action(:return_to_portal) { |b| b.portal_window.use }
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
@@ -261,7 +250,7 @@ class BasePage < PageFactory
     # ========
 
     def links(*links_text)
-      links_text.each { |link| elementate(:link, link) }
+      links_text.each { |link| elementize(:link, link) }
     end
 
     def buttons(*buttons_text)
@@ -283,8 +272,8 @@ class BasePage < PageFactory
       identifiers={:link=>:text, :button=>:value}
       el_name=damballa("#{text}_#{type}")
       act_name=damballa(text)
-      element(el_name) { |b| b.send(type, identifiers[type]=>text) }
-      action(act_name) { |b| b.send(type, identifiers[type]=>text).click }
+      element(el_name) { |b| b.frm.send(type, identifiers[type]=>text) }
+      action(act_name) { |b| b.frm.send(type, identifiers[type]=>text).click }
     end
 
     # Used for getting rid of the space and comma in the full name

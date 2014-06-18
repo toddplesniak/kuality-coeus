@@ -334,22 +334,6 @@ class UserObject < DataFactory
     $users.admin.log_in if $users.current_user==nil
     visit(SystemAdmin).person
     on PersonLookup do |search|
-
-    # DEBUG
-    puts
-    puts
-    puts @browser.div(id: 'embedded').html
-    puts
-    puts
-    puts
-    #puts @browser.frm.id.inspect
-    puts
-    puts
-    puts
-    #puts @browser.frm.text_field(id: 'principalName').present?
-    puts
-    puts
-
       search.principal_name.set @user_name
       search.search
       begin
