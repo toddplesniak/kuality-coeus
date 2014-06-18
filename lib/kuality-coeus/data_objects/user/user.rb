@@ -334,6 +334,19 @@ class UserObject < DataFactory
     $users.admin.log_in if $users.current_user==nil
     visit(SystemAdmin).person
     on PersonLookup do |search|
+
+
+      # DEBUG
+      puts
+      puts
+      puts @browser.url
+      puts
+      puts
+      puts
+      puts search.url
+      puts
+      puts
+
       search.principal_name.set @user_name
       search.search
       begin
