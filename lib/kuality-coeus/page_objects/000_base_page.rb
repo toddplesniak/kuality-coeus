@@ -1,5 +1,6 @@
 class BasePage < PageFactory
 
+=begin
   element(:frm) { |b|
     if b.div(id: 'embedded').exist?
       b.iframe.iframe
@@ -7,6 +8,7 @@ class BasePage < PageFactory
       b.body
     end
   }
+=end
 
 
   action(:use_new_tab) { |b| b.windows.last.use }
