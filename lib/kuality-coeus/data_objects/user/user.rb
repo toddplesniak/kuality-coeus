@@ -336,13 +336,17 @@ class UserObject < DataFactory
     visit PersonLookup do |search|
 
     # DEBUG
-    frame = @browser.iframe
     puts
     puts
-    puts frame.id.inspect
-    puts frame.iframe.id.inspect
-    puts @browser.frm.id.inspect
-    puts @browser.frm.text_field(id: 'principalName').present?
+    puts @browser.div(id: 'embedded').html
+    puts
+    puts
+    puts
+    #puts @browser.frm.id.inspect
+    puts
+    puts
+    puts
+    #puts @browser.frm.text_field(id: 'principalName').present?
     puts
     puts
 
