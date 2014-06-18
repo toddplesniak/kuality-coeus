@@ -333,18 +333,19 @@ class UserObject < DataFactory
   def exist?
     $users.admin.log_in if $users.current_user==nil
 
-    visit(Researcher).create_proposal
+    visit PersonLookup do |search|
 
+    # DEBUG
     frame = @browser.iframe
     puts
     puts
     puts frame.id.inspect
     puts frame.iframe.id.inspect
     puts @browser.frm.id.inspect
+    puts @browser.frm.text_field(id: 'principalName').present?
     puts
     puts
 
-    visit PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
       begin
