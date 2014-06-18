@@ -332,6 +332,7 @@ class UserObject < DataFactory
 
   def exist?
     $users.admin.log_in if $users.current_user==nil
+    exit
     visit PersonLookup do |search|
       search.principal_name.set @user_name
       search.search

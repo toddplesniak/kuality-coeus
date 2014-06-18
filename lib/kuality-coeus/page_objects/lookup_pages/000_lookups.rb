@@ -6,17 +6,19 @@ class Lookups < BasePage
   def self.url_info(title, class_name)
     riceify = $context
     riceify.gsub!('c','r') if class_name[/^rice/] && $base_url[/kuali/]
-    page_url %|#{
-                $base_url+$context
-              }portal.do?channelTitle=#{
-                title
-              }&channelUrl=#{
-                $base_url[/.*(?=\/$)/]+':'+$port+'/'+riceify
-              }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
-               class_name
-              }&docFormKey=88888888&returnLocation=#{
-               $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
-              }portal.do&hideReturnLink=true|
+    string = %|#{
+    $base_url+$context
+    }portal.do?channelTitle=#{
+    title
+    }&channelUrl=#{
+    $base_url[/.*(?=\/$)/]+':'+$port+'/'+riceify
+    }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
+    class_name
+    }&docFormKey=88888888&returnLocation=#{
+    $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
+    }portal.do&hideReturnLink=true|
+    puts string
+    page_url string
   end
 
   # &includeCustomActionUrls=true
