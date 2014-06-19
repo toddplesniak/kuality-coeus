@@ -16,22 +16,22 @@ Feature: Basic Error Validations for Institutional Proposals
     When  the Institutional Proposal Maintainer adds a cost sharing element with a missing required field
     Then  an error should appear saying the field is required
 
-  Scenario: Filling out cost share amount fields with invalid entries
-    Given 1 Approved Institutional Proposal exists
-    When  the Institutional Proposal Maintainer enters letters in the numeric cost share fields
-    Then  errors should appear warning that the field contents are not valid
-
-  Scenario: Attempt to add an unrecovered f&a element w/o required field
-    Given 1 Approved Institutional Proposal exists
-    When  the Institutional Proposal Maintainer adds an unrecovered f&a element with a missing required field
-    Then  an error should appear saying the field is required
-
-  Scenario: Filling out cost unrecovered f&a fields with invalid entries
-    Given 1 Approved Institutional Proposal exists
-    When  the Institutional Proposal Maintainer enters letters in the numeric unrecovered F&A fields
-    Then  errors should appear warning that the field contents are not valid
-
-  Scenario: Filling out fiscal year with an invalid year
-    Given 1 Approved Institutional Proposal exists
-    When  the Institutional Maintainer enters an invalid year for the fiscal year field
-    Then  an error should appear that says the allowable range for fiscal years
+#  Scenario: Filling out cost share amount fields with invalid entries
+#    Given 1 Approved Institutional Proposal exists
+#    When  the Institutional Proposal Maintainer enters letters in the numeric cost share fields
+#    Then  errors should appear warning that the field contents are not valid
+#
+#  Scenario: Attempt to add an unrecovered f&a element w/o required field
+#    Given 1 Approved Institutional Proposal exists
+#    When  the Institutional Proposal Maintainer adds an unrecovered f&a element with a missing required field
+#    Then  an error should appear saying the field is required
+#
+#  Scenario: Filling out cost unrecovered f&a fields with invalid entries
+#    Given 1 Approved Institutional Proposal exists
+#    When  the Institutional Proposal Maintainer enters letters in the numeric unrecovered F&A fields
+#    Then  errors should appear warning that the field contents are not valid
+#
+#  Scenario: Filling out fiscal year with an invalid year
+#    Given 1 Approved Institutional Proposal exists
+#    When  the Institutional Maintainer enters an invalid year for the fiscal year field
+#    Then  an error should appear that says the allowable range for fiscal years

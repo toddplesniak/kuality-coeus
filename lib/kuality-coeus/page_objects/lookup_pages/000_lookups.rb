@@ -4,8 +4,7 @@ class Lookups < BasePage
   search_results_table
 
   def self.url_info(title, class_name)
-    riceify = $context
-    riceify.gsub!('c','r') if class_name[/^rice/] && $base_url[/kuali/]
+    riceify = class_name[/^rice/] && $base_url[/kuali/] ? $context.gsub('c','r') : $context
     string = %|#{
               $base_url+$context
               }portal.do?channelTitle=#{
