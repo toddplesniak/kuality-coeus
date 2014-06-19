@@ -20,7 +20,7 @@ class Award < KCAwards
   element(:account_id) { |b| b.frm.text_field(name: 'document.awardList[0].accountNumber') }
   element(:account_type) { |b| b.frm.select(name: 'document.awardList[0].accountTypeCode') }
   element(:award_type) { |b| b.frm.select(name: 'document.awardList[0].awardTypeCode') }
-  element(:award_title) { |b| b.frm.text_field(name: 'document.awardList[0].title') }
+  element(:award_title) { |b| b.frm.textarea(name: 'document.awardList[0].title') }
   element(:sponsor_id) { |b| b.frm.text_field(name: 'document.awardList[0].sponsorCode') }
   element(:prime_sponsor) { |b| b.frm.text_field(name: 'document.awardList[0].primeSponsorCode') }
   action(:lookup_prime_sponsor) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.Sponsor!!).(((sponsorCode:document.awardList[0].primeSponsorCode,sponsorName:document.awardList[0].primeSponsor.sponsorName))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchorDetailsDates').click }
