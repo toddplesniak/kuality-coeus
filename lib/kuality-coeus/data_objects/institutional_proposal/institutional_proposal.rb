@@ -105,7 +105,7 @@ class InstitutionalProposalObject < DataFactory
 
   def view(tab)
     open_document
-    on(InstitutionalProposal).send(StringFactory.damballa(tab.to_s))
+    on(KCInstitutionalProposal).send(StringFactory.damballa(tab.to_s))
   end
 
   def add_custom_data opts={}
