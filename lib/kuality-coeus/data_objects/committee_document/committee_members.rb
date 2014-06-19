@@ -25,13 +25,28 @@ class CommitteeMemberObject < DataFactory
   def create
     # Navigation done by CommitteeDocument object
     # TODO: Support non-employee searching
-    on(Members).employee_search
+    on Members do |page|
+      existing_members = page.existing_members
+
+      # DEBUG
+      puts existing_members.inspect
+
+      page.employee_search
+    end
     if @name=='::random::'
       on KcPersonLookup do |page|
         letter = %w{a r e o n}.sample
         page.first_name.set "*#{letter}*"
         page.search
-        page.return_random
+
+
+        # TODO: Write code to restrict selection to
+        # unused names...
+        puts page.returned_full_names.inspect
+        names = page.returned_full_names - existing_members
+        puts names.inspect
+
+
       end
       on Members do |page|
         @name = page.member_name_pre_add
@@ -87,8 +102,11 @@ class CommitteeMemberObject < DataFactory
       # TODO: Write this code
     else
       on ResearchAreasLookup do |page|
-        page.research_area_code.set "*#{rand(99)}*"
-        page.search
+        until page.results_table.present?
+          page.research_area_code.set "*#{rand(99)}*"
+          page.search
+          sleep 0.2
+        end
         research_description = page.research_descriptions.sample
         page.check_item(research_description)
         page.return_selected

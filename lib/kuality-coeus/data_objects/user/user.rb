@@ -332,13 +332,7 @@ class UserObject < DataFactory
 
   def exist?
     $users.admin.log_in if $users.current_user==nil
-    visit(SystemAdmin).person
-
-    # FIXME: This is a hack to support the Jenkins Headless testing...
-    sleep 2
-    @browser.frm.div(id: 'lookup').wait_until_present
-
-    on PersonLookup do |search|
+    visit PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
       begin

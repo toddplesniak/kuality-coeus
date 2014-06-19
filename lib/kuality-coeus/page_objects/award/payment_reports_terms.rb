@@ -8,7 +8,7 @@ class PaymentReportsTerms < KCAwards
   element(:osp_file_copy) { |b| b.frm.select(name: 'awardReportsBean.newAwardReportTerms[2].ospDistributionCode') }
   action(:add_payment_type) { |b| b.frm.button(name: 'methodToCall.addAwardReportTerm.reportClass6.reportClassIndex2.anchorReportClasses:PaymentInvoiceRequirements').click; b.loading }
 
-  element(:invoice_instructions) { |b| b.frm.text_field(name: 'document.awardList[0].awardPaymentAndInvoiceRequirementsComments.comments') }
+  element(:invoice_instructions) { |b| b.frm.textarea(name: 'document.awardList[0].awardPaymentAndInvoiceRequirementsComments.comments') }
   
   action(:generate_schedule) { |b| b.frm.button(name: 'methodToCall.generatePaymentSchedules.anchorReportClasses:PaymentInvoiceRequirements').click; b.loading }
 

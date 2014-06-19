@@ -249,8 +249,9 @@ class BasePage < PageFactory
     private
     # ========
 
+    # Don't use this with links that are contained in the iframes...
     def links(*links_text)
-      links_text.each { |link| elementate(:link, link) }
+      links_text.each { |link| elementize(:link, link) }
     end
 
     def buttons(*buttons_text)

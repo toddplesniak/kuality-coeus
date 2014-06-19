@@ -25,7 +25,7 @@ And /the IRB Admin submits a Committee that allows a maximum of 1 protocol/ do
 end
 
 And /adds several members to the Committee/ do
-  (rand(4)+30).times{@committee.add_member}
+  (rand(4)+33).times{@committee.add_member}
 end
 
 And /schedules at least one event for the Committee/ do

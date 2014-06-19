@@ -34,11 +34,11 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0.4)
-    test-factory (0.4.7)
+    test-factory (0.5.0)
       watir-webdriver (>= 0.6.4)
     watir-nokogiri (1.0.0)
       nokogiri
-    watir-webdriver (0.6.4)
+    watir-webdriver (0.6.10)
       selenium-webdriver (>= 2.18.0)
     websocket (1.0.7)
 
@@ -49,6 +49,6 @@ DEPENDENCIES
   cucumber
   headless (~> 1.0.1)
   rspec
-  test-factory (>= 0.4.7)
+  test-factory (>= 0.5.0)
   watir-nokogiri
-  watir-webdriver (= 0.6.4)
+  watir-webdriver (= 0.6.10)
