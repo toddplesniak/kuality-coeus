@@ -1,5 +1,7 @@
 class InstitutionalProposal < KCInstitutionalProposal
 
+  expected_element :document_overview_tab
+
   description_field
 
   value(:institutional_proposal_number) { |b| b.institutional_proposal_tab.table[0][1].text.strip }
