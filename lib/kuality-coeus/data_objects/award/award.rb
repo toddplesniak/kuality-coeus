@@ -278,6 +278,13 @@ class AwardObject < DataFactory
       page.expand_all
       page.award_hierarchy_link.wait_until_present
       page.submit
+
+
+      # DEBUG
+      sleep 299
+
+
+
       # TODO: Code for intelligently handling the appearance of this (It's a screen about validation warnings)
       confirmation
 
