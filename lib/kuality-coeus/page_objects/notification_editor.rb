@@ -8,7 +8,7 @@ class NotificationEditor < BasePage
   action(:add) { |b| b.frm.button(name: 'methodToCall.addNotificationRecipient.anchor').click }
 
   element(:subject) { |b| b.frm.text_field(name: 'notificationHelper.notification.subject') }
-  element(:message) { |b| b.frm.text_field(name: 'notificationHelper.notification.message') }
+  element(:message) { |b| b.frm.textarea(name: 'notificationHelper.notification.message') }
 
   # Unfortunately this is necessary because it's the only way
   # to know the IP Number when it gets created
