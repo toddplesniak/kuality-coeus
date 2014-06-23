@@ -1,3 +1,4 @@
+@Proposal
 Feature: Copying Proposal Development Documents
 
   As a Proposal Creator, I want to be able to copy

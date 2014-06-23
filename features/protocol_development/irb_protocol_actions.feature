@@ -1,3 +1,4 @@
+@IRB
 Feature: IRB Protocol Actions
 
   TBD

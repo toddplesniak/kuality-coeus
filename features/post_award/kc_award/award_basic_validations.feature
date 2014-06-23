@@ -1,3 +1,4 @@
+@Award
 Feature: Basic Award Validations
 
   As an Award Modifier, I want to know when an Award document contains errors and omissions,
