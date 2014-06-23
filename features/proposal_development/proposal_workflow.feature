@@ -1,3 +1,4 @@
+@Proposal
 Feature: Proposal Workflows and Routing
 
   As system user with the appropriate roles and permissions, I want the ability to

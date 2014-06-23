@@ -1,3 +1,4 @@
+@Proposal, @Smoke
 Feature: Creating a proposal development document
 
   As a researcher I want the ability to create a proposal
