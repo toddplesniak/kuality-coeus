@@ -1,4 +1,3 @@
-@failing_in_background_bad_path
 Feature: Award Versions
 
   Summary to be written
