@@ -58,19 +58,6 @@ class TimeAndMoneyObject < DataFactory
 
   def submit
     on TimeAndMoney do |page|
-
-
-      # DEBUG
-      puts
-      puts
-      puts
-      puts 'Here we go!'
-      puts
-      puts
-      puts
-      sleep 25
-
-
       page.submit
       page.hierarchy_table.wait_until_present
       @status = page.header_status

@@ -20,7 +20,7 @@ Feature: Adding Multiple Funding Proposals to an Award
     Given the Award Modifier starts an Award with the first Funding Proposal
     When  the Award Modifier adds the second Funding Proposal to the unsaved Award, merge type 'No Change'
     Then  the Title, Activity Type, NSF Science Code, and Sponsor still match the first Proposal
-  @test
+
   Scenario: Latest Funding Proposal linked to new Award overwrites data
     Given the Award Modifier starts an Award with the first Funding Proposal
     When  the Award Modifier adds the second Funding Proposal to the unsaved Award, merge type 'Merge'
@@ -36,7 +36,7 @@ Feature: Adding Multiple Funding Proposals to an Award
     And   the Award's cost share data are from both Proposals
     And   the Award's special review items are from both Proposals
     And   the Award's F&A data are from both Proposals
-
+  @test
   Scenario: Link Multiple Proposals, Merge
     Given the Award Modifier creates an Award with the first Funding Proposal
     When  the second Funding Proposal is merged to the Award

@@ -43,9 +43,9 @@ And /adds an F&A rate to the Award$/ do
 end
 
 And /adds an F&A rate to the Award but misses a required field$/ do
-  rf = ['Rate',
-        'Type',
-        'Fiscal Year',
+  rf = [#'Rate',
+        #'Type',
+        #'Fiscal Year',
         'Start Date'
   ].sample
   field = damballa(rf)
