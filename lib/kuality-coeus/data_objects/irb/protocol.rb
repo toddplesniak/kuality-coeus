@@ -8,16 +8,19 @@ class IRBProtocolObject < DataFactory
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date,
                # Submit for review...
-               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
+               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
+               :primary_reviewers, :secondary_reviewers
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
-        description:    random_alphanums_plus,
-        protocol_type:  '::random::',
-        title:          random_alphanums_plus,
-        lead_unit:      '::random::',
+        description:         random_alphanums_plus,
+        protocol_type:       '::random::',
+        title:               random_alphanums_plus,
+        lead_unit:           '::random::',
+        primary_reviewers:   [],
+        secondary_reviewers: []
     }
     # TODO: Needs a @lookup_class and @search_key defined
     @lookup_class = ProtocolLookup
@@ -73,21 +76,12 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  def assign_reviewers
-    view :protocol_actions
-    on ProtocolActions do |page|
-      page.expand_all
+  def assign_primary_reviewers *reviewers
+    assign_reviewers 'primary', reviewers
+  end
 
-
-
-      # DEBUG
-      puts page.reviewers.inspect
-      sleep 50
-
-
-
-
-    end
+  def assign_secondary_reviewers *reviewers
+    assign_reviewers 'secondary', reviewers
   end
 
   # =======
@@ -133,6 +127,36 @@ class IRBProtocolObject < DataFactory
     object = make object_class, opts
     object.create
     object
+  end
+
+  def assign_reviewers type, reviewers
+    rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
+    existing_reviewers = @primary_reviewers + @secondary_reviewers
+    view :protocol_actions
+    on ProtocolActions do |page|
+      page.expand_all
+      if reviewers==[]
+        unselected_reviewers = (page.reviewers - existing_reviewers).shuffle
+        # We want to randomize the number of reviewers selected when there
+        # are several to choose from, but we don't want to select all of them
+        # if we can avoid it...
+        count = case(unselected_reviewers.size)
+                  when 0
+                    0
+                  when 1, 2
+                    1
+                  else
+                    rand(unselected_reviewers.size - 1)
+                end
+        count.times do |x|
+          page.reviewer_type(unselected_reviewers[x]).select type
+          rev[type] << unselected_reviewers[x]
+        end
+      else
+        # TODO: Write this!
+      end
+      page.assign_reviewers
+    end
   end
 
 end

@@ -1,6 +1,7 @@
 class CommitteeDocumentObject < DataFactory
 
   include StringFactory
+  include DateFactory
   include Navigation
 
   attr_reader :description, :committee_id, :document_id, :status, :name,
@@ -67,7 +68,9 @@ class CommitteeDocumentObject < DataFactory
   end
 
   def add_schedule opts={}
-    defaults = {document_id: @document_id}
+    defaults = {document_id: @document_id,
+                date: hours_from_now((@adv_submission_days.to_i+1)*24)[:date_w_slashes]
+    }
     open_document
     on(Committee).schedule
     @schedule.add defaults.merge(opts)

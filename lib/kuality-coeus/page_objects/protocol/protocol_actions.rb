@@ -20,7 +20,7 @@ class ProtocolActions < KCProtocol
                        end
   }
 
-  p_element(:reviewer_type) { |name, b| b.reviewers_container.td(text: /#{name}/).parent.select(name: /reviewerTypeCode/) }
+  p_element(:reviewer_type) { |name, b| b.reviewers_container.td(text: name ).parent.select(name: /reviewerTypeCode/) }
 
   element(:reviewers_row) { |b| b.frm.tr(id: 'reviewers') }
   element(:expedited_review_checklist) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }
@@ -30,15 +30,18 @@ class ProtocolActions < KCProtocol
 
   # Assign Reviewers
   element(:assign_reviewers_div) { |b| b.frm.div(id: 'tab-:AssignReviewers-div') }
+  action(:assign_reviewers) { |b| b.frm.button(name:'methodToCall.assignReviewers.anchor:AssignReviewers').click }
 
   private
 
   element(:reviewers_container) { |b|
     if b.reviewers_row.present?
-      reviewers_row
+      b.reviewers_row
     else
-      assign_reviewers_div
+      b.assign_reviewers_div
     end
   }
+
+
 
 end

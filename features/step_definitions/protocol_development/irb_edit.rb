@@ -19,7 +19,8 @@ And /^submits the Protocol to the Committee for review$/ do
 end
 
 And /assigns reviewers to the Protocol/ do
-  @irb_protocol.assign_reviewers
+  @irb_protocol.assign_primary_reviewers
+  @irb_protocol.assign_secondary_reviewers
 end
 
 And /^submits the Protocol to the Committee for Expedited review$/ do

@@ -313,7 +313,7 @@ class AwardObject < DataFactory
     on Award do |page|
       award.id = page.header_award_id
       award.document_id = page.header_document_id
-      award.custom_data.document_id = page.header_document_id
+      award.custom_data.document_id = page.header_document_id if award.custom_data
     end
 
     # Modify the new data object according to the

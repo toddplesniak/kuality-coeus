@@ -25,12 +25,9 @@ class CommitteeMemberObject < DataFactory
   def create
     # Navigation done by CommitteeDocument object
     # TODO: Support non-employee searching
+    existing_members = []
     on Members do |page|
       existing_members = page.existing_members
-
-      # DEBUG
-      puts existing_members.inspect
-
       page.employee_search
     end
     if @name=='::random::'
@@ -38,20 +35,10 @@ class CommitteeMemberObject < DataFactory
         letter = %w{a r e o n}.sample
         page.first_name.set "*#{letter}*"
         page.search
-
-
-        # TODO: Write code to restrict selection to
-        # unused names...
-        puts page.returned_full_names.inspect
-        names = page.returned_full_names - existing_members
-        puts names.inspect
-
-
+        @name = (page.returned_full_names - existing_members).sample
+        page.return_value @name
       end
-      on Members do |page|
-        @name = page.member_name_pre_add
-        page.add_member
-      end
+      on(Members).add_member
     else
       # TODO: Write code for when we know the name
     end
@@ -76,19 +63,6 @@ class CommitteeMemberObject < DataFactory
       end
     end
     on(Members).save
-
-
-
-
-    # DEBUG
-    sleep 45 if on(Members).errors.count > 0
-
-
-
-
-
-
-
   end
 
   private
