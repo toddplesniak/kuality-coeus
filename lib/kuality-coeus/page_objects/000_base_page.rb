@@ -281,6 +281,7 @@ class BasePage < PageFactory
     def nsp(string)
       string.gsub(/[ ,]/, '')
     end
+    alias_method :nospace, :nsp
 
     # Used to add an extra space in the full name (because some
     # elements have that, annoyingly!)

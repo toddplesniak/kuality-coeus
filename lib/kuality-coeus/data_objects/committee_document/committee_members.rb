@@ -2,7 +2,7 @@ class CommitteeMemberObject < DataFactory
 
   include DateFactory
 
-  attr_reader :document_id, :name, :membership_type, :paid_member, :term_start_date, :term_end_date,
+  attr_reader :document_id, :name, :user_name, :membership_type, :paid_member, :term_start_date, :term_end_date,
               :roles, :expertise
 
   def initialize(browser, opts={})
@@ -32,10 +32,11 @@ class CommitteeMemberObject < DataFactory
     end
     if @name=='::random::'
       on KcPersonLookup do |page|
-        letter = %w{a r e o n}.sample
+        letter = %w{l s r o h e t b g j}.sample
         page.first_name.set "*#{letter}*"
         page.search
-        @name = (page.returned_full_names - existing_members).sample
+        @name = (page.returned_full_names - existing_members - $users.full_names).sample
+        @user_name = page.user_name_of @name
         page.return_value @name
       end
       on(Members).add_member
@@ -94,5 +95,9 @@ end # CommitteeMemberObject
 class CommitteeMemberCollection < CollectionsFactory
 
   contains CommitteeMemberObject
+
+  def member(full_name)
+    self.find { |member| member.name==full_name }
+  end
 
 end # CommitteeMemberCollection

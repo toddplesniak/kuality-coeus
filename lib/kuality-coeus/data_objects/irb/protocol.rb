@@ -6,7 +6,7 @@ class IRBProtocolObject < DataFactory
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
-               :protocol_number, :status, :submission_status, :expiration_date,
+               :protocol_number, :status, :submission_status, :expiration_date, :principal_investigator,
                # Submit for review...
                :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
                :primary_reviewers, :secondary_reviewers
@@ -36,7 +36,6 @@ class IRBProtocolObject < DataFactory
       @initiator=doc.initiator
       @submission_status=doc.submission_status
       @expiration_date=doc.expiration_date
-      @search_key = { protocol_number: @protocol_number }
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title
     end
@@ -45,6 +44,7 @@ class IRBProtocolObject < DataFactory
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
+      @search_key = { protocol_number: @protocol_number }
     end
   end
 
