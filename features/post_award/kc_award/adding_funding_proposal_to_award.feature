@@ -8,7 +8,7 @@ Feature: Adding a Funding Proposal to an Award
   Background:
     * a User exists with the role 'Award Modifier' in unit '000001'
     * 1 Approved Institutional Proposal exists
-
+  @test
   Scenario: Award Fields Remain Editable
     When  the Award Modifier starts an Award with the Funding Proposal
     Then  all Award fields remain editable
@@ -17,7 +17,7 @@ Feature: Adding a Funding Proposal to an Award
     Given the Award Modifier starts an Award with the Funding Proposal
     When  the Funding Proposal is removed from the Award
     Then  the Title, Activity Type, NSF Science Code, and Sponsor still match the Proposal
-  @test
+
   Scenario: KC-TS-1160 Action Availability to Delete Link
     When the Award Modifier creates an Award with the Funding Proposal
     Then the Award Modifier cannot remove the Proposal from the Award
