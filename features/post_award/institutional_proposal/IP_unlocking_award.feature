@@ -17,7 +17,7 @@ Feature: Unlocking Award from an Institutional Proposal
   Scenario: KC-TS-1161 Unlock submitted Award from Institutional Proposal
     When the Award Modifier submits the Award
     Then the Institutional Proposal Maintainer can unlink the proposal
-
+  @test
   Scenario: Unlock completed Award from Institutional Proposal
     Then the Institutional Proposal Maintainer cannot unlink the proposal
 
