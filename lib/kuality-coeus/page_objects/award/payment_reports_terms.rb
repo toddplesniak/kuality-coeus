@@ -12,6 +12,8 @@ class PaymentReportsTerms < KCAwards
   
   action(:generate_schedule) { |b| b.frm.button(name: 'methodToCall.generatePaymentSchedules.anchorReportClasses:PaymentInvoiceRequirements').click; b.loading }
 
+  action(:refresh_selection_lists) { |b| b.frm.button(name: 'methodToCall.refreshPulldownOptions').click; b.loading }
+
   # Adding Reports...
 
   # Strings that will work with these methods:
