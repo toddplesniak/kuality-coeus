@@ -6,6 +6,6 @@ class KCProtocol < BasePage
   error_messages
 
   buttons 'Protocol', 'Personnel', 'Questionnaire', 'Custom Data', 'Special Review',
-              'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa'
+              'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa', 'Online Review'
 
 end

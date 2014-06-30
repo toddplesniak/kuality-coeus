@@ -9,6 +9,9 @@ class Members < CommitteeDocument
   # is clicked.
   value(:member_name_pre_add) { |b| onespace(b.frm.label.text) }
 
+  # Returns an array containing the names of all the members listed on the page
+  value(:existing_members) { |b| b.frm.div(id: 'workarea').h2s.map{ |h| onespace(h.text[/.+(?=\s\()/]) } }
+
   # Member-specific fields...
   p_element(:membership_type) { |name, b| b.member_area(name).select(title: '* Membership Type') }
   p_element(:paid_member) { |name, b| b.member_area(name).checkbox }

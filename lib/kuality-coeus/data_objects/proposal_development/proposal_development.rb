@@ -122,7 +122,7 @@ class ProposalDevelopmentObject < DataFactory
       look.search
       look.open @institutional_proposal_number
     end
-    doc_id = on(DocumentHeader).document_id
+    doc_id = on(InstitutionalProposal).document_id
     @cd = @custom_data.data_object_copy if @custom_data
     ip = make InstitutionalProposalObject, dev_proposal_number: @proposal_number,
          proposal_type: @proposal_type,

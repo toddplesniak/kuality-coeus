@@ -51,7 +51,6 @@ class AwardFARatesObject < DataFactory
       # Added this line for testing a blank start date field...
       page.new_rate_start_date.clear if @start_date==''
       page.add_rate
-
       # Note: This line may have unintended consequences...
       page.save unless page.errors.size > 0
     end

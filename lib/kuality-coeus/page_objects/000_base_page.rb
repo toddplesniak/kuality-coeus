@@ -74,7 +74,7 @@ class BasePage < PageFactory
     end
 
     def tab_buttons
-      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').click; b.loading }
+      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present.click; b.loading }
     end
 
     def tiny_buttons
@@ -249,6 +249,7 @@ class BasePage < PageFactory
     private
     # ========
 
+    # Don't use this with links that are contained in the iframes...
     def links(*links_text)
       links_text.each { |link| elementize(:link, link) }
     end
@@ -280,6 +281,7 @@ class BasePage < PageFactory
     def nsp(string)
       string.gsub(/[ ,]/, '')
     end
+    alias_method :nospace, :nsp
 
     # Used to add an extra space in the full name (because some
     # elements have that, annoyingly!)

@@ -19,9 +19,12 @@ class ActionList < BasePage
   action(:default_action) { |b| b.frm.select(name: 'defaultActionToTake') }
   action(:apply_default_action) { |b| b.frm.link(align: 'absmiddle').click }
 
+  # Protocol Review
+  p_action(:open_review) { |match, b| b.item_row(match).link.click }
+
   private
 
   value(:action_requested_column) { |b| b.results_table.tr(index: 0).ths.find_index{|th| th.text=='Action Requested'} }
-  value(:route_status_column) { |b| results_table.tr(index: 0).ths.find_index{|th| th.text=='Route Status'} }
+  value(:route_status_column) { |b| b.results_table.tr(index: 0).ths.find_index{|th| th.text=='Route Status'} }
 
 end

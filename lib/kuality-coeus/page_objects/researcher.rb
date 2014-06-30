@@ -9,8 +9,8 @@ class Researcher < BasePage
 
   element(:error_table) { |b| b.frm.table(class: 'container2') }
 
-  action(:action_list) { |b| b.link(title: 'Action List').click }
-  element(:doc_srch_button) { |b| b.link(title: 'Document Search') }
+  action(:action_list) { |b| b.frm.link(title: 'Action List').click }
+  element(:doc_srch_button) { |b| b.frm.link(title: 'Document Search') }
   action(:doc_search) { |b| b.doc_srch_button.click }
 
 end

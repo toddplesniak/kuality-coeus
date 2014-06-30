@@ -1,5 +1,7 @@
 class ParameterMaintenanceDocument < BasePage
 
+  expected_element :parameter_value
+
   description_field
   global_buttons
   

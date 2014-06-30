@@ -26,11 +26,9 @@ module Personnel
     on lookup_page do |page|
       if @last_name.nil?
         if @type=='non_employee'
-          results=false
-          until results do
+          until page.results_table.present? do
             page.state.pick '::random::'
             page.search
-            results = true if page.results_table.present?
           end
         else
           page.search
