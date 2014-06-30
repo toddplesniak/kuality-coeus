@@ -11,6 +11,10 @@ class OnlineReview < KCProtocol
   p_element(:new_comment_final) { |name, b| b.reviewer_panel(name).checkbox(title: 'Final') }
   p_action(:add_comment) { |name, b| b.reviewer_panel(name).button(name: /methodToCall.addOnlineReviewComment.\d+.anchor:ReviewComments/).click; b.loading }
 
+  p_element(:review_comment) { |text, b| b.frm.textarea(value: text)  }
+  p_element(:comment_private) { |text, b| b.review_comment(text).parent.parent.checkbox(title: 'Private') }
+  p_element(:comment_final) { |text, b| b.review_comment(text).parent.parent.checkbox(title: 'Final') }
+
   # Review Attachment
   p_element(:new_attachment_description) { |name, b| b.reviewer_panel(name).textarea(name: /newReviewAttachment.description/) }
   p_element(:new_attachment_filename) { |name, b| b.reviewer_panel(name).file_field(name: /newReviewAttachment.newFile/) }
@@ -19,8 +23,8 @@ class OnlineReview < KCProtocol
 
   # Review Global Buttons
   p_action(:save_review_of) { |name, b| b.reviewer_panel(name).button(name: /methodToCall.saveOnlineReview/).click; b.loading }
-  p_action(:approve_review_of) { |name, b| b.reviewer_panel(name).button(name: /methodToCall.saveOnlineReview/).click; b.loading }
-  p_action(:delete_review_of) { |name, b| b.reviewer_panel(name).button(name: /methodToCall.saveOnlineReview/).click; b.loading }
+  p_action(:approve_review_of) { |name, b| b.reviewer_panel(name).button(name: /methodToCall.approveOnlineReview/).click; b.loading; b.awaiting_doc }
+  p_action(:delete_review_of) { |name, b| b.reviewer_panel(name).button(name: /methodToCall.deleteOnlineReview/).click; b.loading }
 
   private
 

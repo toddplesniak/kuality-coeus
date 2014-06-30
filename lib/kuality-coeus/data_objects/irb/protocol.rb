@@ -153,7 +153,13 @@ class IRBProtocolObject < DataFactory
           rev[type] << unselected_reviewers[x]
         end
       else
-        # TODO: Write this!
+        # Note: This code is written with the assumption
+        # that the reviewer being passed is selectable and
+        # isn't already a reviewer...
+        reviewers.each do |reviewer|
+          page.reviewer_type(reviewer).select type
+          rev[type] << reviewer
+        end
       end
       page.assign_reviewers
     end

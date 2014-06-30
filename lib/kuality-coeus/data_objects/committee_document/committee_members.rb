@@ -14,7 +14,7 @@ class CommitteeMemberObject < DataFactory
         term_start_date: right_now[:date_w_slashes],
         term_end_date:   hours_from_now(50000)[:date_w_slashes],
         paid_member:     [:clear, :set].sample,
-        roles:           [{role: '::random::', start_date: right_now[:date_w_slashes], end_date: hours_from_now(50000)[:date_w_slashes]}],
+        roles:           [{role: ACTIVE_ROLES.sample, start_date: right_now[:date_w_slashes], end_date: hours_from_now(50000)[:date_w_slashes]}],
         expertise:       []
     }
 
@@ -32,10 +32,15 @@ class CommitteeMemberObject < DataFactory
     end
     if @name=='::random::'
       on KcPersonLookup do |page|
-        letter = %w{l s r o h e t b g j}.sample
+        letter = %w{l s r o h e t b g j f}.sample
         page.first_name.set "*#{letter}*"
         page.search
-        @name = (page.returned_full_names - existing_members - $users.full_names).sample
+        # This code removes names that contain 3 words, which
+        # can screw things up elsewhere...
+        @name = 'William Lloyd Garrison'
+        while name.scan(' ').size > 1
+          @name = (page.returned_full_names - existing_members - $users.full_names).sample
+        end
         @user_name = page.user_name_of @name
         page.return_value @name
       end
@@ -66,6 +71,18 @@ class CommitteeMemberObject < DataFactory
     on(Members).save
   end
 
+  def sign_in
+    $users.current_user.sign_out if $users.current_user
+    visit($cas ? CASLogin : Login) do |log_in|
+      log_in.username.set @user_name
+      log_in.login
+    end
+  end
+
+  def sign_out
+    @browser.goto "#{$base_url}#{$context}logout.do"
+  end
+
   private
 
   def add_expertise(item=nil)
@@ -90,6 +107,10 @@ class CommitteeMemberObject < DataFactory
     end
   end
 
+  ACTIVE_ROLES = ['Chair', 'Expedited/Exempt Reviewer', 'Alternate', 'IRB Administrator',
+                  'Member - Scientist', 'Member - Non Scientist', 'Member', 'Community Member',
+                  'Prisoner Representative', 'Vice Chair', 'Additional Committee Member' ]
+
 end # CommitteeMemberObject
 
 class CommitteeMemberCollection < CollectionsFactory
@@ -98,6 +119,10 @@ class CommitteeMemberCollection < CollectionsFactory
 
   def member(full_name)
     self.find { |member| member.name==full_name }
+  end
+
+  def full_names
+    self.collect { |member| member.name }
   end
 
 end # CommitteeMemberCollection
