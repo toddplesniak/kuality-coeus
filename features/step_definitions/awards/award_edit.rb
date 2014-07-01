@@ -21,7 +21,7 @@ end
 
 When /completes? the Award requirements$/ do
   steps %q{
-    * adds 5 reports to the Award
+    * add a report to the Award
     * add Terms to the Award
     * add the required Custom Data to the Award
     * add a Payment & Invoice item to the Award
