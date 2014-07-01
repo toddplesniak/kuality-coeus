@@ -30,19 +30,30 @@ class AwardReportsObject < DataFactory
       DEBUG.message 'refreshed'
       page.add_report_type(@report).pick! @type
       DEBUG.message 'set report type'
+      DEBUG.message "which is: #{@type}"
+      DEBUG.pause 3
       page.add_report_type(@report).fire_event('onchange')
+      DEBUG.pause 3
       page.add_frequency(@report).pick! @frequency
       DEBUG.message 'set frequency'
+      DEBUG.pause 3
       page.add_frequency(@report).fire_event('onchange')
+      DEBUG.pause 3
       page.add_frequency_base(@report).pick! @frequency_base
       DEBUG.message 'set frequency base'
+      DEBUG.pause 3
       page.add_frequency_base(@report).fire_event('onchange')
+      DEBUG.pause 3
       page.add_osp_file_copy(@report).pick! @osp_file_copy
       DEBUG.message 'set osp file copy'
+      DEBUG.pause 3
       page.add_due_date(@report).fit @due_date
       page.add_report(@report)
+      DEBUG.pause 3
       page.save
+      DEBUG.pause 3
       DEBUG.message 'saved report'
+      DEBUG.pause 3
     end
   end
 
