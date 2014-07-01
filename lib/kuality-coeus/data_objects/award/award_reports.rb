@@ -35,20 +35,21 @@ class AwardReportsObject < DataFactory
       page.add_report_type(@report).fire_event('onchange')
       DEBUG.pause 3
       page.add_frequency(@report).pick! @frequency
-      DEBUG.message 'set frequency'
+      DEBUG.message "set frequency #{@frequency}"
       DEBUG.pause 3
       page.add_frequency(@report).fire_event('onchange')
       DEBUG.pause 3
       page.add_frequency_base(@report).pick! @frequency_base
-      DEBUG.message 'set frequency base'
+      DEBUG.message "set frequency base #{@frequency_base}"
       DEBUG.pause 3
       page.add_frequency_base(@report).fire_event('onchange')
       DEBUG.pause 3
       page.add_osp_file_copy(@report).pick! @osp_file_copy
-      DEBUG.message 'set osp file copy'
+      DEBUG.message "set osp file copy #{@osp_file_copy}"
       DEBUG.pause 3
       page.add_due_date(@report).fit @due_date
       page.add_report(@report)
+      DEBUG.message 'added report'
       DEBUG.pause 3
       page.save
       DEBUG.pause 3

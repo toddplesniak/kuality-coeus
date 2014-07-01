@@ -23,7 +23,7 @@ class PaymentReportsTerms < KCAwards
   p_element(:add_frequency_base) { |report, b| b.report_div(report).select(name: /awardReportsBean.newAwardReportTerms\[\d+\].frequencyBaseCode/) }
   p_element(:add_osp_file_copy) { |report, b| b.report_div(report).select(name: /awardReportsBean.newAwardReportTerms\[\d+\].ospDistributionCode/) }
   p_element(:add_due_date) { |report, b| b.report_div(report).text_field(name: /awardReportsBean.newAwardReportTerms\[\d+\].dueDate/) }
-  p_action(:add_report) { |report, b| b.frm.button(name: /methodToCall.addAwardReportTerm.reportClass\d+.reportClassIndex\d+.anchorReportClasses:#{report}/).click }
+  p_action(:add_report) { |report, b| b.frm.button(name: /methodToCall.addAwardReportTerm.reportClass\d+.reportClassIndex\d+.anchorReportClasses:#{report}/).click; b.loading }
 
   # Editing Reports...
   p_element(:report_type) { |report, number, b| b.report_infoline(report, number).parent.select(name: /reportCode/) }
