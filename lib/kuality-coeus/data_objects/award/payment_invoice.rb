@@ -38,11 +38,20 @@ class PaymentInvoiceObject < DataFactory
         page.payment_type.fire_event('onchange')
         page.frequency.pick! pir[:frequency]
         page.frequency.fire_event('onchange')
-        page.frequency_base.pick! pir[:frequency_base]
-        page.frequency_base.fire_event('onchange')
+        if pir[:frequency]=='None' && pir[:frequency_base]=='::random::'
+          pir[:frequency_base]=nil
+        else
+          page.frequency_base.pick! pir[:frequency_base]
+          page.frequency_base.fire_event('onchange')
+        end
         page.osp_file_copy.pick! pir[:osp_file_copy]
         page.add_payment_type
       end
+
+
+      DEBUG.message @payment_and_invoice_requirements.inspect
+
+
       fill_out page, :invoice_instructions
     page.save
     end

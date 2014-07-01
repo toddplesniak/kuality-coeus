@@ -39,11 +39,15 @@ class AwardReportsObject < DataFactory
       DEBUG.pause 3
       page.add_frequency(@report).fire_event('onchange')
       DEBUG.pause 3
-      page.add_frequency_base(@report).pick! @frequency_base
-      DEBUG.message "set frequency base #{@frequency_base}"
-      DEBUG.pause 3
-      page.add_frequency_base(@report).fire_event('onchange')
-      DEBUG.pause 3
+      if @frequency=='None' && @frequency_base=='::random::'
+        # Then we need to handle Frequency Base differently...
+        @frequency_base=nil
+      else
+        page.add_frequency_base(@report).pick! @frequency_base
+        DEBUG.message "set frequency base #{@frequency_base}"
+        DEBUG.pause 3
+        page.add_frequency_base(@report).fire_event('onchange')
+      end
       page.add_osp_file_copy(@report).pick! @osp_file_copy
       DEBUG.message "set osp file copy #{@osp_file_copy}"
       DEBUG.pause 3
