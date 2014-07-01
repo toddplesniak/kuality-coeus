@@ -26,25 +26,31 @@ class AwardReportsObject < DataFactory
     on PaymentReportsTerms do |page|
       page.expand_all
       page.refresh_selection_lists
+
+      DEBUG.pause 100
+
+
       page.add_report_type(@report).pick! @type
       page.add_report_type(@report).fire_event('onchange')
       page.add_frequency(@report).pick! @frequency
       page.add_frequency(@report).fire_event('onchange')
-      if @frequency=='None' && @frequency_base=='::random::'
+      #if @frequency=='None' && @frequency_base=='::random::'
         # Then we need to handle Frequency Base differently...
-        @frequency_base=nil
-      else
+      #  @frequency_base=nil
+      #else
+
+      ar = page.add_frequency_base(@report).options.map(&:text)
+
+      puts ar.inspect
+      puts ar.size==1 && (ar[0]=~/^select(.?)$/i || ar[0]=='')
+
         page.add_frequency_base(@report).pick! @frequency_base
-        DEBUG.message "set frequency base #{@frequency_base}"
         page.add_frequency_base(@report).fire_event('onchange')
-      end
+      #end
       page.add_osp_file_copy(@report).pick! @osp_file_copy
-      DEBUG.message "set osp file copy #{@osp_file_copy}"
       page.add_due_date(@report).fit @due_date
       page.add_report(@report)
-      DEBUG.message 'added report'
       page.save
-      DEBUG.message 'saved report'
     end
   end
 
