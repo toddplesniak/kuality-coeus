@@ -26,10 +26,6 @@ class AwardReportsObject < DataFactory
     on PaymentReportsTerms do |page|
       page.expand_all
       page.refresh_selection_lists
-
-      DEBUG.pause 100
-
-
       page.add_report_type(@report).pick! @type
       page.add_report_type(@report).fire_event('onchange')
       page.add_frequency(@report).pick! @frequency

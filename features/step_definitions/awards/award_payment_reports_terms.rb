@@ -1,6 +1,5 @@
 When /I? ?adds? a report to the Award$/ do
-  #DEBUG: Remove the type when not debugging!
-  @award.add_report type: 'None', frequency: 'None'
+  @award.add_report
 end
 
 When /adds (\d+) reports to the Award$/ do |x|
@@ -13,13 +12,7 @@ When /I? ?adds? Terms to the Award$/ do
 end
 
 Given /I? ?add a Payment & Invoice item to the Award$/ do
-  #DEBUG: Remove the requirements when not debugging!
-  @award.add_payment_and_invoice payment_and_invoice_requirements: [{
-      payment_type: 'None',
-      frequency: 'None',
-      frequency_base: '::random::',
-      osp_file_copy: '::random::'
-  }]
+  @award.add_payment_and_invoice
 end
 
 When /^I start adding a Payment & Invoice item to the Award$/ do
