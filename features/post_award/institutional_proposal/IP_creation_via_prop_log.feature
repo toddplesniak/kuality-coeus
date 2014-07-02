@@ -1,4 +1,4 @@
-@IP, @Proposal_Log
+@IP @Proposal_Log
 Feature: Creating an Institutional Proposal from a Proposal Log
 
   In order to avoid the KC Proposal Development and Budget Module,
