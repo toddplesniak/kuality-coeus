@@ -49,7 +49,6 @@ And /adds an F&A rate to the Award but misses a required field$/ do
         'Start Date'
   ].sample
   field = damballa(rf)
-  value = field==:type ? 'select' : ''
   value = field==:type ? 'select' : ' '
   if field == 'Fiscal Year'
     @award.add_fna_rate field => value, start_date: '01/01/2020'
