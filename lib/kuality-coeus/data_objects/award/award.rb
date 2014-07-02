@@ -423,7 +423,9 @@ class AwardObject < DataFactory
 
   def open_document
     navigate unless on_award?
-    on(TimeAndMoney).return_to_award if on_tm?
+    if on_tm?
+      on(TimeAndMoney).return_to_award
+    end
   end
 
   def navigate

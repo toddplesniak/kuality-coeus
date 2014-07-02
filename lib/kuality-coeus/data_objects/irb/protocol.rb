@@ -39,8 +39,8 @@ class IRBProtocolObject < DataFactory
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title
     end
-      set_lead_unit
       set_pi
+      set_lead_unit
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
