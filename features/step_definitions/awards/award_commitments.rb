@@ -50,7 +50,12 @@ And /adds an F&A rate to the Award but misses a required field$/ do
   ].sample
   field = damballa(rf)
   value = field==:type ? 'select' : ''
-  @award.add_fna_rate field => value
+  value = field==:type ? 'select' : ' '
+  if field == 'Fiscal Year'
+    @award.add_fna_rate field => value, start_date: '01/01/2020'
+  else
+    @award.add_fna_rate field => value
+  end
   @required_field_error = "#{rf} is a mandatory field"
 end
 
