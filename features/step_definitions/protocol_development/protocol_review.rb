@@ -49,10 +49,4 @@ And /the IRB Admin approves the review/ do
     page.comment_private(@comment).clear
     page.approve_review_of @irb_protocol.primary_reviewers[0]
   end
-
-
-
-  DEBUG.pause 500
-
-
 end

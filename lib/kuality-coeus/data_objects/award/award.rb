@@ -424,7 +424,6 @@ class AwardObject < DataFactory
   def open_document
     navigate unless on_award?
     if on_tm?
-      DEBUG.message 'On T&M Document. Leaving...'
       on(TimeAndMoney).return_to_award
     end
   end
