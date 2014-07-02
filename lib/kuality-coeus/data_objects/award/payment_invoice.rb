@@ -38,19 +38,12 @@ class PaymentInvoiceObject < DataFactory
         page.payment_type.fire_event('onchange')
         page.frequency.pick! pir[:frequency]
         page.frequency.fire_event('onchange')
-        #if pir[:frequency]=='None' && pir[:frequency_base]=='::random::'
-        #  pir[:frequency_base]=nil
-        #else
-
-        ar = page.frequency_base.options.map(&:text)
-
-        puts ar.inspect
-        puts ar.size==1 && (ar[0]=~/^select(.?)$/i || ar[0]=='')
-
-
+        if pir[:frequency]=='None' && pir[:frequency_base]=='::random::'
+          pir[:frequency_base]=nil
+        else
           page.frequency_base.pick! pir[:frequency_base]
           page.frequency_base.fire_event('onchange')
-        #end
+        end
         page.osp_file_copy.pick! pir[:osp_file_copy]
         page.add_payment_type
       end
