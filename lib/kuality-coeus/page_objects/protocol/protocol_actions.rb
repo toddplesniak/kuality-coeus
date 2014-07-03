@@ -30,7 +30,11 @@ class ProtocolActions < KCProtocol
 
   # Assign Reviewers
   element(:assign_reviewers_div) { |b| b.frm.div(id: 'tab-:AssignReviewers-div') }
-  action(:assign_reviewers) { |b| b.frm.button(name:'methodToCall.assignReviewers.anchor:AssignReviewers').click }
+  action(:assign_reviewers) { |b| b.frm.button(name:'methodToCall.assignReviewers.anchor:AssignReviewers').click; b.loading }
+
+  # Withdraw Protocol
+  element(:withdrawal_reason) { |b| b.frm.textarea(name: 'actionHelper.protocolWithdrawBean.reason') }
+  action(:submit_withdrawal_reason) { |b| b.frm.button(name: 'methodToCall.withdrawProtocol.anchor:WithdrawProtocol').click; b.loading }
 
   private
 

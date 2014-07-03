@@ -9,7 +9,9 @@ class IRBProtocolObject < DataFactory
                :protocol_number, :status, :submission_status, :expiration_date, :principal_investigator,
                # Submit for review...
                :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
-               :primary_reviewers, :secondary_reviewers
+               :primary_reviewers, :secondary_reviewers,
+               # Withdraw
+               :withdrawal_reason
 
   def initialize(browser, opts={})
     @browser = browser
@@ -82,6 +84,16 @@ class IRBProtocolObject < DataFactory
 
   def assign_secondary_reviewers *reviewers
     assign_reviewers 'secondary', reviewers
+  end
+
+  def withdraw(reason=random_multiline(50,4))
+    @withdrawal_reason=reason
+    view :protocol_actions
+    on ProtocolActions do |page|
+      page.expand_all
+      fill_out page, :withdrawal_reason
+      page.submit_withdrawal_reason
+    end
   end
 
   # =======

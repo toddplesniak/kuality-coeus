@@ -17,7 +17,7 @@ Then /^the assigned reviewers get a Protocol Review$/ do
 end
 
 And /the primary reviewer submits review comments/ do
-
+  # TODO: Rethink this design. Should this be in a data object made for the review?
   @comment = random_multiline(200, 10)
 
 
@@ -49,10 +49,15 @@ And /the IRB Admin approves the review/ do
     page.comment_private(@comment).clear
     page.approve_review_of @irb_protocol.primary_reviewers[0]
   end
+end
 
+And /the IRB Admin withdraws the Protocol/ do
+  steps '* log in with the IRB Administrator user'
+  @irb_protocol.withdraw
 
 
   DEBUG.pause 500
+
 
 
 end
