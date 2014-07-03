@@ -43,10 +43,11 @@ And /adds an F&A rate to the Award$/ do
 end
 
 And /adds an F&A rate to the Award but misses a required field$/ do
-  rf = [#'Rate',
-        #'Type',
-        #'Fiscal Year',
-        'Start Date'
+  # Note: This does not test Start Date. Because of how these fields
+  # auto-populate, to test Start Date will require extensive custom code.
+  rf = ['Rate',
+        'Type',
+        'Fiscal Year'
   ].sample
   field = damballa(rf)
   value = field==:type ? 'select' : ' '
