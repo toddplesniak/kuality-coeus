@@ -17,7 +17,7 @@ Feature: Award Versions
     When  the original Award is edited again
     Then  a confirmation screen asks if you want to edit the existing pending version
     And   selecting 'yes' takes you to the pending version
-  @test
+
   Scenario: Editing finalized Award when a pending new version exists, select 'no'
     Given the Time & Money Modifier submits the Award's T&M document
     And   the Award Modifier edits the finalized Award

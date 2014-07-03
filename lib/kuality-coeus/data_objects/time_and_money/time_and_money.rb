@@ -1,6 +1,7 @@
 class TimeAndMoneyObject < DataFactory
 
   include StringFactory
+  include Navigation
 
   attr_reader :status, :transaction_type_code, :transactions,
               :funds_distribution, :transaction_history, :award_number,
@@ -66,7 +67,7 @@ class TimeAndMoneyObject < DataFactory
 
   def cancel
     on(TimeAndMoney).cancel
-    on(Confirmation).yes
+    confirmation
     # Hard-coded because the status never
     # actually apppears in the UI during this
     # process.
