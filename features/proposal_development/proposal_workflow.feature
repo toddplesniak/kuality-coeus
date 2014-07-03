@@ -31,7 +31,7 @@ Feature: Proposal Workflows and Routing
     Given the Proposal Creator submits a new Proposal into routing
     When  I recall the Proposal
     Then  the Proposal status should be Revisions Requested
-
+  @test
   Scenario: An OSP Admin overrides a budget's cost sharing amount
     Given the Budget Column's 'Cost Sharing Amount' has a lookup for 'Proposal Cost Share' that returns 'Amount'
     And   a User exists with the role: 'OSP Administrator'
