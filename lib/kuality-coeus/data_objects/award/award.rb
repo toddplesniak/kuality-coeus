@@ -455,7 +455,7 @@ class AwardObject < DataFactory
   end
 
   def on_tm?
-    !(on(Award).t_m_button.exist?)
+    @browser.frm.button(name: 'methodToCall.returnToAward').present? && !(on(Award).t_m_button.present?)
   end
 
   def page_class
