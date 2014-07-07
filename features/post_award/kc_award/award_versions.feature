@@ -10,7 +10,7 @@ Feature: Award Versions
     * adds a subaward to the Award
     * completes the Award requirements
     * the Award Modifier submits the Award
-  @test
+
   Scenario: Editing finalized Award when a pending new version exists, select 'yes'
     Given the Time & Money Modifier submits the Award's T&M document
     And   the Award Modifier edits the finalized Award
@@ -23,7 +23,7 @@ Feature: Award Versions
     And   the Award Modifier edits the finalized Award
     When  the original Award is edited again
     Then  selecting 'no' on the confirmation screen creates a new version of the Award
-  @test
+
   Scenario: Canceling and reopening Time And Money
     Given the Award Modifier edits the finalized Award
     And   the Time And Money Modifier initializes the Award's Time And Money document
