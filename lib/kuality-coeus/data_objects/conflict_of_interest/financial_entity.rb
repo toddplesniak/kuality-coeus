@@ -1,7 +1,6 @@
 class FinancialEntityObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :entity_name, :type, :sponsor_code, :status_code, :held,
               :address_line_1, :sponsor_research, :city, :country, :postal_code,

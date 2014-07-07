@@ -1,7 +1,6 @@
 class AwardCostSharingObject < DataFactory
 
-  include DateFactory
-  include StringFactory
+  include DateFactory, StringFactory
 
   attr_reader :percentage, :type, :project_period, :source,
               :destination, :commitment_amount, :cost_share_met,

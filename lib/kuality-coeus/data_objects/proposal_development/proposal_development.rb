@@ -1,9 +1,6 @@
 class ProposalDevelopmentObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
-  include DocumentUtilities
+  include StringFactory, DateFactory, Navigation, DocumentUtilities
   
   attr_reader :proposal_type, :lead_unit, :activity_type, :project_title, :proposal_number,
               :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,

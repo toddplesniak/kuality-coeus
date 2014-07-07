@@ -1,7 +1,6 @@
 class CommitteeScheduleObject < DataFactory
 
-  include DateFactory
-  include StringFactory
+  include DateFactory, StringFactory
 
   attr_reader :document_id, :date, :start_time, :meridian,
               :place, :recurrence, :recurrence_settings, :status,

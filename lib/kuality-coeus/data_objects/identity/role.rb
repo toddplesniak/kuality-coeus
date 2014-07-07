@@ -1,7 +1,6 @@
 class RoleObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :id, :name, :type, :namespace, :description,
               :permissions, :save_type

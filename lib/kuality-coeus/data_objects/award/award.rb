@@ -1,10 +1,7 @@
 # coding: UTF-8
 class AwardObject < DataFactory
 
-  include Navigation
-  include DateFactory
-  include StringFactory
-  include DocumentUtilities
+  include Navigation, DateFactory, StringFactory, DocumentUtilities
 
   attr_reader :award_status,
               :award_title, :lead_unit, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,

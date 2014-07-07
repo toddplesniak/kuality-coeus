@@ -1,7 +1,6 @@
 class BudgetPeriodObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :start_date, :end_date, :total_sponsor_cost,
               :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,

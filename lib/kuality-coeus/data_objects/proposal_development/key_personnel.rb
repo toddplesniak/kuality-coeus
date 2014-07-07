@@ -1,8 +1,6 @@
  class KeyPersonObject < DataFactory
 
-  include StringFactory
-  include Navigation
-  include Personnel
+  include StringFactory, Navigation, Personnel
 
   attr_reader :first_name, :last_name, :type, :role, :document_id, :key_person_role,
               :full_name, :user_name, :home_unit, :units, :responsibility,

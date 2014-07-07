@@ -1,7 +1,6 @@
 class ComplianceQuestionsObject < DataFactory
 
-  include DateFactory
-  include Navigation
+  include DateFactory, Navigation
 
   attr_reader :document_id, :agree_to_ethical_conduct, :conduct_review_date
 

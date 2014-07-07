@@ -1,7 +1,6 @@
 class IRBProtocolObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,

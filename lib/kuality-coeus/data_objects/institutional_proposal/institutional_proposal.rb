@@ -1,9 +1,6 @@
 class InstitutionalProposalObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
-  include DocumentUtilities
+  include StringFactory, DateFactory, Navigation, DocumentUtilities
 
   attr_reader :document_id, :proposal_number, :dev_proposal_number, :project_title,
               :doc_status, :sponsor_id, :activity_type, :proposal_type, :proposal_status,

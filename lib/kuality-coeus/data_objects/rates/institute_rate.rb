@@ -1,8 +1,6 @@
 class InstituteRateObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
+  include StringFactory, DateFactory, Navigation
 
   ACTIVITY_TYPES = {
     # Description                   # Code

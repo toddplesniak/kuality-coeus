@@ -1,7 +1,6 @@
 class ChangeObject < DataFactory
 
-  include DateFactory
-  include StringFactory
+  include DateFactory, StringFactory
 
   attr_reader :effective_date, :obligated_change, :anticipated_change
 

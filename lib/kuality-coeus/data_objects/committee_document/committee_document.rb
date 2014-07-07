@@ -1,8 +1,6 @@
 class CommitteeDocumentObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
+  include StringFactory, DateFactory, Navigation
 
   attr_reader :description, :committee_id, :document_id, :status, :name,
               :home_unit, :min_members_for_quorum, :maximum_protocols,
