@@ -50,7 +50,9 @@ class CommitteeDocumentObject < DataFactory
 
   def submit
     open_document
-    on(Committee).submit
+    on Committee do |page|
+      page.submit
+    end
   end
 
   def view(tab)

@@ -74,6 +74,12 @@ class IRBProtocolObject < DataFactory
       @schedule_date ||= page.schedule_date.options[1].text
       page.schedule_date.pick! @schedule_date
       page.submit_for_review
+      @status=page.document_status
+
+      DEBUG.message 'In #submit_for_review'
+      DEBUG.message @status
+
+
     end
   end
 
@@ -93,6 +99,19 @@ class IRBProtocolObject < DataFactory
       fill_out page, :withdrawal_reason
       page.submit_withdrawal_reason
     end
+
+
+
+
+    DEBUG.message 'In #withdraw'
+    DEBUG.message @document_id
+    DEBUG.message @status
+    DEBUG.message '...should be Withdrawn'
+
+
+
+
+
   end
 
   # =======

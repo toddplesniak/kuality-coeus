@@ -56,7 +56,7 @@ And /the IRB Admin withdraws the Protocol/ do
   @irb_protocol.withdraw
 
 
-  DEBUG.pause 500
+  DEBUG.pause 100
 
 
 
