@@ -54,10 +54,33 @@ end
 And /the IRB Admin withdraws the Protocol/ do
   steps '* log in with the IRB Administrator user'
   @irb_protocol.withdraw
+end
+
+And /the primary reviewer no longer sees their review comments/ do
+
+  pr_name = @irb_protocol.primary_reviewers[0]
+  primary_reviewer = @committee.members.member(pr_name)
+  primary_reviewer.sign_in
+  visit(Researcher).action_list
 
 
-  DEBUG.pause 100
+  DEBUG.pause 500
 
 
+  primary_reviewer.sign_out
 
+end
+
+Then /the secondary reviewer can see the primary reviewer's comment in / do
+  sr_name = @irb_protocol.secondary_reviewers[0]
+  secondary_reviewer = @committee.members.member(sr_name)
+  secondary_reviewer.sign_in
+  visit(Researcher).action_list
+  on(ActionList).filter
+  on ActionListFilter do |page|
+    page.document_title.set @irb_protocol.protocol_number
+    page.filter
+  end
+  on(ActionList).open_review(@irb_protocol.protocol_number)
+  on(OnlineReview).review_comment(@comment).should be_present
 end

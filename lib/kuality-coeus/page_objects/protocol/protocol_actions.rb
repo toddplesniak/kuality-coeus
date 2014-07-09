@@ -36,6 +36,10 @@ class ProtocolActions < KCProtocol
   element(:withdrawal_reason) { |b| b.frm.textarea(name: 'actionHelper.protocolWithdrawBean.reason') }
   action(:submit_withdrawal_reason) { |b| b.frm.button(name: 'methodToCall.withdrawProtocol.anchor:WithdrawProtocol').click; b.loading }
 
+  # Summary & History
+  value(:review_comments) { |b| b }
+
+
   private
 
   element(:reviewers_container) { |b|

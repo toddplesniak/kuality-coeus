@@ -21,7 +21,8 @@ class IRBProtocolObject < DataFactory
         title:               random_alphanums_plus,
         lead_unit:           '::random::',
         primary_reviewers:   [],
-        secondary_reviewers: []
+        secondary_reviewers: [],
+        reviews:             collection('Review')
     }
     # TODO: Needs a @lookup_class and @search_key defined
     @lookup_class = ProtocolLookup
@@ -75,11 +76,6 @@ class IRBProtocolObject < DataFactory
       page.schedule_date.pick! @schedule_date
       page.submit_for_review
       @status=page.document_status
-
-      DEBUG.message 'In #submit_for_review'
-      DEBUG.message @status
-
-
     end
   end
 
@@ -98,20 +94,9 @@ class IRBProtocolObject < DataFactory
       page.expand_all
       fill_out page, :withdrawal_reason
       page.submit_withdrawal_reason
+      @status=page.document_status
+      @document_id=page.document_id
     end
-
-
-
-
-    DEBUG.message 'In #withdraw'
-    DEBUG.message @document_id
-    DEBUG.message @status
-    DEBUG.message '...should be Withdrawn'
-
-
-
-
-
   end
 
   # =======
