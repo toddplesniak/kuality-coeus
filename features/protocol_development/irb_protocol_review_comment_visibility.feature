@@ -10,6 +10,7 @@ Feature: IRB Protocol Review Comment Visibility
     * adds several members to the Committee
     * submits the Committee
     * the Protocol Creator creates an IRB Protocol in the Committee's home unit
+    * assigns a committee member the the Protocol's personnel
     * submits the Protocol to the Committee for review
     * assigns a primary and a secondary reviewer to the Protocol
     * the primary reviewer submits review comments
@@ -20,5 +21,6 @@ Feature: IRB Protocol Review Comment Visibility
     When  the IRB Admin approves the primary reviewers comment(s)
     Then  the secondary reviewer can see the primary reviewer's comment in Submission Details
     And   the principal investigator can't see the primary reviewer's comment in Submission Details
+    And   the non-reviewing committee member in the Protocol's personnel can't see the primary reviewer's comment in Submission Details
 
-  Scenario:
+  #Scenario: Approved Primary Reviewer Comments are Final, not Private

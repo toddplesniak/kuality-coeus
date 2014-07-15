@@ -9,7 +9,7 @@ class ProtocolPersonnelObject < DataFactory
     @browser = browser
 
     defaults = {
-
+        type: 'employee'
     }
 
     set_options(defaults.merge(opts))
@@ -17,7 +17,18 @@ class ProtocolPersonnelObject < DataFactory
   end
 
   def create
+    get_person
+    on page_class do |page|
+      page.protocol_role.fit @role
+      page.add_person
+      page.save
+    end
+  end
 
+  private
+
+  def page_class
+    ProtocolPersonnel
   end
 
 end

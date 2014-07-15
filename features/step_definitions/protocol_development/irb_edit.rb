@@ -30,11 +30,24 @@ end
 
 # Note: This stepdef assumes no reviewers are already assigned...
 And /assigns a primary and a secondary reviewer to the Protocol/ do
-  names = @committee.members.full_names.shuffle
+  # Select a random committee member who is not already in the Protocol's personnel...
+  names = (@committee.members.full_names - @irb_protocol.personnel.names).shuffle
   @irb_protocol.assign_primary_reviewers names[0]
   @irb_protocol.assign_secondary_reviewers names[1]
 end
 
+And /assigns a committee member the the Protocol's personnel/ do
+  # Need to make sure the selected member isn't already assigned to the Protocol somehow...
+  names = @committee.members.full_names - @irb_protocol.personnel.names - @irb_protocol.primary_reviewers - @irb_protocol.secondary_reviewers
+  name = names.sample
+  first = name[/^\w+/]
+  last = name[/\w+$/]
+  role = ['Co-Investigator', 'Correspondent - CRC', 'Correspondent Administrator', 'Study Personnel'].sample
+  @irb_protocol.view :personnel
+  @irb_protocol.personnel.add full_name: name,
+                              role: role, first_name: first,
+                              last_name: last
+end
 
 And /^submits the Protocol to the Committee for Expedited review$/ do
   # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
