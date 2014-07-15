@@ -35,4 +35,3 @@ end
 And /submits the Committee/ do
   @committee.submit
 end
-

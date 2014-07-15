@@ -49,8 +49,8 @@
       person.add_person
       break unless person.add_person_errors.empty? # ..we've thrown an error, so no need to continue this method...
       person.expand_all
-      @user_name=person.user_name @full_name
-      @home_unit=person.home_unit @full_name
+      @user_name=person.user_name_of @full_name
+      @home_unit=person.home_unit_of @full_name
       set_up_units
       break if person.unit_details_errors_div(@full_name).present?
       # If it's a key person without units then they won't have credit splits,

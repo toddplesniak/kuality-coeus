@@ -70,7 +70,7 @@ class CommitteeScheduleObject < DataFactory
   end
 
   def random_weekdays
-    %w{Sunday Monday Tuesday Wednesday Thursday Friday Saturday}.shuffle.pop(rand(5))
+    %w{Sunday Monday Tuesday Wednesday Thursday Friday Saturday}.shuffle.pop(rand(4)+1)
   end
 
   def random_weekday

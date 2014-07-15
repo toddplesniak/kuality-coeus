@@ -32,12 +32,24 @@ class ProtocolActions < KCProtocol
   element(:assign_reviewers_div) { |b| b.frm.div(id: 'tab-:AssignReviewers-div') }
   action(:assign_reviewers) { |b| b.frm.button(name:'methodToCall.assignReviewers.anchor:AssignReviewers').click; b.loading }
 
+  # Manage Review Comments
+  p_element(:review_comment) { |text, b| b.frm.textarea(value: text) }
+  p_element(:comment_private) { |text, b| b.review_comment(text).parent.parent.checkbox(title: 'Private') }
+  p_element(:comment_final) { |text, b| b.review_comment(text).parent.parent.checkbox(title: 'Final') }
+  action(:manage_comments) { |b| b.frm.button(name: /methodToCall.manageComments.anchor/).click; b.loading }
+
   # Withdraw Protocol
   element(:withdrawal_reason) { |b| b.frm.textarea(name: 'actionHelper.protocolWithdrawBean.reason') }
   action(:submit_withdrawal_reason) { |b| b.frm.button(name: 'methodToCall.withdrawProtocol.anchor:WithdrawProtocol').click; b.loading }
 
   # Summary & History
-  value(:review_comments) { |b| b }
+  value(:review_comments) { |b|
+    begin
+      b.review_comments_table.hiddens.map{ |hid| hid.value }
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError
+      []
+    end
+  }
 
 
   private
@@ -50,4 +62,6 @@ class ProtocolActions < KCProtocol
     end
   }
 
+  element(:review_comments_table) { |b| b.frm.div(id: 'tab-:ReviewComments-div').table }
+  
 end

@@ -5,10 +5,10 @@ class IRBProtocolObject < DataFactory
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
-               :protocol_number, :status, :submission_status, :expiration_date, :principal_investigator,
+               :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
                :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
-               :primary_reviewers, :secondary_reviewers,
+               :primary_reviewers, :secondary_reviewers, :reviews,
                # Withdraw
                :withdrawal_reason
 
@@ -20,11 +20,11 @@ class IRBProtocolObject < DataFactory
         protocol_type:       '::random::',
         title:               random_alphanums_plus,
         lead_unit:           '::random::',
+        personnel:           collection('ProtocolPersonnel'),
         primary_reviewers:   [],
         secondary_reviewers: [],
         reviews:             collection('Review')
     }
-    # TODO: Needs a @lookup_class and @search_key defined
     @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
   end
@@ -72,6 +72,9 @@ class IRBProtocolObject < DataFactory
       # we want to pick the first selectable item
       # so as to make it most likely that there
       # will be active committee members available...
+      # FIXME!!! FIXME!!! FIXME!!! FIXME!!! FIXME!!!
+      # TODO: This is still buggy because sometimes the schedule dates
+      # fall outside of the selectable range. FIXME!!!
       @schedule_date ||= page.schedule_date.options[1].text
       page.schedule_date.pick! @schedule_date
       page.submit_for_review
@@ -97,6 +100,10 @@ class IRBProtocolObject < DataFactory
       @status=page.document_status
       @document_id=page.document_id
     end
+  end
+
+  def principal_investigator
+    @personnel.principal_investigator
   end
 
   # =======
@@ -125,6 +132,9 @@ class IRBProtocolObject < DataFactory
     end
   end
 
+  # TODO: This is going to have to be updated when we want to
+  # be able to specify a particular person as the PI. Right now
+  # it selects a PI at random.
   def set_pi
     on(ProtocolOverview).pi_employee_search
     on KcPersonLookup do |look|
@@ -132,8 +142,19 @@ class IRBProtocolObject < DataFactory
       # We need to exclude the set of test users from the list
       # of names we'll randomly select from...
       names = look.returned_full_names - $users.full_names
-      @principal_investigator = names.sample
-      look.return_value @principal_investigator
+      name = 'William Lloyd Garrison'
+      while name.scan(' ').size > 1
+        name = names.sample
+        # The KcPerson_Id of the user must not contain letters...
+        name = 'William Lloyd Garrison' if look.person_id_of(name) =~ /[a-z]/
+      end
+      first_name = name[/^\w+/]
+      last_name = name[/\w+$/]
+      user_name = look.user_name_of name
+      look.return_value name
+      pi = make ProtocolPersonnelObject, first_name: first_name, last_name: last_name,
+                full_name: name, role: 'Principal Investigator', user_name: user_name
+      @personnel << pi
     end
   end
 
@@ -174,10 +195,21 @@ class IRBProtocolObject < DataFactory
         reviewers.each do |reviewer|
           page.reviewer_type(reviewer).select type
           rev[type] << reviewer
+          make_review_for type, reviewer
         end
       end
       page.assign_reviewers
     end
+  end
+
+  def make_review_for(type, reviewer)
+    opts = {
+        due_date:        @schedule_date[/^\d+-\d+-\d{4}(?=,)/].gsub('-','/'),
+        reviewer:        reviewer,
+        type:            type
+    }
+    review = make ReviewObject, opts
+    @reviews << review
   end
 
 end
