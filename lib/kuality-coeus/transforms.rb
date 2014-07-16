@@ -6,4 +6,6 @@ module Transforms
 
   CREDIT_SPLITS = { recognition: 'Recognition', responsibility: 'Responsibility', space: 'Space', financial: 'Financial' }
 
+  CAN = { 'can ' => :should, 'can\'t ' => :should_not }
+
 end

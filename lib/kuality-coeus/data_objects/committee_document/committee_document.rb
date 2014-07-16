@@ -16,7 +16,7 @@ class CommitteeDocumentObject < DataFactory
       home_unit:              '000001',
       name:                   random_alphanums(60), # Restricted character set until this is fixed: https://jira.kuali.org/browse/KRAFDBCK-10768
       min_members_for_quorum: rand(100).to_s,
-      maximum_protocols:      rand(100).to_s,
+      maximum_protocols:      (rand(100)+1).to_s,
       adv_submission_days:    (rand(76)+14).to_s, # Defaults to a minimum of 14 days
       review_type:            'Full',
       members:                collection('CommitteeMember'),
@@ -74,6 +74,13 @@ class CommitteeDocumentObject < DataFactory
     open_document
     on(Committee).schedule
     @schedule.add defaults.merge(opts)
+
+
+
+    DEBUG.message @schedule.inspect
+
+
+
   end
 
 end

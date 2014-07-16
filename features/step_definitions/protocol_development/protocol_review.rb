@@ -31,12 +31,14 @@ And /the primary reviewer submits review comments/ do
   primary_reviewer.sign_out
 end
 
-And /the IRB Admin sets the flags of the primary reviewers comments to Private and Final/ do
+And /the IRB Admin sets the flags of the primary reviewers comments to (.*)/ do |flags|
+  private = flags[/Private/]
+  final = flags[/Final/]
   steps '* log in with the IRB Administrator user'
   @irb_protocol.view 'Online Review'
   @irb_protocol.primary_reviewers.each do |reviewer|
-    @irb_protocol.reviews.review_by(reviewer).mark_comments_final
-    @irb_protocol.reviews.review_by(reviewer).mark_comments_private
+    @irb_protocol.reviews.review_by(reviewer).mark_comments_final if final
+    @irb_protocol.reviews.review_by(reviewer).mark_comments_private if private
   end
 end
 

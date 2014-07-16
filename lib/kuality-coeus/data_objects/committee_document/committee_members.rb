@@ -73,10 +73,12 @@ class CommitteeMemberObject < DataFactory
 
   def sign_in
     $users.current_user.sign_out if $users.current_user
+    sign_out
     visit($cas ? CASLogin : Login) do |log_in|
       log_in.username.set @user_name
       log_in.login
     end
+    visit Researcher
   end
 
   def sign_out
