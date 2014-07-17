@@ -1,7 +1,6 @@
 class SpecialReviewObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :type, :approval_status, :document_id, :protocol_number,
               :application_date, :approval_date, :expiration_date,

@@ -1,7 +1,6 @@
 class TimeAndMoneyObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :status, :transaction_type_code, :transactions,
               :funds_distribution, :transaction_history, :award_number,

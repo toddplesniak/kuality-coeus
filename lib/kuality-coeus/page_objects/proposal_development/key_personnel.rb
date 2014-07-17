@@ -34,8 +34,8 @@ class KeyPersonnel < ProposalDevelopmentDocument
   # Note this method ONLY relates to the select list for the role, not
   # the read-only field that appears when the role is "Key Person"
   action(:role) { |full_name, p| p.person_div(full_name).select(name: /document.developmentProposalList[\d+].proposalPersons[\d+].proposalPersonRoleId/) }
-  action(:user_name) { |full_name, p| p.person_div(full_name).table[1][3].text }
-  action(:home_unit) { |full_name, p| p.person_div(full_name).table[8][1].text }
+  p_value(:user_name_of) { |full_name, p| p.person_div(full_name).table[1][3].text }
+  p_value(:home_unit_of) { |full_name, p| p.person_div(full_name).table[8][1].text }
   action(:era_commons_name) { |full_name, p| p.person_div(full_name).text_field(name: /eraCommonsUserName/) }
 
   # Degrees...

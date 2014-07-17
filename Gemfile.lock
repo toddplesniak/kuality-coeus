@@ -35,7 +35,7 @@ GEM
       rubyzip (~> 1.0)
       websocket (~> 1.0.4)
     test-factory (0.5.0)
-      watir-webdriver (>= 0.6.10)
+      watir-webdriver (>= 0.6.4)
     watir-nokogiri (1.0.0)
       nokogiri
     watir-webdriver (0.6.10)

@@ -1,7 +1,6 @@
 class AwardFARatesObject < DataFactory
 
-  include DateFactory
-  include StringFactory
+  include DateFactory, StringFactory
 
   attr_reader :rate, :type, :fiscal_year, :start_date, :end_date,
               :campus, :source, :destination, :unrecovered_fa

@@ -7,7 +7,7 @@ Feature: Submitting an IRB Protocol for Review
     Given Users exist with the following roles: IRB Administrator, Protocol Creator
     And   the IRB Admin creates a Committee
     And   schedules at least one event for the Committee
-    And   adds several members to the Committee
+    And   adds four or more members to the Committee
     And   submits the Committee
     And   the Protocol Creator creates an IRB Protocol in the Committee's home unit
     And   submits the Protocol to the Committee for review

@@ -1,7 +1,6 @@
 class ProjectPersonnelObject < DataFactory
 
-  include Navigation
-  include Personnel
+  include Navigation, Personnel
 
   attr_reader :full_name, :first_name, :last_name, :role, :lead_unit,
               :units, :faculty, :total_effort, :academic_year_effort,

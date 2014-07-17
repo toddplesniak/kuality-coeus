@@ -1,7 +1,6 @@
 class SubawardBudgetObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :organization_name, :organization_id, :file_name, :direct_cost,
               :f_and_a_cost, :cost_sharing, :total_cost

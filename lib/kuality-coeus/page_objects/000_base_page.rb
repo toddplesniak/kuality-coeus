@@ -1,12 +1,13 @@
 class BasePage < PageFactory
 
   action(:use_new_tab) { |b| b.windows.last.use }
-  action(:return_to_portal) { |b| b.portal_window.use }
+  action(:return_to_portal_window) { |b| b.portal_window.use }
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
   action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
-  action(:awaiting_doc) { |b| b.frm.button(name: 'methodToCall.returnToPortal').wait_while_present }
+  element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
+  action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
   element(:logout_button) { |b| b.button(value: 'Logout') }
   action(:logout) { |b| b.logout_button.click }
 
@@ -46,7 +47,6 @@ class BasePage < PageFactory
       value(:committee_name) { |p| p.headerinfo_table[2][3].text }
       alias_method :pi, :committee_name
       alias_method :expiration_date, :committee_name
-      element(:headerarea) { |b| b.frm.div(id: 'headerarea') }
     end
 
     # Included here because this is such a common field in KC

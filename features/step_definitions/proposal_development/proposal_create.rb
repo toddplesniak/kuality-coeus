@@ -29,8 +29,8 @@ When /^(the (.*) |)creates a Proposal while missing a required field$/ do |text,
   steps %{ * I log in with the #{role_name} user } unless text==''
   # Pick a field at random for the test...
   required_field = [ 'Proposal Type', 'Activity Type', 'Project Title',
-                     'Sponsor Code',
-                     'Project Start Date', 'Project End Date'
+       'Sponsor Code',
+       'Project Start Date', 'Project End Date'
           ].sample
   # Properly set the nil value depending on the field type...
   required_field=~/Type/ ? value='select' : value=''

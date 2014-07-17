@@ -1,8 +1,6 @@
 class ProposalQuestionsObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
+  include StringFactory, DateFactory, Navigation
 
   attr_reader :document_id, :agree_to_nih_policy, :policy_review_date
 

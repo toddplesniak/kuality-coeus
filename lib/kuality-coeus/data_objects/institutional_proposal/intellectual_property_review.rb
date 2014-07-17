@@ -1,8 +1,6 @@
 class IPReviewObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
+  include StringFactory, DateFactory, Navigation
 
   attr_reader :document_id, :activities, :submitted_for_review, :reviewer, :save_type
 
