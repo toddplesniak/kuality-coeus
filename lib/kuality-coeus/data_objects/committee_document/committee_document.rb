@@ -69,18 +69,12 @@ class CommitteeDocumentObject < DataFactory
 
   def add_schedule opts={}
     defaults = {document_id: @document_id,
-                date: hours_from_now((@adv_submission_days.to_i+1)*24)[:date_w_slashes]
+                date: hours_from_now((@adv_submission_days.to_i+1)*24)[:date_w_slashes],
+                min_days: @adv_submission_days.to_i+2
     }
     open_document
     on(Committee).schedule
     @schedule.add defaults.merge(opts)
-
-
-
-    DEBUG.message @schedule.inspect
-
-
-
   end
 
 end
