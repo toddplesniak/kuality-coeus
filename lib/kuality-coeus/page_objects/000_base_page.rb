@@ -18,6 +18,8 @@ class BasePage < PageFactory
   element(:save_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.save') }
   value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
 
+  element(:workarea_div) { |b| b.frm.div(id: 'workarea') }
+
   value(:htm) { |b| b.frm.html }
   value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
 
@@ -47,6 +49,7 @@ class BasePage < PageFactory
       value(:committee_name) { |p| p.headerinfo_table[2][3].text }
       alias_method :pi, :committee_name
       alias_method :expiration_date, :committee_name
+      element(:headerarea) { |b| b.frm.div(id: 'headerarea') }
     end
 
     # Included here because this is such a common field in KC

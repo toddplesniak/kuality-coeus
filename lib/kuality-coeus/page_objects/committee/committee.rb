@@ -1,5 +1,7 @@
 class Committee < CommitteeDocument
 
+  expected_element :workarea_div
+
   document_header_elements
   description_field
 

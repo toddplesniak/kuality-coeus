@@ -1,5 +1,7 @@
 class CommitteeSchedule < CommitteeDocument
-  
+
+  expected_element :workarea_div
+
   element(:date) { |b| b.frm.text_field(name: 'committeeHelper.scheduleData.scheduleStartDate') }
   element(:start_time) { |b| b.frm.text_field(name: 'committeeHelper.scheduleData.time.time') }
   p_element(:meridian) { |m, b| b.frm.radio(value: m).set }
@@ -48,6 +50,5 @@ class CommitteeSchedule < CommitteeDocument
   p_action(:month_option) { |option, b| b.frm.radio(name: 'committeeHelper.scheduleData.monthlySchedule.monthOption', value: option).set }
   # Acceptable parameter values are: 'XDAY' or 'CMPLX'
   p_action(:year_option) { |option, b| b.frm.radio(name: 'committeeHelper.scheduleData.yearlySchedule.yearOption', value: option).set }
-
 
 end
