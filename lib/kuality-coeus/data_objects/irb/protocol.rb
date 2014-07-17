@@ -32,7 +32,6 @@ class IRBProtocolObject < DataFactory
       @initiator=doc.initiator
       @submission_status=doc.submission_status
       @expiration_date=doc.expiration_date
-      @search_key = { protocol_number: @protocol_number }
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title
     end
@@ -41,6 +40,7 @@ class IRBProtocolObject < DataFactory
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
+      @search_key = { protocol_number: @protocol_number }
     end
   end
 
