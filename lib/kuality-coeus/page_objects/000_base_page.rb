@@ -18,6 +18,8 @@ class BasePage < PageFactory
   element(:save_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.save') }
   value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
 
+  element(:workarea_div) { |b| b.frm.div(id: 'workarea') }
+
   value(:htm) { |b| b.frm.html }
   value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
 

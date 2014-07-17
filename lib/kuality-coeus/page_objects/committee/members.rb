@@ -1,5 +1,7 @@
 class Members < CommitteeDocument
 
+  expected_element :close_button
+
   action(:employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.KcPerson!!).(((personId:committeeHelper.newCommitteeMembership.personId,fullName:committeeHelper.newCommitteeMembership.personName))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
   action(:non_employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.NonOrganizationalRolodex!!).(((rolodexId:committeeHelper.newCommitteeMembership.rolodexId,fullName:committeeHelper.newCommitteeMembership.personName))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
   action(:clear) { |b| b.frm.button(name: 'methodToCall.clearCommitteeMembership').click }
@@ -22,6 +24,8 @@ class Members < CommitteeDocument
   p_element(:add_role_end_date) { |name, b| b.member_area(name).text_field(title: '* End Date') }
   p_action(:add_role) { |name, b| b.member_area(name).button(name: /methodToCall.addCommitteeMembershipRole.document.committeeList/).click }
   p_action(:lookup_expertise) { |name, b| b.member_area(name).button(alt: 'Multiple Value Search on ').click }
+
+  element(:close_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.close') }
 
   private
   p_element(:member_area) { |name, b| b.frm.h3(text: /#{Regexp.escape(name)}/).parent }

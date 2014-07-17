@@ -1,5 +1,7 @@
 class ProtocolOverview < KCProtocol
 
+  expected_element :workarea_div
+
   description_field
 
   # Document Overview
