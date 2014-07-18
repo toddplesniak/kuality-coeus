@@ -2,7 +2,7 @@
 Feature: Submitting an IRB Protocol for Review
 
   This feature summary needs to be written
-  @test
+
   Scenario: Submitting a Protocol to a Committee
     Given Users exist with the following roles: IRB Administrator, Protocol Creator
     And   the IRB Admin creates a Committee

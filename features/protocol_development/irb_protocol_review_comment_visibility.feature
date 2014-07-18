@@ -15,7 +15,7 @@ Feature: IRB Protocol Review Comment Visibility
     * submits the Protocol to the Committee for review
     * assigns a primary and a secondary reviewer to the Protocol
     * the primary reviewer submits review comments
-  
+  @test
   Scenario: Approved Primary Reviewer Comments are Private and Final
     Given the IRB Admin sets the flags of the primary reviewers comments to Private and Final
     And   the IRB Admin approves the primary reviewers review(s)
