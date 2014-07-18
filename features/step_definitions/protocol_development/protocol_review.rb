@@ -9,7 +9,7 @@ Then /^the assigned reviewers get a Protocol Review$/ do
       page.document_title.set @irb_protocol.protocol_number
       page.filter
     end
-    title_string = "KC Protocol Review - #{@irb_protocol.principal_investigator[/\w+$/]}/Protocol# #{@irb_protocol.protocol_number}"
+    title_string = "KC Protocol Review - #{@irb_protocol.principal_investigator.last_name}/Protocol# #{@irb_protocol.protocol_number}"
     on(ActionList).open_review(title_string)
     on(OnlineReview).new_review_comment(rev_name).should be_present
     reviewer.sign_out
