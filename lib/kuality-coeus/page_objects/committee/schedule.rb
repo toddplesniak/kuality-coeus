@@ -42,6 +42,7 @@ class CommitteeSchedule < CommitteeDocument
   action(:add_event) { |b| b.frm.button(name: 'methodToCall.addEvent.anchorSchedule').click }
 
   # Event list
+  p_action(:maintain) { |date, b| b.schedule_table.row(text: /#{Regexp.escape(date)}/).button(name: /methodToCall.maintainSchedule/).click }
 
   private
   # Acceptable parameter values: 'XDAY' or 'WEEKDAY'
@@ -51,4 +52,6 @@ class CommitteeSchedule < CommitteeDocument
   # Acceptable parameter values are: 'XDAY' or 'CMPLX'
   p_action(:year_option) { |option, b| b.frm.radio(name: 'committeeHelper.scheduleData.yearlySchedule.yearOption', value: option).set }
 
+  element(:schedule_table) { |b| b.frm.table(id: 'schedule-table') }
+  
 end
