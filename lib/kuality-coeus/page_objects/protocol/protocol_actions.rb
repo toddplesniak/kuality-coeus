@@ -14,11 +14,14 @@ class ProtocolActions < KCProtocol
 
   element(:exempt_studies_checklist) { |b| b.frm.tr(id: 'exemptStudiesCheckList') }
 
-  action(:submit_for_review) { |b| b.frm.button(name: 'methodToCall.submitForReview.anchor:SubmitforReview').click; b.loading; b.awaiting_doc }
+  action(:submit_for_review_submit) { |b| b.frm.button(name: 'methodToCall.submitForReview.anchor:SubmitforReview').click; b.loading; b.awaiting_doc }
 
   #Expedited Approval
   element(:expedited_approval_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.approvalDate') }
   element(:expedited_expiration_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.expirationDate') }
+
+  value(:expedited_approval_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').td(text: /Approval Date:$/).parent.td(index: 1).text }
+  value(:expedited_expiration_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').td(text: /Expiration Date:$/).parent.td(index: 1).text }
 
   action(:submit_expedited_approval) { |b| b.frm.button(name: /^methodToCall.grantExpeditedApproval/).click }
 
@@ -36,9 +39,20 @@ class ProtocolActions < KCProtocol
 
   #Assign Reviewers
 
+  #Notify Committee
+  element(:committee_id_assign) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
+  element(:committee_comment) { |b| b.frm.textarea(id: 'actionHelper.protocolNotifyCommitteeBean.comment') }
+  element(:committee_action_date) { |b| b.frm.text_field(id: 'actionHelper.protocolNotifyCommitteeBean.actionDate') }
+  action(:submit_notify_committee) { |b| b.frm.button(name: 'methodToCall.notifyCommitteeProtocol.anchor:NotifyCommittee').click }
+
+  #Expire
+  element(:expire_action_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpireBean.actionDate') }
+  value(:expire_action_date_value) { |b| b.expire_action_date.value }
+
   # Returns an array containing the names of the listed reviewers
   value(:reviewers) { |b| b.reviewers_row.hiddens(name: /fullName/).map{|r| r.value} }
   p_element(:reviewer_type) { |name, b| b.reviewers_row.td(text: /#{name}/).parent.select(name: /actionHelper.protocolSubmitAction.reviewer\[\d+\].reviewerTypeCode/) }
   element(:reviewers_row) { |b| b.frm.tr(id: 'reviewers') }
+
 
 end

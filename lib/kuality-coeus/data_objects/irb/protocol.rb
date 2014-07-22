@@ -19,7 +19,7 @@ class IRBProtocolObject < DataFactory
         protocol_type:       '::random::',
         title:               random_alphanums_plus,
         lead_unit:           '::random::',
-        expedited_checklist: [],
+        expedited_checklist: {},
         amendment_summary: random_alphanums_plus,
         amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers', 'Protocol Organizations',
                 'Subjects', 'Questionnaire', 'General Info', 'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
@@ -63,33 +63,58 @@ class IRBProtocolObject < DataFactory
         type_qualifier: '::random::',
         committee: '::random::',
         schedule_date: '::random::',
+        expedited_checklist: 'add yes'
     }
     set_options(defaults.merge(opts))
-    view :protocol_actions
+    # view :protocol_actions
     on ProtocolActions do |page|
+      page.protocol_actions_tab
       page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
                :committee
       page.schedule_date.pick! @schedule_date
 
-      @expedited_checklist.each do |item|
-        #needed to make a Hash because #{item} is passing in as an array
-        item_hash = Hash[*item.flatten]
-        #fetch gets the hash item pair
-        #hash.keys.sample gets the key which is then used to find the value defined in EXPEDITED_CHECKLIST
-        page.expedited_checklist(Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample)).set
+      if @expedited_checklist == nil
+        puts 'not adding checklist'
+      else
+        @expedited_checklist.each do |item|
+          puts "Item Class value is #{item} and class is... "
+          puts item.class.inspect
 
-        # puts 'hash sample'
-        # puts Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample).inspect
+          #needed to make a Hash because #{item} is passing in as an array
+          item_hash = Hash[*item.flatten]
 
+          puts "After hash convert, Item Class value is #{item_hash} and class is... "
+          puts item_hash.class.inspect
+
+          #fetch gets the hash item pair
+          #hash.keys.sample gets the key which is then used to find the value defined in EXPEDITED_CHECKLIST
+          page.expedited_checklist(Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample)).set
+
+          # puts 'hash sample'
+          # puts Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample).inspect
+        end
       end
 
-
-      page.submit_for_review
+      page.submit_for_review_submit
       page.processing_document
 
     end
   end
+
+  def notify_committee opts={}
+    defaults = {
+        committee_id_assign: '::random::',
+    }
+    set_options(defaults.merge(opts))
+
+    on ProtocolActions do |notify|
+        fill_out notify, :committee_id_assign, :committee_action_date
+
+        notify.submit_notify_committee
+      end
+  end
+
 
   def create_amendment opts={}
     defaults = {

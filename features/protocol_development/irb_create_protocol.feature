@@ -36,10 +36,36 @@ Feature: Creating IRB Protocols
     And I create a IRB Protocol with Expedited Submissions Review Type
     And I submit a Expedited Approval with a date of last year
 #  (approval date + 364) leave action date as is (today's date)
-    And I create an Amendment
+    And I add a Create Amendment to the IRB Protocol
 #    Then Verify Expiration date is correct
     And I submit an Amendment of type Expedited for review
     When I assign to a reviewer
     Then the Expedited Approval Date should be correct
 #    And the Expedited Expiration Date should be correct
 
+
+
+#  <create amendment>
+#  change nothing
+#
+#  navigate to protocol actions
+#  select amendment + expedited + checkbox <submit>
+#  assign to committee + schedule <submit>
+#  NOTE: expiration date still shows 6/30/14
+#
+#  select <return to PI>
+
+
+#  navigate to amendment protocol tab - expiration date is erased and system says it will generate upon approval (This is wrong, it should retain 6/30/14)
+#  navigate to protocol actions
+#  select resubmission + expedited + checkbox <submit>
+#
+#  assign to committee + schedule <submit>
+#  assign to reviewer <submit>
+#  show expedited approval action
+#
+#  The approval date and expiration date are not editable and default incorrectly.
+#  They should display the approval date of 7/1/13 and expiration date of 6/30/14.
+#  Even worse, when you approve the amendment it overwrites the initial protocol
+#  existing expiration date with the wrong information that defaulted from the amendment.
+#  No admin change can be done for the amendment once approved so incorrect correspondence is generated.
