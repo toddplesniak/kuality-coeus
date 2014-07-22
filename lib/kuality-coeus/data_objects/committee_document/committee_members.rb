@@ -109,9 +109,12 @@ class CommitteeMemberObject < DataFactory
     end
   end
 
-  ACTIVE_ROLES = ['Chair', 'Expedited/Exempt Reviewer', 'Alternate', 'IRB Administrator',
-                  'Member - Scientist', 'Member - Non Scientist', 'Member', 'Community Member',
-                  'Prisoner Representative', 'Vice Chair', 'Additional Committee Member' ]
+  ACTIVE_ROLES = ['Chair', 'Expedited/Exempt Reviewer', 'Alternate',
+                  'IRB Administrator',
+                  'Member - Scientist', 'Member - Non Scientist',
+                  'Member', 'Community Member',
+                  'Prisoner Representative', 'Vice Chair', 'Additional Committee Member'
+                   ]
 
 end # CommitteeMemberObject
 

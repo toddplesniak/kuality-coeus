@@ -51,7 +51,6 @@ class ProtocolActions < KCProtocol
     end
   }
 
-
   private
 
   element(:reviewers_container) { |b|

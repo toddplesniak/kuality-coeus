@@ -14,16 +14,21 @@ Feature: IRB Protocol Review Comment Visibility
     * assigns a committee member the the Protocol's personnel
     * submits the Protocol to the Committee for review
     * assigns a primary and a secondary reviewer to the Protocol
+    * edits the meeting details to make it available to reviewers
     * the primary reviewer submits review comments
-  
+  @test
   Scenario: Approved Primary Reviewer Comments are Private and Final
     Given the IRB Admin sets the flags of the primary reviewers comments to Private and Final
     And   the IRB Admin approves the primary reviewers review(s)
     When  the IRB Admin approves the primary reviewers comment(s)
     Then  the secondary reviewer can see the primary reviewer's comment in Submission Details
     And   the principal investigator can't see the primary reviewer's comment in Submission Details
-    And   the non-reviewing committee member in the Protocol's personnel can't see the primary reviewer's comment in Submission Details
+    And   the non-reviewing committee member can't see the primary reviewer's comment in Submission Details
     And   the uninvolved committee member can see the primary reviewer's comment in Submission Details
+    And   the secondary reviewer can see the primary reviewer's comment in the meeting minutes
+    And   the primary reviewer can see the primary reviewer's comment in the meeting minutes
+    And   the uninvolved committee member can see the primary reviewer's comment in the meeting minutes
+    And   the non-reviewing committee member can't see the primary reviewer's comment in the meeting minutes
 
   Scenario: Approved Primary Reviewer Comments are Final, not Private
     Given the IRB Admin sets the flags of the primary reviewers comments to Final
@@ -31,7 +36,7 @@ Feature: IRB Protocol Review Comment Visibility
     When  the IRB Admin approves the primary reviewers comment(s)
     Then  the secondary reviewer can see the primary reviewer's comment in Submission Details
     And   the principal investigator can see the primary reviewer's comment in Submission Details
-    And   the non-reviewing committee member in the Protocol's personnel can see the primary reviewer's comment in Submission Details
+    And   the non-reviewing committee member can see the primary reviewer's comment in Submission Details
     And   the uninvolved committee member can see the primary reviewer's comment in Submission Details
 
   Scenario: Approved Primary Reviewer Comments are Private, not Final
@@ -40,7 +45,7 @@ Feature: IRB Protocol Review Comment Visibility
     When  the IRB Admin approves the primary reviewers comment(s)
     Then  the secondary reviewer can't see the primary reviewer's comment in Submission Details
     And   the principal investigator can't see the primary reviewer's comment in Submission Details
-    And   the non-reviewing committee member in the Protocol's personnel can't see the primary reviewer's comment in Submission Details
+    And   the non-reviewing committee member can't see the primary reviewer's comment in Submission Details
     And   the uninvolved committee member can't see the primary reviewer's comment in Submission Details
 
   Scenario: Approved Primary Reviewer Comments are not Private and not Final

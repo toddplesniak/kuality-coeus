@@ -55,9 +55,15 @@ class CommitteeDocumentObject < DataFactory
     end
   end
 
+  # FIXME
+  # This method will create a new committee document if
+  # the committee is in a final status. Not good!
   def view(tab)
     open_document
-    on(Committee).send(damballa(tab).to_sym)
+    on Committee do |page|
+      page.description.set @description
+      page.send(damballa(tab).to_sym)
+    end
   end
 
   def add_member opts={}

@@ -8,4 +8,6 @@ module Transforms
 
   CAN = { 'can ' => :should, 'can\'t ' => :should_not }
 
+  CHECK = { set: true, clear: false }
+
 end
