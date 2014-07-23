@@ -28,12 +28,6 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in the meeting mi
   end
   on Meeting do |page|
     page.expand_all
-
-    DEBUG.message @irb_protocol.protocol_number
-    DEBUG.message people.inspect
-
-    DEBUG.pause 30
-
     expect(page.minute_entries.find{ |m_e| m_e[:description]==comment }).send(translate[bool], be_nil)
   end
   member.sign_out
