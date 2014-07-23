@@ -1,8 +1,6 @@
 class BudgetPersonnelObject < DataFactory
 
-  include StringFactory
-  include Navigation
-  include Utilities
+  include StringFactory, Navigation, Utilities
 
   attr_reader :type, :full_name, :job_code, :appointment_type, :base_salary,
               :salary_effective_date, :salary_anniversary_date,

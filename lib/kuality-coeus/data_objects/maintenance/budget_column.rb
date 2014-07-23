@@ -1,7 +1,6 @@
 class BudgetColumnObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :name, :has_lookup, :lookup_argument, :lookup_return, :save_type
 

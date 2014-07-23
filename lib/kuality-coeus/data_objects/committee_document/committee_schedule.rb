@@ -1,7 +1,6 @@
 class CommitteeScheduleObject < DataFactory
 
-  include DateFactory
-  include StringFactory
+  include DateFactory, StringFactory
 
   attr_reader :document_id, :date, :start_time, :meridian,
               :place, :recurrence, :recurrence_settings, :status,
@@ -12,13 +11,17 @@ class CommitteeScheduleObject < DataFactory
 
     defaults = {
         date:               next_monday[:date_w_slashes],
-        start_time:         "#{rand(12)+1}:#{rand(60)}",
+        start_time:         "#{'%02d'%(rand(12)+1)}:#{'%02d'%rand(60)}",
         meridian:           %w{AM PM}.sample,
-        place:              random_alphanums_plus(20),
+        place:              random_alphanums(20), # Needs to be a restricted char set until https://jira.kuali.org/browse/KRAFDBCK-10947 is fixed
         recurrence:         random_recurrence,
     }
     set_options(defaults.merge(opts))
     requires :document_id
+    # Note: This variable is needed to ensure that the randomized committee schedule
+    # will have at least 1 event set after the Committee's "Adv Submission Days" count.
+    # See the CommitteeDocumentObject's #add_schedule method.
+    @min_days ||= 2
     @recurrence_settings ||= default_recurrence_parameters[@recurrence.to_sym]
   end
 
@@ -63,15 +66,15 @@ class CommitteeScheduleObject < DataFactory
 
   def default_recurrence_parameters
     {
-        Daily:   {option: :every_x_days, count: rand(6)+1, end_on: date_factory(Time.now+(86400*(rand(365)+1)))[:date_w_slashes] },
-        Weekly:  {count: rand(5)+1, days: random_weekdays, end_on: date_factory(Time.now+(86400*365*(rand(2)+1)))[:date_w_slashes] },
+        Daily:   {option: :every_x_days, count: rand(6)+1, end_on: date_factory(Time.now+(86400*(rand(365)+@min_days)))[:date_w_slashes] },
+        Weekly:  {count: rand(5)+1, days: random_weekdays, end_on: date_factory(Time.now+(86400*365*(rand(2)+2)))[:date_w_slashes] },
         Monthly: {option: :x_weekday_of_x_months, cardinal_day: random_cardinal_day, weekday: random_weekday, count: rand(12)+1, end_on: date_factory(Time.now+(86400*365*(rand(5)+1)))[:date_w_slashes] },
         Yearly:  {option: :weekday_of_month_of_x_years, cardinal_day: random_cardinal_day, weekday: random_weekday, month: random_month, count: rand(5)+1, end_on: date_factory(Time.now+(86400*365*(rand(25)+1)))[:date_w_slashes] }
     }
   end
 
   def random_weekdays
-    %w{Sunday Monday Tuesday Wednesday Thursday Friday Saturday}.shuffle.pop(rand(5))
+    %w{Sunday Monday Tuesday Wednesday Thursday Friday Saturday}.shuffle.pop(rand(4)+1)
   end
 
   def random_weekday
@@ -87,7 +90,7 @@ class CommitteeScheduleObject < DataFactory
   end
 
   def random_recurrence
-    %w{Never Daily Weekly Monthly Yearly}.sample
+    %w{Daily Weekly Never Monthly Yearly}.sample
   end
 
 end # CommitteeScheduleObject

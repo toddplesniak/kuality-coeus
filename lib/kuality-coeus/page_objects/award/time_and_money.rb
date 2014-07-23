@@ -1,5 +1,7 @@
 class TimeAndMoney < KCAwards
 
+  expected_element :hierarchy_table
+
   description_field
 
   action(:return_to_award) { |b| b.return_button.click; b.loading }

@@ -1,3 +1,4 @@
+@Award
 Feature: Sponsor Template Creation
 
   As a user with the Modify Sponsor Template role,

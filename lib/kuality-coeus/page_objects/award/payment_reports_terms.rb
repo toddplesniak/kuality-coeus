@@ -8,9 +8,11 @@ class PaymentReportsTerms < KCAwards
   element(:osp_file_copy) { |b| b.frm.select(name: 'awardReportsBean.newAwardReportTerms[2].ospDistributionCode') }
   action(:add_payment_type) { |b| b.frm.button(name: 'methodToCall.addAwardReportTerm.reportClass6.reportClassIndex2.anchorReportClasses:PaymentInvoiceRequirements').click; b.loading }
 
-  element(:invoice_instructions) { |b| b.frm.text_field(name: 'document.awardList[0].awardPaymentAndInvoiceRequirementsComments.comments') }
+  element(:invoice_instructions) { |b| b.frm.textarea(name: 'document.awardList[0].awardPaymentAndInvoiceRequirementsComments.comments') }
   
   action(:generate_schedule) { |b| b.frm.button(name: 'methodToCall.generatePaymentSchedules.anchorReportClasses:PaymentInvoiceRequirements').click; b.loading }
+
+  action(:refresh_selection_lists) { |b| b.frm.button(name: 'methodToCall.refreshPulldownOptions').click; b.loading }
 
   # Adding Reports...
 
@@ -21,7 +23,7 @@ class PaymentReportsTerms < KCAwards
   p_element(:add_frequency_base) { |report, b| b.report_div(report).select(name: /awardReportsBean.newAwardReportTerms\[\d+\].frequencyBaseCode/) }
   p_element(:add_osp_file_copy) { |report, b| b.report_div(report).select(name: /awardReportsBean.newAwardReportTerms\[\d+\].ospDistributionCode/) }
   p_element(:add_due_date) { |report, b| b.report_div(report).text_field(name: /awardReportsBean.newAwardReportTerms\[\d+\].dueDate/) }
-  p_action(:add_report) { |report, b| b.frm.button(name: /methodToCall.addAwardReportTerm.reportClass\d+.reportClassIndex\d+.anchorReportClasses:#{report}/).click }
+  p_action(:add_report) { |report, b| b.frm.button(name: /methodToCall.addAwardReportTerm.reportClass\d+.reportClassIndex\d+.anchorReportClasses:#{report}/).click; b.loading }
 
   # Editing Reports...
   p_element(:report_type) { |report, number, b| b.report_infoline(report, number).parent.select(name: /reportCode/) }

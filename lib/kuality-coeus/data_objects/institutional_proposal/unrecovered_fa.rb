@@ -1,8 +1,6 @@
 class IPUnrecoveredFAObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
+  include StringFactory, DateFactory, Navigation
 
   attr_reader :fiscal_year, :rate_type, :applicable_rate,
               :on_campus_contract, :source_account, :amount

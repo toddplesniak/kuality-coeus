@@ -1,7 +1,6 @@
 class AwardFARatesObject < DataFactory
 
-  include DateFactory
-  include StringFactory
+  include DateFactory, StringFactory
 
   attr_reader :rate, :type, :fiscal_year, :start_date, :end_date,
               :campus, :source, :destination, :unrecovered_fa
@@ -27,13 +26,11 @@ class AwardFARatesObject < DataFactory
       page.expand_all
       page.new_rate.fit @rate
       page.new_rate_type.pick! @type
-
+      page.new_rate_fiscal_year.fit @fiscal_year
       if @start_date
-        page.new_rate_fiscal_year.fit @fiscal_year
         page.new_rate_start_date.set @start_date
         page.new_rate_end_date.set @end_date
       else
-        page.new_rate_fiscal_year.send_keys @fiscal_year.to_s
         page.new_rate_fiscal_year.fire_event 'onblur'
         sleep 1.5
         x = 0
@@ -53,7 +50,8 @@ class AwardFARatesObject < DataFactory
       # Added this line for testing a blank start date field...
       page.new_rate_start_date.clear if @start_date==''
       page.add_rate
-      page.save
+      # Note: This line may have unintended consequences...
+      page.save unless page.errors.size > 0
     end
   end
 

@@ -7,7 +7,7 @@ And /^the (.*) parameter is set to (.*)$/ do |parameter, value|
     look.edit_item parameter
   end
   on ParameterMaintenanceDocument do |page|
-    unless page.parameter_value.value==parameter
+    unless page.parameter_value.value==value
       page.parameter_value.set(value)
       page.description.set random_alphanums
       page.blanket_approve

@@ -1,6 +1,6 @@
 When /^I visit the action list outbox$/ do
-
-  visit(ActionList).outbox
+  visit(Researcher).action_list
+  on(ActionList).outbox
 end
 
 Then /^the (principal investigator|OSPApprover) can access the Proposal from their action list$/ do |user|

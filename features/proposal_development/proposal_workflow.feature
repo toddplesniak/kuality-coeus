@@ -1,3 +1,4 @@
+@Proposal
 Feature: Proposal Workflows and Routing
 
   As system user with the appropriate roles and permissions, I want the ability to
@@ -25,7 +26,7 @@ Feature: Proposal Workflows and Routing
     When  the Proposal Creator submits a new Proposal into routing
     Then  the OSPApprover can access the Proposal from their action list
     And   the approval buttons appear on the Proposal Summary and Proposal Action pages
-
+  @test
   Scenario: Proposal is recalled
     Given the Proposal Creator submits a new Proposal into routing
     When  I recall the Proposal

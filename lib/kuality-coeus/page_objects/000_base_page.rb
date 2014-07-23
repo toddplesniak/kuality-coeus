@@ -1,12 +1,13 @@
 class BasePage < PageFactory
 
   action(:use_new_tab) { |b| b.windows.last.use }
-  action(:return_to_portal) { |b| b.portal_window.use }
+  action(:return_to_portal_window) { |b| b.portal_window.use }
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
   action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
-  action(:awaiting_doc) { |b| b.frm.button(name: 'methodToCall.returnToPortal').wait_while_present }
+  element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
+  action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
   action(:processing_document) { |b| b.frm.div(text: /The document is being processed. You will be returned to the document once processing is complete./ ).wait_while_present }
 
   element(:logout_button) { |b| b.button(value: 'Logout') }
@@ -18,6 +19,8 @@ class BasePage < PageFactory
   action(:form_status) { |name, b| b.form_tab(name).text[/(?<=\()\w+/] }
   element(:save_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.save') }
   value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
+
+  element(:workarea_div) { |b| b.frm.div(id: 'workarea') }
 
   value(:htm) { |b| b.frm.html }
   value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
@@ -68,7 +71,7 @@ class BasePage < PageFactory
       # Explicitly defining the "recall" button to keep the method name at "recall" instead of "recall_current_document"...
       element(:recall_button) { |b| b.frm.button(class: 'globalbuttons', title: 'Recall current document') }
       action(:recall) { |b| b.recall_button.click; b.loading }
-      action(:edit) { |b| b.edit_button.click; b.loading }
+      action(:edit) { |b| b.edit_button.when_present(5).click; b.loading }
       element(:edit_button) { |b| b.frm.button(name: 'methodToCall.editOrVersion') }
       action(:delete_selected) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.deletePerson').click; b.loading }
       element(:send_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.sendNotification', title: 'send') }
@@ -76,8 +79,9 @@ class BasePage < PageFactory
     end
 
     def tab_buttons
+      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present.click; b.loading }
       element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
-      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').click; b.loading }
+      
     end
 
     def tiny_buttons
@@ -252,8 +256,9 @@ class BasePage < PageFactory
     private
     # ========
 
+    # Don't use this with links that are contained in the iframes...
     def links(*links_text)
-      links_text.each { |link| elementate(:link, link) }
+      links_text.each { |link| elementize(:link, link) }
     end
 
     def buttons(*buttons_text)
@@ -283,6 +288,7 @@ class BasePage < PageFactory
     def nsp(string)
       string.gsub(/[ ,]/, '')
     end
+    alias_method :nospace, :nsp
 
     # Used to add an extra space in the full name (because some
     # elements have that, annoyingly!)

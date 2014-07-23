@@ -1,7 +1,6 @@
 class ProposalLogObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :number, :log_type, :log_status, :proposal_type, :title,
               :principal_investigator, :lead_unit, :sponsor_id, :status,

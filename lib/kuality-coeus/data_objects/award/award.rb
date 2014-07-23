@@ -1,10 +1,7 @@
 # coding: UTF-8
 class AwardObject < DataFactory
 
-  include Navigation
-  include DateFactory
-  include StringFactory
-  include DocumentUtilities
+  include Navigation, DateFactory, StringFactory, DocumentUtilities
 
   attr_reader :award_status,
               :award_title, :lead_unit, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
@@ -313,7 +310,7 @@ class AwardObject < DataFactory
     on Award do |page|
       award.id = page.header_award_id
       award.document_id = page.header_document_id
-      award.custom_data.document_id = page.header_document_id
+      award.custom_data.document_id = page.header_document_id if award.custom_data
     end
 
     # Modify the new data object according to the
@@ -423,7 +420,9 @@ class AwardObject < DataFactory
 
   def open_document
     navigate unless on_award?
-    on(TimeAndMoney).return_to_award if on_tm?
+    if on_tm?
+      on(TimeAndMoney).return_to_award
+    end
   end
 
   def navigate
@@ -453,7 +452,7 @@ class AwardObject < DataFactory
   end
 
   def on_tm?
-    !(on(Award).t_m_button.exist?)
+    @browser.frm.button(name: 'methodToCall.returnToAward').present? && !(on(Award).t_m_button.present?)
   end
 
   def page_class

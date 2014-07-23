@@ -1,5 +1,7 @@
 class BudgetColumnToAlter < BasePage
 
+  expected_element :lookup_argument
+
   description_field
   tab_buttons
   global_buttons

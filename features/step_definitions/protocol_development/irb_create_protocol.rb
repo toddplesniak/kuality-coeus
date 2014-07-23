@@ -14,7 +14,7 @@ When /^the Protocol Creator creates an IRB Protocol but misses a required field$
   required_field = ['Description', 'Title', 'Lead Unit'
           ].sample
   field = damballa(required_field)
-  @irb_protocol = create IRBProtocolObject, field=>''
+  @irb_protocol = create IRBProtocolObject, field=>' '
   text = ' is a required field.'
   errors = {
       description: "Document Description (Description)#{text}",

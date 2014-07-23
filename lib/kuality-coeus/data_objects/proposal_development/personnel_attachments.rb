@@ -1,7 +1,6 @@
 class PersonnelAttachmentObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :person, :type, :file_name, :description, :document_id, :doc_type
 

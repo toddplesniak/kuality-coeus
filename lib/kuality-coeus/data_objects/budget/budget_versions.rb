@@ -1,7 +1,6 @@
 class BudgetVersionsObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :document_id, :status,
               # Stuff on Budget Versions page...

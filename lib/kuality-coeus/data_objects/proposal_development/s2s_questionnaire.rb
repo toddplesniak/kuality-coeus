@@ -11,9 +11,7 @@ class S2SQuestionnaireObject < DataFactory
                  :international_activities, :other_agencies, :subject_to_review,
                  :novice_applicants]
 
-  include StringFactory
-  include Navigation
-  include Utilities
+  include StringFactory, Navigation, Utilities
 
   attr_reader :document_id, :civil_service, :total_ftes, :potential_effects, :explain_potential_effects,
               :international_support, :explain_support, :pi_in_govt, :pis_us_govt_agency, :total_amount_requested,

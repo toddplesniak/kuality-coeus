@@ -1,3 +1,4 @@
+@IP
 Feature: Linking an Institutional Proposal to a KC Award
 
   To be written.

@@ -26,11 +26,9 @@ module Personnel
     on lookup_page do |page|
       if @last_name.nil?
         if @type=='non_employee'
-          results=false
-          until results do
+          until page.results_table.present? do
             page.state.pick '::random::'
             page.search
-            results = true if page.results_table.present?
           end
         else
           page.search
@@ -131,11 +129,14 @@ module Personnel
       log_in.username.set @user_name
       log_in.login
     end
+    visit Researcher
   end
+  alias :sign_in :log_in
 
   def log_out
     visit(Researcher).logout
   end
+  alias :sign_out :log_out
 
 end # Personnel
 
@@ -145,6 +146,7 @@ module People
   def names
     self.collect { |person| person.full_name }
   end
+  alias :full_names :names
 
   def roles
     self.collect{ |person| person.role }.uniq
