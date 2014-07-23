@@ -31,41 +31,59 @@ Feature: Creating IRB Protocols
 
   @wip @KRAFDBCK-9927
   Scenario: Return to PI for amendment updates with correct expiration date
+    #need to add in Committee defined because test will fail without particular committee
     Given a User exists with the role: 'IRB Administrator'
     And log in with the IRB Administrator user
+#    Eliminates 4 lines
+    #"the IRB Admin submits a Protocol to the Committee for Expedited review, with an approval date of last year"
     And I create a IRB Protocol with Expedited Submissions Review Type
+#  create protocol
+#   enter in desc, title, Principal Investigator
+#       navigate to protocol actions
+#  select initial + expedited + checkbox <submit>
+    And I assign a random Committee to the Protocol Action
+#  assign to committee + schedule <submit>
+    And I assign the Protocol Action to reviewers
+#  assign reviewer <submit>
     And I submit a Expedited Approval with a date of last year
 #  (approval date + 364) leave action date as is (today's date)
-    And I add a Create Amendment to the IRB Protocol
-#    Then Verify Expiration date is correct
-    And I submit an Amendment of type Expedited for review
-    When I assign to a reviewer
-    Then the Expedited Approval Date should be correct
-#    And the Expedited Expiration Date should be correct
-
-
-
-#  <create amendment>
-#  change nothing
-#
-#  navigate to protocol actions
-#  select amendment + expedited + checkbox <submit>
-#  assign to committee + schedule <submit>
-#  NOTE: expiration date still shows 6/30/14
-#
-#  select <return to PI>
-
-
-#  navigate to amendment protocol tab - expiration date is erased and system says it will generate upon approval (This is wrong, it should retain 6/30/14)
-#  navigate to protocol actions
-#  select resubmission + expedited + checkbox <submit>
-#
-#  assign to committee + schedule <submit>
-#  assign to reviewer <submit>
 #  show expedited approval action
+#   change approval date to 7/1/13 + make sure expiration date also updates 6/30/14 (approval date + 364) leave action date as is (today's date)
+#   (DO NOT USE SYSTEM DEFAULT DATES FOR APPROVAL/EXPIRATION) <submit>
+    And I add a Create Amendment to the IRB Protocol
+#  <create amendment>
+#   change nothing
+#    Then Verify Expiration date is correct
+#    And I submit for review with a Submission Type of Amendment and review type to Expedited
+    And on the Protocol Actions I Submit for Review with:
+      | Submission Type | Amendment |
+      | Review Type     | Expedited |
+    #     navigate to protocol actions
+#  Submit For Review - select amendment + expedited + checkbox <submit>
+    And I assign a random Committee to the Protocol Action
+#  assign to committee + schedule <submit>
+#   NOTE: expiration date still shows 6/30/14
+    And I return the Protocol Actions to the PI
+#  select <return to PI>
+#    Then the expiration date should be correct
+#    navigate to amendment protocol tab -
+#  expiration date is erased and system says it will generate upon approval
+#  (This is wrong, it should retain 6/30/14)
+    And on the Protocol Actions I Submit for Review with:
+        | Submission Type | Resubmission |
+        | Review Type     | Expedited    |
+#    navigate to protocol actions
+#  select resubmission + expedited + checkbox <submit>
+    And I assign a random Committee to the Protocol Action
+#  assign to committee + schedule <submit>
+    And I assign to a reviewwer
+#  assign to reviewer <submit>
+# array of selection lists and set one to assigned.
+    Then the Approval date should be uneditable and correct
+    And the Expedited Approval Date should be unaeditable and correct
+#    show expedited approval action
 #
-#  The approval date and expiration date are not editable and default incorrectly.
-#  They should display the approval date of 7/1/13 and expiration date of 6/30/14.
-#  Even worse, when you approve the amendment it overwrites the initial protocol
-#  existing expiration date with the wrong information that defaulted from the amendment.
-#  No admin change can be done for the amendment once approved so incorrect correspondence is generated.
+#  The approval date and expiration date are not editable and default incorrectly. They should display the approval date of 7/1/13 and expiration date of 6/30/14.
+#  Even worse, when you approve the amendment it overwrites the initial protocol existing expiration date
+#  with the wrong information that defaulted from the amendment. No admin change can be done for the amendment once approved so incorrect correspondence is generated.n
+#  change can be done for the amendment once approved so incorrect correspondence is generated.

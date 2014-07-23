@@ -38,6 +38,8 @@ class ProtocolActions < KCProtocol
 
 
   #Assign Reviewers
+  element(:submit_assign_reviewers_button) { |b| b.frm.button(name: 'methodToCall.assignReviewers.anchor:AssignReviewers') }
+  action(:submit_assign_reviewers) { |b| b.submit_assign_reviewers_button.click }
 
   #Notify Committee
   element(:committee_id_assign) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
@@ -53,6 +55,10 @@ class ProtocolActions < KCProtocol
   value(:reviewers) { |b| b.reviewers_row.hiddens(name: /fullName/).map{|r| r.value} }
   p_element(:reviewer_type) { |name, b| b.reviewers_row.td(text: /#{name}/).parent.select(name: /actionHelper.protocolSubmitAction.reviewer\[\d+\].reviewerTypeCode/) }
   element(:reviewers_row) { |b| b.frm.tr(id: 'reviewers') }
+
+  #Return to PI
+  element(:return_to_pi_action_date) { |b| b.frm.text_field(name: 'actionHelper.protocolReturnToPIBean.actionDate') }
+  action(:submit_return_to_pi) { |b| b.frm.button(name: /^methodToCall.returnToPI.anchor/).click }
 
 
 end

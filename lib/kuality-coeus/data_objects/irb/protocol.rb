@@ -104,17 +104,18 @@ class IRBProtocolObject < DataFactory
 
   def notify_committee opts={}
     defaults = {
-        committee_id_assign: '::random::',
+        committee_id_assign: '::random::'
     }
     set_options(defaults.merge(opts))
 
     on ProtocolActions do |notify|
-        fill_out notify, :committee_id_assign, :committee_action_date
+      notify.expand_all_button.when_present.click
+      fill_out notify, :committee_id_assign, :committee_action_date
+
 
         notify.submit_notify_committee
-      end
+    end
   end
-
 
   def create_amendment opts={}
     defaults = {
