@@ -7,10 +7,34 @@ class Meeting < BasePage
   error_messages
 
   # Meeting Details
+  element(:place) { |b| b.frm.text_field(name: 'meetingHelper.committeeSchedule.place') }
+  element(:max_protocols) { |b| b.frm.text_field(name: 'meetingHelper.committeeSchedule.maxProtocols') }
   element(:available_to_reviewers) { |b| b.frm.checkbox(name: 'meetingHelper.committeeSchedule.availableToReviewers') }
 
   # Protocol Submitted
 
+  # This method returns an Array of Hashes.
+  # Each Hash contains Key/Value pairs that correspond
+  # to the columns in the Protocol Submitted table.
+  # Example: { protocol_number: '1407000050', principal_investigator: 'Steve Smith', protocol_title: 'Fun Title',
+  #            submission_type: 'Initial Protocol Application for Approval', type_qualifier: 'Eligibility Exceptions/Protocol Deviations',
+  #            review_type: 'Full', submission_status: 'Submitted to Committee', submission_date: '07/23/2014' }
+  value(:protocols_submitted) { |b| array = []; b.frm.table(id: 'protocolSubmitted-table').tbody.trs.
+                                    each { |tr|
+                                           array << {
+                                               protocol_number: tr.tds[0].text,
+                                               principal_investigator: tr.tds[1].text,
+                                               protocol_title: tr.tds[2].text,
+                                               submission_type: tr.tds[3].text,
+                                               type_qualifier: tr.tds[4].text,
+                                               review_type: tr.tds[5].text,
+                                               submission_status: tr.tds[6].text,
+                                               submission_date: tr.tds[7].text
+                                           }
+                                        }
+                                    array
+                              }
+  
   # Other Actions
 
   # Attendance
