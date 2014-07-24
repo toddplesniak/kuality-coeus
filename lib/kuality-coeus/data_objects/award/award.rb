@@ -293,7 +293,7 @@ class AwardObject < DataFactory
       sleep 3 # FIXME!
       copy.show_award_details_panel(@id) unless copy.award_div(@id).visible?
       copy.copy_descendents(@id).send(descendents) if copy.copy_descendents(@id).enabled?
-      copy.send("copy_as_#{type}", @id).set
+      copy.send("copy_as_#{type}", @id)
       copy.child_of_target_award(@id).pick! parent
       copy.copy_award @id
     end

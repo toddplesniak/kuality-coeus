@@ -25,8 +25,8 @@ class ReviewObject < DataFactory
   def add_comment opts={}
     defaults = {
         comment: random_multiline(200, 10),
-        private: :clear,
-        final:   :clear
+        private: 'No',
+        final:   'No'
     }
     options = defaults.merge(opts)
     # Navigation done by the Protocol Object and/or step definition
@@ -54,8 +54,8 @@ class ReviewObject < DataFactory
   def mark_comments_private
     on(OnlineReview).expand_all
     @comments.each do |comment|
-      comment[:private]= :set
-      on(OnlineReview).comment_final(comment[:comment]).send comment[:private]
+      comment[:private]= 'Yes'
+      on(OnlineReview).comment_final(comment[:comment]).fit comment[:private]
     end
     on(OnlineReview).save_review_of @reviewer
   end
@@ -63,8 +63,8 @@ class ReviewObject < DataFactory
   def mark_comments_final
     on(OnlineReview).expand_all
     @comments.each do |comment|
-      comment[:final]= :set
-      on(OnlineReview).comment_final(comment[:comment]).send comment[:final]
+      comment[:final]= 'Yes'
+      on(OnlineReview).comment_final(comment[:comment]).fit comment[:final]
     end
     on(OnlineReview).save_review_of @reviewer
   end

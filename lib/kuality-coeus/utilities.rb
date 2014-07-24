@@ -18,12 +18,6 @@ module Utilities
     $users[-1]
   end
 
-  def make_role(opts={})
-    name = opts[:name]
-    name ||= 'role'
-    set(name, (make RoleObject, opts))
-  end
-
   def random_percentage
     random_dollar_value(100)
   end
