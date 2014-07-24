@@ -6,13 +6,6 @@ class ComplianceQuestionsObject < DataFactory
 
   def initialize(browser, opts={})
     @browser = browser
-    # PLEASE NOTE:
-    # This is an unusual data object class in that
-    # it breaks the typical model for radio button
-    # methods and their associated class instance variables
-    #
-    # In general, it's not workable to set up radio button elements
-    # to use "Y" and "N" as the instance variables associated with them.
     defaults = {
         agree_to_ethical_conduct: 'Y',
         conduct_review_date:      right_now[:date_w_slashes],

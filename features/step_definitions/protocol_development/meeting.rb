@@ -5,7 +5,7 @@ And /edits the meeting details to make it available to reviewers/ do
     page.open_meeting
   end
   on Meeting do |page|
-    page.available_to_reviewers.set
+    page.available_to_reviewers.fit 'yes'
     page.save
   end
 end

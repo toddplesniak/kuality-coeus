@@ -10,9 +10,10 @@ class SponsorTermObject < DataFactory
 
     defaults = {
         description:              random_alphanums,
-        ## TODO: 'Random Alphanums' won't work for this field, because it only allows numbers
-        ## Also, this field requires a unique term id, and that has yet to be resolved.
-        sponsor_term_id:          dateTime.now,
+        # Note: #random_alphanums won't work for this field, because it only allows numbers.
+        # Also, this field requires a unique term id, so we use the current Time object, converted
+        # to a String, to ensure this.
+        sponsor_term_id:          right_now[:custom].to_i.to_s,
         sponsor_term_code:        '1',
         sponsor_term_type_code:   '::random::',
         sponsor_term_description: random_alphanums,
