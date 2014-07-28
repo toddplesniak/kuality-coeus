@@ -8,4 +8,6 @@ class KCProtocol < BasePage
   buttons 'Protocol', 'Personnel', 'Questionnaire', 'Custom Data', 'Special Review',
           'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa', 'Online Review'
 
+  value(:current_tab_is) { |b| b.frm.dt(class: 'licurrent').button.value}
+
 end

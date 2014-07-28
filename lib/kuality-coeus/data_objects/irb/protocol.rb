@@ -13,7 +13,7 @@ class IRBProtocolObject < DataFactory
                :withdrawal_reason,
               
                :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
-               :expedited_checklist, :amend, :amendment_summary #debug
+               :expedited_checklist, :amend, :amendment_summary
 
   def initialize(browser, opts={})
     @browser = browser
@@ -26,13 +26,8 @@ class IRBProtocolObject < DataFactory
         personnel:           collection('ProtocolPersonnel'),
         primary_reviewers:   [],
         secondary_reviewers: [],
-        reviews:             collection('Review'),
+        reviews:             collection('Review')
         
-        expedited_checklist: {}, #debug
-        amendment_summary: random_alphanums_plus,
-        amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers', 'Protocol Organizations',
-                'Subjects', 'Questionnaire', 'General Info', 'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
-
     }
     @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
@@ -70,10 +65,11 @@ class IRBProtocolObject < DataFactory
         submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
         type_qualifier: '::random::',
         committee: '::random::',
-        expedited_checklist: '::random::'
+        expedited_checklist: '::random::',
+        schedule_date: '::random::'
     }
     set_options(defaults.merge(opts))
-    view :protocol_actions
+    view :protocol_actions unless on(KCProtocol).current_tab_is == 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
@@ -87,36 +83,18 @@ class IRBProtocolObject < DataFactory
       # fall outside of the selectable range. FIXME!!!
       @schedule_date ||= page.schedule_date.options[1].text
       page.schedule_date.pick! @schedule_date
-      page.submit_for_review
-      @status=page.document_status
 
-      if @expedited_checklist == '::random::'
-        @expedited_checklist.each do |item|
-          puts "Item Class value is #{item} and class is... "
-          puts item.class.inspect
-
-          #needed to make a Hash because #{item} is passing in as an array
-          item_hash = Hash[*item.flatten]
-
-          puts "After hash convert, Item Class value is #{item_hash} and class is... "
-          puts item_hash.class.inspect
-
-          #fetch gets the hash item pair
-          #hash.keys.sample gets the key which is then used to find the value defined in EXPEDITED_CHECKLIST
-          page.expedited_checklist(Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample)).set
-
-          # puts 'hash sample'
-          # puts Transforms::EXPEDITED_CHECKLIST.fetch(item_hash.keys.sample).inspect
-        end
-        else
-          #TODO:: Need to add defined checklist 
-          puts 'not adding checklist'
-
-        end
+      if @submission_review_type == 'Expedited' && @expedited_checklist == '::random::'
+        @expedited_checklist = Transforms::EXPEDITED_CHECKLIST.keys.sample
+        page.expedited_checklist(Transforms::EXPEDITED_CHECKLIST.fetch(@expedited_checklist)).set
+      end
+      if @submission_review_type == 'Exempt' && @expedited_checklist == '::random::'
+        #TODO:: @submission_review_type == 'Exempt' transforms.rb checklist needs to be create
+        warn 'Exempt expedited checklist type needs to be created'
+      end
 
       page.submit_for_review_submit
-      page.processing_document
-
+      @status=page.document_status
     end
   end
 
@@ -151,9 +129,8 @@ class IRBProtocolObject < DataFactory
     set_options(defaults.merge(opts))
 
     on ProtocolActions do |notify|
-      notify.expand_all_button.when_present.click
+      notify.expand_all
       fill_out notify, :committee_id_assign, :committee_action_date
-
 
         notify.submit_notify_committee
     end
@@ -161,23 +138,47 @@ class IRBProtocolObject < DataFactory
 
   def create_amendment opts={}
     defaults = {
-      amendment_summary: random_alphanums_plus,
+        amendment_summary: random_alphanums_plus,
+      amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+              'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
+              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
     }
     set_options(defaults.merge(opts))
 
-    # on(KCProtocol).protocol_actions
-    # on ProtocolActions do |page|
-    #   page.expand_all
-    #
-    #   fill_out page, :amendment_summary
-    #   page.amend(@amend).set
-    #
-    #   sleep 30
-    #   page.create_amendment
-    #   # page.processing_document
-    #   puts 'why you no work?'
-    # end
+    on ProtocolActions do |page|
+      page.expand_all
+      page.amendment_summary.set @amendment_summary
+      page.amend(@amend).set
+      page.create_amendment
+    end
+
+    on(NotificationEditor).send_button.click if on(NotificationEditor).send_button.present?
   end
+
+  def expedited_approval opts={}
+      defaults = {
+      }
+      set_options(defaults.merge(opts))
+
+    #Handle too many Protocols continue? prompt if appears
+    on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    on(Confirmation).awaiting_doc
+
+    on ProtocolActions do |page|
+      page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
+      page.expand_all unless page.expedited_approval_date.present?
+
+      page.expedited_approval_date.when_present.focus
+      #There is a PROBLEM when entering text in Approval Date. A popup appears saying wrong format.
+      #entering text into a clear Approval Date field does not produce a popup
+      page.expedited_approval_date.clear
+      page.alert.ok if page.alert.exists?
+      page.expedited_approval_date.fit @expedited_approval_date
+
+      page.submit_expedited_approval
+    end
+  end
+
 
   # =======
   private
@@ -241,7 +242,7 @@ class IRBProtocolObject < DataFactory
   def assign_reviewers type, reviewers
     rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
     existing_reviewers = @primary_reviewers + @secondary_reviewers
-    view :protocol_actions
+    view :protocol_actions unless on(KCProtocol).current_tab_is == 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       if reviewers==[]

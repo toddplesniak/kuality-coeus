@@ -9,8 +9,6 @@ class ProtocolActions < KCProtocol
   element(:committee) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.committeeId') }
   element(:schedule_date) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.scheduleId') }
 
-  action(:protocol_actions_tab) { |b| b.frm.button(value: 'Protocol Actions').click}
-
   element(:expedited_review_checklist) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }
   p_element(:expedited_checklist) { |i, b| b.expedited_review_checklist.checkbox(name: "actionHelper.protocolSubmitAction.expeditedReviewCheckList[#{i}].checked") }
 
@@ -22,10 +20,10 @@ class ProtocolActions < KCProtocol
   element(:expedited_approval_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.approvalDate') }
   element(:expedited_expiration_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.expirationDate') }
 
-  value(:expedited_approval_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').td(text: /Approval Date:$/).parent.td(index: 1).text }
-  value(:expedited_expiration_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').td(text: /Expiration Date:$/).parent.td(index: 1).text }
+  value(:expedited_approval_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tr.th(text: /Approval Date:$/).parent.td.text }
+  value(:expedited_expiration_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tr.th(text: /Expiration Date:$/).parent.td.text }
 
-  action(:submit_expedited_approval) { |b| b.frm.button(name: /^methodToCall.grantExpeditedApproval/).click }
+  action(:submit_expedited_approval) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').button(name: /^methodToCall.grantExpeditedApproval/).click }
 
   value(:expedited_approval_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 1)[1].text }
   value(:expedited_expiration_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 2)[1].text }
@@ -38,7 +36,6 @@ class ProtocolActions < KCProtocol
   # NOTE: 'General Info' is the title for Add/Modify Notes & Attachments
   action(:create_amendment) { |b| b.frm.button(name: 'methodToCall.createAmendment.anchor:CreateAmendment').click }
 
-
   #Assign Reviewers
   element(:submit_assign_reviewers_button) { |b| b.frm.button(name: 'methodToCall.assignReviewers.anchor:AssignReviewers') }
   action(:submit_assign_reviewers) { |b| b.submit_assign_reviewers_button.click }
@@ -47,7 +44,7 @@ class ProtocolActions < KCProtocol
   element(:committee_id_assign) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
   element(:committee_comment) { |b| b.frm.textarea(id: 'actionHelper.protocolNotifyCommitteeBean.comment') }
   element(:committee_action_date) { |b| b.frm.text_field(id: 'actionHelper.protocolNotifyCommitteeBean.actionDate') }
-  action(:submit_notify_committee) { |b| b.frm.button(name: 'methodToCall.notifyCommitteeProtocol.anchor:NotifyCommittee').click }
+  action(:submit_notify_committee) { |b| b.frm.div(id: 'tab-:NotifyCommittee-div').button(name: 'methodToCall.notifyCommitteeProtocol.anchor:NotifyCommittee').click }
 
   #Expire
   element(:expire_action_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpireBean.actionDate') }
@@ -71,7 +68,6 @@ class ProtocolActions < KCProtocol
   #Return to PI
   element(:return_to_pi_action_date) { |b| b.frm.text_field(name: 'actionHelper.protocolReturnToPIBean.actionDate') }
   action(:submit_return_to_pi) { |b| b.frm.button(name: /^methodToCall.returnToPI.anchor/).click }
-
 
   # Assign Reviewers
   element(:assign_reviewers_div) { |b| b.frm.div(id: 'tab-:AssignReviewers-div') }
@@ -107,5 +103,7 @@ class ProtocolActions < KCProtocol
   }
 
   element(:review_comments_table) { |b| b.frm.div(id: 'tab-:ReviewComments-div').table }
-  
+
+  value(:summary_initial_approval_date) { |b| b.frm..div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 0).text }
+  value(:summary_expiration_date) { |b| b.frm..div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 1).text }
 end
