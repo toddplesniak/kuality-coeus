@@ -1,5 +1,7 @@
 module DocumentUtilities
 
+  CREDIT_SPLITS = { recognition: 'Recognition', responsibility: 'Responsibility', space: 'Space', financial: 'Financial' }
+
   # This method simply sets all the credit splits to
   # equal values based on how many persons and units
   # are attached to the Proposal. If more complicated
@@ -12,7 +14,8 @@ module DocumentUtilities
     split = (100.0/@key_personnel.with_units.size).round(2)
 
     # Now make a hash to use for editing the person's splits...
-    splits = {responsibility: split, financial: split, recognition: split, space: split}
+    splits = {}
+    CREDIT_SPLITS.keys.each{ |cs| splits.store(cs, split) }
 
     # Now we update the KeyPersonObjects' instance variables
     # for their own splits as well as for their units
@@ -25,7 +28,7 @@ module DocumentUtilities
       # Iterate through the units, updating their credit splits with the
       # valid split amount...
       units.each do |unit|
-        [:responsibility, :financial, :recognition, :space].each { |item| unit[item]=units_split }
+        CREDIT_SPLITS.keys.each { |item| unit[item]=units_split }
       end
       person.update_unit_credit_splits units
     end
