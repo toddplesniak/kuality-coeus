@@ -106,6 +106,8 @@ class BasePage < PageFactory
       action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
 
+      action(:return_random_row) { |b| b.results_table[rand(b.results_table.to_a.length - 1) + 1] }
+
       p_value(:docs_w_status) { |status, b| array = []; (b.results_table.rows.find_all{|row| row[3].text==status}).each { |row| array << row[0].text }; array }
 
       # Used as the catch-all "document opening" method for conditional navigation,

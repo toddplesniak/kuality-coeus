@@ -16,7 +16,7 @@ class SponsorTemplateObject < DataFactory
         template_description: random_alphanums,
         template_status:      '::random::',
         payment_basis:        'Cost reimbursement',
-        payment_method:       'Advanced payment invoice',
+        payment_method:       'Advanced payment invoice'
 
     }
     set_options(defaults.merge(opts))
@@ -24,7 +24,9 @@ class SponsorTemplateObject < DataFactory
 
   def create
     visit(Maintenance).sponsor_template
-    on(SponsorTemplateLookup).create
+
+    on(SponsorTemplateLookup).create_new
+
     on SponsorTemplate do |add|
       @document_id=add.document_id
       @status=add.document_status
@@ -42,10 +44,12 @@ class SponsorTemplateObject < DataFactory
 
   def set_sponsor_terms
 
-    on(SponsorTemplate).find_sponsor_term
+    on(SponsorTemplate).sponsor_term_search
     on SponsorTermLookup do |look|
       look.search
-      look.return_random
+
+      look.send([:set, :clear].sample)
+      sleep 60
     end
   end
 
