@@ -20,13 +20,10 @@ class ProtocolActions < KCProtocol
   element(:expedited_approval_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.approvalDate') }
   element(:expedited_expiration_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.expirationDate') }
 
-  value(:expedited_approval_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tr.th(text: /Approval Date:$/).parent.td.text }
-  value(:expedited_expiration_date_locked_value) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tr.th(text: /Expiration Date:$/).parent.td.text }
+  value(:expedited_approval_date_ro) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tr.th(text: /Approval Date:$/).parent.td.text }
+  value(:expedited_expiration_date_ro) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tr.th(text: /Expiration Date:$/).parent.td.text }
 
   action(:submit_expedited_approval) { |b| b.frm.div(id: 'tab-:ExpeditedApproval-div').button(name: /^methodToCall.grantExpeditedApproval/).click }
-
-  value(:expedited_approval_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 1)[1].text }
-  value(:expedited_expiration_date_uneditable) { |date_slashes, b| b.frm.div(id: 'tab-:ExpeditedApproval-div').tbody.td.tr(:index, 2)[1].text }
 
   #Create Amendment
   element(:amendment_summary) { |b| b.frm.textarea(name: 'actionHelper.protocolAmendmentBean.summary') }
@@ -34,21 +31,18 @@ class ProtocolActions < KCProtocol
   # 'General Info', 'Funding Source', 'Protocol References and Other Identifiers', 'Protocol Organizations',
   # 'Subjects', 'Questionnaire', 'General Info', 'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'
   # NOTE: 'General Info' is the title for Add/Modify Notes & Attachments
+
   action(:create_amendment) { |b| b.frm.button(name: 'methodToCall.createAmendment.anchor:CreateAmendment').click }
 
-  #Assign Reviewers
-  element(:submit_assign_reviewers_button) { |b| b.frm.button(name: 'methodToCall.assignReviewers.anchor:AssignReviewers') }
-  action(:submit_assign_reviewers) { |b| b.submit_assign_reviewers_button.click }
 
   #Notify Committee
   element(:committee_id_assign) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
   element(:committee_comment) { |b| b.frm.textarea(id: 'actionHelper.protocolNotifyCommitteeBean.comment') }
   element(:committee_action_date) { |b| b.frm.text_field(id: 'actionHelper.protocolNotifyCommitteeBean.actionDate') }
-  action(:submit_notify_committee) { |b| b.frm.div(id: 'tab-:NotifyCommittee-div').button(name: 'methodToCall.notifyCommitteeProtocol.anchor:NotifyCommittee').click }
+  action(:notify_committee) { |b| b.frm.div(id: 'tab-:NotifyCommittee-div').button(name: 'methodToCall.notifyCommitteeProtocol.anchor:NotifyCommittee').click }
 
   #Expire
   element(:expire_action_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpireBean.actionDate') }
-  value(:expire_action_date_value) { |b| b.expire_action_date.value }
 
   # Returns an array containing the names of the listed reviewers
   value(:reviewers) { |b|
@@ -67,11 +61,13 @@ class ProtocolActions < KCProtocol
 
   #Return to PI
   element(:return_to_pi_action_date) { |b| b.frm.text_field(name: 'actionHelper.protocolReturnToPIBean.actionDate') }
-  action(:submit_return_to_pi) { |b| b.frm.button(name: /^methodToCall.returnToPI.anchor/).click }
+  action(:return_to_pi) { |b| b.frm.button(name: /^methodToCall.returnToPI.anchor/).click }
 
   # Assign Reviewers
   element(:assign_reviewers_div) { |b| b.frm.div(id: 'tab-:AssignReviewers-div') }
-  action(:assign_reviewers) { |b| b.frm.button(name:'methodToCall.assignReviewers.anchor:AssignReviewers').click; b.loading }
+  element(:assign_reviewers_button) { |b| b.frm.button(name: 'methodToCall.assignReviewers.anchor:AssignReviewers') }
+  action(:assign_reviewers) { |b| b.assign_reviewers_button.click; b.loading }
+
 
   # Manage Review Comments
   p_element(:review_comment) { |text, b| b.frm.textarea(value: text) }
@@ -104,6 +100,6 @@ class ProtocolActions < KCProtocol
 
   element(:review_comments_table) { |b| b.frm.div(id: 'tab-:ReviewComments-div').table }
 
-  value(:summary_initial_approval_date) { |b| b.frm..div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 0).text }
-  value(:summary_expiration_date) { |b| b.frm..div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 1).text }
+  value(:summary_initial_approval_date) { |b| b.frm.div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 0).text }
+  value(:summary_expiration_date) { |b| b.frm.div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 1).text }
 end

@@ -55,8 +55,12 @@ class IRBProtocolObject < DataFactory
   end
 
   def view(tab)
-    open_document
-    on(ProtocolOverview).send(damballa(tab.to_s))
+    raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
+
+    open_document unless @browser.frm.dt(class: 'licurrent').button.alt == tab || @browser.frm.dt(class: 'licurrent').button.alt == 'Protocol'
+
+    on(ProtocolOverview).send(damballa(tab.to_s)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
+
   end
 
   def submit_for_review opts={}
@@ -69,7 +73,7 @@ class IRBProtocolObject < DataFactory
         schedule_date: '::random::'
     }
     set_options(defaults.merge(opts))
-    view :protocol_actions unless on(KCProtocol).current_tab_is == 'Protocol Actions'
+    view 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
@@ -85,8 +89,8 @@ class IRBProtocolObject < DataFactory
       page.schedule_date.pick! @schedule_date
 
       if @submission_review_type == 'Expedited' && @expedited_checklist == '::random::'
-        @expedited_checklist = Transforms::EXPEDITED_CHECKLIST.keys.sample
-        page.expedited_checklist(Transforms::EXPEDITED_CHECKLIST.fetch(@expedited_checklist)).set
+        @expedited_checklist = EXPEDITED_CHECKLIST.keys.sample
+        page.expedited_checklist(EXPEDITED_CHECKLIST.fetch(@expedited_checklist)).set
       end
       if @submission_review_type == 'Exempt' && @expedited_checklist == '::random::'
         #TODO:: @submission_review_type == 'Exempt' transforms.rb checklist needs to be create
@@ -94,6 +98,7 @@ class IRBProtocolObject < DataFactory
       end
 
       page.submit_for_review_submit
+      page.awaiting_doc
       @status=page.document_status
     end
   end
@@ -108,7 +113,7 @@ class IRBProtocolObject < DataFactory
 
   def withdraw(reason=random_multiline(50,4))
     @withdrawal_reason=reason
-    view :protocol_actions
+    view 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       fill_out page, :withdrawal_reason
@@ -127,12 +132,13 @@ class IRBProtocolObject < DataFactory
         committee_id_assign: '::random::'
     }
     set_options(defaults.merge(opts))
+    view 'Protocol Actions'
 
     on ProtocolActions do |notify|
       notify.expand_all
       fill_out notify, :committee_id_assign, :committee_action_date
 
-        notify.submit_notify_committee
+        notify.notify_committee
     end
   end
 
@@ -145,17 +151,21 @@ class IRBProtocolObject < DataFactory
     }
     set_options(defaults.merge(opts))
 
+    view 'Protocol Actions'
+
     on ProtocolActions do |page|
       page.expand_all
       page.amendment_summary.set @amendment_summary
       page.amend(@amend).set
       page.create_amendment
+
+      page.awaiting_doc
     end
 
-    on(NotificationEditor).send_button.click if on(NotificationEditor).send_button.present?
+    confirmation('yes')
   end
 
-  def expedited_approval opts={}
+  def submit_expedited_approval opts={}
       defaults = {
       }
       set_options(defaults.merge(opts))
@@ -164,8 +174,10 @@ class IRBProtocolObject < DataFactory
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
     on(Confirmation).awaiting_doc
 
-    on ProtocolActions do |page|
-      page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
+      view 'Protocol Actions'
+
+      on ProtocolActions do |page|
+      # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
       page.expand_all unless page.expedited_approval_date.present?
 
       page.expedited_approval_date.when_present.focus
@@ -176,6 +188,8 @@ class IRBProtocolObject < DataFactory
       page.expedited_approval_date.fit @expedited_approval_date
 
       page.submit_expedited_approval
+
+      page.awaiting_doc
     end
   end
 
@@ -183,6 +197,11 @@ class IRBProtocolObject < DataFactory
   # =======
   private
   # =======
+
+  EXPEDITED_CHECKLIST = { 'Clinical studies of drugs and medical devices'=>0, 'Continuing review of approved IRB limited to data analysis'=>1,
+                          'Continuing review of research not conducted'=>2, 'Collection of blood samples'=>3, 'Prospective collection of biological specimens'=>4,
+                          'Collection of data through noninvasie procedures'=>5, 'Research involving materials'=>6, 'Collection of data from voice'=>7, 'Research on individual or group'=>8,
+                          'Continuing review of approved IRB permanently closed to enrollment'=>9, 'Continuing review of research previously approved'=>10 }
 
   def merge_settings(opts)
     defaults = {
@@ -242,7 +261,7 @@ class IRBProtocolObject < DataFactory
   def assign_reviewers type, reviewers
     rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
     existing_reviewers = @primary_reviewers + @secondary_reviewers
-    view :protocol_actions unless on(KCProtocol).current_tab_is == 'Protocol Actions'
+    view 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       if reviewers==[]

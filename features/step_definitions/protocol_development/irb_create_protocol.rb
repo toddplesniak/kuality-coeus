@@ -34,67 +34,62 @@ And /the Protocol Creator creates another IRB Protocol in the Committee's home u
   @irb_protocol2 = create IRBProtocolObject, lead_unit: @committee.home_unit
 end
 
-And /^I create a IRB Protocol with Expedited Submissions Review Type$/ do
-  @irb_protocol = create IRBProtocolObject, lead_unit: '000001', protocol_type: 'Expedited'
+And /^I create a IRB Protocol with Expedited Submissions Review Type for lead unit '(\d+)'$/ do |lead_unit|
+  @irb_protocol = create IRBProtocolObject, lead_unit: lead_unit, protocol_type: 'Expedited'
 
   @irb_protocol.submit_for_review  submission_type: 'Initial Protocol Application for Approval',
                                     submission_review_type: 'Expedited'
 
 end
 
-And /^I Notify the Committee on the Protocol Action$/ do
+And /^I Notify the Committee about the Protocol document$/ do
   @irb_protocol.notify_committee
 end
 
 And /^I assign the Protocol Action to reviewers$/ do
    on ProtocolActions do |page|
-     page.expand_all unless page.submit_assign_reviewers_button.present?
-     page.submit_assign_reviewers
+     page.expand_all unless page.assign_reviewers_button.present?
+     page.assign_reviewers
    end
 end
 
 And /^I submit a Expedited Approval with a date of last year$/ do
-  @irb_protocol.expedited_approval expedited_approval_date: "#{last_year[:date_w_slashes]}"
+  @irb_protocol.submit_expedited_approval expedited_approval_date: "#{last_year[:date_w_slashes]}"
 end
 
-And /^I add a Create Amendment to the IRB Protocol$/ do
+And /^I add a Create Amendment to the Protocol document$/ do
   @irb_protocol.create_amendment
 end
 
-And /^I return the Protocol Actions to the PI$/ do
+And /^I return the Protocol document to the PI$/ do
   on ProtocolActions do |page|
-    page.submit_return_to_pi
-    page.send_button.click if page.send_button.present?
+    page.return_to_pi
+    page.send_it if page.send_button.present?
   end
 end
 
 And /^on the Protocol Actions I Submit for Review with:$/ do |table|
   review_data = table.rows_hash
 
-  on ProtocolActions do |page|
-    page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
-    page.expand_all
-
-    @irb_protocol.submit_for_review  submission_type:   review_data['Submission Type'],
-                                     submission_review_type: review_data['Review Type'],
-                                     expedited_checklist: nil
-  end
+  @irb_protocol.submit_for_review  submission_type:   review_data['Submission Type'],
+                                   submission_review_type: review_data['Review Type'],
+                                   expedited_checklist: nil
 end
 
 Then /^the Summary Approval Date should be last year/ do
-  on(ProtocolActions).expedited_approval_date_locked_value.should == last_year[:date_w_slashes]
+  on(ProtocolActions).expedited_approval_date_ro.should == last_year[:date_w_slashes]
 end
 
 And /^the Expedited Date should be yesterday$/ do
-  on(ProtocolActions).expedited_expiration_date_locked_value.should == yesterday[:date_w_slashes]
+  on(ProtocolActions).expedited_expiration_date_ro.should == yesterday[:date_w_slashes]
 end
 
 When /^the IRB Admin submits a Protocol to the Committee for Expedited review, with an approval date of last year$/ do
-  steps 'When I log in with the IRB Administrator user'
-  steps 'And  I create a IRB Protocol with Expedited Submissions Review Type'
-  steps 'And  I Notify the Committee on the Protocol Action'
-  steps 'And  assigns reviewers to the Protocol'
-  steps 'And  I assign the Protocol Action to reviewers'
-  steps 'And  I submit a Expedited Approval with a date of last year'
+  steps %|* I log in with the IRB Administrator user
+          * I create a IRB Protocol with Expedited Submissions Review Type for lead unit '000001'
+          * I Notify the Committee about the Protocol document
+          * assigns reviewers to the Protocol
+          * I assign the Protocol Action to reviewers
+          * I submit a Expedited Approval with a date of last year|
 end
 
