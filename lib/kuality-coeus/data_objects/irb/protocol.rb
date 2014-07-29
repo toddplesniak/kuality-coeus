@@ -72,7 +72,6 @@ class IRBProtocolObject < DataFactory
       # we want to pick the first selectable item
       # so as to make it most likely that there
       # will be active committee members available...
-      # FIXME!!! FIXME!!! FIXME!!! FIXME!!! FIXME!!!
       # TODO: This is still buggy because sometimes the schedule dates
       # fall outside of the selectable range. FIXME!!!
       @schedule_date ||= page.schedule_date.options[1].text

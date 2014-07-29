@@ -69,7 +69,7 @@ end
 Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
   @award.view :contacts
   on AwardContacts do |page|
-    Transforms::CREDIT_SPLITS.values.each do |type|
+    DocumentUtilities::CREDIT_SPLITS.values.each do |type|
       page.errors.should include "The Project Personnel #{type} Credit Split does not equal 100%"
       page.errors.should include "The Unit #{type} Credit Split for #{@award.key_personnel.principal_investigator.full_name} does not equal 100%"
     end

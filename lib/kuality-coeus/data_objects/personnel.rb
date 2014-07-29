@@ -112,7 +112,7 @@ module Personnel
       end
       # This updates the @units variable, in case
       # it was not the passed parameter...
-      Transforms::CREDIT_SPLITS.keys.each do |split|
+      DocumentUtilities::CREDIT_SPLITS.keys.each do |split|
         unless unit[split]==nil
           @units[@units.find_index{|u| u[:number]==unit[:number]}][split]=unit[split]
         end
