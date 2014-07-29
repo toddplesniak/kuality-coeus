@@ -80,3 +80,11 @@ Feature: IRB Protocol Review Comment Visibility
     And   the primary reviewer can't see the primary reviewer's comment in the meeting minutes
     And   the uninvolved committee member can't see the primary reviewer's comment in the meeting minutes
     And   the non-reviewing committee member can't see the primary reviewer's comment in the meeting minutes
+
+  Scenario: Withdrawn Protocol, Approved Primary Reviewer Comments are Final, not Private
+    Given the IRB Admin sets the flags of the primary reviewers comments to Final
+    When  the IRB Admin withdraws the Protocol
+    Then  the primary reviewer can see the primary reviewer's comment in Submission Details
+    And   the secondary reviewer can see the primary reviewer's comment in Submission Details
+    And   the principal investigator can see the primary reviewer's comment in Submission Details
+    And   the non-reviewing committee member can see the primary reviewer's comment in Submission Details
