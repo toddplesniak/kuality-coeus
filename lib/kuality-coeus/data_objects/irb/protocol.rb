@@ -56,11 +56,8 @@ class IRBProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-
-    open_document unless @browser.frm.dt(class: 'licurrent').button.alt == tab || @browser.frm.dt(class: 'licurrent').button.alt == 'Protocol'
-
+    open_document
     on(ProtocolOverview).send(damballa(tab.to_s)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
-
   end
 
   def submit_for_review opts={}
@@ -74,6 +71,7 @@ class IRBProtocolObject < DataFactory
     }
     set_options(defaults.merge(opts))
     view 'Protocol Actions'
+
     on ProtocolActions do |page|
       page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
@@ -163,20 +161,21 @@ class IRBProtocolObject < DataFactory
     end
 
     confirmation('yes')
+    @document_id = on(ProtocolActions).document_id
   end
 
   def submit_expedited_approval opts={}
-      defaults = {
-      }
-      set_options(defaults.merge(opts))
+    defaults = {
+    }
+    set_options(defaults.merge(opts))
 
     #Handle too many Protocols continue? prompt if appears
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
     on(Confirmation).awaiting_doc
 
-      view 'Protocol Actions'
+    view 'Protocol Actions'
 
-      on ProtocolActions do |page|
+    on ProtocolActions do |page|
       # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
       page.expand_all unless page.expedited_approval_date.present?
 
@@ -188,11 +187,19 @@ class IRBProtocolObject < DataFactory
       page.expedited_approval_date.fit @expedited_approval_date
 
       page.submit_expedited_approval
-
       page.awaiting_doc
     end
   end
 
+  def return_to_pi
+    on ProtocolActions do |page|
+      page.return_to_pi
+      page.send_it if page.send_button.present?
+      DEBUG.message @document_id.inspect
+
+      @document_id=page.document_id
+    end
+  end
 
   # =======
   private

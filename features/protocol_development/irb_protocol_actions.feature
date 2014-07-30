@@ -18,25 +18,23 @@ Feature: IRB Protocol Actions
     | Expedited | Expedited Review |
     | Exempt    | Exempt Studies   |
 
-  Scenario:
-
   @KRAFDBCK-9927
-  Scenario: Return to PI with amendment updates has the correct expiration date
+  Scenario: Return to pi with amendment updates has the correct expiration date
     * the IRB Admin creates a Committee
     * schedules at least one event for the Committee
     * submits the Committee
-    When the IRB Admin submits a Protocol to the Committee for Expedited review, with an approval date of last year
-    And  I add a Create Amendment to the Protocol document
-    And  on the Protocol Actions I Submit for Review with:
+    When the IRB Admin submits a Protocol to the Committee for expedited review, with an approval date of last year
+    And  I create an amendment for the Protocol
+    And  submits the Protocol for review with:
        | Submission Type | Amendment |
        | Review Type     | Expedited |
-    And  I Notify the Committee about the Protocol document
-    And  I return the Protocol document to the PI
-    And  on the Protocol Actions I Submit for Review with:
+    And  notifies the committee about the Protocol
+    And  returns the Protocol document to the pi
+    And  submits the Protocol for review with:
        | Submission Type | Resubmission |
        | Review Type     | Expedited    |
-    And  I Notify the Committee about the Protocol document
-    And  I assigns reviewers to the Protocol
-    And  I assign the Protocol Action to reviewers
-    Then the Summary Approval Date should be last year
-    And  the Expedited Date should be yesterday
+    And  notifies the committee about the Protocol
+    And  assigns reviewers to the Protocol
+    And  assigns the protocol action to reviewers
+    Then the summary approval date should be last year
+    And  the expedited date should be yesterday
