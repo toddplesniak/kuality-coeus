@@ -15,7 +15,7 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in Submission Det
   }
   member = people[person] ? @committee.members.member(people[person]) : @irb_protocol.principal_investigator
   member.sign_in
-  @irb_protocol.view :protocol_actions
+  @irb_protocol.view 'Protocol Actions'
   on ProtocolActions do |page|
     page.expand_all
     page.review_comments.send(Transforms::CAN[bool], include, @irb_protocol.reviews.review_by(@irb_protocol.primary_reviewers[0]).comments[0][:comment])

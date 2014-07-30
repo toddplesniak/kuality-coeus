@@ -8,6 +8,8 @@ class BasePage < PageFactory
   action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
   element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
   action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
+  action(:processing_document) { |b| b.frm.div(text: /The document is being processed. You will be returned to the document once processing is complete./ ).wait_while_present }
+
   element(:logout_button) { |b| b.button(value: 'Logout') }
   action(:logout) { |b| b.logout_button.click }
 
@@ -73,11 +75,14 @@ class BasePage < PageFactory
       element(:edit_button) { |b| b.frm.button(name: 'methodToCall.editOrVersion') }
       action(:delete_selected) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.deletePerson').click; b.loading }
       element(:send_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.sendNotification', title: 'send') }
+      action(:send_it) { |b| b.send_button.click }
       action(:send_fyi) { |b| b.send_button.click; b.loading; b.awaiting_doc }
     end
 
     def tab_buttons
       action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present.click; b.loading }
+      element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
+      
     end
 
     def tiny_buttons

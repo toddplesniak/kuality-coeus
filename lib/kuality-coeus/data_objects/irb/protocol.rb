@@ -10,7 +10,10 @@ class IRBProtocolObject < DataFactory
                :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
                :primary_reviewers, :secondary_reviewers, :reviews,
                # Withdraw
-               :withdrawal_reason
+               :withdrawal_reason,
+              
+               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
+               :expedited_checklist, :amend, :amendment_summary
 
   def initialize(browser, opts={})
     @browser = browser
@@ -24,6 +27,7 @@ class IRBProtocolObject < DataFactory
         primary_reviewers:   [],
         secondary_reviewers: [],
         reviews:             collection('Review')
+        
     }
     @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
@@ -51,8 +55,12 @@ class IRBProtocolObject < DataFactory
   end
 
   def view(tab)
-    open_document
-    on(ProtocolOverview).send(damballa(tab.to_s))
+    raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
+
+    open_document unless @browser.frm.dt(class: 'licurrent').button.alt == tab || @browser.frm.dt(class: 'licurrent').button.alt == 'Protocol'
+
+    on(ProtocolOverview).send(damballa(tab.to_s)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
+
   end
 
   def submit_for_review opts={}
@@ -60,10 +68,12 @@ class IRBProtocolObject < DataFactory
         submission_type: '::random::',
         submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
         type_qualifier: '::random::',
-        committee: '::random::'
+        committee: '::random::',
+        expedited_checklist: '::random::',
+        schedule_date: '::random::'
     }
     set_options(defaults.merge(opts))
-    view :protocol_actions
+    view 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
@@ -76,7 +86,18 @@ class IRBProtocolObject < DataFactory
       # fall outside of the selectable range. FIXME!!!
       @schedule_date ||= page.schedule_date.options[1].text
       page.schedule_date.pick! @schedule_date
-      page.submit_for_review
+
+      if @submission_review_type == 'Expedited' && @expedited_checklist == '::random::'
+        @expedited_checklist = EXPEDITED_CHECKLIST.keys.sample
+        page.expedited_checklist(EXPEDITED_CHECKLIST.fetch(@expedited_checklist)).set
+      end
+      if @submission_review_type == 'Exempt' && @expedited_checklist == '::random::'
+        #TODO:: @submission_review_type == 'Exempt' transforms.rb checklist needs to be create
+        warn 'Exempt expedited checklist type needs to be created'
+      end
+
+      page.submit_for_review_submit
+      page.awaiting_doc
       @status=page.document_status
     end
   end
@@ -91,7 +112,7 @@ class IRBProtocolObject < DataFactory
 
   def withdraw(reason=random_multiline(50,4))
     @withdrawal_reason=reason
-    view :protocol_actions
+    view 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       fill_out page, :withdrawal_reason
@@ -105,9 +126,81 @@ class IRBProtocolObject < DataFactory
     @personnel.principal_investigator
   end
 
+  def notify_committee opts={}
+    defaults = {
+        committee_id_assign: '::random::'
+    }
+    set_options(defaults.merge(opts))
+    view 'Protocol Actions'
+
+    on ProtocolActions do |notify|
+      notify.expand_all
+      fill_out notify, :committee_id_assign, :committee_action_date
+
+        notify.notify_committee
+    end
+  end
+
+  def create_amendment opts={}
+    defaults = {
+        amendment_summary: random_alphanums_plus,
+      amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+              'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
+              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
+    }
+    set_options(defaults.merge(opts))
+
+    view 'Protocol Actions'
+
+    on ProtocolActions do |page|
+      page.expand_all
+      page.amendment_summary.set @amendment_summary
+      page.amend(@amend).set
+      page.create_amendment
+
+      page.awaiting_doc
+    end
+
+    confirmation('yes')
+  end
+
+  def submit_expedited_approval opts={}
+      defaults = {
+      }
+      set_options(defaults.merge(opts))
+
+    #Handle too many Protocols continue? prompt if appears
+    on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    on(Confirmation).awaiting_doc
+
+      view 'Protocol Actions'
+
+      on ProtocolActions do |page|
+      # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
+      page.expand_all unless page.expedited_approval_date.present?
+
+      page.expedited_approval_date.when_present.focus
+      #There is a PROBLEM when entering text in Approval Date. A popup appears saying wrong format.
+      #entering text into a clear Approval Date field does not produce a popup
+      page.expedited_approval_date.clear
+      page.alert.ok if page.alert.exists?
+      page.expedited_approval_date.fit @expedited_approval_date
+
+      page.submit_expedited_approval
+
+      page.awaiting_doc
+    end
+  end
+
+
   # =======
   private
   # =======
+
+  EXPEDITED_CHECKLIST = { 'Clinical studies of drugs and medical devices'=>0, 'Continuing review of approved IRB limited to data analysis'=>1,
+                          'Continuing review of research not conducted'=>2, 'Collection of blood samples'=>3, 'Prospective collection of biological specimens'=>4,
+                          'Collection of data through noninvasie procedures'=>5, 'Research involving materials'=>6, 'Collection of data from voice'=>7, 'Research on individual or group'=>8,
+                          'Continuing review of approved IRB permanently closed to enrollment'=>9, 'Continuing review of research previously approved'=>10 }
 
   def merge_settings(opts)
     defaults = {
@@ -167,7 +260,7 @@ class IRBProtocolObject < DataFactory
   def assign_reviewers type, reviewers
     rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
     existing_reviewers = @primary_reviewers + @secondary_reviewers
-    view :protocol_actions
+    view 'Protocol Actions'
     on ProtocolActions do |page|
       page.expand_all
       if reviewers==[]
