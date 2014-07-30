@@ -1,5 +1,7 @@
 class ProtocolActions < KCProtocol
 
+  undef committee_id
+
   # Available Actions
   # Submit for Review
   element(:submit_for_review_div) { |b| b.frm.div(id: 'tab-:SubmitforReview-div') }
@@ -14,7 +16,7 @@ class ProtocolActions < KCProtocol
 
   element(:exempt_studies_checklist) { |b| b.frm.tr(id: 'exemptStudiesCheckList') }
 
-  action(:submit_for_review_submit) { |b| b.frm.button(name: 'methodToCall.submitForReview.anchor:SubmitforReview').click; b.loading; b.awaiting_doc }
+  action(:submit_for_review) { |b| b.frm.button(name: 'methodToCall.submitForReview.anchor:SubmitforReview').click; b.loading; b.awaiting_doc }
 
   #Expedited Approval
   element(:expedited_approval_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.approvalDate') }
@@ -36,7 +38,7 @@ class ProtocolActions < KCProtocol
 
 
   #Notify Committee
-  element(:committee_id_assign) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
+  element(:committee_id) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
   element(:committee_comment) { |b| b.frm.textarea(id: 'actionHelper.protocolNotifyCommitteeBean.comment') }
   element(:committee_action_date) { |b| b.frm.text_field(id: 'actionHelper.protocolNotifyCommitteeBean.actionDate') }
   action(:notify_committee) { |b| b.frm.div(id: 'tab-:NotifyCommittee-div').button(name: 'methodToCall.notifyCommitteeProtocol.anchor:NotifyCommittee').click }
@@ -88,6 +90,9 @@ class ProtocolActions < KCProtocol
     end
   }
 
+  value(:summary_initial_approval_date) { |b| b.frm.div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 0).text }
+  value(:summary_expiration_date) { |b| b.frm.div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 1).text }
+
   private
 
   element(:reviewers_container) { |b|
@@ -100,6 +105,4 @@ class ProtocolActions < KCProtocol
 
   element(:review_comments_table) { |b| b.frm.div(id: 'tab-:ReviewComments-div').table }
 
-  value(:summary_initial_approval_date) { |b| b.frm.div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 0).text }
-  value(:summary_expiration_date) { |b| b.frm.div(id: 'tab-:Summary-div').th(text: 'Expiration Date:').parent.td(index: 1).text }
 end

@@ -42,15 +42,8 @@ And /^I create a IRB Protocol with Expedited Submissions Review Type for lead un
 
 end
 
-And /^I Notify the Committee about the Protocol document$/ do
+And /^I notify the Committee about the Protocol document$/ do
   @irb_protocol.notify_committee
-end
-
-And /^I assign the Protocol Action to reviewers$/ do
-   on ProtocolActions do |page|
-     page.expand_all unless page.assign_reviewers_button.present?
-     page.assign_reviewers
-   end
 end
 
 And /^I submit a Expedited Approval with a date of last year$/ do

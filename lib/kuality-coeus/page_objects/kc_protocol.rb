@@ -8,5 +8,4 @@ class KCProtocol < BasePage
   buttons 'Protocol', 'Personnel', 'Questionnaire', 'Custom Data', 'Special Review',
           'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa', 'Online Review'
 
-
 end

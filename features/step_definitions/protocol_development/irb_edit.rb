@@ -43,7 +43,7 @@ And /assigns a committee member the the Protocol's personnel/ do
   first = name[/^\w+/]
   last = name[/\w+$/]
   role = ['Co-Investigator', 'Correspondent - CRC', 'Correspondent Administrator', 'Study Personnel'].sample
-  @irb_protocol.view :personnel
+  @irb_protocol.view 'Personnel'
   @irb_protocol.personnel.add full_name: name,
                               role: role, first_name: first,
                               last_name: last
@@ -56,4 +56,8 @@ end
 
 When /the second Protocol is submitted to the Committee for review on the same date/ do
   @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date
+end
+
+And /suspends the Protocol$/ do
+  @irb_protocol.suspend
 end

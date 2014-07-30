@@ -11,8 +11,6 @@ class IRBProtocolObject < DataFactory
                :primary_reviewers, :secondary_reviewers, :reviews,
                # Withdraw
                :withdrawal_reason,
-              
-               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
                :expedited_checklist, :amend, :amendment_summary
 
   def initialize(browser, opts={})
@@ -56,11 +54,8 @@ class IRBProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-
-    open_document unless @browser.frm.dt(class: 'licurrent').button.alt == tab || @browser.frm.dt(class: 'licurrent').button.alt == 'Protocol'
-
-    on(ProtocolOverview).send(damballa(tab.to_s)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
-
+    open_document
+    on(ProtocolOverview).send(damballa(tab)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
   end
 
   def submit_for_review opts={}
@@ -92,13 +87,14 @@ class IRBProtocolObject < DataFactory
         page.expedited_checklist(EXPEDITED_CHECKLIST.fetch(@expedited_checklist)).set
       end
       if @submission_review_type == 'Exempt' && @expedited_checklist == '::random::'
-        #TODO:: @submission_review_type == 'Exempt' transforms.rb checklist needs to be create
+        #TODO:: @submission_review_type == 'Exempt' checklist needs to be created
         warn 'Exempt expedited checklist type needs to be created'
       end
 
-      page.submit_for_review_submit
+      page.submit_for_review
       page.awaiting_doc
       @status=page.document_status
+      @document_id=page.document_id
     end
   end
 
@@ -126,25 +122,20 @@ class IRBProtocolObject < DataFactory
     @personnel.principal_investigator
   end
 
-  def notify_committee opts={}
-    defaults = {
-        committee_id_assign: '::random::'
-    }
-    set_options(defaults.merge(opts))
+  def notify_committee
     view 'Protocol Actions'
-
     on ProtocolActions do |notify|
       notify.expand_all
-      fill_out notify, :committee_id_assign, :committee_action_date
+      notify.committee_id.set @committee
 
-        notify.notify_committee
+      notify.notify_committee
     end
   end
 
   def create_amendment opts={}
     defaults = {
         amendment_summary: random_alphanums_plus,
-      amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+        amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
               'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
               'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
     }
@@ -164,18 +155,9 @@ class IRBProtocolObject < DataFactory
     confirmation('yes')
   end
 
-  def submit_expedited_approval opts={}
-      defaults = {
-      }
-      set_options(defaults.merge(opts))
-
-    #Handle too many Protocols continue? prompt if appears
-    on(Confirmation).yes if on(Confirmation).yes_button.exists?
-    on(Confirmation).awaiting_doc
-
-      view 'Protocol Actions'
-
-      on ProtocolActions do |page|
+  def submit_expedited_approval
+    view 'Protocol Actions'
+    on ProtocolActions do |page|
       # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
       page.expand_all unless page.expedited_approval_date.present?
 
@@ -192,6 +174,13 @@ class IRBProtocolObject < DataFactory
     end
   end
 
+  def suspend
+    view 'Protocol Actions'
+    on ProtocolActions do |page|
+      page.expand_all
+      page.x
+    end
+  end
 
   # =======
   private
