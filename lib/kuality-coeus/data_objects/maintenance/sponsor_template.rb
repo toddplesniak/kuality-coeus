@@ -25,7 +25,7 @@ class SponsorTemplateObject < DataFactory
   def create
     visit(Maintenance).sponsor_template
 
-    on(SponsorTemplateLookup).create_new
+    on(Lookups).create_new
 
     on SponsorTemplate do |add|
       @document_id=add.document_id
@@ -45,11 +45,11 @@ class SponsorTemplateObject < DataFactory
   def set_sponsor_terms
 
     on(SponsorTemplate).sponsor_term_search
-    on SponsorTermLookup do |look|
+    on SponsorTemplateLookup do |look|
       look.search
-
-      look.send([:set, :clear].sample)
-      sleep 60
+      #random row for 'Sponsor Term Id' returns text but results contains 2 trailing spaces on the end that needed to be stripped
+      look.select_checkbox(look.return_random_row[1].text.strip).set
+      look.return_selected
     end
   end
 

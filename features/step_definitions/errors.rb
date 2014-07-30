@@ -53,9 +53,33 @@ Then /^an error is shown that says (.*)$/ do |error|
 end
 
 Then /^errors about the missing terms are shown$/ do
-  ['Equipment Approval', 'Invention','Prior Approval','Property','Publication',
-   'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions']
-  .each { |term| $current_page.validation_errors_and_warnings.should include "There must be at least one #{term} Terms defined." }
+  # errors = {'Equipment Approval', 'Invention','Prior Approval','Property','Publication',
+  #  'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions'}
+  #
+  # $current_page.errors.should include errors[error]
+  # .each { |term|
+  #   $current_page.validation_errors_and_warnings.should include "There must be at least one #{term} Terms defined."
+  on AwardContacts do |page|
+    page.errors.should include 'Equipment Approval Terms'
+    page.errors.should include 'Invention Terms'
+    page.errors.should include 'Prior Approval'
+    page.errors.should include 'Property'
+    page.errors.should include 'Publication'
+    page.errors.should include 'Referenced Document'
+    page.errors.should include 'Rights In Data'
+    page.errors.should include 'Subaward Approval'
+    page.errors.should include 'Travel Restrictions'
+    # errors = { "No < Equipment Approval Terms > terms are selected for the current award. Please add a term.",
+    #            "No < Invention Terms > terms are selected for the current award. Please add a term.",
+    #            "No < Prior Approval Terms > terms are selected for the current award. Please add a term.",
+    #            "No < Property Terms > terms are selected for the current award. Please add a term.",
+    #            "No < Publication Terms > terms are selected for the current award. Please add a term.",
+    #            "No < Rights In Data Terms > terms are selected for the current award. Please add a term.",
+    #            "No < Subaward Approval Terms > terms are selected for the current award. Please add a term.",
+    #            "No < Travel Restrictions Terms > terms are selected for the current award. Please add a term."
+    # }
+  end
+
 end
 
 # TODO: Move to the big step def.
