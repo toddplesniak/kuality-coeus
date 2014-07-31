@@ -1,5 +1,5 @@
 Then /^the assigned reviewers get a Protocol Review$/ do
-  reviewers = @irb_protocol.primary_reviewers + @irb_protocol.secondary_reviewers
+  reviewers = @irb_protocol.review_submission.primary_reviewers + @irb_protocol.review_submission.secondary_reviewers
   reviewers.each do |rev_name|
     reviewer = @committee.members.member(rev_name)
     reviewer.sign_in
@@ -17,7 +17,7 @@ Then /^the assigned reviewers get a Protocol Review$/ do
 end
 
 And /the primary reviewer submits review comments/ do
-  pr_name = @irb_protocol.primary_reviewers[0]
+  pr_name = @irb_protocol.review_submission.primary_reviewers[0]
   primary_reviewer = @committee.members.member(pr_name)
   primary_reviewer.sign_in
   visit(Researcher).action_list
@@ -27,7 +27,7 @@ And /the primary reviewer submits review comments/ do
     page.filter
   end
   on(ActionList).open_review(@irb_protocol.protocol_number)
-  @irb_protocol.reviews.review_by(pr_name).add_comment
+  @irb_protocol.review_submission.add_comment_for pr_name
   primary_reviewer.sign_out
 end
 
@@ -36,18 +36,18 @@ And /the IRB Admin sets the flags of the primary reviewers comments to (.*)/ do 
   final = flags[/Final/]
   steps '* log in with the IRB Administrator user'
   @irb_protocol.view 'Online Review'
-  @irb_protocol.primary_reviewers.each do |reviewer|
-    @irb_protocol.reviews.review_by(reviewer).mark_comments_final if final
-    @irb_protocol.reviews.review_by(reviewer).mark_comments_private if private
+  @irb_protocol.review_submission.primary_reviewers.each do |reviewer|
+    @irb_protocol.review_submission.mark_comments_final_for(reviewer) if final
+    @irb_protocol.review_submission.mark_comments_private_for(reviewer) if private
   end
 end
 
 And /the IRB Admin approves the primary reviewers (review|comment)\(s\)/ do |type|
-  types = { 'review'=>:approve, 'comment'=>:accept_comments }
+  types = { 'review'=>:approve_review_of, 'comment'=>:accept_comments_of }
   steps '* log in with the IRB Administrator user'
   @irb_protocol.view 'Online Review'
-  @irb_protocol.primary_reviewers.each do |reviewer|
-    @irb_protocol.reviews.review_by(reviewer).send(types[type])
+  @irb_protocol.review_submission.primary_reviewers.each do |reviewer|
+    @irb_protocol.review_submission.send(types[type], reviewer)
   end
 end
 

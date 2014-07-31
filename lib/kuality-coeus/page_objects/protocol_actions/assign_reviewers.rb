@@ -5,7 +5,7 @@ class AssignReviewers < KCProtocol
   p_element(:reviewer_type) { |name, b| b.assign_reviewers_div.td(text: name ).parent.select(name: /reviewerTypeCode/) }
 
   element(:submit_button) { |b| b.frm.button(name: 'methodToCall.assignReviewers.anchor:AssignReviewers') }
-  action(:submit) { |b| b.assign_reviewers_button.click; b.loading }
+  action(:submit) { |b| b.submit_button.click; b.loading }
 
   private
 

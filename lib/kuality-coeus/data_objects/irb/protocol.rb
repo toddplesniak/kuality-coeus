@@ -7,8 +7,7 @@ class IRBProtocolObject < DataFactory
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
-               :primary_reviewers, :secondary_reviewers, :reviews,
+               :review_submission,
                # Withdraw
                :withdrawal_reason,
                # Amendment
@@ -23,11 +22,7 @@ class IRBProtocolObject < DataFactory
         protocol_type:       '::random::',
         title:               random_alphanums_plus,
         lead_unit:           '::random::',
-        personnel:           collection('ProtocolPersonnel'),
-        primary_reviewers:   [],
-        secondary_reviewers: [],
-        reviews:             collection('Review')
-        
+        personnel:           collection('ProtocolPersonnel')
     }
     @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
@@ -61,51 +56,13 @@ class IRBProtocolObject < DataFactory
   end
 
   def submit_for_review opts={}
-    defaults = {
-        submission_type: '::random::',
-        submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
-        type_qualifier: '::random::',
-        committee: '::random::',
-        expedited_checklist: '::random::',
-        schedule_date: '::random::'
-    }
-    set_options(defaults.merge(opts))
     view 'Protocol Actions'
+    @review_submission = make ReviewObject, opts
+    @review_submission.create
     on ProtocolActions do |page|
-      page.expand_all
-      fill_out page, :submission_type, :submission_review_type, :type_qualifier,
-               :committee
-      # If the test doesn't specify a particular schedule date then
-      # we want to pick the first selectable item
-      # so as to make it most likely that there
-      # will be active committee members available...
-      # TODO: This is still buggy because sometimes the schedule dates
-      # fall outside of the selectable range. FIXME!!!
-      @schedule_date ||= page.schedule_date.options[1].text
-      page.schedule_date.pick! @schedule_date
-
-      if @submission_review_type == 'Expedited' && @expedited_checklist == '::random::'
-        @expedited_checklist = EXPEDITED_CHECKLIST.keys.sample
-        page.expedited_checklist(EXPEDITED_CHECKLIST.fetch(@expedited_checklist)).set
-      end
-      if @submission_review_type == 'Exempt' && @expedited_checklist == '::random::'
-        #TODO:: @submission_review_type == 'Exempt' checklist needs to be created
-        warn 'Exempt expedited checklist type needs to be created'
-      end
-
-      page.submit_for_review
-      page.awaiting_doc
       @status=page.document_status
       @document_id=page.document_id
     end
-  end
-
-  def assign_primary_reviewers *reviewers
-    assign_reviewers 'primary', reviewers
-  end
-
-  def assign_secondary_reviewers *reviewers
-    assign_reviewers 'secondary', reviewers
   end
 
   def withdraw(reason=random_multiline(50,4))
@@ -188,11 +145,6 @@ class IRBProtocolObject < DataFactory
   private
   # =======
 
-  EXPEDITED_CHECKLIST = { 'Clinical studies of drugs and medical devices'=>0, 'Continuing review of approved IRB limited to data analysis'=>1,
-                          'Continuing review of research not conducted'=>2, 'Collection of blood samples'=>3, 'Prospective collection of biological specimens'=>4,
-                          'Collection of data through noninvasie procedures'=>5, 'Research involving materials'=>6, 'Collection of data from voice'=>7, 'Research on individual or group'=>8,
-                          'Continuing review of approved IRB permanently closed to enrollment'=>9, 'Continuing review of research previously approved'=>10 }
-
   def merge_settings(opts)
     defaults = {
         document_id: @document_id,
@@ -239,60 +191,6 @@ class IRBProtocolObject < DataFactory
                 full_name: name, role: 'Principal Investigator', user_name: user_name
       @personnel << pi
     end
-  end
-
-  def prep(object_class, opts)
-    merge_settings(opts)
-    object = make object_class, opts
-    object.create
-    object
-  end
-
-  def assign_reviewers type, reviewers
-    rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
-    existing_reviewers = @primary_reviewers + @secondary_reviewers
-    view 'Protocol Actions'
-    on ProtocolActions do |page|
-      page.expand_all
-      if reviewers==[]
-        unselected_reviewers = (page.reviewers - existing_reviewers).shuffle
-        # We want to randomize the number of reviewers selected when there
-        # are several to choose from, but we don't want to select all of them
-        # if we can avoid it...
-        count = case(unselected_reviewers.size)
-                  when 0
-                    0
-                  when 1, 2
-                    1
-                  else
-                    rand(unselected_reviewers.size - 1)
-                end
-        count.times do |x|
-          page.reviewer_type(unselected_reviewers[x]).select type
-          rev[type] << unselected_reviewers[x]
-        end
-      else
-        # Note: This code is written with the assumption
-        # that the reviewer being passed is selectable and
-        # isn't already a reviewer...
-        reviewers.each do |reviewer|
-          page.reviewer_type(reviewer).select type
-          rev[type] << reviewer
-          make_review_for type, reviewer
-        end
-      end
-      page.assign_reviewers
-    end
-  end
-
-  def make_review_for(type, reviewer)
-    opts = {
-        due_date:        @schedule_date[/^\d+-\d+-\d{4}(?=,)/].gsub('-','/'),
-        reviewer:        reviewer,
-        type:            type
-    }
-    review = make ReviewObject, opts
-    @reviews << review
   end
 
 end

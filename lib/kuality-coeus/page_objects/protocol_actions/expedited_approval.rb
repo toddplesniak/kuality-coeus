@@ -1,5 +1,7 @@
 class ExpeditedApproval < KCProtocol
 
+  undefine :expiration_date
+
   element(:approval_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.approvalDate') }
   element(:expiration_date) { |b| b.frm.text_field(name: 'actionHelper.protocolExpeditedApprovalBean.expirationDate') }
 
