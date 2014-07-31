@@ -11,7 +11,9 @@ class IRBProtocolObject < DataFactory
                :primary_reviewers, :secondary_reviewers, :reviews,
                # Withdraw
                :withdrawal_reason,
+               # Amendment
                :expedited_checklist, :amend, :amendment_summary
+
 
   def initialize(browser, opts={})
     @browser = browser

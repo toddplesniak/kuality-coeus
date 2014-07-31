@@ -50,7 +50,6 @@ And /assigns a committee member the the Protocol's personnel/ do
 end
 
 And /^submits the Protocol to the Committee for Expedited review$/ do
-  # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
