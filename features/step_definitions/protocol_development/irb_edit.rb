@@ -1,6 +1,6 @@
 When /^the Protocol is given an '(.*)' Submission Review Type$/ do |type|
   @irb_protocol.view 'Protocol Actions'
-  on ProtocolActions do |page|
+  on SubmitForReview do |page|
     page.expand_all
     page.submission_review_type.select type
   end
@@ -38,22 +38,26 @@ end
 
 And /assigns a committee member the the Protocol's personnel/ do
   # Need to make sure the selected member isn't already assigned to the Protocol somehow...
-  names = @committee.members.full_names - @irb_protocol.personnel.names - @irb_protocol.primary_reviewers - @irb_protocol.secondary_reviewers
+  reviewers = @irb_protocol.reviews ? @irb_protocol.primary_reviewers + @irb_protocol.secondary_reviewers : []
+  names = @committee.members.full_names - @irb_protocol.personnel.names - reviewers
   name = names.sample
   first = name[/^\w+/]
   last = name[/\w+$/]
   role = ['Co-Investigator', 'Correspondent - CRC', 'Correspondent Administrator', 'Study Personnel'].sample
-  @irb_protocol.view :personnel
+  @irb_protocol.view 'Personnel'
   @irb_protocol.personnel.add full_name: name,
                               role: role, first_name: first,
                               last_name: last
 end
 
 And /^submits the Protocol to the Committee for Expedited review$/ do
-  # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
 When /the second Protocol is submitted to the Committee for review on the same date/ do
   @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date
+end
+
+And /suspends the Protocol$/ do
+  @irb_protocol.suspend
 end
