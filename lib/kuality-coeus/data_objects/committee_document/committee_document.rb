@@ -6,6 +6,7 @@ class CommitteeDocumentObject < DataFactory
               :home_unit, :min_members_for_quorum, :maximum_protocols,
               :adv_submission_days, :review_type, :last_updated, :updated_user,
               :initiator, :members, :areas_of_research, :type, :schedule
+  def_delegators :@members, :member
 
   def initialize(browser, opts={})
     @browser = browser

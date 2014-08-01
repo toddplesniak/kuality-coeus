@@ -81,10 +81,6 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  #def principal_investigator
-  #  @personnel.principal_investigator
-  #end
-
   def notify_committee
     view 'Protocol Actions'
     on ProtocolActions do |notify|
