@@ -52,32 +52,14 @@ Then /^an error is shown that says (.*)$/ do |error|
   $current_page.validation_errors_and_warnings.should include errors[error]
 end
 
-Then /^errors about the missing terms are shown$/ do
-  # errors = {'Equipment Approval', 'Invention','Prior Approval','Property','Publication',
-  #  'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions'}
-  #
-  # $current_page.errors.should include errors[error]
-  # .each { |term|
-  #   $current_page.validation_errors_and_warnings.should include "There must be at least one #{term} Terms defined."
-  on AwardContacts do |page|
-    page.errors.should include 'Equipment Approval Terms'
-    page.errors.should include 'Invention Terms'
-    page.errors.should include 'Prior Approval'
-    page.errors.should include 'Property'
-    page.errors.should include 'Publication'
-    page.errors.should include 'Referenced Document'
-    page.errors.should include 'Rights In Data'
-    page.errors.should include 'Subaward Approval'
-    page.errors.should include 'Travel Restrictions'
-    # errors = { "No < Equipment Approval Terms > terms are selected for the current award. Please add a term.",
-    #            "No < Invention Terms > terms are selected for the current award. Please add a term.",
-    #            "No < Prior Approval Terms > terms are selected for the current award. Please add a term.",
-    #            "No < Property Terms > terms are selected for the current award. Please add a term.",
-    #            "No < Publication Terms > terms are selected for the current award. Please add a term.",
-    #            "No < Rights In Data Terms > terms are selected for the current award. Please add a term.",
-    #            "No < Subaward Approval Terms > terms are selected for the current award. Please add a term.",
-    #            "No < Travel Restrictions Terms > terms are selected for the current award. Please add a term."
-    # }
+Then /^(\d+) errors display about the missing terms are shown for the edit sponsor template terms tab$/ do |arg|
+  on SponsorTemplate do |page|
+    page.error_messages_div.text.should include "#{arg} error(s) found on page."
+    #Although 8 errors are displayed these 4 appear to be consistent across the 'Edit Sponsor Template Terms'  tab
+    page.errors.should include 'No < Invention Terms > terms are selected for the current award. Please add a term.'
+    page.errors.should include 'No < Publication Terms > terms are selected for the current award. Please add a term.'
+    page.errors.should include 'No < Subaward Approval Terms > terms are selected for the current award. Please add a term.'
+    page.errors.should include 'No < Travel Restrictions Terms > terms are selected for the current award. Please add a term.'
   end
 
 end
