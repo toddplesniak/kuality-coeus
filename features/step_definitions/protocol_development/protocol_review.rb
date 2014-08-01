@@ -1,7 +1,7 @@
 Then /^the assigned reviewers get a Protocol Review$/ do
   reviewers = @irb_protocol.primary_reviewers + @irb_protocol.secondary_reviewers
   reviewers.each do |rev_name|
-    reviewer = @committee.members.member(rev_name)
+    reviewer = @committee.member(rev_name)
     reviewer.sign_in
     visit(Researcher).action_list
     on(ActionList).filter
@@ -18,7 +18,7 @@ end
 
 And /the primary reviewer submits review comments/ do
   pr_name = @irb_protocol.primary_reviewers[0]
-  primary_reviewer = @committee.members.member(pr_name)
+  primary_reviewer = @committee.member(pr_name)
   primary_reviewer.sign_in
   visit(Researcher).action_list
   on(ActionList).filter

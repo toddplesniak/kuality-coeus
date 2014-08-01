@@ -61,3 +61,31 @@ end
 And /suspends the Protocol$/ do
   @irb_protocol.suspend
 end
+
+And /the IRB Admin closes the Protocol$/ do
+  steps '* log in with the IRB Administrator user'
+  @irb_protocol.view 'Protocol Actions'
+  DEBUG.message
+  DEBUG.pause 300
+end
+
+And /the principal investigator approves the Protocol$/ do
+  $users.current_user.log_out
+  @irb_protocol.principal_investigator.log_in
+
+  # TODO: This is probably not the right pathway through the UI...
+  visit(Researcher).action_list
+  on(ActionList).filter
+  on ActionListFilter do |page|
+
+    DEBUG.message @irb_protocol.protocol_number
+
+    page.document_title.set @irb_protocol.protocol_number
+    page.filter
+  end
+  on(ActionList).open_review(@irb_protocol.protocol_number)
+  @irb_protocol.view 'Protocol Actions'
+  DEBUG.message
+  DEBUG.pause 300
+
+end
