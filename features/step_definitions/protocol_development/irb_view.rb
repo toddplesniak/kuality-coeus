@@ -18,7 +18,7 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in Submission Det
   @irb_protocol.view 'Protocol Actions'
   on ProtocolActions do |page|
     page.expand_all
-    page.review_comments.send(Transforms::CAN[bool], include, @irb_protocol.reviews.review_by(@irb_protocol.primary_reviewers[0]).comments[0][:comment])
+    page.review_comments.send(Transforms::CAN[bool], include, @irb_protocol.comments_of(@irb_protocol.primary_reviewers[0])[0][:comment])
   end
   member.sign_out
 end

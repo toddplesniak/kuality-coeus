@@ -72,6 +72,10 @@ class ReviewObject < DataFactory
     @comments << comment
   end
 
+  def comments_of reviewer
+    @comments.find_all { |c| c[:reviewer]==reviewer }
+  end
+
   def add_attachment opts={}
 
   end

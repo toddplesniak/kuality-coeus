@@ -7,12 +7,16 @@ class IRBProtocolObject < DataFactory
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :review_submission,
+               :reviews,
                # Withdraw
                :withdrawal_reason,
                # Amendment
                :expedited_checklist, :amend, :amendment_summary
 
+  def_delegators :@personnel, :principal_investigator
+  def_delegators :@reviews, :add_comment_for, :approve_review_of, :accept_comments_of, :comments_of,
+                 :mark_comments_private_for, :mark_comments_final_for, :assign_primary_reviewers,
+                 :assign_secondary_reviewers, :primary_reviewers, :secondary_reviewers
 
   def initialize(browser, opts={})
     @browser = browser
@@ -57,8 +61,8 @@ class IRBProtocolObject < DataFactory
 
   def submit_for_review opts={}
     view 'Protocol Actions'
-    @review_submission = make ReviewObject, opts
-    @review_submission.create
+    @reviews = make ReviewObject, opts
+    @reviews.create
     on ProtocolActions do |page|
       @status=page.document_status
       @document_id=page.document_id
@@ -77,9 +81,9 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  def principal_investigator
-    @personnel.principal_investigator
-  end
+  #def principal_investigator
+  #  @personnel.principal_investigator
+  #end
 
   def notify_committee
     view 'Protocol Actions'

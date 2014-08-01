@@ -301,10 +301,6 @@ class BasePage < PageFactory
       string.gsub('  ', ' ')
     end
 
-    def undefine *methods
-      methods.each{ |m| undef_method m }
-    end
-
   end # self
 
-end # B asePage
+end # BasePage
