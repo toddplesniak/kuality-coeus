@@ -63,7 +63,7 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     @reviews = make ReviewObject, opts
     @reviews.create
-    on ProtocolActions do |page|
+    on SubmitForReview do |page|
       @status=page.document_status
       @document_id=page.document_id
     end
@@ -72,10 +72,10 @@ class IRBProtocolObject < DataFactory
   def withdraw(reason=random_multiline(50,4))
     @withdrawal_reason=reason
     view 'Protocol Actions'
-    on ProtocolActions do |page|
+    on WithdrawProtocol do |page|
       page.expand_all
       fill_out page, :withdrawal_reason
-      page.submit_withdrawal_reason
+      page.submit
       @status=page.document_status
       @document_id=page.document_id
     end
@@ -83,11 +83,11 @@ class IRBProtocolObject < DataFactory
 
   def notify_committee
     view 'Protocol Actions'
-    on ProtocolActions do |notify|
+    on NotifyCommittee do |notify|
       notify.expand_all
       notify.committee_id.set @committee
 
-      notify.notify_committee
+      notify.submit
     end
   end
 

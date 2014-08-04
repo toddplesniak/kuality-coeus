@@ -50,6 +50,15 @@ And /assigns a committee member the the Protocol's personnel/ do
                               last_name: last
 end
 
+And /^the Protocol is submitted to the Committee for review, with:$/ do |table|
+  review_data = table.rows_hash
+
+  @irb_protocol.submit_for_review  submission_type: review_data['Submission Type'],
+                                   submission_review_type: review_data['Review Type'],
+                                   type_qualifier: review_data['Type Qualifier'],
+                                   committee: @committee.name
+end
+
 And /^submits the Protocol to the Committee for Expedited review$/ do
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
@@ -65,7 +74,11 @@ end
 And /the IRB Admin closes the Protocol$/ do
   steps '* log in with the IRB Administrator user'
   @irb_protocol.view 'Protocol Actions'
-  DEBUG.message
+  on Close do |page|
+    page.expand_all
+    page.comments.set random_alphanums_plus
+    page.submit
+  end
   DEBUG.pause 300
 end
 

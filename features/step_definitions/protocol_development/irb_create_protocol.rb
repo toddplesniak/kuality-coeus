@@ -61,14 +61,6 @@ And /^I return the Protocol document to the PI$/ do
   end
 end
 
-And /^on the Protocol Actions I Submit for Review with:$/ do |table|
-  review_data = table.rows_hash
-
-  @irb_protocol.submit_for_review  submission_type:   review_data['Submission Type'],
-                                   submission_review_type: review_data['Review Type'],
-                                   expedited_checklist: nil
-end
-
 Then /^the Summary Approval Date should be last year/ do
   on(ProtocolActions).expedited_approval_date_ro.should == last_year[:date_w_slashes]
 end
