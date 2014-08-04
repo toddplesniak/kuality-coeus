@@ -12,7 +12,7 @@ end
 
 Then /the (.*) (can |can't )see the primary reviewer's comment in the meeting minutes/ do |person, bool|
   translate = { 'can ' => :not_to, 'can\'t ' => :to }
-  comment = @irb_protocol.reviews.review_by(@irb_protocol.primary_reviewers[0]).comments[0][:comment].gsub(/\s+/, ' ').strip
+  comment = @irb_protocol.comments_of(@irb_protocol.primary_reviewers[0])[0][:comment].gsub(/\s+/, ' ').strip
   people = {
       'primary reviewer'               => @irb_protocol.primary_reviewers[0],
       'secondary reviewer'             => @irb_protocol.secondary_reviewers[0],

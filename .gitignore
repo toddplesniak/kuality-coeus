@@ -9,3 +9,4 @@ test.feature
 *.log
 *test_spec.rb
 *.png
+Gemfile.lock

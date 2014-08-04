@@ -19,22 +19,24 @@ Feature: IRB Protocol Actions
     | Exempt    | Exempt Studies   |
 
   @KRAFDBCK-9927
-  Scenario: Return to pi with amendment updates has the correct expiration date
-    * the IRB Admin creates a Committee
-    * schedules at least one event for the Committee
-    * submits the Committee
-    When the IRB Admin submits a Protocol to the Committee for expedited review, with an approval date of last year
-    And  I create an amendment for the Protocol
-    And  submits the Protocol for review with:
-       | Submission Type | Amendment |
-       | Review Type     | Expedited |
-    And  notifies the committee about the Protocol
-    And  returns the Protocol document to the pi
-    And  submits the Protocol for review with:
-       | Submission Type | Resubmission |
-       | Review Type     | Expedited    |
-    And  notifies the committee about the Protocol
-    And  assigns reviewers to the Protocol
-    And  assigns the protocol action to reviewers
-    Then the summary approval date should be last year
-    And  the expedited date should be yesterday
+  Scenario: Return to PI with amendment updates
+    Given the IRB Admin creates a Committee
+    And   schedules at least one event for the Committee
+    And   submits the Committee
+    And   I log in with the IRB Administrator user
+    When  I create an IRB Protocol with expedited submissions review type for lead unit '000001'
+    And   the IRB Admin submits the Protocol to the Committee for expedited review, with an approval date of last year
+    And   creates an amendment for the Protocol
+    And   submits the Protocol to the Committee for review, with:
+          | Submission Type | Amendment |
+          | Review Type     | Expedited |
+    And   notifies the Committee about the Protocol
+    And   returns the Protocol to the PI
+    And   submits the Protocol to the Committee for review, with:
+          | Submission Type | Resubmission |
+          | Review Type     | Expedited    |
+    And   notifies the Committee about the Protocol
+    And  the IRB Admin assigns reviewers to the Protocol
+    And   the IRB Admin assigns the Protocol to reviewers
+    Then  the summary approval date should be last year
+    And   the expedited date should be yesterday

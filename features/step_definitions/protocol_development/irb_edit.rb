@@ -1,6 +1,6 @@
 When /^the Protocol is given an '(.*)' Submission Review Type$/ do |type|
   @irb_protocol.view 'Protocol Actions'
-  on ProtocolActions do |page|
+  on SubmitForReview do |page|
     page.expand_all
     page.submission_review_type.select type
   end
@@ -38,22 +38,104 @@ end
 
 And /assigns a committee member the the Protocol's personnel/ do
   # Need to make sure the selected member isn't already assigned to the Protocol somehow...
-  names = @committee.members.full_names - @irb_protocol.personnel.names - @irb_protocol.primary_reviewers - @irb_protocol.secondary_reviewers
+  reviewers = @irb_protocol.reviews ? @irb_protocol.primary_reviewers + @irb_protocol.secondary_reviewers : []
+  names = @committee.members.full_names - @irb_protocol.personnel.names - reviewers
   name = names.sample
   first = name[/^\w+/]
   last = name[/\w+$/]
   role = ['Co-Investigator', 'Correspondent - CRC', 'Correspondent Administrator', 'Study Personnel'].sample
-  @irb_protocol.view :personnel
+  @irb_protocol.view 'Personnel'
   @irb_protocol.personnel.add full_name: name,
                               role: role, first_name: first,
                               last_name: last
 end
 
+And /^the Protocol is submitted to the Committee for review, with:$/ do |table|
+  review_data = table.rows_hash
+
+  @irb_protocol.submit_for_review  submission_type: review_data['Submission Type'],
+                                   submission_review_type: review_data['Review Type'],
+                                   type_qualifier: review_data['Type Qualifier'],
+                                   committee: @committee.name
+end
+
 And /^submits the Protocol to the Committee for Expedited review$/ do
-  # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
 When /the second Protocol is submitted to the Committee for review on the same date/ do
   @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date
+end
+
+And /suspends the Protocol$/ do
+  @irb_protocol.suspend
+end
+
+And /the IRB Admin closes the Protocol$/ do
+  steps '* log in with the IRB Administrator user'
+  @irb_protocol.view 'Protocol Actions'
+
+  on Close do |page|
+    page.expand_all
+    page.comments.set random_alphanums_plus
+    page.submit
+  end
+end
+
+And /the principal investigator approves the Protocol$/ do
+  $users.current_user.log_out
+  @irb_protocol.principal_investigator.log_in
+
+  # TODO: This is probably not the right pathway through the UI...
+  visit(Researcher).action_list
+  on(ActionList).filter
+  on ActionListFilter do |page|
+
+    DEBUG.message @irb_protocol.protocol_number
+
+    page.document_title.set @irb_protocol.protocol_number
+    page.filter
+  end
+  on(ActionList).open_review(@irb_protocol.protocol_number)
+  @irb_protocol.view 'Protocol Actions'
+  DEBUG.message
+  DEBUG.pause 300
+end
+
+And /^I submit a expedited approval with a date of last year$/ do
+  @irb_protocol.submit_expedited_approval expedited_approval_date: "#{last_year[:date_w_slashes]}"
+end
+
+And /creates an amendment for the Protocol$/ do
+  @irb_protocol.create_amendment
+end
+
+And /returns the Protocol to the PI$/ do
+  @irb_protocol.return_to_pi
+end
+
+And /submits the Protocol to the Committee for review, with:$/ do |table|
+  review_data = table.rows_hash
+  @irb_protocol.submit_for_review  submission_type:   review_data['Submission Type'],
+                                   submission_review_type: review_data['Review Type'],
+                                   expedited_checklist: nil
+end
+
+And /notifies the Committee about the Protocol/ do
+  @irb_protocol.notify_committee
+end
+
+And /assigns the Protocol to reviewers$/ do
+  on AssignReviewers do |page|
+    page.expand_all unless page.submit_button.present?
+    page.submit
+  end
+end
+
+When /submits the Protocol to the Committee for expedited review, with an approval date of last year$/ do
+  steps %|
+          * notifies the Committee about the Protocol
+          * assigns reviewers to the Protocol
+          * assigns the Protocol to reviewers
+          * I submit a expedited approval with a date of last year|
 end
