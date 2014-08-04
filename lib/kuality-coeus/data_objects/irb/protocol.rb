@@ -64,9 +64,10 @@ class IRBProtocolObject < DataFactory
     @reviews = make ReviewObject, opts
     @reviews.create
 
-    @status=on(ProtocolActions).document_status
-    #document id changes here
-    @document_id=on(ProtocolActions).document_id
+    on SubmitForReview do |page|
+      @status=page.document_status
+      @document_id=page.document_id
+    end
   end
 
   def withdraw(reason=random_multiline(50,4))
