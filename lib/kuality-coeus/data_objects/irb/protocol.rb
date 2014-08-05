@@ -81,11 +81,11 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  def notify_committee
+  def notify_committee(committee_name)
     view 'Protocol Actions'
     on NotifyCommittee do |notify|
       notify.expand_all
-      notify.committee_id.set @committee
+      notify.committee_id.select committee_name
 
       notify.submit
     end
@@ -104,7 +104,7 @@ class IRBProtocolObject < DataFactory
 
     on CreateAmendment do |page|
       page.expand_all
-      page.amendment_summary.set @amendment_summary
+      page.summary.set @amendment_summary
       page.amend(@amend).set
       page.create
 
@@ -115,22 +115,11 @@ class IRBProtocolObject < DataFactory
     @document_id = on(ProtocolActions).document_id
   end
 
-  def submit_expedited_approval
+  def submit_expedited_approval opts={}
     view 'Protocol Actions'
-    on ProtocolActions do |page|
-      # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
-      page.expand_all unless page.approval_date.present?
+    @expedited_approval = make ExpeditedApprovalObject, opts
+    @expedited_approval.create
 
-      page.approval_date.when_present.focus
-      #There is a PROBLEM when entering text in Approval Date. A popup appears saying wrong format.
-      #entering text into a clear Approval Date field does not produce a popup
-      page.approval_date.clear
-      page.alert.ok if page.alert.exists?
-      page.approval_date.fit @expedited_approval_date
-
-      page.submit
-      page.awaiting_doc
-    end
   end
 
   def suspend

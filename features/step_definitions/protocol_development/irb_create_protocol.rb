@@ -48,29 +48,3 @@ And /^I create an IRB Protocol with expedited submissions review type for lead u
                                    submission_review_type: 'Expedited'
 end
 
-And /^I notify the Committee about the Protocol document$/ do
-  @irb_protocol.notify_committee
-end
-
-And /^I submit a Expedited Approval with a date of last year$/ do
-  @irb_protocol.submit_expedited_approval expedited_approval_date: "#{last_year[:date_w_slashes]}"
-end
-
-And /^I add a Create Amendment to the Protocol document$/ do
-  @irb_protocol.create_amendment
-end
-
-And /^I return the Protocol document to the PI$/ do
-  on ProtocolActions do |page|
-    page.return_to_pi
-    page.send_it if page.send_button.present?
-  end
-end
-
-Then /^the Summary Approval Date should be last year/ do
-  on(ProtocolActions).expedited_approval_date_ro.should == last_year[:date_w_slashes]
-end
-
-And /^the Expedited Date should be yesterday$/ do
-  on(ProtocolActions).expedited_expiration_date_ro.should == yesterday[:date_w_slashes]
-end
