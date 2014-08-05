@@ -63,7 +63,6 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     @reviews = make ReviewObject, opts
     @reviews.create
-
     on SubmitForReview do |page|
       @status=page.document_status
       @document_id=page.document_id
@@ -86,7 +85,8 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     on NotifyCommittee do |notify|
       notify.expand_all
-      notify.select_committee_id.pick! @committee_id
+      notify.committee_id.set @committee
+
       notify.submit
     end
   end
@@ -106,7 +106,7 @@ class IRBProtocolObject < DataFactory
       page.expand_all
       page.amendment_summary.set @amendment_summary
       page.amend(@amend).set
-      page.submit
+      page.create
 
       page.awaiting_doc
     end
@@ -115,12 +115,9 @@ class IRBProtocolObject < DataFactory
     @document_id = on(ProtocolActions).document_id
   end
 
-  def submit_expedited_approval  opts={}
-    defaults = { }
-    set_options(defaults.merge(opts))
-
+  def submit_expedited_approval
     view 'Protocol Actions'
-    on ExpeditedApproval do |page|
+    on ProtocolActions do |page|
       # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
       page.expand_all unless page.approval_date.present?
 

@@ -51,8 +51,6 @@ class ReviewObject < DataFactory
       end
 
       page.submit
-      page.awaiting_doc
-
     end
   end
 

@@ -34,12 +34,30 @@ And /the Protocol Creator creates another IRB Protocol in the Committee's home u
   @irb_protocol2 = create IRBProtocolObject, lead_unit: @committee.home_unit
 end
 
+And /the Protocol Creator creates an? (.*) IRB Protocol in the Committee's home unit/ do |type|
+  steps '* I log in with the Protocol Creator user'
+  @irb_protocol2 = create IRBProtocolObject, lead_unit: @committee.home_unit, protocol_type: type
+end
+
+# TODO: Reword this and the following scenarios to remove the "I"...
 And /^I create an IRB Protocol with expedited submissions review type for lead unit '(\d+)'$/ do |lead_unit|
   @irb_protocol = create IRBProtocolObject, lead_unit: lead_unit, protocol_type: 'Expedited'
 
   @irb_protocol.view 'Protocol Actions'
   @irb_protocol.submit_for_review  submission_type: 'Initial Protocol Application for Approval',
                                    submission_review_type: 'Expedited'
+end
+
+And /^I notify the Committee about the Protocol document$/ do
+  @irb_protocol.notify_committee
+end
+
+And /^I submit a Expedited Approval with a date of last year$/ do
+  @irb_protocol.submit_expedited_approval expedited_approval_date: "#{last_year[:date_w_slashes]}"
+end
+
+And /^I add a Create Amendment to the Protocol document$/ do
+  @irb_protocol.create_amendment
 end
 
 And /^I return the Protocol document to the PI$/ do

@@ -1,6 +1,6 @@
 class NotifyCommittee < KCProtocol
 
-  element(:select_committee_id) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
+  element(:committee_id) { |b| b.frm.select(name: 'actionHelper.protocolNotifyCommitteeBean.committeeId') }
   element(:comment) { |b| b.frm.textarea(id: 'actionHelper.protocolNotifyCommitteeBean.comment') }
   element(:action_date) { |b| b.frm.text_field(id: 'actionHelper.protocolNotifyCommitteeBean.actionDate') }
 

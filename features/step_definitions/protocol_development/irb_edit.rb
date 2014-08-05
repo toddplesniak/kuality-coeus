@@ -60,6 +60,7 @@ And /^the Protocol is submitted to the Committee for review, with:$/ do |table|
 end
 
 And /^submits the Protocol to the Committee for Expedited review$/ do
+  # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
@@ -74,12 +75,12 @@ end
 And /the IRB Admin closes the Protocol$/ do
   steps '* log in with the IRB Administrator user'
   @irb_protocol.view 'Protocol Actions'
-
   on Close do |page|
     page.expand_all
     page.comments.set random_alphanums_plus
     page.submit
   end
+  DEBUG.pause 300
 end
 
 And /the principal investigator approves the Protocol$/ do
@@ -100,42 +101,5 @@ And /the principal investigator approves the Protocol$/ do
   @irb_protocol.view 'Protocol Actions'
   DEBUG.message
   DEBUG.pause 300
-end
 
-And /^I submit a expedited approval with a date of last year$/ do
-  @irb_protocol.submit_expedited_approval expedited_approval_date: "#{last_year[:date_w_slashes]}"
-end
-
-And /creates an amendment for the Protocol$/ do
-  @irb_protocol.create_amendment
-end
-
-And /returns the Protocol to the PI$/ do
-  @irb_protocol.return_to_pi
-end
-
-And /submits the Protocol to the Committee for review, with:$/ do |table|
-  review_data = table.rows_hash
-  @irb_protocol.submit_for_review  submission_type:   review_data['Submission Type'],
-                                   submission_review_type: review_data['Review Type'],
-                                   expedited_checklist: nil
-end
-
-And /notifies the Committee about the Protocol/ do
-  @irb_protocol.notify_committee
-end
-
-And /assigns the Protocol to reviewers$/ do
-  on AssignReviewers do |page|
-    page.expand_all unless page.submit_button.present?
-    page.submit
-  end
-end
-
-When /submits the Protocol to the Committee for expedited review, with an approval date of last year$/ do
-  steps %|
-          * notifies the Committee about the Protocol
-          * assigns reviewers to the Protocol
-          * assigns the Protocol to reviewers
-          * I submit a expedited approval with a date of last year|
 end
