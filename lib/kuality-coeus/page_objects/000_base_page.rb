@@ -119,8 +119,8 @@ class BasePage < PageFactory
     end
 
     def results_multi_select
-      action(:select_all_from_all_pages) { |b| b.frm.button(title: 'Select all rows from all pages').click }
-      action(:select_all_from_this_page) { |b| b.frm.button(title: 'Select all rows from this page').click }
+      action(:select_all_from_all_pages) { |b| b.frm.img(title: 'Select all rows from all pages').click }
+      action(:select_all_from_this_page) { |b| b.frm.img(title: 'Select all rows from this page').click }
       action(:return_selected) { |b| b.frm.button(title: 'Return selected results').click; b.loading }
       p_action(:check_item) { |item, b| b.item_row(item).checkbox.set }
     end
