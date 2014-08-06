@@ -13,3 +13,8 @@ Feature: Sponsor Template Creation
     When  the Modify Sponsor Template user submits a new Award Sponsor Template without a Sponsor Term
     Then  8 errors display about the missing terms are shown for the edit sponsor template terms tab
 
+  @wip @test
+  Scenario: Create a Sponsor Template with all 8 Sponsor Template Terms
+    Given I log in with the Modify Sponsor Template user
+    When create a Sponsor Template with 8 valid terms
+    Then the Sponsor Template status should be 'ENROUTE'

@@ -45,7 +45,7 @@ class SponsorTemplateObject < DataFactory
   def set_sponsor_terms
 
     on(SponsorTemplate).sponsor_term_search
-    on SponsorTemplateLookup do |look|
+    on SponsorTermLookup do |look|
       look.search
       #random row for 'Sponsor Term Id' returns text but results contains 2 trailing spaces on the end that needed to be stripped
       look.select_checkbox(look.return_random_row[1].text.strip).set
