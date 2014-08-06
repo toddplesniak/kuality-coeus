@@ -59,7 +59,7 @@ Then /^(\d+) errors display about the missing terms are shown for the edit spons
     page.errors.should include 'No < Invention Terms > terms are selected for the current award. Please add a term.'
     page.errors.should include 'No < Publication Terms > terms are selected for the current award. Please add a term.'
     page.errors.should include 'No < Subaward Approval Terms > terms are selected for the current award. Please add a term.'
-    page.errors.should include 'No < Travel Restrictions Terms > terms are selected for the current award. Please add a term.'
+    # page.errors.should include 'No < Travel Restrictions Terms > terms are selected for the current award. Please add a term.'
   end
 
 end
