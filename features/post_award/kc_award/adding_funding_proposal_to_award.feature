@@ -1,4 +1,4 @@
-@aok
+@Award
 Feature: Adding a Funding Proposal to an Award
 
   As an Award Modifier, when I add a Funding Proposal to an Award,

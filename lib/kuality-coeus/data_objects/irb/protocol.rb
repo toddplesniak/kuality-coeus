@@ -1,25 +1,33 @@
 class IRBProtocolObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
-               :protocol_number, :status, :submission_status, :expiration_date,
+               :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date
+               :reviews,
+               # Withdraw
+               :withdrawal_reason,
+               # Amendment
+               :expedited_checklist, :amend, :amendment_summary
+
+  def_delegators :@personnel, :principal_investigator
+  def_delegators :@reviews, :add_comment_for, :approve_review_of, :accept_comments_of, :comments_of,
+                 :mark_comments_private_for, :mark_comments_final_for, :assign_primary_reviewers,
+                 :assign_secondary_reviewers, :primary_reviewers, :secondary_reviewers
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
-        description:    random_alphanums_plus,
-        protocol_type:  '::random::',
-        title:          random_alphanums_plus,
-        lead_unit:      '::random::',
+        description:         random_alphanums_plus,
+        protocol_type:       '::random::',
+        title:               random_alphanums_plus,
+        lead_unit:           '::random::',
+        personnel:           collection('ProtocolPersonnel')
     }
-    # TODO: Needs a @lookup_class and @search_key defined
     @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
   end
@@ -33,39 +41,111 @@ class IRBProtocolObject < DataFactory
       @initiator=doc.initiator
       @submission_status=doc.submission_status
       @expiration_date=doc.expiration_date
-      @search_key = { protocol_number: @protocol_number }
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title
     end
-      set_lead_unit
       set_pi
+      set_lead_unit
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
+      @search_key = { protocol_number: @protocol_number }
     end
   end
 
   def view(tab)
+    raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
     open_document
-    on(ProtocolOverview).send(damballa(tab.to_s))
+    on(ProtocolOverview).send(damballa(tab)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
   end
 
   def submit_for_review opts={}
+    view 'Protocol Actions'
+    @reviews = make ReviewObject, opts
+    @reviews.create
+    on SubmitForReview do |page|
+      @status=page.document_status
+      @document_id=page.document_id
+    end
+  end
+
+  def withdraw(reason=random_multiline(50,4))
+    @withdrawal_reason=reason
+    view 'Protocol Actions'
+    on WithdrawProtocol do |page|
+      page.expand_all
+      fill_out page, :withdrawal_reason
+      page.submit
+      @status=page.document_status
+      @document_id=page.document_id
+    end
+  end
+
+  def assign_to_agenda
+    view 'Protocol Actions'
+    on AssignToAgenda do |page|
+      page.expand_all
+      # TODO: Add more stuff here when needed.
+      page.submit
+    end
+  end
+
+  def notify_committee
+    view 'Protocol Actions'
+    on NotifyCommittee do |notify|
+      notify.expand_all
+      notify.committee_id.set @committee
+      notify.submit
+    end
+  end
+
+  def create_amendment opts={}
     defaults = {
-        submission_type: '::random::',
-        submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
-        type_qualifier: '::random::',
-        committee: '::random::',
-        schedule_date: '::random::'
+        amendment_summary: random_alphanums_plus,
+        amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+              'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
+              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
     }
     set_options(defaults.merge(opts))
-    view :protocol_actions
+
+    view 'Protocol Actions'
+
     on ProtocolActions do |page|
       page.expand_all
-      fill_out page, :submission_type, :submission_review_type, :type_qualifier,
-               :committee
-      page.schedule_date.pick! @schedule_date
-      page.submit_for_review
+      page.amendment_summary.set @amendment_summary
+      page.amend(@amend).set
+      page.create_amendment
+
+      page.awaiting_doc
+    end
+
+    confirmation('yes')
+  end
+
+  def submit_expedited_approval
+    view 'Protocol Actions'
+    on ProtocolActions do |page|
+      # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
+      page.expand_all unless page.expedited_approval_date.present?
+
+      page.expedited_approval_date.when_present.focus
+      #There is a PROBLEM when entering text in Approval Date. A popup appears saying wrong format.
+      #entering text into a clear Approval Date field does not produce a popup
+      page.expedited_approval_date.clear
+      page.alert.ok if page.alert.exists?
+      page.expedited_approval_date.fit @expedited_approval_date
+
+      page.submit_expedited_approval
+
+      page.awaiting_doc
+    end
+  end
+
+  def suspend
+    view 'Protocol Actions'
+    on ProtocolActions do |page|
+      page.expand_all
+      page.x
     end
   end
 
@@ -95,6 +175,9 @@ class IRBProtocolObject < DataFactory
     end
   end
 
+  # TODO: This is going to have to be updated when we want to
+  # be able to specify a particular person as the PI. Right now
+  # it selects a PI at random.
   def set_pi
     on(ProtocolOverview).pi_employee_search
     on KcPersonLookup do |look|
@@ -102,16 +185,20 @@ class IRBProtocolObject < DataFactory
       # We need to exclude the set of test users from the list
       # of names we'll randomly select from...
       names = look.returned_full_names - $users.full_names
-      @principal_investigator = names.sample
-      look.return_value @principal_investigator
+      name = 'William Lloyd Garrison'
+      while name.scan(' ').size > 1
+        name = names.sample
+        # The KcPerson_Id of the user must not contain letters...
+        name = 'William Lloyd Garrison' if look.person_id_of(name) =~ /[a-z]/
+      end
+      first_name = name[/^\w+/]
+      last_name = name[/\w+$/]
+      user_name = look.user_name_of name
+      look.return_value name
+      pi = make ProtocolPersonnelObject, first_name: first_name, last_name: last_name,
+                full_name: name, role: 'Principal Investigator', user_name: user_name
+      @personnel << pi
     end
-  end
-
-  def prep(object_class, opts)
-    merge_settings(opts)
-    object = make object_class, opts
-    object.create
-    object
   end
 
 end

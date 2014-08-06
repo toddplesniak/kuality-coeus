@@ -15,7 +15,11 @@ end
 #    a class instance variable based on the username
 # 3) Logs that user in (if they're not already)...
 Given /^I'm logged in with (.*)$/ do |username|
-  make_user(user: username).sign_in
+  user = make_user(user: username)
+
+  DEBUG.message user.inspect
+
+  user.sign_in
 end
 
 # Whereas, this step def

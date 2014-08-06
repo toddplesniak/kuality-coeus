@@ -11,7 +11,7 @@ class SponsorTemplate < BasePage
   element(:payment_method) { |b| b.frm.select(name: 'document.newMaintainableObject.methodOfPaymentCode') }
 
   #Required to Submit
-  element(:template_description) { |b| b.frm.text_field(name: 'document.newMaintainableObject.description') }
+  element(:template_description) { |b| b.frm.textarea(name: 'document.newMaintainableObject.description') }
   element(:template_status) { |b| b.frm.select(name: 'document.newMaintainableObject.statusCode') }
   action(:sponsor_term_search) { |b| b.frm.button(title: 'Multiple Value Search on Sponsor Term').click; b.loading }
 

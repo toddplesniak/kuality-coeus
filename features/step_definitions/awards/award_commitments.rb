@@ -43,14 +43,19 @@ And /adds an F&A rate to the Award$/ do
 end
 
 And /adds an F&A rate to the Award but misses a required field$/ do
+  # Note: This does not test Start Date. Because of how these fields
+  # auto-populate, to test Start Date will require extensive custom code.
   rf = ['Rate',
         'Type',
-        'Fiscal Year',
-        'Start Date'
+        'Fiscal Year'
   ].sample
   field = damballa(rf)
-  value = field==:type ? 'select' : ''
-  @award.add_fna_rate field => value
+  value = field==:type ? 'select' : ' '
+  if field == 'Fiscal Year'
+    @award.add_fna_rate field => value, start_date: '01/01/2020'
+  else
+    @award.add_fna_rate field => value
+  end
   @required_field_error = "#{rf} is a mandatory field"
 end
 

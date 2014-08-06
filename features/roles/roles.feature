@@ -1,3 +1,4 @@
+@Smoke
 Feature: Roles Administration
 
   As an administrator, I want to be able to set up

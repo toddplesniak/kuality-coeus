@@ -2,7 +2,7 @@ class CommitteeMemberObject < DataFactory
 
   include DateFactory
 
-  attr_reader :document_id, :name, :membership_type, :paid_member, :term_start_date, :term_end_date,
+  attr_reader :document_id, :name, :user_name, :membership_type, :paid_member, :term_start_date, :term_end_date,
               :roles, :expertise
 
   def initialize(browser, opts={})
@@ -12,9 +12,9 @@ class CommitteeMemberObject < DataFactory
         name:            '::random::',
         membership_type: '::random::',
         term_start_date: right_now[:date_w_slashes],
-        term_end_date:   hours_from_now(10416)[:date_w_slashes],
-        paid_member:     :clear,
-        roles:           [{role: '::random::', start_date: right_now[:date_w_slashes], end_date: hours_from_now(10416)[:date_w_slashes]}],
+        term_end_date:   hours_from_now(50000)[:date_w_slashes],
+        paid_member:     [:clear, :set].sample,
+        roles:           [{role: ACTIVE_ROLES.sample, start_date: right_now[:date_w_slashes], end_date: hours_from_now(50000)[:date_w_slashes]}],
         expertise:       []
     }
 
@@ -25,18 +25,26 @@ class CommitteeMemberObject < DataFactory
   def create
     # Navigation done by CommitteeDocument object
     # TODO: Support non-employee searching
-    on(Members).employee_search
+    existing_members = []
+    on Members do |page|
+      existing_members = page.existing_members
+      page.employee_search
+    end
     if @name=='::random::'
-      on PersonLookup do |page|
-        letter = %w{a r e o n}.sample
+      on KcPersonLookup do |page|
+        letter = %w{l s r o h e t b g j f}.sample
         page.first_name.set "*#{letter}*"
         page.search
-        page.return_random
+        # This code removes names that contain 3 words, which
+        # can screw things up elsewhere...
+        @name = 'William Lloyd Garrison'
+        while name.scan(' ').size > 1
+          @name = (page.returned_full_names - existing_members - $users.full_names).sample
+        end
+        @user_name = page.user_name_of @name
+        page.return_value @name
       end
-      on Members do |page|
-        @name = page.member_name_pre_add
-        page.add_member
-      end
+      on(Members).add_member
     else
       # TODO: Write code for when we know the name
     end
@@ -63,18 +71,36 @@ class CommitteeMemberObject < DataFactory
     on(Members).save
   end
 
+  def sign_in
+    $users.current_user.sign_out if $users.current_user
+    sign_out
+    visit($cas ? CASLogin : Login) do |log_in|
+      log_in.username.set @user_name
+      log_in.login
+    end
+    visit Researcher
+  end
+
+  def sign_out
+    @browser.goto "#{$base_url}#{$context}logout.do"
+  end
+
   private
 
   def add_expertise(item=nil)
+    on Members do |page|
+      page.expand_all
+      page.lookup_expertise(@name)
+    end
     if item
       # TODO: Write this code
     else
-      on Members do |page|
-        page.expand_all
-        page.lookup_expertise(@name)
-      end
       on ResearchAreasLookup do |page|
-        page.search
+        until page.results_table.present?
+          page.research_area_code.set "*#{rand(99)}*"
+          page.search
+          sleep 0.2
+        end
         research_description = page.research_descriptions.sample
         page.check_item(research_description)
         page.return_selected
@@ -83,10 +109,29 @@ class CommitteeMemberObject < DataFactory
     end
   end
 
+  ACTIVE_ROLES = ['Chair', 'Expedited/Exempt Reviewer', 'Alternate',
+                  'IRB Administrator',
+                  'Member - Scientist', 'Member - Non Scientist',
+                  'Member', 'Community Member',
+                  'Prisoner Representative', 'Vice Chair', 'Additional Committee Member'
+                   ]
+
 end # CommitteeMemberObject
 
 class CommitteeMemberCollection < CollectionsFactory
 
   contains CommitteeMemberObject
+
+  def member(full_name)
+    self.find { |member| member.name==full_name }
+  end
+
+  def full_names
+    self.collect { |member| member.name }
+  end
+
+  def voting_members
+    self.find_all { |member| member.membership_type=='Voting member' }
+  end
 
 end # CommitteeMemberCollection

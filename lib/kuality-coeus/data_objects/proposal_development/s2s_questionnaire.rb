@@ -11,9 +11,7 @@ class S2SQuestionnaireObject < DataFactory
                  :international_activities, :other_agencies, :subject_to_review,
                  :novice_applicants]
 
-  include StringFactory
-  include Navigation
-  include Utilities
+  include StringFactory, Navigation, Utilities
 
   attr_reader :document_id, :civil_service, :total_ftes, :potential_effects, :explain_potential_effects,
               :international_support, :explain_support, :pi_in_govt, :pis_us_govt_agency, :total_amount_requested,
@@ -41,13 +39,6 @@ class S2SQuestionnaireObject < DataFactory
   def initialize(browser, opts={})
     @browser = browser
 
-    # PLEASE NOTE:
-    # This is a unique data object class in that
-    # it breaks the typical model for radio button
-    # methods and their associated class instance variables
-    #
-    # In general, it's not workable to set up radio button elements
-    # to use "Y" and "N" as the instance variables associated with them.
     defaults = {
         civil_service:            'N',
         potential_effects:        'N',

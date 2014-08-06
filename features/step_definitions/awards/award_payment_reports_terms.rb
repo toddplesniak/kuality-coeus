@@ -1,5 +1,9 @@
-When /I? ?adds? a Report to the Award$/ do
+When /I? ?adds? a report to the Award$/ do
   @award.add_report
+end
+
+When /adds (\d+) reports to the Award$/ do |x|
+  x.to_i.times{ @award.add_report }
 end
 
 When /I? ?adds? Terms to the Award$/ do

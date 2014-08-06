@@ -1,0 +1,3 @@
+class Suspend < KCProtocol
+
+end

@@ -145,7 +145,6 @@ class UserObject < DataFactory
     @browser = browser
 
     defaults={
-        user_name:        random_letters(16),
         description:      random_alphanums,
         affiliation_type: 'Student',
         campus_code:      'UN - UNIVERSITY',
@@ -184,6 +183,7 @@ class UserObject < DataFactory
     end
 
     set_options options
+    @user_name ||= random_letters(16)
     @rolez.each { |role| role[:user_name]=@user_name; @roles << make(UserRoleObject, role) } unless @rolez.nil?
     @rolez=nil
     @full_name = "#{@first_name} #{@last_name}"
@@ -332,8 +332,7 @@ class UserObject < DataFactory
 
   def exist?
     $users.admin.log_in if $users.current_user==nil
-    visit(SystemAdmin).person
-    on PersonLookup do |search|
+    visit PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
       begin

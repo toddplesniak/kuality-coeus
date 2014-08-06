@@ -1,3 +1,4 @@
+@Proposal
 Feature: Permissions in a Proposal
 
   As a Proposal Aggregator, I want to be able to assign others permissions to a proposal,

@@ -1,10 +1,7 @@
 # coding: UTF-8
 class AwardObject < DataFactory
 
-  include Navigation
-  include DateFactory
-  include StringFactory
-  include DocumentUtilities
+  include Navigation, DateFactory, StringFactory, DocumentUtilities
 
   attr_reader :award_status,
               :award_title, :lead_unit, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
@@ -187,12 +184,15 @@ class AwardObject < DataFactory
     view :contacts
     on AwardContacts do |page|
       page.expand_all
+      x = 0
       while page.org_name==' '
         page.sponsor_non_employee_id.set s_c[:non_employee_id]
-        page.sponsor_project_role.pick! s_c[:project_role]
-        page.unit_employee_user_name.focus
-        sleep 0.5 # FIXME!
+        page.sponsor_non_employee_id.fire_event 'onblur'
+        sleep 1
+        x+=1
+        raise 'Sponsor Organization is not populating!' if x == 30
       end
+      page.sponsor_project_role.pick! s_c[:project_role]
       page.add_sponsor_contact
       page.save
     end
@@ -293,7 +293,7 @@ class AwardObject < DataFactory
       sleep 3 # FIXME!
       copy.show_award_details_panel(@id) unless copy.award_div(@id).visible?
       copy.copy_descendents(@id).send(descendents) if copy.copy_descendents(@id).enabled?
-      copy.send("copy_as_#{type}", @id).set
+      copy.send("copy_as_#{type}", @id)
       copy.child_of_target_award(@id).pick! parent
       copy.copy_award @id
     end
@@ -310,7 +310,7 @@ class AwardObject < DataFactory
     on Award do |page|
       award.id = page.header_award_id
       award.document_id = page.header_document_id
-      award.custom_data.document_id = page.header_document_id
+      award.custom_data.document_id = page.header_document_id if award.custom_data
     end
 
     # Modify the new data object according to the
@@ -324,9 +324,7 @@ class AwardObject < DataFactory
           # TODO: Determine if this is all we want, here...
           award.description = random_alphanums
           page.description.set award.description
-
           page.project_end_date.set @project_end_date
-
           page.save
           award.document_status=page.header_status
         end
@@ -375,7 +373,6 @@ class AwardObject < DataFactory
         award.parent = parent
 
     end
-
     award
   end
 
@@ -423,7 +420,9 @@ class AwardObject < DataFactory
 
   def open_document
     navigate unless on_award?
-    on(TimeAndMoney).return_to_award if on_tm?
+    if on_tm?
+      on(TimeAndMoney).return_to_award
+    end
   end
 
   def navigate
@@ -453,7 +452,7 @@ class AwardObject < DataFactory
   end
 
   def on_tm?
-    !(on(Award).t_m_button.exist?)
+    @browser.frm.button(name: 'methodToCall.returnToAward').present? && !(on(Award).t_m_button.present?)
   end
 
   def page_class

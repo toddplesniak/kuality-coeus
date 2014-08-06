@@ -1,7 +1,6 @@
 class FundsDistributionObject < DataFactory
 
-  include StringFactory
-  include DateFactory
+  include StringFactory, DateFactory
 
   attr_reader :start_date, :end_date, :direct_cost, :fa_cost
   attr_accessor :number

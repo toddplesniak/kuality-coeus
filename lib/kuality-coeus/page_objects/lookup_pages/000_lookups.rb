@@ -4,17 +4,18 @@ class Lookups < BasePage
   search_results_table
 
   def self.url_info(title, class_name)
-    page_url %|#{
-                $base_url+$context
-              }portal.do?channelTitle=#{
+    riceify = class_name[/^rice/] && $base_url[/kuali/] ? $context.gsub('c','r') : $context
+    url = %|#{$base_url+$context
+                  }portal.do?channelTitle=#{
                 title
-              }&channelUrl=#{
+                  }&channelUrl=#{
+                $base_url[/.*(?=\/$)/]+':'+$port+'/'+riceify
+                  }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
+                class_name
+                  }&docFormKey=88888888&includeCustomActionUrls=true&returnLocation=#{
                 $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
-              }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
-               class_name
-              }&docFormKey=88888888&includeCustomActionUrls=true&returnLocation=#{
-               $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
-              }portal.do&hideReturnLink=true|
+                  }portal.do&hideReturnLink=true|
+    page_url url
   end
 
   element(:last_name) { |b| b.frm.text_field(id: 'lastName') }
@@ -27,3 +28,4 @@ class Lookups < BasePage
   alias_method :create, :create_new
 
 end
+

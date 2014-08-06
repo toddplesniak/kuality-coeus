@@ -1,9 +1,6 @@
 class ProposalDevelopmentObject < DataFactory
 
-  include StringFactory
-  include DateFactory
-  include Navigation
-  include DocumentUtilities
+  include StringFactory, DateFactory, Navigation, DocumentUtilities
   
   attr_reader :proposal_type, :lead_unit, :activity_type, :project_title, :proposal_number,
               :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
@@ -187,7 +184,7 @@ class ProposalDevelopmentObject < DataFactory
   def recall(reason=random_alphanums)
     @recall_reason=reason
     open_document
-    on(Proposal).recall
+    on(ProposalActions).recall
     on Confirmation do |conf|
       conf.reason.set @recall_reason
       conf.yes

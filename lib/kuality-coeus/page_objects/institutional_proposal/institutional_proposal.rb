@@ -1,5 +1,7 @@
 class InstitutionalProposal < KCInstitutionalProposal
 
+  expected_element :document_overview_tab
+
   description_field
 
   value(:institutional_proposal_number) { |b| b.institutional_proposal_tab.table[0][1].text.strip }
@@ -9,7 +11,7 @@ class InstitutionalProposal < KCInstitutionalProposal
   element(:award_id) { |b| b.frm.text_field(name: 'document.institutionalProposalList[0].currentAwardNumber') }
   element(:proposal_type) { |b| b.frm.select(name: 'document.institutionalProposalList[0].proposalTypeCode') }
   element(:activity_type) { |b| b.frm.select(name: 'document.institutionalProposalList[0].activityTypeCode') }
-  element(:project_title) { |b| b.frm.text_field(name: 'document.institutionalProposalList[0].title') }
+  element(:project_title) { |b| b.frm.textarea(name: 'document.institutionalProposalList[0].title') }
   element(:sponsor_id) { |b| b.frm.text_field(name: 'document.institutionalProposalList[0].sponsorCode') }
   action(:find_sponsor_code) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.Sponsor!!).(((sponsorCode:document.institutionalProposalList[0].sponsorCode,sponsorName:document.institutionalProposalList[0].sponsor.sponsorName))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchorSponsorProgramInformation').click }
 

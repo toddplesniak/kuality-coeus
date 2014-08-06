@@ -21,11 +21,10 @@ Then /^an error should appear that says (.*)$/ do |error|
             'a valid sponsor is required' => 'A valid Sponsor Code (Sponsor) must be selected.',
             'the Account ID may only contain letters or numbers' => 'The Account ID (Account ID) may only consist of letters or digits.',
             'the Award\'s title contains invalid characters' => 'The Award Title (Title) may only consist of visible characters, spaces, or tabs.',
-            'the Award\'s title can\'t be longer than 200 characters' => 'The specified Award Title (Title) must not be longer than 200 characters.',
             'the anticipated amount must be equal to or more than obligated' => 'The Anticipated Amount must be greater than or equal to Obligated Amount.',
             'the project period has a typo' => 'Project Period is not formatted correctly.',
             'cost share type is required' => 'Cost Share Type Code is a required field.',
-            'the fiscal year is not valid' => 'Fiscal Year is not formatted correctly.',
+            'the fiscal year is not valid' => 'not found is not a valid date.',
             'the approved equipment can\'t have duplicates' => 'Approved Equipment Vendor, Model and Item must be unique',
             'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.',
             'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.'
@@ -66,7 +65,7 @@ end
 Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
   @award.view :contacts
   on AwardContacts do |page|
-    Transforms::CREDIT_SPLITS.values.each do |type|
+    DocumentUtilities::CREDIT_SPLITS.values.each do |type|
       page.errors.should include "The Project Personnel #{type} Credit Split does not equal 100%"
       page.errors.should include "The Unit #{type} Credit Split for #{@award.key_personnel.principal_investigator.full_name} does not equal 100%"
     end
@@ -148,6 +147,5 @@ Then /^a confirmation screen asks if you want to edit the existing pending versi
 end
 
 Then /^there are no errors on the page$/ do
-  DEBUG.message $current_page.class.inspect
   $current_page.errors.size.should==0
 end

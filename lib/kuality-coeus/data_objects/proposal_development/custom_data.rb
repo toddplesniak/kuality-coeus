@@ -1,8 +1,7 @@
 # coding: UTF-8
 class CustomDataObject < DataFactory
 
-  include Navigation
-  include StringFactory
+  include Navigation, StringFactory
 
   attr_reader :graduate_student_count, :billing_element
   attr_accessor :document_id

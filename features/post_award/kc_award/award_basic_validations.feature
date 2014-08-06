@@ -1,3 +1,4 @@
+@Award
 Feature: Basic Award Validations
 
   As an Award Modifier, I want to know when an Award document contains errors and omissions,
@@ -30,7 +31,7 @@ Feature: Basic Award Validations
   Scenario: Enter a title containing more than 200 characters
     Given the Award Modifier creates an Award
     When  the Award's title is made more than 200 characters long
-    Then  an error should appear that says the Award's title can't be longer than 200 characters
+    Then  the Award's title is trimmed to the first 200 characters
 
   Scenario: The anticipated amount is less than the obligated amount
     When  the Award Modifier creates an Award with more obligated than anticipated amounts
@@ -54,7 +55,7 @@ Feature: Basic Award Validations
     And   adds a $0.00 Subaward to the Award
     When  data validation is turned on for the Award
     Then  an error is shown that says the subaward's amount can't be zero
-
+  @test
   Scenario: Missing required field in F&A Rate entry
     Given the Award Modifier creates an Award
     When  the Award Modifier adds an F&A rate to the Award but misses a required field
@@ -85,7 +86,7 @@ Feature: Basic Award Validations
     And   adds an item of approved equipment to the Award
     When  the AM adds a duplicate item of approved equipment to the Award
     Then  an error should appear that says the approved equipment can't have duplicates
-
+  @test
   Scenario: Cancelling and Restarting a T&M document
     Given a User exists with the role: 'Time And Money Modifier'
     And   the Award Modifier creates an Award

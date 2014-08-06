@@ -1,12 +1,12 @@
 class CommitteeDocumentObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, DateFactory, Navigation
 
   attr_reader :description, :committee_id, :document_id, :status, :name,
               :home_unit, :min_members_for_quorum, :maximum_protocols,
               :adv_submission_days, :review_type, :last_updated, :updated_user,
               :initiator, :members, :areas_of_research, :type, :schedule
+  def_delegators :@members, :member, :voting_members
 
   def initialize(browser, opts={})
     @browser = browser
@@ -17,7 +17,7 @@ class CommitteeDocumentObject < DataFactory
       home_unit:              '000001',
       name:                   random_alphanums(60), # Restricted character set until this is fixed: https://jira.kuali.org/browse/KRAFDBCK-10768
       min_members_for_quorum: rand(100).to_s,
-      maximum_protocols:      rand(100).to_s,
+      maximum_protocols:      (rand(100)+1).to_s,
       adv_submission_days:    (rand(76)+14).to_s, # Defaults to a minimum of 14 days
       review_type:            'Full',
       members:                collection('CommitteeMember'),
@@ -45,14 +45,26 @@ class CommitteeDocumentObject < DataFactory
     end
   end
 
-  def submit
-    open_document
-    on(Committee).submit
+  def edit opts={}
+    # TODO: Write this!
   end
 
+  def submit
+    open_document
+    on Committee do |page|
+      page.submit
+    end
+  end
+
+  # FIXME
+  # This method will create a new committee document if
+  # the committee is in a final status. Not good!
   def view(tab)
     open_document
-    on(Committee).send(damballa(tab).to_sym)
+    on Committee do |page|
+      page.description.set @description
+      page.send(damballa(tab).to_sym)
+    end
   end
 
   def add_member opts={}
@@ -63,7 +75,10 @@ class CommitteeDocumentObject < DataFactory
   end
 
   def add_schedule opts={}
-    defaults = {document_id: @document_id}
+    defaults = {document_id: @document_id,
+                date: hours_from_now((@adv_submission_days.to_i+1)*24)[:date_w_slashes],
+                min_days: @adv_submission_days.to_i+2
+    }
     open_document
     on(Committee).schedule
     @schedule.add defaults.merge(opts)

@@ -1,7 +1,6 @@
 class SubawardObject < DataFactory
 
-  include StringFactory
-  include Navigation
+  include StringFactory, Navigation
 
   attr_reader :document_id, :subaward_id, :version, :subaward_status,
               :document_status, :requisitioner, :requisitioner_unit,
