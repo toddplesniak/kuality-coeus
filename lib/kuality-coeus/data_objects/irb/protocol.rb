@@ -124,7 +124,7 @@ class IRBProtocolObject < DataFactory
 
   def submit_expedited_approval
     view 'Protocol Actions'
-    on ProtocolActions do |page|
+    on ExpeditedApproval do |page|
       # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
       page.expand_all unless page.expedited_approval_date.present?
 
@@ -143,9 +143,18 @@ class IRBProtocolObject < DataFactory
 
   def suspend
     view 'Protocol Actions'
-    on ProtocolActions do |page|
+    on Suspend do |page|
       page.expand_all
       page.x
+    end
+  end
+
+  # TODO: This needs to be made much more robust...
+  def approve_action
+    view 'Protocol Actions'
+    on ApproveAction do |page|
+      page.expand_all
+      page.submit
     end
   end
 

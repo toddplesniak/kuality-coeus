@@ -1,5 +1,7 @@
 class ApproveAction < KCProtocol
-  
+
+  undefine :expiration_date
+
   element(:approval_date) { |b| b.frm.text_field(name: 'actionHelper.protocolFullApprovalBean.approvalDate') }
   element(:expiration_date) { |b| b.frm.text_field(name: 'actionHelper.protocolFullApprovalBean.expirationDate') }
   element(:comments) { |b| b.frm.textarea(name: 'actionHelper.protocolFullApprovalBean.comments') }
