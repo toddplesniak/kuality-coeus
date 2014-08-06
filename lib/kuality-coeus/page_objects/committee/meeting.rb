@@ -38,6 +38,9 @@ class Meeting < BasePage
   # Other Actions
 
   # Attendance
+  p_action(:present_voting) { |full_name, b| b.member_absent_table.tr(text: /#{full_name}/).button(name: /methodToCall\.presentVoting/).click; b.loading }
+  p_action(:present_other)  { |full_name, b| b.member_absent_table.tr(text: /#{full_name}/).button(name: /methodToCall\.presentOther/).click; b.loading }
+  p_action(:mark_absent)    { |full_name, b| b.member_absent_table.tr(text: /#{full_name}/).button(name: /methodToCall\.markAbsent/).click; b.loading }
 
   # Minutes
   element(:minutes_div) { |b| b.frm.div(id: 'tab-Minutes-div') }
@@ -82,4 +85,6 @@ class Meeting < BasePage
 
   element(:minute_entry_rows) { |b| b.entry_type.present? ? b.frm.table(id: 'minutes-table').rows[2..-1] : b.frm.table(id: 'minutes-table').rows[1..-1] }
 
+  element(:member_absent_table) { |b| b.frm.table(id: 'memberAbsent-table') }
+  
 end

@@ -130,4 +130,8 @@ class CommitteeMemberCollection < CollectionsFactory
     self.collect { |member| member.name }
   end
 
+  def voting_members
+    self.find_all { |member| member.membership_type=='Voting member' }
+  end
+
 end # CommitteeMemberCollection

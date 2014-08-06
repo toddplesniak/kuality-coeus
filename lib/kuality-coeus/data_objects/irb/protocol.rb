@@ -81,12 +81,20 @@ class IRBProtocolObject < DataFactory
     end
   end
 
+  def assign_to_agenda
+    view 'Protocol Actions'
+    on AssignToAgenda do |page|
+      page.expand_all
+      # TODO: Add more stuff here when needed.
+      page.submit
+    end
+  end
+
   def notify_committee
     view 'Protocol Actions'
     on NotifyCommittee do |notify|
       notify.expand_all
       notify.committee_id.set @committee
-
       notify.submit
     end
   end
