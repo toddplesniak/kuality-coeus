@@ -22,3 +22,11 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in Submission Det
   end
   member.sign_out
 end
+
+Then /^the summary approval date should be last year$/ do
+  on(ExpeditedApproval).approval_date_ro.should == last_year[:date_w_slashes]
+end
+
+And /^the expedited date should be yesterday$/ do
+  on(ExpeditedApproval).expiration_date_ro.should == yesterday[:date_w_slashes]
+end

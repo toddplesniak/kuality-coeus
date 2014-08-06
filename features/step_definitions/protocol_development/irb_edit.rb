@@ -1,6 +1,6 @@
 When /^the Protocol is given an '(.*)' Submission Review Type$/ do |type|
   @irb_protocol.view 'Protocol Actions'
-  on ProtocolActions do |page|
+  on SubmitForReview do |page|
     page.expand_all
     page.submission_review_type.select type
   end
@@ -60,6 +60,7 @@ And /^the Protocol is submitted to the Committee for review, with:$/ do |table|
 end
 
 And /^submits the Protocol to the Committee for Expedited review$/ do
+  # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
@@ -101,4 +102,42 @@ And /the principal investigator approves the Protocol$/ do
   DEBUG.message
   DEBUG.pause 300
 
+end
+
+And /^I submit a expedited approval with a date of last year$/ do
+  @irb_protocol.submit_expedited_approval approval_date: "#{last_year[:date_w_slashes]}"
+end
+
+And /creates an amendment for the Protocol$/ do
+  @irb_protocol.create_amendment
+end
+
+And /returns the Protocol to the PI$/ do
+  @irb_protocol.return_to_pi
+end
+
+And /submits the Protocol to the Committee for review, with:$/ do |table|
+  review_data = table.rows_hash
+  @irb_protocol.submit_for_review  submission_type:   review_data['Submission Type'],
+                                   submission_review_type: review_data['Review Type'],
+                                   expedited_checklist: nil
+end
+
+And /notifies the Committee about the Protocol/ do
+  @irb_protocol.notify_committee "#{@committee.name}"
+end
+
+And /assigns the Protocol to reviewers$/ do
+  on AssignReviewers do |page|
+      page.expand_all unless page.submit_button.present?
+      page.submit
+    end
+end
+
+When /submits the Protocol to the Committee for expedited review, with an approval date of last year$/ do
+  steps %|
+          * notifies the Committee about the Protocol
+          * assigns reviewers to the Protocol
+          * assigns the Protocol to reviewers
+          * I submit a expedited approval with a date of last year|
 end

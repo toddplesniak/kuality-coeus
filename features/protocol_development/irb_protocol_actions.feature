@@ -1,7 +1,9 @@
 @IRB
 Feature: IRB Protocol Actions
 
-  Description TBD
+  [smoke] - Expedited Reivwe and Exempt Studies checklists can be filled out
+  [KRAFDBCK-9927] verify the Summary Approval date and the Expedited date are correct on the IRB Protocol Actions tab after
+  setting the approval date back one year and assigning to reviewers after retuning the document to the PI
 
   Background:
     * Users exist with the following roles: IRB Administrator, Protocol Creator
@@ -21,7 +23,9 @@ Feature: IRB Protocol Actions
     Given the IRB Admin creates a Committee
     And   schedules at least one event for the Committee
     And   submits the Committee
-    And   the IRB Admin submits a Protocol to the Committee for Expedited review, with an approval date of last year
+    And   I log in with the IRB Administrator user
+    When  I create an IRB Protocol with expedited submissions review type for lead unit '000001'
+    And   the IRB Admin submits the Protocol to the Committee for expedited review, with an approval date of last year
     And   creates an amendment for the Protocol
     And   submits the Protocol to the Committee for review, with:
           | Submission Type | Amendment |
@@ -32,6 +36,7 @@ Feature: IRB Protocol Actions
           | Submission Type | Resubmission |
           | Review Type     | Expedited    |
     And   notifies the Committee about the Protocol
-    When  the IRB Admin assigns reviewers to the Protocol
-    Then  the Summary Approval Date should be last year
-    And   the Expedited Date should be yesterday
+    And  the IRB Admin assigns reviewers to the Protocol
+    And   the IRB Admin assigns the Protocol to reviewers
+    Then  the summary approval date should be last year
+    And   the expedited date should be yesterday
