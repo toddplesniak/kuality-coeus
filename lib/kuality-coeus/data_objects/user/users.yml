@@ -505,11 +505,6 @@ smalkmus: # AKA: "Principal Name"
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :clear
-   - :id:   '129'
-     :name: Protocol Creator
-     :qualifiers:
-       - :unit: '000001'
-         :descends_hierarchy: :clear
    - :id:   '149'
      :name: Protocol Approver
      :qualifiers:
