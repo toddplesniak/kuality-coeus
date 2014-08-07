@@ -293,11 +293,7 @@ warrens:  # AKA: "Principal Name"
       :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-
-#Note: Lannister is ONLY an OSP Admin. This means, he will not be
-#in any proposal's workflow.
-
-lannister:  # AKA: "Principal Name"
+lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in any proposal's workflow.
   :user_name:        lannister
   :description:      OSP Administrator
   :affiliation_type: Staff
@@ -800,7 +796,6 @@ dbyrne:  # AKA: "Principal Name"
       :name: Institutional Proposal Maintainer
       :qualifiers:
         - :unit: '000001'
-
 kcrimson:  # AKA: "Principal Name"
   :user_name:        kcrimson
   :description:      Award Sponsor Template Modifier
@@ -852,7 +847,6 @@ kcrimson:  # AKA: "Principal Name"
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
-
 greyjoy:  # AKA: "Principal Name"
   :user_name:        greyjoy
   :description:      Subaward Modifier
@@ -897,56 +891,3 @@ greyjoy:  # AKA: "Principal Name"
       :name: Modify Subaward
       :qualifiers:
         - :unit:
-asharadayne: # AKA: "Principal Name"
-  :user_name:        asharadayne
-  :description:      Protocol Creator
-  :affiliation_type: Staff
-  :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      asharadayne
-  :employee_status:  Active
-  :employee_type:    Professional
-  :base_salary:      234567.89
-  :primary_department_code: '000001'
-  :first_name:       Ashara
-  :last_name:        Dayne
-  :primary_title:    Protocol Creator
-  :directory_title:  Protocol Creator
-  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: asharadayne
-  :directory_department:  Finance
-  :graduate_student_count: '0'
-  :billing_element:  bla bla bla
-  :addresses:
-   - :type:    Work
-     :line_1:  475 N scottsdale rd
-     :city:    scottsdale
-     :state:   ARIZONA
-     :country: United States
-     :zip:     85257
-     :default: :set
-  :phones:
-   - :type:    Work
-     :number:  602-228-3976
-     :default: :set
-   - :type:    Facsimile
-     :number:  555-555-5551
-     :default: :clear
-     :country: United States
-  :emails:
-   - :email:   kc-qa-notify@rsmart.com
-     :type:    Work
-     :default: :set
-  :rolez:
-   - :id:   '104'
-     :name: Protocol Viewer
-     :qualifiers:
-       - :unit: '000001'
-   - :id:   '105'
-     :name: Protocol Aggregator
-     :qualifiers:
-       - :unit: '000001'
-   - :id:   '129'
-     :name: Protocol Creator
-     :qualifiers:
-       - :unit: '000001'
-         :descends_hierarchy: :clear
