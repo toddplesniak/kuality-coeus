@@ -90,11 +90,12 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  def notify_committee
+  def notify_committee(committee_name)
     view 'Protocol Actions'
     on NotifyCommittee do |notify|
       notify.expand_all
-      notify.committee_id.set @committee
+      notify.committee_id.select committee_name
+
       notify.submit
     end
   end
@@ -110,35 +111,26 @@ class IRBProtocolObject < DataFactory
 
     view 'Protocol Actions'
 
-    on ProtocolActions do |page|
+    on CreateAmendment do |page|
       page.expand_all
-      page.amendment_summary.set @amendment_summary
+      page.summary.set @amendment_summary
       page.amend(@amend).set
-      page.create_amendment
+      page.create
 
       page.awaiting_doc
     end
 
     confirmation('yes')
+    @document_id = on(ProtocolActions).document_id
   end
 
-  def submit_expedited_approval
+  def submit_expedited_approval opts={}
     view 'Protocol Actions'
-    on ExpeditedApproval do |page|
-      # page.protocol_actions unless page.current_tab_is == 'Protocol Actions'
-      page.expand_all unless page.expedited_approval_date.present?
+    @expedited_approval = make ExpeditedApprovalObject, opts
+    @expedited_approval.create
 
-      page.expedited_approval_date.when_present.focus
-      #There is a PROBLEM when entering text in Approval Date. A popup appears saying wrong format.
-      #entering text into a clear Approval Date field does not produce a popup
-      page.expedited_approval_date.clear
-      page.alert.ok if page.alert.exists?
-      page.expedited_approval_date.fit @expedited_approval_date
-
-      page.submit_expedited_approval
-
-      page.awaiting_doc
-    end
+    #correcspondence page for expediated reiview.
+    on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
   def suspend
@@ -146,6 +138,16 @@ class IRBProtocolObject < DataFactory
     on Suspend do |page|
       page.expand_all
       page.x
+    end
+  end
+
+  def return_to_pi
+    on ReturnToPI do |page|
+      page.submit
+      page.send_it if page.send_button.present?
+      DEBUG.message @document_id.inspect
+
+      @document_id=page.document_id
     end
   end
 

@@ -1,5 +1,5 @@
 Then /^the (.*) Checklist can be filled out$/ do |checklist|
-  on(ProtocolActions).send("#{damballa(checklist)}_checklist".to_sym).should be_present
+  on(SubmitForReview).send("#{damballa(checklist)}_checklist".to_sym).should be_present
 end
 
 Then /the system warns that the number of protocols exceeds the allowed maximum/ do
@@ -21,4 +21,12 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in Submission Det
     page.review_comments.send(Transforms::CAN[bool], include, @irb_protocol.comments_of(@irb_protocol.primary_reviewers[0])[0][:comment])
   end
   member.sign_out
+end
+
+Then /^the summary approval date on the Protocol should be last year$/ do
+  on(ExpeditedApproval).approval_date_ro.should == last_year[:date_w_slashes]
+end
+
+And /^the expedited date on the Protocol should be yesterday$/ do
+  on(ExpeditedApproval).expiration_date_ro.should == yesterday[:date_w_slashes]
 end

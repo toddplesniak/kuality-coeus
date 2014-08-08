@@ -40,47 +40,11 @@ And /the Protocol Creator creates an? (.*) IRB Protocol in the Committee's home 
 end
 
 # TODO: Reword this and the following scenarios to remove the "I"...
-And /^I create a IRB Protocol with Expedited Submissions Review Type for lead unit '(\d+)'$/ do |lead_unit|
+And /creates an IRB Protocol with expedited submissions review type for lead unit '(\d+)'$/ do |lead_unit|
   @irb_protocol = create IRBProtocolObject, lead_unit: lead_unit, protocol_type: 'Expedited'
 
+  @irb_protocol.view 'Protocol Actions'
   @irb_protocol.submit_for_review  submission_type: 'Initial Protocol Application for Approval',
-                                    submission_review_type: 'Expedited'
-
-end
-
-And /^I notify the Committee about the Protocol document$/ do
-  @irb_protocol.notify_committee
-end
-
-And /^I submit a Expedited Approval with a date of last year$/ do
-  @irb_protocol.submit_expedited_approval expedited_approval_date: "#{last_year[:date_w_slashes]}"
-end
-
-And /^I add a Create Amendment to the Protocol document$/ do
-  @irb_protocol.create_amendment
-end
-
-And /^I return the Protocol document to the PI$/ do
-  on ProtocolActions do |page|
-    page.return_to_pi
-    page.send_it if page.send_button.present?
-  end
-end
-
-Then /^the Summary Approval Date should be last year/ do
-  on(ProtocolActions).expedited_approval_date_ro.should == last_year[:date_w_slashes]
-end
-
-And /^the Expedited Date should be yesterday$/ do
-  on(ProtocolActions).expedited_expiration_date_ro.should == yesterday[:date_w_slashes]
-end
-
-When /^the IRB Admin submits a Protocol to the Committee for Expedited review, with an approval date of last year$/ do
-  steps %|* I log in with the IRB Administrator user
-          * I create a IRB Protocol with Expedited Submissions Review Type for lead unit '000001'
-          * I Notify the Committee about the Protocol document
-          * assigns reviewers to the Protocol
-          * I assign the Protocol Action to reviewers
-          * I submit a Expedited Approval with a date of last year|
+                                   submission_review_type: 'Expedited'
 end
 
