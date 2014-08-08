@@ -59,7 +59,11 @@ And /^the Protocol is submitted to the Committee for review, with:$/ do |table|
                                    committee: @committee.name
 end
 
-And /^submits the Protocol to the Committee for Expedited review$/ do
+And /^(the principal investigator |)submits the Protocol to the Committee for expedited review$/ do |usr|
+  if usr=='the principal investigator '
+    $users.current_user.sign_out
+    @irb_protocol.principal_investigator.sign_in
+  end
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
@@ -79,7 +83,6 @@ And /the IRB Admin closes the Protocol$/ do
     page.comments.set random_alphanums_plus
     page.submit
   end
-  DEBUG.pause 300
 end
 
 And /the principal investigator approves the Protocol$/ do
@@ -98,7 +101,12 @@ And /the principal investigator approves the Protocol$/ do
   end
   on(ActionList).open_review(@irb_protocol.protocol_number)
   @irb_protocol.view 'Protocol Actions'
-  DEBUG.message
-  DEBUG.pause 300
+end
+
+# TODO: This is an experimental step and should be moved to a different file, if it works.
+And /^closes the document$/ do
+
+  $current_page.close
+  on(Confirmation).yes
 
 end

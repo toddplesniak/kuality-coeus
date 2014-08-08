@@ -189,6 +189,12 @@ class UserObject < DataFactory
     @full_name = "#{@first_name} #{@last_name}"
   end
 
+  # It's important to note that this method will work
+  # regardless of who is logged in--because if the current user
+  # is not capable of creating a new user, they will be logged out
+  # and the Admin user will log in. It's probably a good idea to
+  # revisit this approach in the future. For now, though, it
+  # makes the Cucumber scenarios a bit cleaner and simpler.
   def create
     visit(SystemAdmin).person
     begin
