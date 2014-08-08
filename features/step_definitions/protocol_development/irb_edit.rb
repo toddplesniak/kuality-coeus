@@ -7,11 +7,7 @@ When /^the Protocol is given an '(.*)' Submission Review Type$/ do |type|
 end
 
 When /the Protocol is being submitted to that Committee for review/ do
-  @irb_protocol.view 'Protocol Actions'
-  on ProtocolActions do |page|
-    page.expand_all
-    page.committee.select @committee.name
-  end
+    @irb_protocol.submit_for_review committee: @committee.name, press: nil
 end
 
 And /submits? the Protocol to the Committee for review$/ do

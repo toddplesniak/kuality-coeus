@@ -1,7 +1,7 @@
 @IRB
 Feature: IRB Protocol Actions
 
-  [smoke] - Expedited Reivew and Exempt Studies checklists can be filled out
+  [smoke] - Expedited Review and Exempt Studies checklists can be filled out
   [KRAFDBCK-9927] verify the Summary Approval date and the Expedited date are correct on the IRB Protocol Actions tab after
   setting the approval date back one year and assigning to reviewers after retuning the document to the PI
 

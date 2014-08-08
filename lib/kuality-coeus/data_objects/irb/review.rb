@@ -20,7 +20,8 @@ class ReviewObject < DataFactory
         primary_reviewers: [],
         secondary_reviewers: [],
         comments: [],
-        attachments: []
+        attachments: [] ,
+        press: 'submit'
     }
 
     set_options(defaults.merge(opts))
@@ -38,7 +39,7 @@ class ReviewObject < DataFactory
       # will be active committee members available...
       # TODO: This is still buggy because sometimes the schedule dates
       # fall outside of the selectable range. FIXME!!!
-      @schedule_date ||= page.schedule_date.options[1].text
+      (@schedule_date ||= page.schedule_date.options[1].text) if page.schedule_date.options[1].exists?
       page.schedule_date.pick! @schedule_date
 
       if @submission_review_type == 'Expedited' && @expedited_checklist == '::random::'
@@ -50,7 +51,8 @@ class ReviewObject < DataFactory
         warn 'Exempt expedited checklist type needs to be created'
       end
 
-      page.submit
+      # page.submit
+      page.send(@press) unless @press.nil?
     end
   end
 
