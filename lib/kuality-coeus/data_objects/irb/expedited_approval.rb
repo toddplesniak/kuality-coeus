@@ -1,6 +1,6 @@
 class ExpeditedApprovalObject < DataFactory
 
-  include StringFactory, Navigation
+  include StringFactory, DateFactory, Navigation
 
   attr_reader :approval_date, :expiration_date, :action_date
 
@@ -9,7 +9,7 @@ class ExpeditedApprovalObject < DataFactory
     @browser = browser
 
     defaults = {
-        approval_date: '04/13/2001'
+        approval_date: right_now[:date_w_slashes]
     }
     set_options(defaults.merge(opts))
   end
@@ -29,7 +29,6 @@ class ExpeditedApprovalObject < DataFactory
       fill_out page, :expiration_date
 
       page.submit
-      page.awaiting_doc
     end
   end
 

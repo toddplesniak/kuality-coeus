@@ -90,7 +90,6 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  def notify_committee
   def notify_committee(committee_name)
     view 'Protocol Actions'
     on NotifyCommittee do |notify|
@@ -130,6 +129,8 @@ class IRBProtocolObject < DataFactory
     @expedited_approval = make ExpeditedApprovalObject, opts
     @expedited_approval.create
 
+    #correcspondence page for expediated reiview.
+    on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
   def suspend
