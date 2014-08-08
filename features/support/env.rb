@@ -34,6 +34,7 @@ Before do
   @browser = kuality.browser
   # Clean out any users that might exist
   $users.clear
+  $current_user=nil
   # Add the admin user to the Users...
   $users << UserObject.new(@browser)
 end

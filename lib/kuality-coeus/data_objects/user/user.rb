@@ -195,7 +195,6 @@ class UserObject < DataFactory
     begin
       on(PersonLookup).create
     rescue Watir::Exception::UnknownObjectException
-      $current_user.sign_out
       $users.admin.log_in
       visit(SystemAdmin).person
       on(PersonLookup).create
@@ -302,17 +301,16 @@ class UserObject < DataFactory
   # Keep in mind...
   # - If some other user is logged in, they
   #   will be automatically logged out
-  # - This method will close all child
-  #   tabs/windows and return to the
-  #   original window
   def sign_in
-    $current_user.sign_out unless $current_user==nil || $current_user==self
-    visit login_class do |log_in|
-      log_in.username.set @user_name
-      log_in.login
+    unless $current_user==self
+      $current_user.sign_out if $current_user
+      visit login_class do |log_in|
+        log_in.username.set @user_name
+        log_in.login
+      end
+      visit(Researcher).logout_button.wait_until_present
+      $current_user=self
     end
-    visit(Researcher).logout_button.wait_until_present
-    $current_user=self
   end
   alias_method :log_in, :sign_in
 
