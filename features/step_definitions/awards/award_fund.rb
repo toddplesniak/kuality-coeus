@@ -155,13 +155,13 @@ When /^the(.*) Funding Proposal is removed from the Award$/ do |count|
   # IT IS ABSOLUTELY NECESSARY!
   index = { '' => 0, ' first' => 0, ' second' => 1 }
   on Award do |page|
-    page.delete_funding_proposal(@ips[index[count]].key_personnel.principal_investigator.full_name)
+    page.delete_funding_proposal(@ips[index[count]].principal_investigator.full_name)
   end
 end
 
 Then /^the Award Modifier cannot remove the Proposal from the Award$/ do
   on Award do |page|
-    page.delete_funding_proposal_button(@institutional_proposal.key_personnel.principal_investigator.full_name).should_not exist
+    page.delete_funding_proposal_button(@institutional_proposal.principal_investigator.full_name).should_not exist
   end
 end
 

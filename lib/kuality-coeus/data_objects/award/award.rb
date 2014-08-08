@@ -15,6 +15,7 @@ class AwardObject < DataFactory
   attr_accessor :document_status, :document_id, :subawards, :transaction_type, :id, :anticipated_amount, :obligated_amount,
                 :custom_data, :description, :project_start_date, :project_end_date, :obligation_start_date,
                 :obligation_end_date, :time_and_money, :parent
+  def_delegators :@key_personnel, :principal_investigator
 
   def initialize(browser, opts={})
     @browser = browser

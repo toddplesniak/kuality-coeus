@@ -88,7 +88,7 @@ Given /^I? ?set the proposal type to either 'Resubmission', 'Renewal', or 'Conti
   @proposal.edit proposal_type: type
 end
 
-When(/^the AOR user submits the Proposal to S2S$/) do
+When /^the AOR user submits the Proposal to S2S$/ do
   @aor.sign_in
   steps '* I submit the Proposal to S2S'
 end
