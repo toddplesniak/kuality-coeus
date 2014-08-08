@@ -102,16 +102,8 @@ And /the principal investigator approves the Protocol$/ do
   @irb_protocol.view 'Protocol Actions'
 end
 
-# TODO: This is an experimental step and should be moved to a different file, if it works and we want to keep it.
-And /^closes the document$/ do
-
-  $current_page.close
-  on(Confirmation).yes
-
-end
-
 And /submits? an expedited approval on the Protocol with a date of last year$/ do
-  @irb_protocol.submit_expedited_approval approval_date: "#{last_year[:date_w_slashes]}"
+  @irb_protocol.submit_expedited_approval approval_date: last_year[:date_w_slashes]
 end
 
 And /creates? an amendment for the Protocol$/ do
@@ -130,7 +122,7 @@ And /submits? the Protocol to the Committee for review, with:$/ do |table|
 end
 
 And /notifies the Committee about the Protocol/ do
-  @irb_protocol.notify_committee "#{@committee.name}"
+  @irb_protocol.notify_committee @committee.name
 end
 
 And /assigns? the Protocol to reviewers$/ do
