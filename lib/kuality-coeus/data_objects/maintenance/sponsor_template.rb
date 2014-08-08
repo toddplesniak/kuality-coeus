@@ -14,11 +14,11 @@ class SponsorTemplateObject < DataFactory
         template_status:      '::random::',
         payment_basis:        ['Cost reimbursement', 'Firm fixed price'].sample,
 
-        payment_method:       'Cost invoice', #['Advanced payment invoice', 'Automatic payment', 'Cost invoice',
-                               # 'Established ACH mechanism for sponsor',
-                               # 'Progress payment invoices', 'SF270/Request for Advance',
-                               # 'Scheduled payment invoices', 'Special Handling--see comments'].sample,
-        sponsor_terms_code: rand(1..9) #this value is used in the search to limit results and return Type Code of 1 to 9.
+        payment_method:       ['Advanced payment invoice', 'Automatic payment', 'Cost invoice',
+                               'Established ACH mechanism for sponsor',
+                               'Progress payment invoices', 'SF270/Request for Advance',
+                               'Scheduled payment invoices', 'Special Handling--see comments'].sample,
+        sponsor_terms_code: rand(1..9) #this value is used in the search to limit results and return the required Type Codes of 1 through 9.
 
     }
     set_options(defaults.merge(opts))
@@ -46,59 +46,27 @@ class SponsorTemplateObject < DataFactory
 
   def set_sponsor_terms
     unless @sponsor_terms_code.nil?
-      arry = ['Equipment Approval Terms', 'Invention Terms', 'Prior Approval Terms', 'Property Terms', 'Publication Terms', 'Referenced Document Terms', 'Rights In Data Terms', 'Subaward Approval Terms', 'Travel Restrictions Terms']
-
       on(SponsorTemplate).sponsor_term_search
       on SponsorTermLookup do |look|
         look.code.fit @sponsor_terms_code
         look.search
-        #random row for 'Sponsor Term Id' returns text but results contains 2 trailing spaces on the end that needed to be stripped
         look.select_all_from_this_page #if  1-9 is in Sponsor Term Type Code
         look.return_selected
       end
     else
       puts 'Skipping adding Sponsor Terms.'
     end
-
   end
 
-  # def set_payment_basis_n_method
-  #
-  #
-  #   Fixed price level of effort => Level of effort invoices || Special Handling--see comments
-  #   Gift => Gift
-  #   No Payment => No Payment or Billed by Department
-  #   Other => Special Handling--see comments
-  #
-  #   'Advanced payment invoice'
-  #   'Automatic payment'
-  #   'Cost Invoice with Certification'
-  #   'Cost invoice '
-  #   'DoD Advance Payment Pool'
-  #   'Established ACH mechanism for sponsor'
-  #   'Fixed price invoice'
-  #   'Gift'
-  #   'Invoices for fees from members or participants'
-  #   'Level of effort invoices'
-  #   'No Payment or Billed by Department'
-  #   'Progress payment invoices'
-  #   'SF270/Request for Advance'
-  #   'Scheduled payment invoices'
-  #   'Special Handling--see comments'
-
-
-
-      # ALL
-    # ['Advanced payment invoice', 'Automatic payment', 'Cost Invoice with Certification', 'Cost invoice ',
-    #  'DoD Advance Payment Pool', 'Established ACH mechanism for sponsor', 'Fixed price invoice', 'Gift',
-    #  'Invoices for fees from members or participants', 'Level of effort invoices',
-    #  'No Payment or Billed by Department', 'Progress payment invoices', 'SF270/Request for Advance',
-    #  'Scheduled payment invoices', 'Special Handling--see comments'].sample
-
-  #   'Fixed price level of effort'  #only Level of effort & Special Handling
-  #   'Gift' #only Gift
-  #   'No Payment' #only No Payment ofr billed by department
-  #   'Other' #only Special handling
-  # end
+    # case 'payment_method'
+    #   when 'Fixed price level of effort'
+    #     @payment_method = 'Level of effort invoices', 'Special Handling--see comments'
+    #   when 'Gift'
+    #     @payment_method = 'Gift'
+    #   when 'No Payment'
+    #     @payment_method = 'No Payment or Billed by Department'
+    #   when 'Other'
+    #     @payment_method = 'Special Handling--see comments'
+    # end
 
 end
