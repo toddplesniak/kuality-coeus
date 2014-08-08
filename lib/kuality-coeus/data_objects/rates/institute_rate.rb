@@ -133,7 +133,7 @@ class InstituteRateObject < DataFactory
   end
 
   def exist?
-    $users.admin.log_in if $users.current_user==nil
+    $users.admin.log_in if $current_user==nil
     navigate
     search
     if on(InstituteRatesLookup).results_table.present?

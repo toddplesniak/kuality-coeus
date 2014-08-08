@@ -86,7 +86,7 @@ And /adds? an invoice to the Subaward$/ do
 end
 
 Then /^the Subaward's requisitioner can approve or disapprove the invoice$/ do
-  $users.current_user.sign_out
+  $current_user.sign_out
   on Login do |page|
     page.username.set @subaward.requisitioner
     page.login

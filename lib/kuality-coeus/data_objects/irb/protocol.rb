@@ -135,7 +135,7 @@ class IRBProtocolObject < DataFactory
 
   def suspend
     view 'Protocol Actions'
-    on ProtocolActions do |page|
+    on Suspend do |page|
       page.expand_all
       page.x
     end
@@ -148,6 +148,15 @@ class IRBProtocolObject < DataFactory
       DEBUG.message @document_id.inspect
 
       @document_id=page.document_id
+    end
+  end
+
+  # TODO: This needs to be made much more robust...
+  def approve_action
+    view 'Protocol Actions'
+    on ApproveAction do |page|
+      page.expand_all
+      page.submit
     end
   end
 

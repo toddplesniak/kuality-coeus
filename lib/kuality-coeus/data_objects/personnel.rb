@@ -121,20 +121,20 @@ module Personnel
     end
   end
 
-  # Note that this method doesn't care whether any $user is
-  # set as the #current_user, so be careful with how you
-  # use this...
   def log_in
+    $current_user.sign_out unless $current_user==nil || $current_user==self
     visit($cas ? CASLogin : Login)do |log_in|
       log_in.username.set @user_name
       log_in.login
     end
+    $current_user=self
     visit Researcher
   end
   alias :sign_in :log_in
 
   def log_out
     visit(Researcher).logout
+    $current_user=nil
   end
   alias :sign_out :log_out
 

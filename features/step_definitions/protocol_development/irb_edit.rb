@@ -64,6 +64,13 @@ And /^submits? the Protocol to the Committee for Expedited review$/ do
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
+And /^(the principal investigator |)submits the Protocol to the Committee for expedited review$/ do |usr|
+  if usr=='the principal investigator '
+    @irb_protocol.principal_investigator.sign_in
+  end
+  @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
+end
+
 When /the second Protocol is submitted to the Committee for review on the same date/ do
   @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date
 end
@@ -80,11 +87,9 @@ And /the IRB Admin closes the Protocol$/ do
     page.comments.set random_alphanums_plus
     page.submit
   end
-  DEBUG.pause 300
 end
 
 And /the principal investigator approves the Protocol$/ do
-  $users.current_user.log_out
   @irb_protocol.principal_investigator.log_in
 
   # TODO: This is probably not the right pathway through the UI...
@@ -99,8 +104,13 @@ And /the principal investigator approves the Protocol$/ do
   end
   on(ActionList).open_review(@irb_protocol.protocol_number)
   @irb_protocol.view 'Protocol Actions'
-  DEBUG.message
-  DEBUG.pause 300
+end
+
+# TODO: This is an experimental step and should be moved to a different file, if it works and we want to keep it.
+And /^closes the document$/ do
+
+  $current_page.close
+  on(Confirmation).yes
 
 end
 

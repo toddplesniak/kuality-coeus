@@ -72,17 +72,19 @@ class CommitteeMemberObject < DataFactory
   end
 
   def sign_in
-    $users.current_user.sign_out if $users.current_user
+    $current_user.sign_out unless $current_user==nil || $current_user==self
     sign_out
     visit($cas ? CASLogin : Login) do |log_in|
       log_in.username.set @user_name
       log_in.login
     end
+    $current_user=self
     visit Researcher
   end
 
   def sign_out
     @browser.goto "#{$base_url}#{$context}logout.do"
+    $current_user=nil
   end
 
   private

@@ -293,11 +293,7 @@ warrens:  # AKA: "Principal Name"
       :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-
-#Note: Lannister is ONLY an OSP Admin. This means, he will not be
-#in any proposal's workflow.
-
-lannister:  # AKA: "Principal Name"
+lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in any proposal's workflow.
   :user_name:        lannister
   :description:      OSP Administrator
   :affiliation_type: Staff
@@ -502,11 +498,6 @@ smalkmus: # AKA: "Principal Name"
        - :unit: '000001'
    - :id:   '128'
      :name: IRB Administrator
-     :qualifiers:
-       - :unit: '000001'
-         :descends_hierarchy: :clear
-   - :id:   '129'
-     :name: Protocol Creator
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :clear
@@ -805,7 +796,6 @@ dbyrne:  # AKA: "Principal Name"
       :name: Institutional Proposal Maintainer
       :qualifiers:
         - :unit: '000001'
-
 kcrimson:  # AKA: "Principal Name"
   :user_name:        kcrimson
   :description:      Award Sponsor Template Modifier
@@ -857,7 +847,6 @@ kcrimson:  # AKA: "Principal Name"
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
-
 greyjoy:  # AKA: "Principal Name"
   :user_name:        greyjoy
   :description:      Subaward Modifier

@@ -10,7 +10,8 @@ And /edits the meeting details to make it available to reviewers/ do
   end
 end
 
-And /records the voting members' attendance at the Committee meeting$/ do
+And /^(the IRB Admin |)records the voting members' attendance at the Committee meeting$/ do |usr|
+  steps '* I log in with the IRB Administrator user' if usr=='the IRB Admin '
   visit CommitteeScheduleLookup do |page|
     page.protocol_number.set @irb_protocol.protocol_number
     page.search

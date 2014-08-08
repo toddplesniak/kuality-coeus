@@ -10,7 +10,8 @@ And /records the Committee's approval decision for the Protocol/ do
     page.yes_count.set @committee.members.size
     page.submit
   end
+end
 
-  DEBUG.message @irb_protocol.protocol_number
-
+And /approves the action of the Protocol$/ do
+  @irb_protocol.approve_action
 end

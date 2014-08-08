@@ -7,8 +7,7 @@ Then /^the (principal investigator|OSPApprover) can access the Proposal from the
   if user=='OSPApprover'
     steps '* I log in with the OSPApprover user'
   else
-    $users.logged_in_user.sign_out unless $users.current_user==nil
-    @proposal.key_personnel.principal_investigator.log_in
+    @proposal.principal_investigator.log_in
   end
   expect {
     visit(Researcher).action_list
