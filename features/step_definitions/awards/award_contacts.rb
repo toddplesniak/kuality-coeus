@@ -30,28 +30,28 @@ When /^a Co-Investigator is added to the Award$/ do
 end
 
 When /^I? ?add the (.*) unit to the Award's PI$/ do |unit|
-  @award.key_personnel.principal_investigator.add_unit unit
+  @award.principal_investigator.add_unit unit
 end
 
 When /^I? ?remove the (.*) unit from the Award's PI$/ do |unit|
-  @award.key_personnel.principal_investigator.delete_unit unit
+  @award.principal_investigator.delete_unit unit
 end
 
 When /^I? ?add (.*) as the lead unit to the Award's PI$/ do |unit|
-  @award.key_personnel.principal_investigator.add_lead_unit unit
+  @award.principal_investigator.add_lead_unit unit
 end
 
 When /^I? ?set (.*) as the lead unit for the Award's PI$/ do |unit|
-  @award.key_personnel.principal_investigator.set_lead_unit unit
+  @award.principal_investigator.set_lead_unit unit
 end
 
 When /^the Award\'s PI is added again with a different role$/ do
-  pi = @award.key_personnel.principal_investigator
+  pi = @award.principal_investigator
   @award.add_key_person first_name: pi.first_name, last_name: pi.last_name
 end
 
 When /^the Award's Principal Investigator has no units$/ do
-  @award.key_personnel.principal_investigator.units.each do |unit|
-    @award.key_personnel.principal_investigator.delete_unit(unit[:number])
+  @award.principal_investigator.units.each do |unit|
+    @award.principal_investigator.delete_unit(unit[:number])
   end
 end

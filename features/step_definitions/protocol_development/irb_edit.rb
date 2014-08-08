@@ -100,11 +100,3 @@ And /the principal investigator approves the Protocol$/ do
   on(ActionList).open_review(@irb_protocol.protocol_number)
   @irb_protocol.view 'Protocol Actions'
 end
-
-# TODO: This is an experimental step and should be moved to a different file, if it works and we want to keep it.
-And /^closes the document$/ do
-
-  $current_page.close
-  on(Confirmation).yes
-
-end

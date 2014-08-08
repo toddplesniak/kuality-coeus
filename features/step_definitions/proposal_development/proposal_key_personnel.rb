@@ -33,7 +33,7 @@ end
 
 When /^I? ?add a co-investigator without a unit to the Proposal$/ do
   @proposal.add_key_person role: 'Co-Investigator'
-  @proposal.key_personnel.co_investigator.delete_units
+  @proposal.co_investigator.delete_units
 end
 
 When /^I? ?add a key person with an invalid unit type$/ do

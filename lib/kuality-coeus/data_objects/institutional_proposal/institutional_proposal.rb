@@ -8,6 +8,7 @@ class InstitutionalProposalObject < DataFactory
               :award_id, :initiator, :proposal_log, :unrecovered_fa,
               :key_personnel, :nsf_science_code, :prime_sponsor_id, :account_id, :cfda_number,
               :version, :prior_versions
+  def_delegators :@project_personnel, :principal_investigator
 
   def initialize(browser, opts={})
     @browser = browser
