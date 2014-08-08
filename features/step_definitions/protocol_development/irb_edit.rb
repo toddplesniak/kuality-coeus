@@ -61,7 +61,6 @@ end
 
 And /^(the principal investigator |)submits the Protocol to the Committee for expedited review$/ do |usr|
   if usr=='the principal investigator '
-    $users.current_user.sign_out
     @irb_protocol.principal_investigator.sign_in
   end
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
@@ -86,7 +85,6 @@ And /the IRB Admin closes the Protocol$/ do
 end
 
 And /the principal investigator approves the Protocol$/ do
-  $users.current_user.log_out
   @irb_protocol.principal_investigator.log_in
 
   # TODO: This is probably not the right pathway through the UI...
@@ -103,7 +101,7 @@ And /the principal investigator approves the Protocol$/ do
   @irb_protocol.view 'Protocol Actions'
 end
 
-# TODO: This is an experimental step and should be moved to a different file, if it works.
+# TODO: This is an experimental step and should be moved to a different file, if it works and we want to keep it.
 And /^closes the document$/ do
 
   $current_page.close

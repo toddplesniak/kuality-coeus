@@ -3,11 +3,6 @@ class Users < Array
 
   include Singleton
 
-  def logged_in_user
-    self.find { |user| user.session_status == 'logged in' }
-  end
-  alias_method :current_user, :logged_in_user
-
   def user(username)
     self.find { |user| user.user_name == username }
   end
@@ -137,7 +132,7 @@ class UserObject < DataFactory
               :primary_title, :directory_title, :citizenship_type, :role,
               :era_commons_user_name, :graduate_student_count, :billing_element,
               :directory_department,
-              :session_status, :type
+              :type
 
   USERS = UserYamlCollection[YAML.load_file("#{File.dirname(__FILE__)}/users.yml")]
 
@@ -200,7 +195,7 @@ class UserObject < DataFactory
     begin
       on(PersonLookup).create
     rescue Watir::Exception::UnknownObjectException
-      $users.logged_in_user.sign_out
+      $current_user.sign_out
       $users.admin.log_in
       visit(SystemAdmin).person
       on(PersonLookup).create
@@ -311,13 +306,13 @@ class UserObject < DataFactory
   #   tabs/windows and return to the
   #   original window
   def sign_in
-    $users.current_user.sign_out unless $users.current_user==nil
+    $current_user.sign_out unless $current_user==nil || $current_user==self
     visit login_class do |log_in|
       log_in.username.set @user_name
       log_in.login
     end
     visit(Researcher).logout_button.wait_until_present
-    @session_status='logged in'
+    $current_user=self
   end
   alias_method :log_in, :sign_in
 
@@ -332,12 +327,12 @@ class UserObject < DataFactory
         page.logout if page.logout_button.present?
       end
     end
-    @session_status='logged out'
+    $current_user=nil
   end
   alias_method :log_out, :sign_out
 
   def exist?
-    $users.admin.log_in if $users.current_user==nil
+    $users.admin.log_in if $current_user==nil
     visit PersonLookup do |search|
       search.principal_name.set @user_name
       search.search

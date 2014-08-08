@@ -4,7 +4,6 @@
 # scripts.
 Given /^I'm( signed)? in (as|with) the admin$/ do |x, y|
   $users.admin.sign_in
-
 end
 
 # Note the difference between the following three
@@ -26,7 +25,7 @@ end
 # 3) Logs that user in, if they're not already
 Given /^I? ?log in (?:again)? ?with the (.*) user$/ do |role|
   user = $users.with_role(role)
-  user.sign_in unless $users.current_user==user
+  user.sign_in
 end
 
 # This step definition
