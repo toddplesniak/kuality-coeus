@@ -10,6 +10,22 @@ And /edits the meeting details to make it available to reviewers/ do
   end
 end
 
+And /^(the IRB Admin |)records the voting members' attendance at the Committee meeting$/ do |usr|
+  steps '* I log in with the IRB Administrator user' if usr=='the IRB Admin '
+  visit CommitteeScheduleLookup do |page|
+    page.protocol_number.set @irb_protocol.protocol_number
+    page.search
+    page.open_meeting
+  end
+  on Meeting do |page|
+    page.expand_all
+    @committee.voting_members.each do |member|
+      page.present_voting(member.name)
+    end
+    page.save
+  end
+end
+
 Then /the (.*) (can |can't )see the primary reviewer's comment in the meeting minutes/ do |person, bool|
   translate = { 'can ' => :not_to, 'can\'t ' => :to }
   comment = @irb_protocol.comments_of(@irb_protocol.primary_reviewers[0])[0][:comment].gsub(/\s+/, ' ').strip

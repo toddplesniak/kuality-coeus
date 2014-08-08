@@ -14,29 +14,29 @@ When /the Protocol is being submitted to that Committee for review/ do
   end
 end
 
-And /^submits the Protocol to the Committee for review$/ do
+And /submits? the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
 end
 
-And /assigns reviewers to the Protocol/ do
+And /assigns? reviewers to the Protocol/ do
   @irb_protocol.assign_primary_reviewers
   @irb_protocol.assign_secondary_reviewers
 end
 
 # Note: This stepdef assumes no reviewers are already assigned...
-And /assigns a primary reviewer to the Protocol/ do
+And /assigns? a primary reviewer to the Protocol/ do
   @irb_protocol.assign_primary_reviewers @committee.members.full_names.sample
 end
 
 # Note: This stepdef assumes no reviewers are already assigned...
-And /assigns a primary and a secondary reviewer to the Protocol/ do
+And /assigns? a primary and a secondary reviewer to the Protocol/ do
   # Select a random committee member who is not already in the Protocol's personnel...
   names = (@committee.members.full_names - @irb_protocol.personnel.names).shuffle
   @irb_protocol.assign_primary_reviewers names[0]
   @irb_protocol.assign_secondary_reviewers names[1]
 end
 
-And /assigns a committee member the the Protocol's personnel/ do
+And /assigns? a committee member the the Protocol's personnel/ do
   # Need to make sure the selected member isn't already assigned to the Protocol somehow...
   reviewers = @irb_protocol.reviews ? @irb_protocol.primary_reviewers + @irb_protocol.secondary_reviewers : []
   names = @committee.members.full_names - @irb_protocol.personnel.names - reviewers
@@ -59,8 +59,15 @@ And /^the Protocol is submitted to the Committee for review, with:$/ do |table|
                                    committee: @committee.name
 end
 
-And /^submits the Protocol to the Committee for Expedited review$/ do
+And /submits? the Protocol to the Committee for Expedited review$/ do
   # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
+  @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
+end
+
+And /^(the principal investigator |)submits the Protocol to the Committee for expedited review$/ do |usr|
+  if usr=='the principal investigator '
+    @irb_protocol.principal_investigator.sign_in
+  end
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
 
@@ -68,7 +75,7 @@ When /the second Protocol is submitted to the Committee for review on the same d
   @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date
 end
 
-And /suspends the Protocol$/ do
+And /suspends? the Protocol$/ do
   @irb_protocol.suspend
 end
 
@@ -80,11 +87,9 @@ And /the IRB Admin closes the Protocol$/ do
     page.comments.set random_alphanums_plus
     page.submit
   end
-  DEBUG.pause 300
 end
 
 And /the principal investigator approves the Protocol$/ do
-  $users.current_user.log_out
   @irb_protocol.principal_investigator.log_in
 
   # TODO: This is probably not the right pathway through the UI...
@@ -99,24 +104,29 @@ And /the principal investigator approves the Protocol$/ do
   end
   on(ActionList).open_review(@irb_protocol.protocol_number)
   @irb_protocol.view 'Protocol Actions'
-  DEBUG.message
-  DEBUG.pause 300
+end
+
+# TODO: This is an experimental step and should be moved to a different file, if it works and we want to keep it.
+And /^closes the document$/ do
+
+  $current_page.close
+  on(Confirmation).yes
 
 end
 
-And /^I submit a expedited approval with a date of last year$/ do
+And /submits? an expedited approval on the Protocol with a date of last year$/ do
   @irb_protocol.submit_expedited_approval approval_date: "#{last_year[:date_w_slashes]}"
 end
 
-And /creates an amendment for the Protocol$/ do
+And /creates? an amendment for the Protocol$/ do
   @irb_protocol.create_amendment
 end
 
-And /returns the Protocol to the PI$/ do
+And /returns? the Protocol to the PI$/ do
   @irb_protocol.return_to_pi
 end
 
-And /submits the Protocol to the Committee for review, with:$/ do |table|
+And /submits? the Protocol to the Committee for review, with:$/ do |table|
   review_data = table.rows_hash
   @irb_protocol.submit_for_review  submission_type:   review_data['Submission Type'],
                                    submission_review_type: review_data['Review Type'],
@@ -127,17 +137,17 @@ And /notifies the Committee about the Protocol/ do
   @irb_protocol.notify_committee "#{@committee.name}"
 end
 
-And /assigns the Protocol to reviewers$/ do
+And /assigns? the Protocol to reviewers$/ do
   on AssignReviewers do |page|
       page.expand_all unless page.submit_button.present?
       page.submit
     end
 end
 
-When /submits the Protocol to the Committee for expedited review, with an approval date of last year$/ do
+When /submits? the Protocol to the Committee for expedited review, with an approval date of last year$/ do
   steps %|
           * notifies the Committee about the Protocol
           * assigns reviewers to the Protocol
           * assigns the Protocol to reviewers
-          * I submit a expedited approval with a date of last year|
+          * submits an expedited approval on the Protocol with a date of last year|
 end

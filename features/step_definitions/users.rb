@@ -16,9 +16,6 @@ end
 # 3) Logs that user in (if they're not already)...
 Given /^I'm logged in with (.*)$/ do |username|
   user = make_user(user: username)
-
-  DEBUG.message user.inspect
-
   user.sign_in
 end
 
@@ -27,7 +24,8 @@ end
 # 2) Assumes that role user already exists in the system
 # 3) Logs that user in, if they're not already
 Given /^I? ?log in (?:again)? ?with the (.*) user$/ do |role|
-  $users.with_role(role).sign_in unless $users.with_role(role).session_status=='logged in'
+  user = $users.with_role(role)
+  user.sign_in
 end
 
 # This step definition

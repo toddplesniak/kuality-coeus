@@ -8,7 +8,7 @@ When /^the (.*) creates an Award$/ do |role_name|
   # is creating the Award in the unit they have
   # rights to. This is why this step specifies what the
   # Award's unit should be...
-  lead_unit = $users.current_user.roles.name($users.current_user.role).qualifiers[0][:unit]
+  lead_unit = $current_user.roles.name($current_user.role).qualifiers[0][:unit]
   raise 'Unable to determine a lead unit for the selected user. Please debug your scenario.' if lead_unit.nil?
   @award = create AwardObject, lead_unit: lead_unit
 end

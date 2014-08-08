@@ -81,6 +81,15 @@ class IRBProtocolObject < DataFactory
     end
   end
 
+  def assign_to_agenda
+    view 'Protocol Actions'
+    on AssignToAgenda do |page|
+      page.expand_all
+      # TODO: Add more stuff here when needed.
+      page.submit
+    end
+  end
+
   def notify_committee(committee_name)
     view 'Protocol Actions'
     on NotifyCommittee do |notify|
@@ -120,11 +129,13 @@ class IRBProtocolObject < DataFactory
     @expedited_approval = make ExpeditedApprovalObject, opts
     @expedited_approval.create
 
+    #correcspondence page for expediated reiview.
+    on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
   def suspend
     view 'Protocol Actions'
-    on ProtocolActions do |page|
+    on Suspend do |page|
       page.expand_all
       page.x
     end
@@ -137,6 +148,15 @@ class IRBProtocolObject < DataFactory
       DEBUG.message @document_id.inspect
 
       @document_id=page.document_id
+    end
+  end
+
+  # TODO: This needs to be made much more robust...
+  def approve_action
+    view 'Protocol Actions'
+    on ApproveAction do |page|
+      page.expand_all
+      page.submit
     end
   end
 

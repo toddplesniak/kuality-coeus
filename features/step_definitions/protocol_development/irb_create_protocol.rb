@@ -36,11 +36,11 @@ end
 
 And /the Protocol Creator creates an? (.*) IRB Protocol in the Committee's home unit/ do |type|
   steps '* I log in with the Protocol Creator user'
-  @irb_protocol2 = create IRBProtocolObject, lead_unit: @committee.home_unit, protocol_type: type
+  @irb_protocol = create IRBProtocolObject, lead_unit: @committee.home_unit, protocol_type: type
 end
 
 # TODO: Reword this and the following scenarios to remove the "I"...
-And /^I create an IRB Protocol with expedited submissions review type for lead unit '(\d+)'$/ do |lead_unit|
+And /creates an IRB Protocol with expedited submissions review type for lead unit '(\d+)'$/ do |lead_unit|
   @irb_protocol = create IRBProtocolObject, lead_unit: lead_unit, protocol_type: 'Expedited'
 
   @irb_protocol.view 'Protocol Actions'

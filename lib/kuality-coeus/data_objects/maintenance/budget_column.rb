@@ -65,7 +65,7 @@ class BudgetColumnObject < DataFactory
   def exists?
     # TODO: This will need to be made more robust at some point because not every user will have permissions
     # To keep it simple for now, just be sure this code is run very early in scenarios.
-    $users.admin.log_in if $users.current_user==nil
+    $users.admin.log_in if $current_user==nil
     visit(Maintenance).budget_editable_columns
     on BudgetColumnsToAlterLookup do |look|
       look.column_name.select @name
