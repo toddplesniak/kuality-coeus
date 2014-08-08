@@ -14,7 +14,7 @@ When /the Protocol is being submitted to that Committee for review/ do
   end
 end
 
-And /^submits? the Protocol to the Committee for review$/ do
+And /submits? the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
 end
 
@@ -59,7 +59,7 @@ And /^the Protocol is submitted to the Committee for review, with:$/ do |table|
                                    committee: @committee.name
 end
 
-And /^submits? the Protocol to the Committee for Expedited review$/ do
+And /submits? the Protocol to the Committee for Expedited review$/ do
   # TODO: Add the randomized selection of the Expedited checkboxes, using Todd's code.
   @irb_protocol.submit_for_review committee: @committee.name, submission_review_type: 'Expedited'
 end
