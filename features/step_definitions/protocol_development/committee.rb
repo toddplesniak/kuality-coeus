@@ -35,3 +35,10 @@ end
 And /submits the Committee/ do
   @committee.submit
 end
+
+And /the IRB Admin submits a Committee with at least one event and four or more paid, voting members/ do
+  steps %q|* the IRB Admin creates a Committee
+    * schedules at least one event for the Committee
+    * adds four or more paid, voting members to the Committee
+    * submits the Committee|
+end
