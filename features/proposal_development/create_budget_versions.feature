@@ -35,7 +35,7 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
     Given the Proposal Creator finalizes the Budget Version
     When  the Proposal Creator marks the Budget Version complete
     Then  the Budget Version is no longer editable
-  @test
+
   Scenario: Adding years to the Proposal
     Given the Proposal Creator pushes the end date 2 more years
     When  the Proposal Creator selects the default periods for the Budget Version

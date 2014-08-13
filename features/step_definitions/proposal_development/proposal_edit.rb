@@ -93,19 +93,27 @@ When /^the AOR user submits the Proposal to S2S$/ do
   steps '* I submit the Proposal to S2S'
 end
 
-And /^the Proposal Creator copies the Proposal, generating a new version of the Institutional Proposal$/ do
+And /^the Proposal Creator copies the Proposal to a new one, as a continuation$/ do
   steps '* I log in with the Proposal Creator user'
   @new_proposal_version = @proposal.copy_to_new_document
   @new_proposal_version.edit proposal_type: 'Continuation', original_ip_id: @institutional_proposal.proposal_number
-  @new_proposal_version.key_personnel.principal_investigator.certification
+
+end
+
+And /^certifies the PI and submits the copied Proposal$/ do
+  @new_proposal_version.principal_investigator.certification
   @new_proposal_version.submit
+end
+
+And /^the OSPApprover and principal investigator approve the New Proposal$/ do
   steps '* I log in with the OSPApprover user'
   @new_proposal_version.approve_from_action_list
-  on(Confirmation).send(:no)
-  $users.logged_in_user.sign_out
+  on(Confirmation).no
   @new_proposal_version.key_personnel.principal_investigator.log_in
   @new_proposal_version.approve_from_action_list
-  visit(Researcher).logout
+end
+
+And /^the OSP Administrator resubmits the New Proposal$/ do
   steps '* I log in with the OSP Administrator user'
   @new_proposal_version.view :proposal_actions
   @new_proposal_version.resubmit

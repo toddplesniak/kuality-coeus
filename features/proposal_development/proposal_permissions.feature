@@ -7,7 +7,6 @@ Feature: Permissions in a Proposal
 
   Background: A proposal creator user creates a proposal
     * Users exist with the following roles: Proposal Creator, Unassigned
-    * I log in with the Proposal Creator user
     * the Proposal Creator creates a Proposal
 
   Scenario: The proposal creator is automatically an aggregator

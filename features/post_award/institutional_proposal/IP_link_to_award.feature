@@ -38,5 +38,8 @@ Feature: Linking an Institutional Proposal to a KC Award
   Scenario: KC-TS-1143 Can Link Multiple Versions of One Institutional Proposal
     Given 1 Approved Institutional Proposal exists
     And   the Award Modifier links the Funding Proposal to a new Award
-    When  the Proposal Creator copies the Proposal, generating a new version of the Institutional Proposal
+    And   the Proposal Creator copies the Proposal to a new one, as a continuation
+    And   certifies the PI and submits the copied Proposal
+    And   the OSPApprover and principal investigator approve the New Proposal
+    When  the OSP Administrator resubmits the New Proposal
     Then  the Award Modifier can merge the new version of the Institutional Proposal to the Award
