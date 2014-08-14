@@ -5,7 +5,7 @@ class ReviewObject < DataFactory
   attr_reader :submission_type, :submission_review_type, :type_qualifier,
               :committee, :expedited_checklist, :schedule_date, :requested_date,
               :determination_recommendation, :attachments, :comments, :primary_reviewers,
-              :secondary_reviewers
+              :secondary_reviewers, :max_protocol_confirm
 
   def initialize(browser, opts={})
     @browser = browser
@@ -51,7 +51,6 @@ class ReviewObject < DataFactory
         warn 'Exempt expedited checklist type needs to be created'
       end
 
-      # page.submit
       page.send(@press) unless @press.nil?
     end
   end
@@ -123,6 +122,8 @@ class ReviewObject < DataFactory
     existing_reviewers = @primary_reviewers + @secondary_reviewers
     on AssignReviewers do |page|
       page.expand_all
+      page.submit_button.wait_until_present
+
       if reviewers==[]
         unselected_reviewers = (page.reviewers - existing_reviewers).shuffle
         # We want to randomize the number of reviewers selected when there

@@ -14,9 +14,25 @@ And /submits? the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
 end
 
-And /assigns? reviewers to the Protocol/ do
+And /(IRB Administrator|) assigns? reviewers to the Protocol/ do |change_user|
+  case change_user
+    when 'IRB Administrator'
+      steps '* log in with the IRB Administrator user'
+  end
+
+  @irb_protocol.view 'Protocol Actions'
+
+  # on ProtocolActions do |page|
+  #   page.reload
+  #   page.loading
+  # end
+
   @irb_protocol.assign_primary_reviewers
   @irb_protocol.assign_secondary_reviewers
+
+  DEBUG.message "primary_reviewer is #{@irb_protocol.primary_reviewers[0]}"
+  DEBUG.message "secondary_reviewer is #{@irb_protocol.secondary_reviewers[0]}"
+
 end
 
 # Note: This stepdef assumes no reviewers are already assigned...
@@ -68,7 +84,7 @@ And /^(the principal investigator |)submits the Protocol to the Committee for ex
 end
 
 When /the second Protocol is submitted to the Committee for review on the same date/ do
-  @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date
+  @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @irb_protocol.schedule_date, max_protocol_confirm: 'Skipping the button press on Confirmation screen for a validation step'
 end
 
 And /suspends? the Protocol$/ do
@@ -94,7 +110,6 @@ And /the principal investigator approves the Protocol$/ do
   on ActionListFilter do |page|
 
     DEBUG.message @irb_protocol.protocol_number
-
     page.document_title.set @irb_protocol.protocol_number
     page.filter
   end
