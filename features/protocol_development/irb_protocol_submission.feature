@@ -11,5 +11,5 @@ Feature: Submitting an IRB Protocol for Review
     And   submits the Committee
     And   the Protocol Creator creates an IRB Protocol in the Committee's home unit
     And   submits the Protocol to the Committee for review
-    When  the Protocol Creator assigns reviewers to the Protocol
+    When  the IRB Administrator assigns reviewers to the Protocol
     Then  the assigned reviewers get a Protocol Review

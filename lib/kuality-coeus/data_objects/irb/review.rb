@@ -54,6 +54,14 @@ class ReviewObject < DataFactory
     end
   end
 
+  def modify opts={}
+    on ModifySubmissionRequest do |page|
+      page.expand_all
+      # TODO!
+      page.submit
+    end
+  end
+
   def add_comment_for(reviewer, opts={})
     defaults = {
         reviewer: reviewer,

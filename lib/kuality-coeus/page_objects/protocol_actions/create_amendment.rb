@@ -9,7 +9,7 @@ class CreateAmendment < KCProtocol
   # NOTE: 'General Info' is the title for Add/Modify Notes & Attachments
   p_element(:amend) { |title, b| b.create_amendment_div.checkbox(title: title) }
 
-  action(:create) { |b| b.frm.button(name: 'methodToCall.createAmendment.anchor:CreateAmendment').click }
+  action(:create) { |b| b.frm.button(name: 'methodToCall.createAmendment.anchor:CreateAmendment').click; b.loading; b.awaiting_doc }
 
   private
   

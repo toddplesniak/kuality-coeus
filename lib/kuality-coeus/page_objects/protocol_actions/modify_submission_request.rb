@@ -7,6 +7,12 @@ class ModifySubmissionRequest < KCProtocol
   element(:billable) { |b| b.frm.checkbox(name: 'actionHelper.protocolModifySubmissionBean.billable') }
   element(:type_qualifier) { |b| b.frm.select(name: 'actionHelper.protocolModifySubmissionBean.submissionQualifierTypeCode') }
 
+  element(:expedited_review_checklist_row) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }
+  p_element(:expedited_checklist) { |i, b| b.frm.checkbox(name: "actionHelper.protocolModifySubmissionBean.expeditedReviewCheckList[#{i}].checked") }
+
+  element(:exempt_studies_checklist_row) { |b| b.frm.tr(id: 'exemptStudiesCheckList') }
+  p_element(:exempt_checklist) { |i, b| b.frm.checkbox(name: "actionHelper.protocolModifySubmissionBean.expeditedReviewCheckList[#{i}].checked") }
+
   action(:submit) { |b| b.frm.button(name: 'methodToCall.modifySubmissionAction.anchor:ModifySubmissionRequest').click; b.loading }
   
 end
