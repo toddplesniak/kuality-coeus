@@ -11,7 +11,9 @@ class IRBProtocolObject < DataFactory
                # Withdraw
                :withdrawal_reason,
                # Amendment
-               :expedited_checklist, :amend, :amendment_summary
+               :amendment,
+               # Return to PI
+               :return_to_pi
 
   def_delegators :@personnel, :principal_investigator
   def_delegators :@reviews, :add_comment_for, :approve_review_of, :accept_comments_of, :comments_of,
@@ -76,6 +78,11 @@ class IRBProtocolObject < DataFactory
     end
   end
 
+  def modify_submission_request opts={}
+    view 'Protocol Actions'
+    @reviews.modify opts
+  end
+
   def withdraw(reason=random_multiline(50,4))
     @withdrawal_reason=reason
     view 'Protocol Actions'
@@ -108,23 +115,22 @@ class IRBProtocolObject < DataFactory
   end
 
   def create_amendment opts={}
-    defaults = {
-        amendment_summary: random_alphanums_plus,
-        amend: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+    @amendment = {
+        summary: random_alphanums_plus,
+        sections: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
               'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
               'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
     }
-    set_options(defaults.merge(opts))
-
+    @amendment.merge!(opts)
     view 'Protocol Actions'
 
     on CreateAmendment do |page|
       page.expand_all
-      page.summary.set @amendment_summary
-      page.amend(@amend).set
+      page.summary.set @amendment[:summary]
+      @amendment[:sections].each do |sect|
+        page.amend(sect).set
+      end
       page.create
-
-      page.awaiting_doc
     end
 
     confirmation('yes')
@@ -136,7 +142,7 @@ class IRBProtocolObject < DataFactory
     @expedited_approval = make ExpeditedApprovalObject, opts
     @expedited_approval.create
 
-    #correcspondence page for expediated reiview.
+    #FIXME!
     on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
@@ -148,12 +154,14 @@ class IRBProtocolObject < DataFactory
     end
   end
 
-  def return_to_pi
+  def return_to_pi opts={}
+    @return_to_pi = { comments: random_alphanums_plus,
+                      action_date: in_a_week[:date_w_slashes] }
+    @return_to_pi.merge!(opts)
     on ReturnToPI do |page|
+      page.action_date.fit @return_to_pi[:action_date]
+      page.comments.fit @return_to_pi[:comments]
       page.submit
-      page.send_it if page.send_button.present?
-      DEBUG.message @document_id.inspect
-
       @document_id=page.document_id
     end
   end

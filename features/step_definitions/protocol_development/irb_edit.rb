@@ -14,25 +14,14 @@ And /submits? the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
 end
 
-And /(IRB Administrator|) assigns? reviewers to the Protocol/ do |change_user|
+And /(IRB Administrator |)assigns? reviewers to the Protocol/ do |change_user|
   case change_user
-    when 'IRB Administrator'
+    when 'IRB Administrator '
       steps '* log in with the IRB Administrator user'
   end
-
   @irb_protocol.view 'Protocol Actions'
-
-  # on ProtocolActions do |page|
-  #   page.reload
-  #   page.loading
-  # end
-
   @irb_protocol.assign_primary_reviewers
   @irb_protocol.assign_secondary_reviewers
-
-  DEBUG.message "primary_reviewer is #{@irb_protocol.primary_reviewers[0]}"
-  DEBUG.message "secondary_reviewer is #{@irb_protocol.secondary_reviewers[0]}"
-
 end
 
 # Note: This stepdef assumes no reviewers are already assigned...

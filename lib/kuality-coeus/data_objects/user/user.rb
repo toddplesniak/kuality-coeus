@@ -172,16 +172,18 @@ class UserObject < DataFactory
                  when opts.key?(:role)
                    USERS.have_role(opts[:role])[0][0]
                  else
-                   :not_nil
+                   :nil
                  end
       options = USERS[@user_name].nil? ? defaults : USERS[@user_name].merge(opts)
     end
 
     set_options options
-    @user_name ||= random_letters(16)
+
+    @user_name=random_letters(16) if @user_name==:nil
     @rolez.each { |role| role[:user_name]=@user_name; @roles << make(UserRoleObject, role) } unless @rolez.nil?
     @rolez=nil
     @full_name = "#{@first_name} #{@last_name}"
+
   end
 
   # It's important to note that this method will work

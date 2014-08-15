@@ -10,7 +10,7 @@ class ProposalDevelopmentObject < DataFactory
               :proposal_questions, :compliance_questions, :kuali_u_questions, :custom_data, :recall_reason,
               :personnel_attachments, :mail_by, :mail_type, :institutional_proposal_number, :nsf_science_code,
               :original_ip_id
-  def_delegators :@personnel, :principal_investigator, :co_investigator
+  def_delegators :@key_personnel, :principal_investigator, :co_investigator
 
 
   def initialize(browser, opts={})
