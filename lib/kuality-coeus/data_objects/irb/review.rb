@@ -5,7 +5,7 @@ class ReviewObject < DataFactory
   attr_reader :submission_type, :submission_review_type, :type_qualifier,
               :committee, :expedited_checklist, :schedule_date, :requested_date,
               :determination_recommendation, :attachments, :comments, :primary_reviewers,
-              :secondary_reviewers
+              :secondary_reviewers, :max_protocol_confirm
 
   def initialize(browser, opts={})
     @browser = browser
@@ -20,7 +20,8 @@ class ReviewObject < DataFactory
         primary_reviewers: [],
         secondary_reviewers: [],
         comments: [],
-        attachments: []
+        attachments: [] ,
+        press: 'submit'
     }
 
     set_options(defaults.merge(opts))
@@ -38,7 +39,7 @@ class ReviewObject < DataFactory
       # will be active committee members available...
       # TODO: This is still buggy because sometimes the schedule dates
       # fall outside of the selectable range. FIXME!!!
-      @schedule_date ||= page.schedule_date.options[1].text
+      (@schedule_date ||= page.schedule_date.options[1].text) if page.schedule_date.options[1].exists?
       page.schedule_date.pick! @schedule_date
 
       if @submission_review_type == 'Expedited' && @expedited_checklist == '::random::'
@@ -50,7 +51,7 @@ class ReviewObject < DataFactory
         warn 'Exempt expedited checklist type needs to be created'
       end
 
-      page.submit
+      page.send(@press) unless @press.nil?
     end
   end
 
@@ -123,12 +124,13 @@ class ReviewObject < DataFactory
   end
 
   private
-
   def assign_reviewers type, reviewers
     rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
     existing_reviewers = @primary_reviewers + @secondary_reviewers
     on AssignReviewers do |page|
       page.expand_all
+      page.submit_button.wait_until_present
+
       if reviewers==[]
         unselected_reviewers = (page.reviewers - existing_reviewers).shuffle
         # We want to randomize the number of reviewers selected when there
@@ -136,11 +138,13 @@ class ReviewObject < DataFactory
         # if we can avoid it...
         count = case(unselected_reviewers.size)
                   when 0
-                    0
+                    warn 'Reviewers count is zero, cannot add reviewer to Protocol'
                   when 1, 2
                     1
                   else
-                    rand(unselected_reviewers.size - 1)
+                    # Needed to add 1 otherwise zero will skip adding a reviewer,
+                    # Changed to take only half of the available reviewers to leave room for adding secondary reviewers
+                    rand((unselected_reviewers.size/2.0).ceil)+1
                 end
         count.times do |x|
           page.reviewer_type(unselected_reviewers[x]).select type

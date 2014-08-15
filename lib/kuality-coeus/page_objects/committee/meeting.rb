@@ -69,7 +69,9 @@ class Meeting < BasePage
 
   # Attachments
 
-
+  # Tabs
+   action(:meeting_actions) { |b| b.frm.button(name: 'methodToCall.headerTab.headerDispatch.reload.navigateTo.actions').click }
+   action(:meeting) { |b| b.frm.button(alt: 'Meeting').click }
 
   # =========
   private

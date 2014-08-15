@@ -65,9 +65,16 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     @reviews = make ReviewObject, opts
     @reviews.create
-    on SubmitForReview do |page|
-      @status=page.document_status
-      @document_id=page.document_id
+    #Need to capture the Document ID, after submit
+    #but there is one test that needs to verify maximum number of Protocol reached.
+    if @reviews.max_protocol_confirm == nil
+      on(Confirmation).yes if on(Confirmation).yes_button.present?
+      on SubmitForReview do |page|
+        @status=page.document_status
+        @document_id=page.document_id
+      end
+    else
+      puts 'Now on the Confirmation page and happy to be here without pressing any button'
     end
   end
 

@@ -3,6 +3,7 @@ class ProtocolOverview < KCProtocol
   expected_element :workarea_div
 
   description_field
+  tiny_buttons
 
   # Document Overview
   element(:organization_doc_number) { |b| b.frm.text_field(name: 'document.documentHeader.organizationDocumentNumber') }
