@@ -23,7 +23,7 @@ And /^(the IRB Admin |)records the voting members' attendance at the Committee m
   visit CommitteeScheduleLookup do |page|
     page.protocol_number.set @irb_protocol.protocol_number
     page.search
-    page.open_meeting
+    page.edit_meeting
   end
   on Meeting do |page|
     page.expand_all
@@ -43,7 +43,6 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in the meeting mi
       'uninvolved committee member'    => (@committee.members.full_names - @irb_protocol.primary_reviewers - @irb_protocol.secondary_reviewers - @irb_protocol.personnel.names)[0],
       'non-reviewing committee member' => (@irb_protocol.personnel.names - [@irb_protocol.principal_investigator.full_name])[0]
   }
-  DEBUG.message "and the people are #{people}"
   member = people[person] ? @committee.members.member(people[person]) : @irb_protocol.principal_investigator
   member.sign_in
   visit CommitteeScheduleLookup do |page|
@@ -52,13 +51,6 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in the meeting mi
     page.view_meeting
   end
   on Meeting do |page|
-
-    DEBUG.pause(20)
-    #Minutes sometimes takes some time to display
-    page.meeting_actions
-    page.expand_all
-    page.meeting
-
     page.expand_all
     expect(page.minute_entries.find{ |m_e| m_e[:description]==comment }).send(translate[bool], be_nil)
   end

@@ -116,7 +116,6 @@ class ReviewObject < DataFactory
   end
 
   private
-
   def assign_reviewers type, reviewers
     rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
     existing_reviewers = @primary_reviewers + @secondary_reviewers
@@ -131,11 +130,13 @@ class ReviewObject < DataFactory
         # if we can avoid it...
         count = case(unselected_reviewers.size)
                   when 0
-                    0
+                    warn 'Reviewers count is zero, cannot add reviewer to Protocol'
                   when 1, 2
                     1
                   else
-                    rand(unselected_reviewers.size - 1)
+                    # Needed to add 1 otherwise zero will skip adding a reviewer,
+                    # Changed to take only half of the available reviewers to leave room for adding secondary reviewers
+                    rand((unselected_reviewers.size/2.0).ceil)+1
                 end
         count.times do |x|
           page.reviewer_type(unselected_reviewers[x]).select type
