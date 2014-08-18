@@ -1,6 +1,6 @@
 class IRBProtocolObject < DataFactory
 
-  include StringFactory, Navigation
+  include StringFactory, Navigation, DateFactory
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
@@ -110,9 +110,9 @@ class IRBProtocolObject < DataFactory
   def create_amendment opts={}
     @amendment = {
         summary: random_alphanums_plus,
-        sections: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+        sections: [['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
               'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
-              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
+              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
     }
     @amendment.merge!(opts)
     view 'Protocol Actions'
@@ -134,11 +134,9 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     @expedited_approval = make ExpeditedApprovalObject, opts
     @expedited_approval.create
-
-    #FIXME!
-    on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
+  # TODO: Finish this off...
   def suspend
     view 'Protocol Actions'
     on Suspend do |page|

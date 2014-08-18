@@ -15,3 +15,7 @@ end
 And /approves the action of the Protocol$/ do
   @irb_protocol.approve_action
 end
+
+And /submits an expedited approval for the Protocol$/ do
+  @irb_protocol.submit_expedited_approval
+end
