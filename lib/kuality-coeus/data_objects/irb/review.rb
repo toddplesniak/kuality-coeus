@@ -138,7 +138,7 @@ class ReviewObject < DataFactory
         # if we can avoid it...
         count = case(unselected_reviewers.size)
                   when 0
-                    warn 'Reviewers count is zero, cannot add reviewer to Protocol'
+                    0
                   when 1, 2
                     1
                   else
@@ -146,6 +146,7 @@ class ReviewObject < DataFactory
                     # Changed to take only half of the available reviewers to leave room for adding secondary reviewers
                     rand((unselected_reviewers.size/2.0).ceil)+1
                 end
+        DEBUG.message "count is: #{count}"
         count.times do |x|
           page.reviewer_type(unselected_reviewers[x]).select type
           rev[type] << unselected_reviewers[x]
