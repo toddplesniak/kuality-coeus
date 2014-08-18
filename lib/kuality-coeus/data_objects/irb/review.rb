@@ -138,7 +138,7 @@ class ReviewObject < DataFactory
         # if we can avoid it...
         count = case(unselected_reviewers.size)
                   when 0
-                    warn 'Reviewers count is zero, cannot add reviewer to Protocol'
+                    0
                   when 1, 2
                     1
                   else
