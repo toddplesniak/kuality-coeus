@@ -1,8 +1,16 @@
-And /edits the meeting details to make it available to reviewers/ do
+And /(Protocol Creator|IRB Administrator) edits the meeting details to make it available to reviewers/ do  |correct_user|
+  case correct_user
+    when 'Protocol Creator'
+      steps '* I log in with the Protocol Creator user'
+      # @irb_protocol.view 'Protocol Actions'
+    when 'IRB Administrator'
+      steps '* log in with the IRB Administrator user'
+  end
+
   visit CommitteeScheduleLookup do |page|
     page.protocol_number.set @irb_protocol.protocol_number
     page.search
-    page.open_meeting
+    page.edit_meeting
   end
   on Meeting do |page|
     page.available_to_reviewers.fit 'yes'
@@ -15,7 +23,7 @@ And /^(the IRB Admin |)records the voting members' attendance at the Committee m
   visit CommitteeScheduleLookup do |page|
     page.protocol_number.set @irb_protocol.protocol_number
     page.search
-    page.open_meeting
+    page.edit_meeting
   end
   on Meeting do |page|
     page.expand_all
@@ -40,7 +48,7 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in the meeting mi
   visit CommitteeScheduleLookup do |page|
     page.protocol_number.set @irb_protocol.protocol_number
     page.search
-    page.open_meeting
+    page.view_meeting
   end
   on Meeting do |page|
     page.expand_all
