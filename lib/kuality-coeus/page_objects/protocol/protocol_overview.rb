@@ -4,7 +4,7 @@ class ProtocolOverview < KCProtocol
 
   description_field
   tiny_buttons
-  protocol_page
+  protocol_common
 
   # Document Overview
   element(:organization_doc_number) { |b| b.frm.text_field(name: 'document.documentHeader.organizationDocumentNumber') }

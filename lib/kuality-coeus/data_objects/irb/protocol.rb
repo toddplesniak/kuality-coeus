@@ -7,7 +7,7 @@ class IRBProtocolObject < DataFactory
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :reviews,
+               :reviews, :schedule_date,
                # Withdraw
                :withdrawal_reason,
                # Amendment

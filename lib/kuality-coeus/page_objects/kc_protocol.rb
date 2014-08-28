@@ -6,14 +6,15 @@ class KCProtocol < BasePage
   error_messages
 
   buttons 'Protocol', 'Personnel', 'Questionnaire', 'Custom Data', 'Special Review',
-          'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa', 'Online Review'
+          'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa', 'Online Review',
+          "The Three R's", 'Species/Groups', 'Procedures', 'Protocol Exception', 'IACUC Protocol Actions'
 
   # This removes the methods created in the BasePage, because
   # the Protocol child classes need their own specialized versions...
   undefine :submit, :committee_id
 
   class << self
-    def protocol_page
+    def protocol_common
       # Required Fields
       element(:protocol_type) { |b| b.frm.select(name: 'document.protocolList[0].protocolTypeCode') }
       element(:title) { |b| b.frm.textarea(name: 'document.protocolList[0].title') }

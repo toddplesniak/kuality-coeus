@@ -1,5 +1,5 @@
 Then /^the (.*) Checklist can be filled out$/ do |checklist|
-  on(SubmitForReview).send("#{damballa(checklist)}_checklist".to_sym).should be_present
+  on(SubmitForReview).send("#{damballa(checklist)}_checklist_row".to_sym).should be_present
 end
 
 Then /the system warns that the number of protocols exceeds the allowed maximum/ do
