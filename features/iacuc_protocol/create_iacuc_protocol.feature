@@ -19,7 +19,20 @@ Feature: Creating IACUC Protocols
 
   @wip
   Scenario: IACUC add a species to the protocol
-    When the IACUC Administrator creates an IACUC Committee with an area of research
-    And  the IACUC Protocol Creator creates an IACUC Protocol
-    And  adds a species group to the IACUC Protocol
-    Then the IACUC Protocol status should be Pending/In Progress
+    Given the IACUC Administrator creates an IACUC Committee with an area of research
+    And   the IACUC Protocol Creator creates an IACUC Protocol
+    When  adds a species group to the IACUC Protocol
+    Then  the IACUC Protocol status should be Pending/In Progress
+
+  @wip @KC-TA-5417
+  Scenario: IACUC Admin deactivates a IACUC Protocol
+    Given the IACUC Administrator approves a submitted IACUC Protocol
+    When  sends a deactivate request on the IACUC Protocol
+    Then  the IACUC Protocol status should be Deactivated
+
+  @wip @KC-TA-5417
+  Scenario: IACUC Admin lift a hold on an IACUC Protocol that was placed on hold
+    Given the IACUC Administrator approves a submitted IACUC Protocol
+    And   places the IACUC Protocol on hold
+    When  lifts the hold on the IACUC Protocol
+    Then  the IACUC Protocol submission status should be Lift Hold

@@ -1,6 +1,12 @@
 Then /^the IACUC Protocol status should be (.*)$/ do |status|
   on IACUCProtocolOverview do |page|
-    page.document_status.should == status
+        page.document_status.should == status
+  end
+end
+
+Then /^the IACUC Protocol submission status should be (.*)$/ do |status|
+  on IACUCProtocolOverview do |page|
+    page.submission_status.should == status
   end
 end
 

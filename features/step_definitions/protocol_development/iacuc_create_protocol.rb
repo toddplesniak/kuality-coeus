@@ -8,6 +8,21 @@ When /(IACUC Protocol Creator |)creates an? IACUC Protocol$/ do |role_name|
   @iacuc_protocol = create IACUCProtocolObject
 end
 
+And /(IACUC Administrator |)approves a submitted IACUC Protocol$/ do |role_name|
+  # steps '* IACUC Protocol Creator creates an IACUC Protocol'
+  steps '* I log in with the IACUC Protocol Creator user'
+  @iacuc_protocol = create IACUCProtocolObject
+  @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
+
+  case role_name
+    when 'IACUC Administrator '
+      steps '* log in with the IACUC Administrator user'
+    else
+      pending "Need to handle the #{role_name} for log in with this step"
+  end
+
+  @iacuc_protocol.admin_approve
+end
 
 When /^the IACUC Protocol Creator attempts to create an IACUC Protocol but misses a required field$/ do
   steps %{ * I log in with the IACUC Protocol Creator user }
@@ -26,14 +41,12 @@ When /^the IACUC Protocol Creator attempts to create an IACUC Protocol but misse
   @required_field_error = errors[field]
 end
 
-
 And /the IACUC Administrator creates an? IACUC Committee with an? area of research/ do
   steps '* log in with the IACUC Administrator user'
   @committee = create CommitteeDocumentObject, committee_type: 'iacuc', review_type: 'Full Committee Member Review'
   @committee.add_area_of_research
 
 end
-
 
 And /(IACUC Protocol Creator | )creates an IACUC Protocol with one species group$$/ do |role_name|
   case role_name

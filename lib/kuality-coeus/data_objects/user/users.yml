@@ -841,7 +841,7 @@ kcrimson:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '1444'
+    - :id:   '1428'
       :name: Modify Sponsor Template
       :qualifiers:
         - :unit: '000001'
@@ -995,22 +995,22 @@ ttim:  # AKA: "Principal Name"
       :name: Modify IACUC Protocols
       :qualifiers:
         - :unit: '000001'
-iacucjenny:  # AKA: "Principal Name"
-  :user_name:        iacucjenny
+jjones:  # AKA: "Principal Name"
+  :user_name:        jjones
   :description:      IACUC Administrator
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      iacucjenny
+  :employee_id:      jjones
   :employee_status:  Active
   :employee_type:    Professional
   :base_salary:      674547.32
   :primary_department_code: '000001'
-  :first_name:       Iacuc
-  :last_name:        Jenny
+  :first_name:       Jenny
+  :last_name:        Jones
   :primary_title:    IACUC Administrator
   :directory_title:  IACUC Administrator
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: iacucadministrator
+  :era_commons_user_name: jjones
   :directory_department:  Finance
   :graduate_student_count: '0'
   :billing_element:  bla bla bla
@@ -1044,4 +1044,5 @@ iacucjenny:  # AKA: "Principal Name"
     - :id:   '1610'
       :name: IACUC Administrator
       :qualifiers:
-        - :unit: '000001'
+      - :unit: '000001'
+        :descends_hierarchy: :set
