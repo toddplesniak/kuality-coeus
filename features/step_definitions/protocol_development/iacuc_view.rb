@@ -15,9 +15,9 @@ Then /^the summary will display the location of the procedure$/ do
     page.procedure_tab('summary')
     page.expand_all
 
-    page.summary_locations.should include @iacuc_protocol.location[:type]
-    page.summary_locations.should include @iacuc_protocol.location[:name]
-    page.summary_locations.should include @iacuc_protocol.location[:room].to_s
-    page.summary_locations.should include @iacuc_protocol.location[:description]
+    page.summary_locations.should include @iacuc_protocol.procedures.location[:type]
+    page.summary_locations.should include @iacuc_protocol.procedures.location[:description]
+    page.summary_locations.should include @iacuc_protocol.procedures.location[:room].to_s
+    page.summary_locations.should include @iacuc_protocol.procedures.location[:name]
   end
 end

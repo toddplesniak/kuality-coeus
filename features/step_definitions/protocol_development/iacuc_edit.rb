@@ -4,8 +4,7 @@ end
 
 And /assigns a procedure to the personnel for location Performance Site$/ do
   @iacuc_protocol.add_procedure
-
-  @iacuc_protocol.set_location(type: 'Performance Site')
+  @iacuc_protocol.procedures.set_location(type: 'Performance Site', room: '101', description: random_alphanums_plus, species: @iacuc_protocol.species[:species])
 end
 
 When /sends a deactivate request on the IACUC Protocol$/ do

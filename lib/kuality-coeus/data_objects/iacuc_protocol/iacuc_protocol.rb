@@ -3,7 +3,9 @@ class IACUCProtocolObject < DataFactory
   include StringFactory, Navigation, DateFactory, Protocol
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
-               :protocol_project_type, :lay_statement_1, :alternate_search_required, :location, :document_id
+               :protocol_project_type, :lay_statement_1, :alternate_search_required,
+               :procedures, :location, :document_id,
+               :species
 
 
   def initialize(browser, opts={})
@@ -26,6 +28,7 @@ class IACUCProtocolObject < DataFactory
   def create
     visit(Researcher).create_iacuc_protocol
     on IACUCProtocolOverview do |doc|
+      doc.expand_all_button.wait_until_present
       @document_id=doc.document_id
       @doc_header=doc.doc_title
       @status=doc.document_status
@@ -53,7 +56,7 @@ class IACUCProtocolObject < DataFactory
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
     open_document
-    on(IACUCProtocolOverview).send(damballa(tab)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
+    on(IACUCProtocolOverview).send(damballa(tab)) #unless @browser.frm.dt(class: 'licurrent').button.alt == tab
   end
 
   def view_procedure(tab)
@@ -84,7 +87,6 @@ class IACUCProtocolObject < DataFactory
       page.expand_all
       page.submission_type.pick! @review[:submission_type]
       page.review_type.pick! @review[:review_type]
-      DEBUG.message "review type is: #{@review[:review_type]}"
       page.type_qualifier.pick! @review[:type_qualifier]
       page.submit
     end
@@ -147,7 +149,6 @@ class IACUCProtocolObject < DataFactory
   end
 
   def admin_approve
-
     view('IACUC Protocol Actions')
     on AdminApproveProtocol do |page|
       page.expand_all
@@ -190,6 +191,10 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_it if   on(NotificationEditor).send_button.present?
   end
 
-
+  def add_procedure opts={}
+    view('Procedures')
+    @procedures = make IACUCProceduresObject, opts
+    @procedures.create
+  end
 
 end #class

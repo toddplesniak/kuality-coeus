@@ -16,10 +16,11 @@ class IACUCProcedures < KCProtocol
   p_action(:edit_procedures) { |person_number='1', b| b.frm.th(text: "#{person_number}").parent.link(id: 'editProcedureLink').click }
 
   #modal
-  element(:all_procedures) { |b| b.frm.checkbox(class: 'checkBoxSelectAll') }
-  element(:all_group) { |b| b.frm.checkbox(class: 'checkBoxAllGroup') }
+  element(:all_procedures) { |b| b.frm.div(class: 'fancybox-wrap fancybox-desktop fancybox-type-inline fancybox-opened').checkbox(class: 'checkBoxSelectAll') }
+  element(:all_group) { |b| b.frm.div(class: 'fancybox-wrap fancybox-desktop fancybox-type-inline fancybox-opened').checkbox(class: 'checkBoxAllGroup') }
+  action(:save_procedure) { |b| b.frm.div(class: 'fancybox-wrap fancybox-desktop fancybox-type-inline fancybox-opened').button(id: 'onProcedureEdit').click; b.loading }
+
   p_element(:qualifications) { |list_index='0', person_index='0', b| b.frm.textarea(name: "document.protocolList[#{list_index}].protocolPersons[#{person_index}].procedureQualificationDescription") }
-  action(:save_procedure) { |b| b.frm.button(id: 'onProcedureEdit').click; b.loading }
 
   #Location
   element(:location_type) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationTypeCode') }
@@ -36,8 +37,6 @@ class IACUCProcedures < KCProtocol
   value(:summary_custom_data) { |b| b.frm.div(align: 'left', index: 1).text }
   value(:summary_personnel) { |b| b.frm.div(align: 'left', index: 2).text }
   value(:summary_locations) { |b| b.frm.div(align: 'left', index: 3).text }
-
-
 
 
 end
