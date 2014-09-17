@@ -5,7 +5,7 @@ class IACUCProtocolObject < DataFactory
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :protocol_project_type, :lay_statement_1, :alternate_search_required,
                :procedures, :location, :document_id,
-               :species
+               :species, :organization, :old_organization_address
 
 
   def initialize(browser, opts={})
@@ -27,6 +27,7 @@ class IACUCProtocolObject < DataFactory
 
   def create
     visit(Researcher).create_iacuc_protocol
+
     on IACUCProtocolOverview do |doc|
       doc.expand_all_button.wait_until_present
       @document_id=doc.document_id
@@ -38,15 +39,15 @@ class IACUCProtocolObject < DataFactory
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title, :lay_statement_1
       doc.protocol_project_type.pick!(@protocol_project_type)
-
     end
+
     set_pi
     set_lead_unit
+
     on IACUCProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
       @search_key = { protocol_number: @protocol_number }
-
     end
 
     #if you want to do more than just submit a protocol then this needs to be set to 'yes' or 'no'
@@ -59,9 +60,13 @@ class IACUCProtocolObject < DataFactory
     on(IACUCProtocolOverview).send(damballa(tab)) #unless @browser.frm.dt(class: 'licurrent').button.alt == tab
   end
 
-  def view_procedure(tab)
-    DEBUG.message "just view on the IACUCProceduresObject now! #{tab}"
-    pending 'fix this'
+  def view_document
+    visit(Researcher).doc_search
+    on DocumentSearch do |search|
+      search.document_id.set @document_id
+      search.search
+      search.open_item @document_id
+    end
   end
 
   def alternate_search_required
@@ -161,14 +166,16 @@ class IACUCProtocolObject < DataFactory
     view('IACUC Protocol Actions')
     on RequestToDeactivate do |page|
       page.expand_all
+
+      #The Devs have blessed us with 2 different submit buttons
+      #that display. Not sure the pattern maybe depending on the doc type/status/user
       page.submit if page.submit_button.exists?
       page.submit2 if page.submit2_button.exists?
 
-      #status changes to pending and need to deactivate a second time
+      #First time the status changes to pending and need to deactivate a second time
       page.expand_all
       page.submit if page.submit_button.present?
       page.submit2 if page.submit2_button.present?
-
     end
     on(NotificationEditor).send_it
   end
@@ -195,6 +202,51 @@ class IACUCProtocolObject < DataFactory
     view('Procedures')
     @procedures = make IACUCProceduresObject, opts
     @procedures.create
+  end
+
+  #TODO:: create OrganizationObject for this complicated tab
+  def add_organization opts={}
+    @organization = {
+        organization_id: '::random::',
+        organization_type: '::random::'
+    }
+    @organization.merge!(opts)
+
+    view('Protocol')
+    on IACUCProtocolOverview do |page|
+      page.expand_all
+      if @organization[:organization_id] == '::random::'
+        page.organization_lookup
+        on OrganizationLookup do |lookup|
+          lookup.search
+          lookup.return_random
+          @organization[:organization_id] = page.organization_id.value
+        end
+      else
+        page.organization_id.fit @organization[:organization_id].value unless @organization[:organization_id].nil?
+      end
+      page.organization_type.pick! @organization[:organization_type] unless @organization[:organization_type].nil?
+      page.add_organization
+      page.save
+    end
+  end
+
+  def clear_contact(org_id)
+    on IACUCProtocolOverview do |page|
+    @old_organization_address = page.contact_address(org_id)
+    page.clear_contact(org_id)
+    end
+  end
+
+  def add_contact_info(org_id)
+    on(IACUCProtocolOverview).add_contact(org_id)
+    on AddressBookLookup do |search|
+      search.search
+      search.return_random
+    end
+    on IACUCProtocolOverview do |page|
+      @organization_address = page.contact_address(org_id)
+    end
   end
 
 end #class

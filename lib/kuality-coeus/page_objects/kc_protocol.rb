@@ -36,9 +36,22 @@ class KCProtocol < BasePage
 
       # Organizations
       element(:organization_id) { |b| b.frm.text_field(name: 'protocolHelper.newProtocolLocation.organizationId') }
-      action(:organization_lookup) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.Organization!!).(((organizationId:protocolHelper.newProtocolLocation.organizationId,contactAddressId:protocolHelper.newProtocolLocation.rolodexId,humanSubAssurance:protocolHelper.newProtocolLocation.organization.humanSubAssurance,organizationName:protocolHelper.newProtocolLocation.organization.organizationName,rolodex.firstName:protocolHelper.newProtocolLocation.organization.rolodex.firstName,rolodex.lastName:protocolHelper.newProtocolLocation.organization.rolodex.lastName,rolodex.addressLine1:protocolHelper.newProtocolLocation.organization.rolodex.addressLine1,rolodex.addressLine2:protocolHelper.newProtocolLocation.organization.rolodex.addressLine2,rolodex.addressLine3:protocolHelper.newProtocolLocation.organization.rolodex.addressLine3,rolodex.city:protocolHelper.newProtocolLocation.organization.rolodex.city,rolodex.state:protocolHelper.newProtocolLocation.organization.rolodex.state))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor21').click }
+      action(:organization_lookup) { |b| b.frm.text_field(id: 'protocolHelper.newProtocolLocation.organizationId').parent.button(alt: 'Search ').click; b.loading }
       action(:organization_type) { |b| b.frm.select_list(name: 'protocolHelper.newProtocolLocation.protocolOrganizationTypeCode') }
-      action(:add_organization) { |b| b.frm.button(name: 'methodToCall.addProtocolLocation.anchorOrganizations') }
+      action(:add_organization) { |b| b.frm.button(name: 'methodToCall.addProtocolLocation.anchorOrganizations').click; b.loading }
+
+      p_value(:contact_address) { |org_id, b| b.frm.div(align: 'left', text: /^#{org_id}/).parent.parent.td(index: 2).text }
+      p_action(:clear_contact) { |org_id, b| b. frm.div(align: 'left', text: /^#{org_id}/).parent.parent.button(title: 'Clear organization address').click; b.loading }
+      p_action(:add_contact) {|org_id, b| b.frm.div(align: 'left', text: /^#{org_id}/).parent.parent.td(index: 2).div.button(title: 'Search ').click; b.loading }
+
+
+      #Returns the organization id and the name as they are wrapped in the same div.
+      p_value(:added_organization_id_with_name) { |index, b| b.frm.div(id: 'tab-Organizations-div').tbody(index: 2).tr(index: "#{index}".to_f.round).td(index: 0).text.gsub(/\n/, ' ') }
+      p_element(:direct_inquiry_button) { |org_id,b| b.frm.div(align: 'left', text: /^#{org_id}/).button(alt: 'Direct Inquiry') }
+      p_action(:direct_inquiry) { |org_id,b| b.direct_inquiry_button(org_id).click; b.use_new_tab}
+
+
+
       #TODO: Create table options so that we can deal with the 'clear contact' and 'delete org' options.
 
       # Funding Sources
@@ -47,6 +60,6 @@ class KCProtocol < BasePage
       action(:funding_number_lookup) { |b| b.frm.button(name: 'methodToCall.performFundingSourceLookup.(!!!!).((())).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).anchor28') }
       action(:add_funding_source) { |b| b.frm.button(name: 'methodToCall.addProtocolFundingSource.anchorFundingSources').click }
     end
+  end  #self
 
-  end
-end
+end #class
