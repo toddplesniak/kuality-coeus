@@ -1,13 +1,13 @@
 class IRBProtocolObject < DataFactory
 
-  include StringFactory, Navigation
+  include StringFactory, Navigation, DateFactory
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :reviews,
+               :reviews, :schedule_date,
                # Withdraw
                :withdrawal_reason,
                # Amendment
@@ -65,9 +65,16 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     @reviews = make ReviewObject, opts
     @reviews.create
-    on SubmitForReview do |page|
-      @status=page.document_status
-      @document_id=page.document_id
+    #Need to capture the Document ID, after submit
+    #but there is one test that needs to verify maximum number of Protocol reached.
+    if @reviews.max_protocol_confirm == nil
+      on(Confirmation).yes if on(Confirmation).yes_button.present?
+      on SubmitForReview do |page|
+        @status=page.document_status
+        @document_id=page.document_id
+      end
+    else
+      puts 'Now on the Confirmation page and happy to be here without pressing any button'
     end
   end
 
@@ -110,9 +117,9 @@ class IRBProtocolObject < DataFactory
   def create_amendment opts={}
     @amendment = {
         summary: random_alphanums_plus,
-        sections: ['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+        sections: [['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
               'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
-              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample
+              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
     }
     @amendment.merge!(opts)
     view 'Protocol Actions'
@@ -156,6 +163,10 @@ class IRBProtocolObject < DataFactory
       page.comments.fit @return_to_pi[:comments]
       page.submit
       @document_id=page.document_id
+    end
+
+    on NotificationEditor do |page|
+      page.send_it
     end
   end
 

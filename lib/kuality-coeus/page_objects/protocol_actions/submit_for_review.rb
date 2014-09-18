@@ -11,9 +11,9 @@ class SubmitForReview < KCProtocol
   element(:schedule_date) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.scheduleId') }
 
   element(:expedited_review_checklist_row) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }
-  p_element(:expedited_checklist) { |i, b| b.expedited_review_checklist_row.checkbox(name: "actionHelper.protocolSubmitAction.expeditedReviewCheckList[#{i}].checked") }
+  p_element(:expedited_checklist) { |index, b| b.expedited_review_checklist_row.checkbox(name: "actionHelper.protocolSubmitAction.expeditedReviewCheckList[#{index}].checked") }
 
-  element(:exempt_studies_checklist) { |b| b.frm.tr(id: 'exemptStudiesCheckList') }
+  element(:exempt_studies_checklist_row) { |b| b.frm.tr(id: 'exemptStudiesCheckList') }
 
   action(:submit) { |b| b.frm.button(name: 'methodToCall.submitForReview.anchor:SubmitforReview').click; b.loading; b.awaiting_doc }
 

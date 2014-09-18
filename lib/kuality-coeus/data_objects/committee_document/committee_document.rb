@@ -23,14 +23,17 @@ class CommitteeDocumentObject < DataFactory
       members:                collection('CommitteeMember'),
       areas_of_research:      [],
       schedule:               collection('CommitteeSchedule'),
-      save_type:              :save
+      save_type:              :save,
+      committee_type:         'irb',
+      area_of_research:         []
     }
     @lookup_class=CommitteeLookup
     set_options(defaults.merge(opts))
   end
     
   def create
-    visit(CentralAdmin).create_irb_committee
+    @committee_type == 'irb' ? visit(CentralAdmin).create_irb_committee : visit(CentralAdmin).create_iacuc_committee
+
     on Committee do |comm|
       @document_id=comm.document_id
       @doc_header=comm.doc_title
@@ -84,6 +87,23 @@ class CommitteeDocumentObject < DataFactory
     @schedule.add defaults.merge(opts)
   end
 
+  def add_area_of_research
+    defaults = {document_id: @document_id}
+    open_document
+    on(Committee).area_of_research
+
+    on ResearchAreasLookup do |page|
+      # until page.results_table.present?
+        page.search
+
+        research_description = page.research_descriptions.sample
+        page.check_item(research_description)
+        page.return_selected
+        @area_of_research << research_description
+      end
+
+
+  end
 end
     
       
