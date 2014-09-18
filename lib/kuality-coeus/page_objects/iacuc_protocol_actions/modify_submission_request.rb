@@ -1,4 +1,4 @@
-class ModifySubmissionRequest < KCProtocol
+class IACUCModifySubmissionRequest < KCProtocol
 
   element(:committee) { |b| b.frm.select(name: 'actionHelper.iacucProtocolModifySubmissionBean.committeeId') }
   element(:schedule_date) { |b| b.frm.select(name: 'actionHelper.iacucProtocolModifySubmissionBean.scheduleId') }
