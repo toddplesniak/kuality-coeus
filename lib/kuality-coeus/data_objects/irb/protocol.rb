@@ -7,7 +7,7 @@ class IRBProtocolObject < DataFactory
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :reviews,
+               :reviews, :schedule_date,
                # Withdraw
                :withdrawal_reason,
                # Amendment
@@ -141,6 +141,9 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     @expedited_approval = make ExpeditedApprovalObject, opts
     @expedited_approval.create
+
+    #FIXME!
+    # on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
   # TODO: Finish this off...

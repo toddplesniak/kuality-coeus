@@ -15,6 +15,9 @@ class Committee < CommitteeDocument
   #value(:last_updated) { |p| p.com_table.row(text: /Last Updated:/).cell(index: -1).text }
   value(:updated_user) { |p| p.com_table.row(text: /Updated User:/).cell(index: -1).text }
 
+  element(:area_of_research_div) { |b| b.frm.div(id: 'researchAreaDiv') }
+  action(:area_of_research) { |b| b.area_of_research_div.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.iacuc.IacucResearchArea!!).((``)).(:;committeeResearchAreas;:).((%true%)).((~~)).anchorAreaofResearch').click }
+
   private
 
   element(:com_table) { |b| b.frm.div(id: 'tab-Committee-div').table }
