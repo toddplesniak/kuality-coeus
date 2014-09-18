@@ -1,5 +1,7 @@
 class ModifySubmissionRequest < KCProtocol
-  
+
+  # undefine :committee
+
   element(:committee) { |b| b.frm.select(name: 'actionHelper.assignCmtSchedBean.committeeId') }
   element(:schedule_date) { |b| b.frm.select(name: 'actionHelper.assignCmtSchedBean.scheduleId') }
   element(:submission_type) { |b| b.frm.select(name: 'actionHelper.protocolModifySubmissionBean.submissionTypeCode') }

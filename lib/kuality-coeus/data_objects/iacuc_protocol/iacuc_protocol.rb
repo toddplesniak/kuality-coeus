@@ -155,7 +155,7 @@ class IACUCProtocolObject < DataFactory
 
   def admin_approve
     view('IACUC Protocol Actions')
-    on AdminApproveProtocol do |page|
+    on AdministrativelyApproveProtocol do |page|
       page.expand_all
       page.submit
     end
@@ -166,9 +166,8 @@ class IACUCProtocolObject < DataFactory
     view('IACUC Protocol Actions')
     on RequestToDeactivate do |page|
       page.expand_all
-
-      #The Devs have blessed us with 2 different submit buttons
-      #that display. Not sure the pattern maybe depending on the doc type/status/user
+      #We have been blessed with 2 different submit buttons that can display.
+      # Not sure the pattern maybe its depending on the doc type/status/user
       page.submit if page.submit_button.exists?
       page.submit2 if page.submit2_button.exists?
 
@@ -204,49 +203,10 @@ class IACUCProtocolObject < DataFactory
     @procedures.create
   end
 
-  #TODO:: create OrganizationObject for this complicated tab
   def add_organization opts={}
-    @organization = {
-        organization_id: '::random::',
-        organization_type: '::random::'
-    }
-    @organization.merge!(opts)
-
     view('Protocol')
-    on IACUCProtocolOverview do |page|
-      page.expand_all
-      if @organization[:organization_id] == '::random::'
-        page.organization_lookup
-        on OrganizationLookup do |lookup|
-          lookup.search
-          lookup.return_random
-          @organization[:organization_id] = page.organization_id.value
-        end
-      else
-        page.organization_id.fit @organization[:organization_id].value unless @organization[:organization_id].nil?
-      end
-      page.organization_type.pick! @organization[:organization_type] unless @organization[:organization_type].nil?
-      page.add_organization
-      page.save
-    end
-  end
-
-  def clear_contact(org_id)
-    on IACUCProtocolOverview do |page|
-    @old_organization_address = page.contact_address(org_id)
-    page.clear_contact(org_id)
-    end
-  end
-
-  def add_contact_info(org_id)
-    on(IACUCProtocolOverview).add_contact(org_id)
-    on AddressBookLookup do |search|
-      search.search
-      search.return_random
-    end
-    on IACUCProtocolOverview do |page|
-      @organization_address = page.contact_address(org_id)
-    end
+    @organization = make OrganizationObject, opts
+    @organization.create
   end
 
 end #class

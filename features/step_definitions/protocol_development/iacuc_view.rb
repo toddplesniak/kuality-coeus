@@ -29,14 +29,14 @@ end
 
 Then /^the added Organization should be displayed on the IACUC Protocol$/ do
   on IACUCProtocolOverview do |page|
-    page.added_organization_id_with_name(1).should include @iacuc_protocol.organization[:organization_id]
+    page.added_organization_id_with_name(1).should include @iacuc_protocol.organization.organization_id
   end
 end
 
 And /^the id should be on the Organization inquiry page$/ do
-  on(IACUCProtocolOverview).direct_inquiry(@iacuc_protocol.organization[:organization_id])
+  on(IACUCProtocolOverview).direct_inquiry(@iacuc_protocol.organization.organization_id)
   on OrganizationDetail do |page|
-    page.organization_id.should == @iacuc_protocol.organization[:organization_id]
+    page.organization_id.should == @iacuc_protocol.organization.organization_id
   end
 end
 
@@ -44,6 +44,6 @@ Then /^on the IACUC Protocol the contact information for the added Organization 
   @iacuc_protocol.view_document
   on IACUCProtocolOverview do |page|
     page.expand_all
-    page.contact_address(@iacuc_protocol.organization[:organization_id]).should == @iacuc_protocol.old_organization_address
+    page.contact_address(@iacuc_protocol.organization.organization_id).should == @iacuc_protocol.organization.old_organization_address
   end
 end

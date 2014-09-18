@@ -1,7 +1,7 @@
 @IRB @Smoke
 Feature: Adding Organizations to IACUC Protocols
 
-  As a researcher I want the ability to add Organizations to a IACUC protocol
+  [KCTEST-884] As a researcher I want the ability to add Organizations to a IACUC protocol
 
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
