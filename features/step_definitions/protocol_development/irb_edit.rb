@@ -73,7 +73,7 @@ And /^(the principal investigator |)submits the Protocol to the Committee for ex
 end
 
 When /the second Protocol is submitted to the Committee for review on the same date/ do
-  @irb_protocol2.submit_for_review committee: @committee.name, schedule_date: @schedule_date, max_protocol_confirm: 'Skipping the button press on Confirmation screen for a validation step'
+  @irb_protocol2.submit_for_review committee: @committee.name, max_protocol_confirm: 'Skipping the button press on Confirmation screen for a validation step'
 end
 
 And /suspends? the Protocol$/ do

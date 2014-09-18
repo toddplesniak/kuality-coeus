@@ -143,9 +143,10 @@ class IRBProtocolObject < DataFactory
     @expedited_approval.create
 
     #FIXME!
-    on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
+    # on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
+  # TODO: Finish this off...
   def suspend
     view 'Protocol Actions'
     on Suspend do |page|
@@ -166,7 +167,9 @@ class IRBProtocolObject < DataFactory
     end
 
     on NotificationEditor do |page|
-      page.send_it
+      if page.notification_editor_div.present?
+        page.send_it
+      end
     end
   end
 

@@ -15,5 +15,4 @@ class NotificationEditor < BasePage
   value(:institutional_proposal_number) { |b| b.message.text[/(?<=is )\d+/] }
 
   element(:notification_editor_div) { |b| b.frm.div(id: 'tab-NotificationEditor-div') }
-
 end

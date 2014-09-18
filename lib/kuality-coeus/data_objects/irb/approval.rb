@@ -1,9 +1,9 @@
-class ExpeditedApprovalObject < DataFactory
+class ApprovalObject < DataFactory
 
   include StringFactory, DateFactory, Navigation
 
   attr_reader :approval_date, :expiration_date, :action_date, :comments,
-              :include_in_agenda, :schedule_date, :risk_level
+              :risk_level
 
   def initialize(browser, opts={})
     @browser = browser
@@ -17,7 +17,7 @@ class ExpeditedApprovalObject < DataFactory
 
   def create
     # NOTE: Navigation is accomplished in the parent Protocol object!
-    on ExpeditedApproval do |page|
+    on ApproveAction do |page|
       page.expand_all
       fill_out page, :comments
       if @approval_date
@@ -39,14 +39,7 @@ class ExpeditedApprovalObject < DataFactory
       else
         @action_date = page.action_date.value
       end
-      if @include_in_agenda
-        page.include_in_agenda.fit @include_in_agenda
-        if @schedule_date
-          fill_out page, :schedule_date
-        else
-          @schedule_date = page.schedule_date.selected_options[0]
-        end
-      end
+
       page.submit
     end
   end
@@ -54,7 +47,8 @@ class ExpeditedApprovalObject < DataFactory
   def add_risk_level opts={}
     level = { risk_level: '::random::', date_assigned: right_now[:date_w_slashes] }
     level.merge!(opts)
-    on ExpeditedApproval do |page|
+    on ApproveAction do |page|
+      page.expand_all
       page.new_risk_level.fit level[:risk_level]
       page.new_date_assigned.fit level[:date_assigned]
       page.add_risk_level
