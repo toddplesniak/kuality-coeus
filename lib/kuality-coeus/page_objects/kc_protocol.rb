@@ -62,4 +62,4 @@ class KCProtocol < BasePage
     end
   end  #self
 
-end #class
+end #KCProtocol

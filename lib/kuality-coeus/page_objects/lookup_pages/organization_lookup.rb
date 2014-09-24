@@ -7,7 +7,7 @@ class OrganizationLookup < Lookups
 
 end
 
-class OrganizationDetail < Lookups
+class OrganizationInquiry < Lookups
   # Page for uneditable info for an Organization
   value(:organization_id) { |b| b.span(id: 'organizationId.div').text.strip }
   value(:organization_name) { |b| b.span(id: 'organizationName.div').text.strip }

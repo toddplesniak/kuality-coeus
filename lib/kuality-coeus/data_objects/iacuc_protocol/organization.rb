@@ -3,7 +3,7 @@ class OrganizationObject < DataFactory
   include StringFactory, Navigation, DateFactory, Protocol
 
   attr_reader  :organization_id, :organization_type, :clear_contact, :add_contact_info,
-               :old_organization_address, :organization_address
+               :old_organization_address, :organization_address, :organization_name
 
   def initialize(browser, opts={})
     @browser = browser
@@ -25,16 +25,30 @@ class OrganizationObject < DataFactory
         page.organization_lookup
         on OrganizationLookup do |lookup|
           lookup.search
-          lookup.return_random
+          return_random_organization
           @organization_id = page.organization_id.value
         end
       else
-        page.organization_id.fit @organization_id.value unless @organization_id.nil?
+        page.organization_id.fit @organization_id
       end
 
-      page.organization_type.pick! @organization_type unless @organization_type.nil?
+      page.organization_type.pick! @organization_type
       page.add_organization
       page.send(@press) unless @press.nil?
+    end
+  end
+
+  def return_random_organization
+    on IACUCProtocolOverview do |page|
+    the_row = rand(page.return_value_links.length)
+    #need to capture the organization data that will be selected
+    @organization_id = page.return_value_links[the_row].parent.parent.td(index: 1).text
+    @organization_name = page.return_value_links[the_row].parent.parent.td(index: 2).text
+    @organization_address = page.return_value_links[the_row].parent.parent.td(index: 3).text
+    @federal_employer_id =  page.return_value_links[the_row].parent.parent.td(index: 4).text
+    @congressional_district =  page.return_value_links[the_row].parent.parent.td(index: 5).text
+    @contact_address_id =  page.return_value_links[the_row].parent.parent.td(index: 6).text
+    page.return_value_links[the_row].click
     end
   end
 

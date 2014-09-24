@@ -29,7 +29,6 @@ class IACUCProtocolObject < DataFactory
     visit(Researcher).create_iacuc_protocol
 
     on IACUCProtocolOverview do |doc|
-      doc.expand_all_button.wait_until_present
       @document_id=doc.document_id
       @doc_header=doc.doc_title
       @status=doc.document_status
@@ -70,7 +69,7 @@ class IACUCProtocolObject < DataFactory
   end
 
   def alternate_search_required
-    view("The Three R's")
+    view "The Three R's"
     on TheThreeRs do |page|
       page.expand_all
       page.alternate_search_required.fit @alternate_search_required
@@ -80,14 +79,14 @@ class IACUCProtocolObject < DataFactory
   end
 
   def submit_for_review opts={}
-    @review = {
+    @review ||= {
         submission_type: '::random::',
         review_type: '::random::',
         type_qualifier: '::random::'
     }
     @review.merge!(opts)
 
-    view('IACUC Protocol Actions')
+    view 'IACUC Protocol Actions'
     on IACUCSubmitForReview do |page|
       page.expand_all
       page.submission_type.pick! @review[:submission_type]
@@ -113,7 +112,7 @@ class IACUCProtocolObject < DataFactory
   end
 
   def add_species_group opts={}
-    @species = {
+    @species ||= {
         name: random_alphanums_plus(10, 'Species '),
         species: '::random::',
         pain_category: '::random::',
@@ -122,7 +121,7 @@ class IACUCProtocolObject < DataFactory
     }
     @species.merge!(opts)
 
-    view('Species Groups')
+    view 'Species Groups'
     on SpeciesGroups do |page|
       page.expand_all
       page.species_group_field.fit @species[:name]
@@ -137,13 +136,13 @@ class IACUCProtocolObject < DataFactory
   end
 
   def add_protocol_exception opts={}
-    @protocol_exception = {
+    @protocol_exception ||= {
         exception: '::random::',
         justification: random_alphanums_plus
     }
     @protocol_exception.merge!(opts)
 
-    view('Protocol Exception')
+    view 'Protocol Exception'
     on ProtocolException do |page|
       page.expand_all
       page.exception.pick! @protocol_exception[:exception]
@@ -154,7 +153,7 @@ class IACUCProtocolObject < DataFactory
   end
 
   def admin_approve
-    view('IACUC Protocol Actions')
+    view 'IACUC Protocol Actions'
     on AdministrativelyApproveProtocol do |page|
       page.expand_all
       page.submit
@@ -163,24 +162,20 @@ class IACUCProtocolObject < DataFactory
   end
 
   def request_to_deactivate
-    view('IACUC Protocol Actions')
+    view 'IACUC Protocol Actions'
     on RequestToDeactivate do |page|
       page.expand_all
-      #We have been blessed with 2 different submit buttons that can display.
-      # Not sure the pattern maybe its depending on the doc type/status/user
-      page.submit if page.submit_button.exists?
-      page.submit2 if page.submit2_button.exists?
+      page.submit
 
       #First time the status changes to pending and need to deactivate a second time
       page.expand_all
-      page.submit if page.submit_button.present?
-      page.submit2 if page.submit2_button.present?
+      page.submit
     end
     on(NotificationEditor).send_it
   end
 
   def place_hold
-    view('IACUC Protocol Actions')
+    view 'IACUC Protocol Actions'
     on PlaceHold do |page|
       page.expand_all
       page.submit
@@ -189,7 +184,7 @@ class IACUCProtocolObject < DataFactory
   end
 
   def lift_hold
-    view('IACUC Protocol Actions')
+    view 'IACUC Protocol Actions'
     on LiftHold do |page|
       page.expand_all
       page.submit
@@ -198,15 +193,16 @@ class IACUCProtocolObject < DataFactory
   end
 
   def add_procedure opts={}
-    view('Procedures')
+    view 'Procedures'
     @procedures = make IACUCProceduresObject, opts
     @procedures.create
   end
 
   def add_organization opts={}
-    view('Protocol')
+    view 'Protocol'
+    raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
     @organization = make OrganizationObject, opts
     @organization.create
   end
 
-end #class
+end #IACUCProtocolObject

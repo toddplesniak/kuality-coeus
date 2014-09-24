@@ -1,7 +1,13 @@
 class IACUCProtocolOverview < KCProtocol
 
+  #removed the method created in the KCProtocol, because
+  # of medusa method in search_results_table
+  undefine :medusa
+
+
   description_field
   tiny_buttons
+  search_results_table
   protocol_common
 
   # Required Fields

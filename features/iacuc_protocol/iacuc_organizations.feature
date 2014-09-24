@@ -9,14 +9,14 @@ Feature: Adding Organizations to IACUC Protocols
   @wip @KCTEST-884
   Scenario: Add an Organization to the IACUC proposal
     Given the IACUC Protocol Creator creates an IACUC Protocol
-    When adds an organization to the IACUC Protocol
-    Then the added Organization should be displayed on the IACUC Protocol
-    And the id should be on the Organization inquiry page
+    And adds an organization to the IACUC Protocol
+    Then the Organization that was added should display on the IACUC Protocol
+    And the added Organization information should display on the inquiry page
 
   @wip @KCTEST-884
   Scenario: Organization cannot be added to the IACUC Protocol without required fields
     Given the IACUC Protocol Creator creates an IACUC Protocol
-    When attempts to add an organization to the IACUC Protocol without required fields
+    When the IACUC Protocol Creator attempts to add an organization to the IACUC Protocol without the required fields
     Then errors should appear warning that the field contents are not valid
 
   @wip @KCTEST-888
@@ -24,7 +24,7 @@ Feature: Adding Organizations to IACUC Protocols
     Given the IACUC Protocol Creator creates an IACUC Protocol
     And   adds an organization to the IACUC Protocol
     And   changes the contact information on the added Organization
-    When  reopens the IACUC Protocol without saving changes
+    When  the IACUC Protocol Creator reopens the IACUC Protocol without saving the changes
     Then  on the IACUC Protocol the contact information for the added Organization is reverted
 
 

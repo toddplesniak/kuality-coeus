@@ -1,42 +1,45 @@
 Then /^the IACUC Protocol status should be (.*)$/ do |status|
   on IACUCProtocolOverview do |page|
-        page.document_status.should == status
+        expect(page.document_status).to eq status
   end
 end
 
 Then /^the IACUC Protocol submission status should be (.*)$/ do |status|
   on IACUCProtocolOverview do |page|
-    page.submission_status.should == status
+    expect(page.submission_status).to eq status
   end
 end
 
 Then /^the summary will display the location of the procedure$/ do
   on IACUCProcedures do |page|
-    page.procedure_tab('summary')
+    page.select_procedure_tab 'summary'
     page.expand_all
 
-    page.summary_locations.should include @iacuc_protocol.procedures.location[:type]
-    page.summary_locations.should include @iacuc_protocol.procedures.location[:description]
-    page.summary_locations.should include @iacuc_protocol.procedures.location[:room].to_s
-    page.summary_locations.should include @iacuc_protocol.procedures.location[:name]
+    expect(page.summary_locations).to include @iacuc_protocol.procedures.location[:type]
+    expect(page.summary_locations).to include @iacuc_protocol.procedures.location[:description]
+    expect(page.summary_locations).to include @iacuc_protocol.procedures.location[:room].to_s
+    expect(page.summary_locations).to include @iacuc_protocol.procedures.location[:name]
   end
 end
 
 Then /^the expiration date is set for the Protocol$/ do
-  on(KCProtocol).expiration_date.should_not == ''
-  on(KCProtocol).expiration_date.should_not == nil
+  expect(on(KCProtocol).expiration_date).to_not equal ''
+  expect(on(KCProtocol).expiration_date).to_not equal nil
 end
 
-Then /^the added Organization should be displayed on the IACUC Protocol$/ do
+Then /the ?(.*) Organization that was added should display on the IACUC Protocol$/ do |count|
   on IACUCProtocolOverview do |page|
-    page.added_organization_id_with_name(1).should include @iacuc_protocol.organization.organization_id
+    index = { '' => 1, 'first' => 1, 'second' => 2 }
+    expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organization.organization_id
   end
 end
 
-And /^the id should be on the Organization inquiry page$/ do
+And /^the added Organization information should display on the inquiry page$/ do
   on(IACUCProtocolOverview).direct_inquiry(@iacuc_protocol.organization.organization_id)
-  on OrganizationDetail do |page|
-    page.organization_id.should == @iacuc_protocol.organization.organization_id
+  on OrganizationInquiry do |page|
+    expect(page.organization_id).to eq @iacuc_protocol.organization.organization_id
+    expect(page.address).to eq @iacuc_protocol.organization.organization_address
+    expect(page.organization_name).to eq @iacuc_protocol.organization.organization_name
   end
 end
 
@@ -44,6 +47,6 @@ Then /^on the IACUC Protocol the contact information for the added Organization 
   @iacuc_protocol.view_document
   on IACUCProtocolOverview do |page|
     page.expand_all
-    page.contact_address(@iacuc_protocol.organization.organization_id).should == @iacuc_protocol.organization.old_organization_address
+    expect(page.contact_address(@iacuc_protocol.organization.organization_id)).to eq @iacuc_protocol.organization.old_organization_address
   end
 end
