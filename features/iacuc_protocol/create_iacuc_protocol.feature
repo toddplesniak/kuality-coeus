@@ -20,14 +20,14 @@ Feature: Creating IACUC Protocols
   @wip @KC-TA-5417
   Scenario: IACUC Admin deactivates an IACUC Protocol
     Given the IACUC Administrator approves a submitted IACUC Protocol
-    When  sends a deactivate request on the IACUC Protocol
+    When  the IACUC Administrator deactivates the IACUC Protocol
     Then  the IACUC Protocol status should be Deactivated
 
   @wip @KC-TA-5417
   Scenario: IACUC Admin lifts a hold on an IACUC Protocol that was placed on hold
     Given the IACUC Administrator approves a submitted IACUC Protocol
     And   places the IACUC Protocol on hold
-    When  lifts the hold on the IACUC Protocol
+    When  lifts the hold placed on the IACUC Protocol
     Then  the IACUC Protocol submission status should be Lift Hold
 
   @wip @KCTEST-881

@@ -9,17 +9,3 @@ class IACUCProtocolActions < KCProtocol
   # Withdraw Protocol
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-

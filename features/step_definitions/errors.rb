@@ -59,11 +59,11 @@ end
 
 # TODO: Move to the big step def.
 Then /^an error is shown that indicates the lead unit code is invalid$/ do
-  $current_page.errors.should include 'Lead Unit is invalid.'
+  expect($current_page.errors).to include('Lead Unit is invalid.')
 end
 
 Then /^an error is shown that indicates the user is already an investigator$/ do
-  $current_page.errors.should include %|#{@first_name} #{@last_name} already holds Investigator role.|
+  expect($current_page.errors).to include(%|#{@first_name} #{@last_name} already holds Investigator role.|)
 end
 
 Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
@@ -121,7 +121,7 @@ end
 # Required Fields        #
 #------------------------#
 Then /^an error should appear saying the field is required$/ do
-  $current_page.errors.should include @required_field_error
+  expect($current_page.errors).to include @required_field_error
 end
 
 #------------------------#
@@ -132,5 +132,5 @@ Then /^a confirmation screen asks if you want to edit the existing pending versi
 end
 
 Then /^there are no errors on the page$/ do
-  $current_page.errors.size.should==0
+  expect($current_page.errors.size).to equal(0)
 end

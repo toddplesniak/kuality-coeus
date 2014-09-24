@@ -10,7 +10,7 @@ And /adds a Procedure to the IACUC Protocol$/ do
   @iacuc_protocol.add_procedure
 end
 
-When /sends a deactivate request on the IACUC Protocol$/ do
+When /deactivates the IACUC Protocol$/ do
    @iacuc_protocol.request_to_deactivate
 end
 
@@ -18,7 +18,7 @@ And   /places the IACUC Protocol on hold$/ do
   @iacuc_protocol.place_hold
 end
 
-When  /lifts the hold on the IACUC Protocol$/ do
+When  /lifts the hold placed on the IACUC Protocol$/ do
   @iacuc_protocol.lift_hold
 end
 
@@ -31,7 +31,7 @@ When /adds an organization to the IACUC Protocol$/ do
   @iacuc_protocol.add_organization
 end
 
-When /attempts to add an organization to the IACUC Protocol without required fields$/ do
+When /attempts to add an organization to the IACUC Protocol without the required fields$/ do
   @iacuc_protocol.add_organization organization_id: nil, organization_type: nil, press: nil
   @errors = [
       'Organization Id is a required field.',
@@ -46,7 +46,7 @@ And /changes the contact information on the added Organization$/ do
   @iacuc_protocol.organization.add_contact_info(@iacuc_protocol.organization.organization_id)
 end
 
-When  /reopens the IACUC Protocol without saving changes$/ do
+When  /reopens the IACUC Protocol without saving the changes$/ do
   on(IACUCProtocolOverview).close
   on(Confirmation).no
   @iacuc_protocol.view_document

@@ -10,14 +10,14 @@ class IACUCProceduresObject < DataFactory
     @browser = browser
 
     defaults = {
-        procedure_index: rand(0..18) ,
-        species_name_type: '::random::',
+        procedure_index: rand(18),
+        species_name_type: '::random::'
     }
     set_options(defaults.merge(opts))
   end
 
   def create
-    view('Procedures')
+    view 'Procedures'
     on IACUCProcedures do |page|
       page.expand_all
 
@@ -34,36 +34,34 @@ class IACUCProceduresObject < DataFactory
   end
 
   def view_details(tab)
-      on(IACUCProcedures).procedure_tab(tab.downcase)
+      on(IACUCProcedures).select_procedure_tab(tab.downcase)
   end
 
   def assign_procedure
-    view_details('Personnel')
+    view_details 'Personnel'
     on IACUCProcedures do |page|
       page.edit_procedures
-      #set to all
       page.all_procedures
       page.save_procedure
     end
   end
 
   def set_location opts={}
-    @location = {
+    @location ||= {
         type: 'Performance Site',
         name: '::random::',
         species: 'blank'
     }
     @location.merge!(opts)
 
-    view('Procedures')
-    view_details('Location')
+    view 'Procedures'
+    view_details 'Location'
     on IACUCProcedures do |page|
       page.location_type.pick! @location[:type]
       page.location_name.pick! @location[:name]
       page.location_room.fit @location[:room]
       page.location_description.fit @location[:description]
       page.add_location
-
       # After adding the location, need to select the procedures for this location
       page.location_edit_procedures
       page.all_group.set if page.all_group.parent.text.strip == @location[:species]

@@ -2,12 +2,12 @@ class IACUCProcedures < KCProtocol
 
   #Tabs
   element(:procedures_tab_div) { |b| b.frm.div(id: 'tab-ProcedureDetails-div') }
-  p_action(:procedure_tab) { |tab, b| b.procedures_tab_div.button(value: tab).click; b.loading }
+  p_action(:select_procedure_tab) { |tab, b| b.procedures_tab_div.button(value: tab).click; b.loading }
 
   #Procedures
   #Checkboxes. no tags
-  element(:procedures_table) { |b| b.frm.table(id: 'included-categories-table').tr }
-  p_element(:category) { |index, b| b.procedures_table.checkbox(name: "iacucProtocolProceduresHelper.allProcedures[#{index}].procedureSelected") }
+  element(:procedures_table) { |b| b.frm.table(id: 'included-categories-table') }
+  p_element(:category) { |index, b| b.procedures_table.tr.checkbox(name: "iacucProtocolProceduresHelper.allProcedures[#{index}].procedureSelected") }
 
   p_element(:select_species) { |index, b| b.frm.select(name: "document.protocolList[0].iacucProtocolStudyGroupBeans[#{index}].protocolSpeciesAndGroups") }
   p_action(:add_species) { |index, b| b.frm.button(name: /^methodToCall.addProtocolStudyGroup.line#{index}.anchor/).click; b.loading }

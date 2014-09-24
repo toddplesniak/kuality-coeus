@@ -2,8 +2,6 @@ When /(IACUC Protocol Creator |)creates an? IACUC Protocol$/ do |role_name|
   case role_name
     when 'IACUC Protocol Creator '
       steps '* I log in with the IACUC Protocol Creator user'
-    else
-      pending "Need to handle the #{role_name} for log in with this step"
   end
   @iacuc_protocol = create IACUCProtocolObject
 end
@@ -51,8 +49,6 @@ And /(IACUC Protocol Creator | )creates an IACUC Protocol with one Species$/ do 
   case role_name
     when 'IACUC Protocol Creator '
       steps '* I log in with the IACUC Protocol Creator user'
-    else
-      pending "Need to handle the #{role_name} for log in with this step"
   end
   @iacuc_protocol = create IACUCProtocolObject
 
