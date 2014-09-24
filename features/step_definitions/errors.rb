@@ -113,7 +113,7 @@ end
 
 Then /^(errors|an error) should appear warning that the field contents are not valid$/ do |x|
   @errors.each do |err|
-    $current_page.errors.should include err
+    expect($current_page.errors).to include err
   end
 end
 

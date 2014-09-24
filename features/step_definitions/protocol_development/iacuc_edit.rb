@@ -51,3 +51,11 @@ When  /reopens the IACUC Protocol without saving the changes$/ do
   on(Confirmation).no
   @iacuc_protocol.view_document
 end
+
+When /attempts to add a Species with non-integers as the species count$/ do
+  #error message only displays 8 characters
+  @iacuc_protocol.add_species_group count: random_alphanums(8)
+  @errors = [
+      "#{@iacuc_protocol.species[:count]} is not a valid integer."
+  ]
+end
