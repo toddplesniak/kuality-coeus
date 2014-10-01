@@ -35,3 +35,9 @@ Feature: Creating IACUC Protocols
     Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
     When the IACUC Administrator approves the IACUC Protocol
     Then  the expiration date is set for the Protocol
+
+  @wip @KCTEST-912
+   Scenario: The system shall allow multiple personnel to be chosen for each add species/groups row.
+    Given the IACUC Protocol Creator creates an IACUC Protocol
+    When adds two personnel members to the IACUC Protocol
+    Then both personnel added to the IACUC Protocol are present

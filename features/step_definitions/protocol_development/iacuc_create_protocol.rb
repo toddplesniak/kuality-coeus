@@ -42,7 +42,6 @@ And /the IACUC Administrator creates an? IACUC Committee with an? area of resear
   steps '* log in with the IACUC Administrator user'
   @committee = create CommitteeDocumentObject, committee_type: 'iacuc', review_type: 'Full Committee Member Review'
   @committee.add_area_of_research
-
 end
 
 And /(IACUC Protocol Creator | )creates an IACUC Protocol with one Species$/ do |role_name|
@@ -51,6 +50,38 @@ And /(IACUC Protocol Creator | )creates an IACUC Protocol with one Species$/ do 
       steps '* I log in with the IACUC Protocol Creator user'
   end
   @iacuc_protocol = create IACUCProtocolObject
+  @species = create SpeciesObject
+end
 
-  @iacuc_protocol.add_species_group
+When /adds a Species with all options$/ do
+  @species = create SpeciesObject, strain: random_alphanums_plus, usda_covered: :set, procedure_summary: random_alphanums_plus(20)
+end
+
+When /adds a Species to the IACUC Protocol$/ do
+  @species = create SpeciesObject
+end
+
+When /adds a second Species to the IACUC Protocol$/ do
+  @species2 = create SpeciesObject
+end
+
+When /^the Application Administrator creates a new Location type$/ do
+  @location_type = create IACUCLocationTypeMaintenanceObject
+end
+
+And /adds a location name to the location type$/ do
+  @location_name = create IACUCLocationNameMaintenanceObject, location_type_code: @location_type.location_type
+end
+
+When /(IACUC Protocol Creator |)assigns the created location to a Procedure on the IACUC Protocol$/ do |role_name|
+  case role_name
+    when 'IACUC Protocol Creator '
+      steps '* I log in with the IACUC Protocol Creator user'
+  end
+  @iacuc_protocol = create IACUCProtocolObject
+  @species = create SpeciesObject
+  @procedures = create IACUCProceduresObject
+
+
+  @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, species: @species.species)
 end

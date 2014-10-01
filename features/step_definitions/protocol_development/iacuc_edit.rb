@@ -1,13 +1,13 @@
 And /adds a Species group to the IACUC Protocol$/ do
-  @iacuc_protocol.add_species_group
+  @species = create SpeciesObject
 end
 
 And /assigns a location to the Procedure with a type of '(.*)' on the IACUC Protocol$/ do |type|
-  @iacuc_protocol.procedures.set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @iacuc_protocol.species[:species])
+  @procedures.set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @species.species)
 end
 
 And /adds a Procedure to the IACUC Protocol$/ do
-  @iacuc_protocol.add_procedure
+  @procedures = create IACUCProceduresObject
 end
 
 When /deactivates the IACUC Protocol$/ do
@@ -54,8 +54,37 @@ end
 
 When /attempts to add a Species with non-integers as the species count$/ do
   #error message only displays 8 characters
-  @iacuc_protocol.add_species_group count: random_alphanums(8)
+  @species = create SpeciesObject, count: random_alphanums(8)
+
+  DEBUG.message "#{@species.count} is the species count"
+  # @iacuc_protocol.add_species count: random_alphanums(8)
   @errors = [
-      "#{@iacuc_protocol.species[:count]} is not a valid integer."
+      "#{@species.count} is not a valid integer."
   ]
+end
+
+When /saves the IACUC Protocol after modifying the required fields for the Species$/ do
+  @species.edit press: 'save', index: 0,
+                group: random_alphanums_plus(10, 'Species '),
+                species: '::random::',
+                pain_category: '::random::',
+                count_type: '::random::',
+                count: rand(1..21),
+                strain: random_alphanums_plus,
+                usda_covered: :set,
+                procedure_summary: random_alphanums_plus(20)
+end
+
+When /^the IACUC Protocol Creator deletes the (.*) Species$/ do |line_item|
+  index = {'first' => 0, 'second' => 1}
+  on SpeciesGroups do |page|
+    page.delete(index[line_item])
+  end
+  on(Confirmation).yes
+end
+
+When /adds (.*) personnel members? to the IACUC Protocol$/ do |num|
+  count = {'one' => 1, 'two' => 2}
+  @personnel = create IACUCPersonnel
+  @personnel2 = create IACUCPersonnel if count[num] > 1
 end

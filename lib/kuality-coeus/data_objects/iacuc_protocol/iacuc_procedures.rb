@@ -48,6 +48,7 @@ class IACUCProceduresObject < DataFactory
 
   def set_location opts={}
     @location ||= {
+        description: random_alphanums,
         type: 'Performance Site',
         name: '::random::',
         species: 'blank'

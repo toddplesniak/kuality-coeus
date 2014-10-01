@@ -5,7 +5,7 @@ class IACUCProtocolObject < DataFactory
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :protocol_project_type, :lay_statement_1, :alternate_search_required,
                :procedures, :location, :document_id,
-               :species, :organization, :old_organization_address
+               :species, :organization, :old_organization_address, :species_modify
 
 
   def initialize(browser, opts={})
@@ -60,6 +60,7 @@ class IACUCProtocolObject < DataFactory
   end
 
   def view_document
+    #use this view when you want to completely reload the document.
     visit(Researcher).doc_search
     on DocumentSearch do |search|
       search.document_id.set @document_id
@@ -108,30 +109,6 @@ class IACUCProtocolObject < DataFactory
     on NotificationEditor do |page|
       page.add
       page.send_it
-    end
-  end
-
-  def add_species_group opts={}
-    @species ||= {
-        name: random_alphanums_plus(10, 'Species '),
-        species: '::random::',
-        pain_category: '::random::',
-        count_type: '::random::',
-        count: rand(1..21)
-    }
-    @species.merge!(opts)
-
-    view 'Species Groups'
-    on SpeciesGroups do |page|
-      page.expand_all
-      page.species_group_field.fit @species[:name]
-      page.species_count.fit @species[:count]
-      page.species.pick! @species[:species]
-      page.pain_category.pick! @species[:pain_category]
-      page.count_type.pick! @species[:count_type]
-      page.add_species
-
-      page.save
     end
   end
 
@@ -190,12 +167,6 @@ class IACUCProtocolObject < DataFactory
       page.submit
     end
     on(NotificationEditor).send_it if   on(NotificationEditor).send_button.present?
-  end
-
-  def add_procedure opts={}
-    view 'Procedures'
-    @procedures = make IACUCProceduresObject, opts
-    @procedures.create
   end
 
   def add_organization opts={}
