@@ -4,7 +4,7 @@ class SpecialReviewObject < DataFactory
 
   attr_reader :type, :approval_status, :document_id, :protocol_number,
               :application_date, :approval_date, :expiration_date,
-              :exemption_number, :doc_type
+              :exemption_number, :doc_type, :index
 
   def initialize(browser, opts={})
     @browser = browser
@@ -16,11 +16,12 @@ class SpecialReviewObject < DataFactory
                         'TLO Review - No conflict (A)','TLO review - Reviewed, no conflict (B1)',
                         'TLO Review - Potential Conflict (B2)','TLO PR-Previously Reviewed','Foundation Relations'
                         ].sample,
-      approval_status: '::random::'
+      approval_status: '::random::',
+      press: 'save'
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id, :doc_header
+    # requires :document_id, :doc_header
   end
 
   def create
@@ -32,22 +33,38 @@ class SpecialReviewObject < DataFactory
       add.add_application_date.fit @application_date
       add.add_approval_date.fit @approval_date
       add.add_expiration_date.fit @expiration_date
-      add.add_exemption_number.fit @exemption_number
+      add.add_exemption_number.pick! @exemption_number
       add.add
-      break unless add.errors.empty? # No need to save if we've thrown an error already
-      add.save
+
+      add.send(@press) unless @press.nil?
     end
   end
 
   def edit opts={}
     view
-    # TODO
+    on SpecialReview do |edit|
+      edit.type_added(index).pick! @type
+      edit.approval_status_added(@index).pick! @approval_status
+      edit.exemption_number_added(@index).pick! @exemption_number
+      edit.protocol_number_added(@index).fit @protocol_number
+      edit.application_date_added(@index).fit @application_date
+      edit.approval_date_added(@index).fit @approval_date
+      edit.expiration_date_added(@index).fit @expiration_date
+
+      edit.send(@press) unless @press.nil?
+    end
+
     set_options(opts)
   end
 
   def view
-    open_document
+    # open_document
     on(Proposal).special_review unless on_page?(on(SpecialReview).add_type)
+  end
+
+  def delete(line_index)
+    index = {'first' => 0, 'second' => 1}
+    on(SpecialReview).delete(index[line_index])
   end
 
   def update_from_parent(id)

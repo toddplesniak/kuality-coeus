@@ -3,10 +3,13 @@ class IACUCProtocolObject < DataFactory
   include StringFactory, Navigation, DateFactory, Protocol
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
-               :protocol_project_type, :lay_statement_1, :alternate_search_required,
+               :protocol_project_type, :lay_statement_1,
+               #theThreeRs
+               :alternate_search_required, :reduction, :refinement, :replacement,
+               #others
                :procedures, :location, :document_id,
-               :species, :organization, :old_organization_address, :species_modify
-
+               :species, :organization, :old_organization_address, :species_modify,
+               :principles
 
   def initialize(browser, opts={})
     @browser = browser
@@ -50,7 +53,9 @@ class IACUCProtocolObject < DataFactory
     end
 
     #if you want to do more than just submit a protocol then this needs to be set to 'yes' or 'no'
-    alternate_search_required unless @alternate_search_required.nil?
+    theThreeRs alternate_search_required: @alternate_search_required, reduction: @reduction, refinement: @refinement, replacement: @replacement
+
+    # alternate_search_required unless @alternate_search_required.nil?
   end
 
   def view(tab)
@@ -69,11 +74,21 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
-  def alternate_search_required
+  def theThreeRs opts={}
+    @principles = {
+      alternate_search_required: 'No'
+    }
+    @principles.merge!(opts)
+
     view "The Three R's"
     on TheThreeRs do |page|
       page.expand_all
-      page.alternate_search_required.fit @alternate_search_required
+
+      page.reduction.fit @principles[:reduction]
+      page.refinement.fit @principles[:refinement]
+      page.replacement.fit @principles[:replacement]
+
+      page.alternate_search_required.fit @principles[:alternate_search_required]
 
       page.save
     end

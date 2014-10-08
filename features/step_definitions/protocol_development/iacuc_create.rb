@@ -57,12 +57,13 @@ When /adds a Species with all options$/ do
   @species = create SpeciesObject, strain: random_alphanums_plus, usda_covered: :set, procedure_summary: random_alphanums_plus(20)
 end
 
-When /adds a Species to the IACUC Protocol$/ do
-  @species = create SpeciesObject
-end
-
-When /adds a second Species to the IACUC Protocol$/ do
-  @species2 = create SpeciesObject
+When /adds a (second |)Species to the IACUC Protocol$/ do |species_number|
+  case species_number
+    when ''
+      @species = create SpeciesObject
+    when 'second '
+      @species2 = create SpeciesObject
+  end
 end
 
 When /^the Application Administrator creates a new Location type$/ do
@@ -82,6 +83,14 @@ When /(IACUC Protocol Creator |)assigns the created location to a Procedure on t
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
 
-
   @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, species: @species.species)
+end
+
+Given /(IACUC Protocol Creator | )creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |role_name|
+  case role_name
+    when 'IACUC Protocol Creator '
+      # steps %{ * I log in with the #{role_name} user }
+      steps '* I log in with the IACUC Protocol Creator user'
+  end
+  @iacuc_protocol = create IACUCProtocolObject, reduction: random_alphanums_plus(2000), refinement: random_alphanums_plus(2000), replacement: random_alphanums_plus(2000)
 end

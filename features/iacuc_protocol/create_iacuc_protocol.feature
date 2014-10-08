@@ -1,4 +1,4 @@
-@IRB @Smoke
+@IACUC
 Feature: Creating IACUC Protocols
 
   As a researcher I want the ability to create a protocol for animal subjects
@@ -41,3 +41,14 @@ Feature: Creating IACUC Protocols
     Given the IACUC Protocol Creator creates an IACUC Protocol
     When adds two personnel members to the IACUC Protocol
     Then both personnel added to the IACUC Protocol are present
+
+  @wip @KCTEST-928 @KCTEST-929 @KCTEST-930
+  Scenario: The Three Principles fields can be edited
+    Given the IACUC Protocol Creator creates an IACUC Protocol with the three principles, reduction, refinement, replacement
+    And edits the Principles of reduction
+    And edits the Principles of refinement
+    And edits the Principles of replacement
+    Then the three principles should have the edited values after saving the IACUC Protocol
+
+
+

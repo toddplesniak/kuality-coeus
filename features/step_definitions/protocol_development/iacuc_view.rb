@@ -1,6 +1,6 @@
 Then /^the IACUC Protocol status should be (.*)$/ do |status|
   on IACUCProtocolOverview do |page|
-        expect(page.document_status).to eq status
+    expect(page.document_status).to eq status
   end
 end
 
@@ -53,12 +53,11 @@ end
 
 Then /^the group name, species, pain category, count type, species count should match the (.*) values$/ do |count|
   index = {'modified' => 0}
-
     on SpeciesGroups do |page|
       expect(page.group_added(index[count]).value).to eq @species.group
       expect(page.count_added(index[count]).value).to eq @species.count.to_s
 
-      #select lists,
+      #select lists, need special handling for finding the values ''.selected_options.first.text'
       expect(page.species_added_value(index[count])).to eq @species.species
       expect(page.pain_category_added_value(index[count])).to eq @species.pain_category
       expect(page.count_type_added_value(index[count])).to eq @species.count_type
@@ -81,5 +80,46 @@ Then /^both personnel added to the IACUC Protocol are present$/ do
   on ProtocolPersonnel do |page|
     expect(page.added_personnel_name(@personnel.full_name, @personnel.protocol_role)).to exist
     expect(page.added_personnel_name(@personnel2.full_name, @personnel2.protocol_role)).to exist
+  end
+end
+
+Then /^the three principles should have the edited values after saving the IACUC Protocol$/ do
+  on TheThreeRs do |page|
+    page.save
+    page.refresh
+    on(IACUCProtocolOverview).description.wait_until_present
+    @iacuc_protocol.view "The Three R's"
+
+    expect(page.reduction.value).to eq @iacuc_protocol.principles[:reduction]
+    expect(page.refinement.value).to eq @iacuc_protocol.principles[:refinement]
+    expect(page.replacement.value).to eq @iacuc_protocol.principles[:replacement]
+    page.save
+
+    page.reduction_expand
+    page.continue_button.wait_until_present
+    expect(page.reduction.value).to eq @iacuc_protocol.principles[:reduction]
+    page.continue
+
+    page.refinement_expand
+    page.continue_button.wait_until_present
+    expect(page.refinement.value).to eq @iacuc_protocol.principles[:refinement]
+    page.continue
+
+    page.replacement_expand
+    page.continue_button.wait_until_present
+    expect(page.replacement.value).to eq @iacuc_protocol.principles[:replacement]
+    page.continue
+  end
+end
+
+Then /(first |)Special Review should be displayed on the IACUC Protocol$/ do |count|
+  index = { 'first ' => 0 }
+
+  on SpecialReview do |page|
+    page.reload
+    on(Confirmation).yes if on(Confirmation).yes_button.present?
+
+    expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review.type
+    expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review.approval_status
   end
 end
