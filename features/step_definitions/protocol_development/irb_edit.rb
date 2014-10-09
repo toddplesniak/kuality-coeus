@@ -97,8 +97,6 @@ And /the principal investigator approves the Protocol$/ do
   visit(Researcher).action_list
   on(ActionList).filter
   on ActionListFilter do |page|
-
-    DEBUG.message @irb_protocol.protocol_number
     page.document_title.set @irb_protocol.protocol_number
     page.filter
   end
