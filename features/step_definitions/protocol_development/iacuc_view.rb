@@ -4,10 +4,11 @@ Then /^the IACUC Protocol status should be (.*)$/ do |status|
   end
 end
 
-Then /^the IACUC Protocol submission status should be (.*)$/ do |status|
-  on IACUCProtocolOverview do |page|
-    expect(page.submission_status).to eq status
-  end
+Then /^the IACUC Protocol submission status should be (.*)$/ do |submission_status|
+    @iacuc_protocol.view 'Protocol'
+    #Need to collect page info because amendment has different fields from the default.
+    @iacuc_protocol.gather_document_info
+    expect(@iacuc_protocol.doc[:submission_status]).to eq submission_status
 end
 
 Then /^the summary will display the location of the procedure$/ do
@@ -54,10 +55,8 @@ end
 Then /^the group name, species, pain category, count type, species count should match the (.*) values$/ do |count|
   index = {'modified' => 0}
     on SpeciesGroups do |page|
-      expect(page.group_added(index[count]).value).to eq @species.group
-      expect(page.count_added(index[count]).value).to eq @species.count.to_s
-
-      #select lists, need special handling for finding the values ''.selected_options.first.text'
+      expect(page.group_added_value(index[count])).to eq @species.group
+      expect(page.count_added_value(index[count])).to eq @species.count.to_s
       expect(page.species_added_value(index[count])).to eq @species.species
       expect(page.pain_category_added_value(index[count])).to eq @species.pain_category
       expect(page.count_type_added_value(index[count])).to eq @species.count_type

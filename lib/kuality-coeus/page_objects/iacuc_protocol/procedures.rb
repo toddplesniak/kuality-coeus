@@ -2,7 +2,7 @@ class IACUCProcedures < KCProtocol
 
   #Tabs
   element(:procedures_tab_div) { |b| b.frm.div(id: 'tab-ProcedureDetails-div') }
-  p_action(:select_procedure_tab) { |tab, b| b.procedures_tab_div.button(value: tab).click; b.loading }
+  p_action(:select_procedure_tab) { |tab, b| b.procedures_tab_div.button(value: tab).when_present.click; b.loading }
 
   #Procedures
   #Checkboxes. no tags
@@ -37,6 +37,4 @@ class IACUCProcedures < KCProtocol
   value(:summary_custom_data) { |b| b.frm.div(align: 'left', index: 1).text }
   value(:summary_personnel) { |b| b.frm.div(align: 'left', index: 2).text }
   value(:summary_locations) { |b| b.frm.div(align: 'left', index: 3).text }
-
-
 end

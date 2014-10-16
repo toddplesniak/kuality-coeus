@@ -29,16 +29,18 @@ class IACUCProceduresObject < DataFactory
   end
 
   def view(tab)
+    #navigation expects to be inside of the iacuc protocol
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
     on(IACUCProtocolOverview).send(damballa(tab))
   end
 
-  def view_details(tab)
-      on(IACUCProcedures).select_procedure_tab(tab.downcase)
+  def view_procedure_details(tab)
+    #for tab navigation inside the procedure details section
+    on(IACUCProcedures).select_procedure_tab(tab.downcase)
   end
 
   def assign_procedure
-    view_details 'Personnel'
+    view_procedure_details 'Personnel'
     on IACUCProcedures do |page|
       page.edit_procedures
       page.all_procedures
@@ -56,7 +58,7 @@ class IACUCProceduresObject < DataFactory
     @location.merge!(opts)
 
     view 'Procedures'
-    view_details 'Location'
+    view_procedure_details 'Location'
     on IACUCProcedures do |page|
       page.location_type.pick! @location[:type]
       page.location_name.pick! @location[:name]
@@ -70,4 +72,4 @@ class IACUCProceduresObject < DataFactory
     end
   end
 
-end
+end   # IACUCProceduresObject

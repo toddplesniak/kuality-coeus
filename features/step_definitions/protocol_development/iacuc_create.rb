@@ -89,8 +89,16 @@ end
 Given /(IACUC Protocol Creator | )creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |role_name|
   case role_name
     when 'IACUC Protocol Creator '
-      # steps %{ * I log in with the #{role_name} user }
       steps '* I log in with the IACUC Protocol Creator user'
   end
   @iacuc_protocol = create IACUCProtocolObject, reduction: random_alphanums_plus(2000), refinement: random_alphanums_plus(2000), replacement: random_alphanums_plus(2000)
+end
+
+And /(IACUC Protocol Creator |)submits an Amendment for review on the IACUC Protocol$/ do |role_name|
+  case role_name
+    when 'IACUC Protocol Creator '
+      steps '* I log in with the IACUC Protocol Creator user'
+  end
+  @iacuc_protocol.create_amendment
+  @iacuc_protocol.submit_for_review review_type: 'Administrative Review', submission_type: 'Amendment'
 end

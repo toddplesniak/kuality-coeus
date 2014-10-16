@@ -53,7 +53,7 @@ When  /reopens the IACUC Protocol without saving the changes$/ do
 end
 
 When /attempts to add a Species with non-integers as the species count$/ do
-  #error message only displays 8 characters
+  #count error message only displays a max of 8 characters so we will use that as our max for count
   @species = create SpeciesObject, count: random_alphanums(8)
 
   @errors = [

@@ -20,7 +20,7 @@ Feature: Add, edit, delete species on IACUC protocol
     Then the group name, species, pain category, count type, species count should match the modified values
 
   @wip
-  Scenario: Delete an existing Species on the IACUC Protocol
+  Scenario: Delete a Species on the IACUC Protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol
     And  adds a Species to the IACUC Protocol
     And  adds a second Species to the IACUC Protocol

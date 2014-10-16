@@ -141,3 +141,20 @@ When /submits? the Protocol to the Committee for expedited review, with an appro
           * assigns the Protocol to reviewers
           * submits an expedited approval on the Protocol with a date of last year|
 end
+
+When /the (IACUC Administrator |)approves the amendment$/ do |role_name|
+  case role_name
+    when 'IACUC Administrator '
+      steps '* log in with the IACUC Administrator user'
+  end
+  # amendment needed a special method
+  @iacuc_protocol.admin_approve_amendment
+end
+
+When /(IACUC Administrator |)suspends the amendment$/ do |role_name|
+  case role_name
+    when 'IACUC Administrator '
+      steps '* log in with the IACUC Administrator user'
+  end
+  @iacuc_protocol.suspend
+end
