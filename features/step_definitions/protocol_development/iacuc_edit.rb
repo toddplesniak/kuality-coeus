@@ -85,6 +85,7 @@ When /adds (.*) personnel members? to the IACUC Protocol$/ do |num|
   count = {'one' => 1, 'two' => 2}
   @personnel = create IACUCPersonnel
   @personnel2 = create IACUCPersonnel if count[num] > 1
+
 end
 
 When /edits the Principles of (.*)/ do |principle|

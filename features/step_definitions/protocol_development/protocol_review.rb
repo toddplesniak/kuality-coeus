@@ -11,7 +11,7 @@ Then /^the assigned reviewers get a Protocol Review$/ do
     end
     title_string = "KC Protocol Review - #{@irb_protocol.principal_investigator.last_name}/Protocol# #{@irb_protocol.protocol_number}"
     on(ActionList).open_review(title_string)
-    on(OnlineReview).new_review_comment(rev_name).should be_present
+    expect(on(OnlineReview).new_review_comment(rev_name)).to be_present
     reviewer.sign_out
   end
 end

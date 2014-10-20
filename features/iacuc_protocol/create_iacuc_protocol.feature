@@ -49,11 +49,3 @@ Feature: Creating IACUC Protocols
     And edits the Principles of refinement
     And edits the Principles of replacement
     Then the three principles should have the edited values after saving the IACUC Protocol
-
-  @wip @KCIAC-256
-  Scenario: do some protocol actions
-    Given the IACUC Administrator approves a submitted IACUC Protocol
-    And  the IACUC Protocol Creator submits an Amendment for review on the IACUC Protocol
-    When the IACUC Administrator approves the amendment
-    And  suspends the amendment
-    Then the IACUC Protocol submission status should be Suspended

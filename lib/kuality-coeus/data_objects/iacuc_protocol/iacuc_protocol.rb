@@ -81,6 +81,7 @@ class IACUCProtocolObject < DataFactory
       search.protocol_number.set protocol_number
       search.search
       search.active_yes.set
+      #Parameter needed for Amendment with unique protocol number
       search.edit_item("#{protocol_number}")
     end
   end
@@ -104,25 +105,6 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
-  def submit_for_review opts={}
-    @review ||= {
-        submission_type: '::random::',
-        review_type: '::random::',
-        type_qualifier: '::random::'
-    }
-    @review.merge!(opts)
-
-    view 'IACUC Protocol Actions'
-    on IACUCSubmitForReview do |page|
-      page.expand_all
-      page.submission_type.pick! @review[:submission_type]
-      page.review_type.pick! @review[:review_type]
-      page.type_qualifier.pick! @review[:type_qualifier]
-
-      page.submit
-    end
-  end
-
   def send_notification_to_employee
     on(IACUCProtocolOverview).send_notification
     on(NotificationEditor).employee_search
@@ -136,6 +118,13 @@ class IACUCProtocolObject < DataFactory
       page.add
       page.send_it
     end
+  end
+
+  def add_organization opts={}
+    view 'Protocol'
+    raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
+    @organization = make OrganizationObject, opts
+    @organization.create
   end
 
   def add_protocol_exception opts={}
@@ -152,6 +141,28 @@ class IACUCProtocolObject < DataFactory
       page.species.pick!  @species[:species]
       page.justification.fit @protocol_exception[:justification]
       page.add_exception
+    end
+  end
+
+  # -----
+  # Protocol Actions
+  # -----
+  def submit_for_review opts={}
+    @review ||= {
+        submission_type: '::random::',
+        review_type: '::random::',
+        type_qualifier: '::random::'
+    }
+    @review.merge!(opts)
+
+    view 'IACUC Protocol Actions'
+    on IACUCSubmitForReview do |page|
+      page.expand_all
+      page.submission_type.pick! @review[:submission_type]
+      page.review_type.pick! @review[:review_type]
+      page.type_qualifier.pick! @review[:type_qualifier]
+
+      page.submit
     end
   end
 
@@ -172,9 +183,16 @@ class IACUCProtocolObject < DataFactory
       page.submit
     end
     on(NotificationEditor).send_it
-    #navigate to protocol then save doc id because when approving an amendment this information changes
+
+    # navigate to protocol then save document id
+    # because when approving an amendment this information changes
+    # and user is left on the amendment without any indication
+    # of what the new document id is.
     view_by_protcol_number
-    @document_id = on(ProtocolActions).document_id
+    on ProtocolActions do |page|
+      page.headerarea.wait_until_present
+      @document_id = page.document_id
+    end
   end
 
   def request_to_deactivate
@@ -182,8 +200,7 @@ class IACUCProtocolObject < DataFactory
     on RequestToDeactivate do |page|
       page.expand_all
       page.submit
-
-      #First time the status changes to pending and need to deactivate a second time
+      #First time the status changes to 'pending' and need to deactivate a second time
       page.expand_all
       page.submit
     end
@@ -208,13 +225,6 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
   end
 
-  def add_organization opts={}
-    view 'Protocol'
-    raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
-    @organization = make OrganizationObject, opts
-    @organization.create
-  end
-
   def create_amendment opts={}
     @amendment = {
         summary: random_alphanums_plus,
@@ -233,10 +243,9 @@ class IACUCProtocolObject < DataFactory
       end
       page.create
     end
-
     confirmation('yes')
 
-    #Amendment has different header with 9 fields
+    #Amendment has a different header with 9 fields instead of the normal 6 fields
     gather_document_info
     @amendment[:protocol_number] = @doc[:protocol_number]
     @amendment[:document_id] = @doc[:document_id]
@@ -245,26 +254,60 @@ class IACUCProtocolObject < DataFactory
   end
 
   def suspend
-    view_by_protcol_number
     view 'IACUC Protocol Actions'
-    @document_id = on(IACUCProtocolActions).document_id
-
     on Suspend do |page|
       page.expand_all
       page.submit
     end
   end
 
+  def expire
+    view 'IACUC Protocol Actions'
+    on Expire do |page|
+      page.expand_all
+      page.submit
+    end
+  end
+
+  def terminate
+    view 'IACUC Protocol Actions'
+    on Terminate do |page|
+      page.expand_all
+      page.submit
+    end
+  end
+
+  def action(page_class)
+    #can be used with IACUC Protocol Actions with submit button
+    #Assign to Agenda, Hold, Suspend, Expire, Terminate
+    view 'IACUC Protocol Actions'
+    # @document_id = on(IACUCProtocolActions).document_id
+    pageKlass = Kernel.const_get(page_class.split.map(&:capitalize).join(''))
+    on pageKlass do |page|
+      page.expand_all
+
+      #TODO:: Add to this method
+      page.submit
+    end
+    on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
+  end
+
+
+  # For Amendment document with 9 fields
   def gather_document_info
     keys=[]
     values=[]
     @doc={}
 
     on IACUCProtocolOverview do |page|
+      # collecting the keys from the header table
       page.headerarea.ths.each {|k| keys << k.text.gsub(':', ' ').gsub('#', 'number').strip.gsub(' ', '_').downcase.to_sym }
+      # collecting the values from the header table
       page.headerarea.tds.each {|v| values << v.text }
     end
+    # turning the two arrays into a usable hash
     @doc = Hash[[keys, values].transpose]
+    #removing empty key value pairs
     @doc.delete_if {|k,v| v.nil? or k==:"" }
   end
 

@@ -21,9 +21,7 @@ class IACUCLocationNameMaintenanceObject < DataFactory
     visit(Maintenance).iacuc_location_name
     on(LocationNameLookup).create
     on LocationNameMaintenance do |page|
-      DEBUG.message "#{@location_name} and the code is: #{@location_name_code}, type_code is #{@location_type_code}"
       fill_out page, :description, :location_name_code, :location_name, :location_type_code
-
       page.send(@press) unless @press.nil?
     end
   end

@@ -1,14 +1,13 @@
-Then /^the IACUC Protocol status should be (.*)$/ do |status|
-  on IACUCProtocolOverview do |page|
-    expect(page.document_status).to eq status
-  end
-end
-
-Then /^the IACUC Protocol submission status should be (.*)$/ do |submission_status|
+Then /^the IACUC Protocol (submission status|status) should be (.*)$/ do |status_field, status_message|
     @iacuc_protocol.view 'Protocol'
     #Need to collect page info because amendment has different fields from the default.
     @iacuc_protocol.gather_document_info
-    expect(@iacuc_protocol.doc[:submission_status]).to eq submission_status
+    case status_field
+      when 'submission status'
+        expect(@iacuc_protocol.doc[:submission_status]).to eq status_message
+      when 'status'
+        expect(@iacuc_protocol.doc[:status]).to eq status_message
+    end
 end
 
 Then /^the summary will display the location of the procedure$/ do

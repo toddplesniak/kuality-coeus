@@ -27,6 +27,7 @@ class IACUCPersonnel <  DataFactory
 
           page.protocol_role.pick @protocol_role
           page.add_person
+          page.save
         end
       end
 
