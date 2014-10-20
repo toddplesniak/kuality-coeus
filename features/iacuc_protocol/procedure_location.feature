@@ -6,7 +6,7 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
 
-  @wip @KCTEST-918
+  @KCTEST-918
   Scenario: Create a IACUC proposal
     Given the IACUC Protocol Creator creates an IACUC Protocol with one Species
     And   adds a Procedure to the IACUC Protocol
