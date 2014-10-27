@@ -44,7 +44,7 @@ And /the IACUC Administrator creates an? IACUC Committee with an? area of resear
   @committee.add_area_of_research
 end
 
-And /(IACUC Protocol Creator | )creates an IACUC Protocol with one Species$/ do |role_name|
+And /(IACUC Protocol Creator |)creates an IACUC Protocol with one Species$/ do |role_name|
   case role_name
     when 'IACUC Protocol Creator '
       steps '* I log in with the IACUC Protocol Creator user'
@@ -66,11 +66,11 @@ When /adds a (second |)Species to the IACUC Protocol$/ do |species_number|
   end
 end
 
-When /^the Application Administrator creates a new Location type$/ do
+When /^the Application Administrator creates a new Location type maintenance document$/ do
   @location_type = create IACUCLocationTypeMaintenanceObject
 end
 
-And /adds a location name to the location type$/ do
+And /adds a location name to the location type maintenance document$/ do
   @location_name = create IACUCLocationNameMaintenanceObject, location_type_code: @location_type.location_type
 end
 
@@ -83,10 +83,10 @@ When /(IACUC Protocol Creator |)assigns the created location to a Procedure on t
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
 
-  @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, species: @species.species)
+  @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, room: rand(100..999), species: @species.species)
 end
 
-Given /(IACUC Protocol Creator | )creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |role_name|
+Given /(IACUC Protocol Creator |)creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |role_name|
   case role_name
     when 'IACUC Protocol Creator '
       steps '* I log in with the IACUC Protocol Creator user'
@@ -101,4 +101,16 @@ And /(IACUC Protocol Creator |)submits an Amendment for review on the IACUC Prot
   end
   @iacuc_protocol.create_amendment
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review', submission_type: 'Amendment'
+end
+
+And  /(IACUC Protocol Creator |)creates an IACUC Protcol with the edited location name for a Procedure$/ do |role_name|
+  case role_name
+    when 'IACUC Protocol Creator '
+      steps '* I log in with the IACUC Protocol Creator user'
+  end
+
+  @iacuc_protocol = create IACUCProtocolObject
+  @species = create SpeciesObject
+  @procedures = create IACUCProceduresObject
+  @procedures.set_location location_name: @location_name.location_name,  species: @species.species
 end

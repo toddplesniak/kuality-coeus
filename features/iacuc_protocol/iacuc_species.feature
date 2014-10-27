@@ -1,7 +1,7 @@
 @IACUC
 Feature: Add, edit, delete species on IACUC protocol
 
-  As a researcher I want the ability to add edit and remove species on the IACUC Protocol
+  As a researcher I want the ability to add, edit and remove species on an IACUC Protocol
 
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator

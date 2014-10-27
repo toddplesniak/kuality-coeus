@@ -1,5 +1,5 @@
 @IACUC
-Feature: add special reviews and verify error messages
+Feature: IACUC Protocol adding special reviews and verify correct error messages display
 
   Add special reviews to the IACUC Protocol and verify errors display when fields are entered incorrectly
 
@@ -30,4 +30,3 @@ Feature: add special reviews and verify error messages
     Given the IACUC Protocol Creator creates an IACUC Protocol
     When attempts to add a Special Review to generate error messages for incorrect date structures
     Then errors should appear warning that the field contents are not valid
-

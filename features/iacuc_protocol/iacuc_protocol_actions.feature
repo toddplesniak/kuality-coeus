@@ -26,3 +26,27 @@ Feature: Protocol actions for IACUC
     And  submits a expire action on the iacuc protocol
     Then the IACUC Protocol status should be Expired
 
+  @wip @KCIAC-256
+  Scenario: Withdraw a submitted IACUC Protocol
+    Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
+    When the IACUC Administrator withdrawls the IACUC Protocol
+    Then the IACUC Protocol submission status should be Withdrawn
+
+  @KCTEST-881
+  Scenario: Verify the expiration date is set after the IACUC Protocol is approved
+    Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
+    When the IACUC Administrator approves the IACUC Protocol
+    Then  the expiration date is set for the Protocol
+
+  @KC-TA-5417
+  Scenario: IACUC Admin deactivates an IACUC Protocol
+    Given the IACUC Administrator approves a submitted IACUC Protocol
+    When  the IACUC Administrator deactivates the IACUC Protocol
+    Then  the IACUC Protocol status should be Deactivated
+
+  @KC-TA-5417
+  Scenario: IACUC Admin lifts a hold on an IACUC Protocol that was placed on hold
+    Given the IACUC Administrator approves a submitted IACUC Protocol
+    And   places the IACUC Protocol on hold
+    When  lifts the hold placed on the IACUC Protocol
+    Then  the IACUC Protocol submission status should be Lift Hold

@@ -2,12 +2,34 @@ And /adds a Species group to the IACUC Protocol$/ do
   @species = create SpeciesObject
 end
 
-And /assigns a location to the Procedure with a type of '(.*)' on the IACUC Protocol$/ do |type|
-  @procedures.set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @species.species)
+And /assigns a (second |)location to the Procedure with a type of '(.*)' on the IACUC Protocol$/ do |count, type|
+  case count
+    when 'second '
+      @procedures2 = make IACUCProceduresObject
+      @procedures2.set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @species.species)
+    else
+      @procedures.set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @species.species)
+  end
+end
+
+And /edits the location type, name, room, description on the IACUC Protocol$/ do
+  @procedures_edit = make IACUCProceduresObject
+  @procedures_edit.edit_location(index: '0', name: '::random::', room: rand(100..999), description: random_alphanums_plus)
 end
 
 And /adds a Procedure to the IACUC Protocol$/ do
   @procedures = create IACUCProceduresObject
+end
+
+And   /deletes the (first |second )location from the Procedure$/ do |count|
+  case count
+    when 'first ' || ''
+      line_index = '0'
+      @procedures.delete_location(line_index)
+    when 'second '
+      line_index = '1'
+      @procedures2.delete_location(line_index)
+  end
 end
 
 When /deactivates the IACUC Protocol$/ do
@@ -20,6 +42,10 @@ end
 
 When  /lifts the hold placed on the IACUC Protocol$/ do
   @iacuc_protocol.lift_hold
+end
+
+When /withdrawls the IACUC Protocol$/ do
+  @iacuc_protocol.withdraw
 end
 
 When /^the IACUC Administrator approves the IACUC Protocol$/ do
@@ -139,4 +165,8 @@ end
 
 When /adds a Special Review to the IACUC Protocol$/ do
   @special_review = create SpecialReviewObject
+end
+
+And /edits the location name on the maintenance document$/ do
+  @location_name.edit location_name: random_alphanums
 end

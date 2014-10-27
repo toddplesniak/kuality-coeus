@@ -8,7 +8,7 @@ class IACUCProtocolObject < DataFactory
                :alternate_search_required, :reduction, :refinement, :replacement,
                #others
                :procedures, :location, :document_id,
-               :species, :organization, :old_organization_address, :species_modify,
+               :species, :organization, :old_organization_address, :species_modify, :withdrawl_reason,
                :principles, :doc
 
   def initialize(browser, opts={})
@@ -216,6 +216,15 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_it
   end
 
+  def withdraw
+    view 'IACUC Protocol Actions'
+    on WithdrawProtocol do |page|
+      page.expand_all
+      page.withdrawal_reason.fit @withdrawl_reason
+      page.submit
+    end
+  end
+
   def lift_hold
     view 'IACUC Protocol Actions'
     on LiftHold do |page|
@@ -286,14 +295,13 @@ class IACUCProtocolObject < DataFactory
     on pageKlass do |page|
       page.expand_all
 
-      #TODO:: Add to this method
+      #TODO:: Add to this method to make more robust
       page.submit
     end
     on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
   end
 
-
-  # For Amendment document with 9 fields
+  # For Amendment document with 9 header area fields
   def gather_document_info
     keys=[]
     values=[]
