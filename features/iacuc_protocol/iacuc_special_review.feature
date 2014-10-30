@@ -12,6 +12,14 @@ Feature: IACUC Protocol adding special reviews and verify correct error messages
     When IACUC Protocol Creator adds a Special Review to the IACUC Protocol
     Then the first Special Review should be displayed on the IACUC Protocol
 
+  @wip
+  Scenario: Edit special review on the IACUC Protocol
+    Given the IACUC Protocol Creator creates an IACUC Protocol
+    And IACUC Protocol Creator adds a Special Review to the IACUC Protocol
+    When IACUC Protocol Creator edits the first Special Review on the IACUC Protocol
+    Then the first Special Review should not be displayed on the IACUC Protocol
+    And the edited Special Review should display on the IACUC Protocol
+
   @wip @KCTEST-1140
   Scenario: Verify Special Review error messages display for type, approval status, and invalid dates
     Given the IACUC Protocol Creator creates an IACUC Protocol

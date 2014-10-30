@@ -88,14 +88,15 @@ When /attempts to add a Species with non-integers as the species count$/ do
 end
 
 When /saves the IACUC Protocol after modifying the required fields for the Species$/ do
-  @species.edit press: 'save', index: 0,
-                group: random_alphanums_plus(10, 'Species '),
-                species: '::random::',
-                pain_category: '::random::',
-                count_type: '::random::',
-                count: rand(1..21),
-                strain: random_alphanums_plus,
-                usda_covered: :set,
+  @species.edit press:             'save',
+                index:             0,
+                group:             random_alphanums_plus(10, 'Species '),
+                species:           '::random::',
+                pain_category:     '::random::',
+                count_type:        '::random::',
+                count:             rand(1..21),
+                strain:            random_alphanums_plus,
+                usda_covered:      :set,
                 procedure_summary: random_alphanums_plus(20)
 end
 
@@ -165,6 +166,26 @@ end
 
 When /adds a Special Review to the IACUC Protocol$/ do
   @special_review = create SpecialReviewObject
+end
+
+When /(IACUC Protocol Creator |)edits the (first |second | )Special Review on the IACUC Protocol$/ do |role_name, line_item|
+  case role_name
+    when 'IACUC Protocol Creator '
+      steps '* I log in with the IACUC Protocol Creator user'
+  end
+  index = {'first ' => 0, 'second ' => 1}
+  @special_review_edit = make SpecialReviewObject
+
+  the_type_array= ['Recombinant DNA','Biohazard Materials','International Programs','Space Change',
+              'TLO Review - No conflict (A)','TLO review - Reviewed, no conflict (B1)',
+              'TLO Review - Potential Conflict (B2)','TLO PR-Previously Reviewed','Foundation Relations']
+
+  the_type_array.delete(@special_review.type)
+
+  @special_review_edit.edit index:           "#{index[line_item]}",
+                            type:   the_type_array.sample,
+                            approval_status: '::random::',
+                            press: 'save'
 end
 
 And /edits the location name on the maintenance document$/ do

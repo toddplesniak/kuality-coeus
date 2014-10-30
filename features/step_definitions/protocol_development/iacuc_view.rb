@@ -163,14 +163,40 @@ Then /^the three principles should have the edited values after saving the IACUC
   end
 end
 
-Then /(first |)Special Review should be displayed on the IACUC Protocol$/ do |count|
-  index = { 'first ' => 0 }
-
+Then /(first |second |)Special Review should (not |)be displayed on the IACUC Protocol$/ do |count, to_be_or_not_to_be|
+  index = {'' => 0, 'first ' => 0, 'second ' => 1}
   on SpecialReview do |page|
     page.reload
     on(Confirmation).yes if on(Confirmation).yes_button.present?
 
-    expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review.type
-    expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review.approval_status
+    case to_be_or_not_to_be
+      when 'not ' #Special should NOT be displayed
+        if index[count] == ['second ']
+          expect(page.type_added(index[count]).selected_options.first.text).to_not eq @special_review2.type
+          expect(page.approval_status_added(index[count]).selected_options.first.text).to_not eq @special_review2.approval_status
+        else
+          expect(page.type_added(index[count]).selected_options.first.text).to_not eq @special_review.type
+          expect(page.approval_status_added(index[count]).selected_options.first.text).to_not eq @special_review.approval_status
+        end
+      else  #If special reviwer SHOULD be displayed
+        if index[count] == ['second ']
+          expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review2.type
+          expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review2.approval_status
+        else
+          expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review.type
+          expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review.approval_status
+        end
+    end
+
+  end
+end
+
+And /^the (first |)edited Special Review should display on the IACUC Protocol$/ do |count|
+  index = {'' => 0, 'first ' => 0}
+  on SpecialReview do |page|
+    page.reload
+    on(Confirmation).yes if on(Confirmation).yes_button.present?
+    expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review_edit.type
+    expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review_edit.approval_status
   end
 end

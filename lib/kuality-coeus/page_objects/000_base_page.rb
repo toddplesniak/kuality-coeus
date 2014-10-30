@@ -191,7 +191,8 @@ class BasePage < PageFactory
       p_element(:application_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].applicationDate") }
       p_element(:approval_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].approvalDate") }
       p_element(:expiration_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].expirationDate") }
-      p_element(:exemption_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].exemptionTypeCodes") }
+      p_element(:exemption_number_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].exemptionTypeCodes") }
+      alias_method :exemption_added, :exemption_number_added
       p_element(:comments_added) { |index, b| b.frm.textarea(name: "document.protocolList[0].specialReviews[#{index}].comments") }
 
       p_action(:delete) { |index, b| b.frm.button(name: "methodToCall.deleteSpecialReview.line#{index}.anchor0.validate0").click }

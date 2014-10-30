@@ -43,17 +43,15 @@ class SpecialReviewObject < DataFactory
   def edit opts={}
     view
     on SpecialReview do |edit|
-      edit.type_added(index).pick! @type
-      edit.approval_status_added(@index).pick! @approval_status
-      edit.exemption_number_added(@index).pick! @exemption_number
-      edit.protocol_number_added(@index).fit @protocol_number
-      edit.application_date_added(@index).fit @application_date
-      edit.approval_date_added(@index).fit @approval_date
-      edit.expiration_date_added(@index).fit @expiration_date
-
-      edit.send(@press) unless @press.nil?
+      edit.type_added(opts[:index]).pick! opts[:type]
+      edit.approval_status_added(opts[:index]).pick! opts[:approval_status]
+      edit.exemption_number_added(opts[:index]).pick! opts[:exemption_number]
+      edit.protocol_number_added(opts[:index]).fit opts[:protocol_number]
+      edit.application_date_added(opts[:index]).fit opts[:application_date]
+      edit.approval_date_added(opts[:index]).fit opts[:approval_date]
+      edit.expiration_date_added(opts[:index]).fit opts[:expiration_date]
+      edit.send(opts[:press]) unless opts[:press].nil?
     end
-
     set_options(opts)
   end
 
