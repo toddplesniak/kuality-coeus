@@ -27,5 +27,3 @@ Feature: Adding Organizations to IACUC Protocols
     And   changes the contact information on the added Organization
     When  the IACUC Protocol Creator reopens the IACUC Protocol without saving the changes
     Then  on the IACUC Protocol the contact information for the added Organization is reverted
-
-

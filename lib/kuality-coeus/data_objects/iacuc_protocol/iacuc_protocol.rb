@@ -53,10 +53,7 @@ class IACUCProtocolObject < DataFactory
       @search_key = { protocol_number: @protocol_number }
     end
 
-    #if you want to do more than just submit a protocol then this needs to be set to 'yes' or 'no'
     theThreeRs alternate_search_required: @alternate_search_required, reduction: @reduction, refinement: @refinement, replacement: @replacement
-
-    # alternate_search_required unless @alternate_search_required.nil?
   end
 
   def view(tab)
@@ -75,13 +72,14 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
-  def view_by_protcol_number(protocol_number=@protocol_number)
+  def view_by_protocol_number(protocol_number=@protocol_number)
     visit(Researcher).search_iacuc_protocols
     on ProtocolLookup do |search|
       search.protocol_number.set protocol_number
       search.search
       search.active_yes.set
-      #Parameter needed for Amendment with unique protocol number
+      #Parameter needed for Amendment which creates a unique protocol number with 4 extra digits at the end
+      #example base protocol number 1410000010 then amendment becomes 1410000010A001
       search.edit_item("#{protocol_number}")
     end
   end
@@ -176,7 +174,7 @@ class IACUCProtocolObject < DataFactory
   end
 
   def admin_approve_amendment
-    view_by_protcol_number(@amendment[:protocol_number])
+    view_by_protocol_number(@amendment[:protocol_number])
     view 'IACUC Protocol Actions'
     on AdministrativelyApproveProtocol do |page|
       page.expand_all
@@ -184,11 +182,11 @@ class IACUCProtocolObject < DataFactory
     end
     on(NotificationEditor).send_it
 
-    # navigate to protocol then save document id
+    # navigate to protocol using protocol numberthen save document id
     # because when approving an amendment this information changes
     # and user is left on the amendment without any indication
     # of what the new document id is.
-    view_by_protcol_number
+    view_by_protocol_number
     on ProtocolActions do |page|
       page.headerarea.wait_until_present
       @document_id = page.document_id
