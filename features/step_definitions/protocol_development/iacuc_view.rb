@@ -1,6 +1,6 @@
 Then /^the IACUC Protocol (submission status|status) should be (.*)$/ do |status_field, status_message|
     @iacuc_protocol.view 'Protocol'
-    #Need to collect page info because amendment has different fields from the default.
+    #Need to collect page info because amendment has 9 fields that are different from the default 6.
     @iacuc_protocol.gather_document_info
     case status_field
       when 'submission status'
@@ -14,7 +14,6 @@ Then /^the summary will display the location of the procedure$/ do
   on IACUCProcedures do |page|
     page.select_procedure_tab 'summary'
     page.expand_all
-
     expect(page.summary_locations).to include @procedures.location[:type]
     expect(page.summary_locations).to include @procedures.location[:description]
     expect(page.summary_locations).to include @procedures.location[:room].to_s
@@ -52,10 +51,11 @@ Then /^the (first|second) location is not listed on the IACUC Protocol$/ do |cou
         expect(page.summary_locations).to_not include @procedures2.location[:room].to_s
         expect(page.summary_locations).to_not include @procedures2.location[:name]
     end
+
   end
 end
 
-And   /^the (first|second) location is listed on the IACUC Protocol$/ do |count|
+And /^the (first|second) location is listed on the IACUC Protocol$/ do |count|
   on IACUCProcedures do |page|
     page.select_procedure_tab 'summary'
     page.expand_all
@@ -72,6 +72,7 @@ And   /^the (first|second) location is listed on the IACUC Protocol$/ do |count|
         expect(page.summary_locations).to include @procedures2.location[:room].to_s
         expect(page.summary_locations).to include @procedures2.location[:name]
     end
+
   end
 end
 
@@ -106,13 +107,13 @@ end
 
 Then /^the group name, species, pain category, count type, species count should match the (.*) values$/ do |count|
   index = {'modified' => 0}
-    on SpeciesGroups do |page|
-      expect(page.group_added_value(index[count])).to eq @species.group
-      expect(page.count_added_value(index[count])).to eq @species.count.to_s
-      expect(page.species_added_value(index[count])).to eq @species.species
-      expect(page.pain_category_added_value(index[count])).to eq @species.pain_category
-      expect(page.count_type_added_value(index[count])).to eq @species.count_type
-    end
+  on SpeciesGroups do |page|
+    expect(page.group_added_value(index[count])).to eq @species.group
+    expect(page.count_added_value(index[count])).to eq @species.count.to_s
+    expect(page.species_added_value(index[count])).to eq @species.species
+    expect(page.pain_category_added_value(index[count])).to eq @species.pain_category
+    expect(page.count_type_added_value(index[count])).to eq @species.count_type
+  end
 end
 
 Then /^the (.*) Species added should be the only Species on the IACUC Protocol$/ do |count|

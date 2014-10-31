@@ -37,15 +37,15 @@ class IACUCPersonnel <  DataFactory
       end
 
       def return_random_person
-        on IACUCProtocolOverview do |page|
-          the_row = rand(page.return_value_links.length)
+        on KcPersonLookup do |lookup|
+          the_row = rand(lookup.return_value_links.length)
           #need to capture the randomly select person data for validation and future use
-          @kcperson_id = page.return_value_links[the_row].parent.parent.td(index: 1).text
-          @full_name = page.return_value_links[the_row].parent.parent.td(index: 2).text
-          @user_name = page.return_value_links[the_row].parent.parent.td(index: 3).text
-          @email_address =  page.return_value_links[the_row].parent.parent.td(index: 4).text
+          @kcperson_id = lookup.return_value_links[the_row].parent.parent.td(index: 1).text
+          @full_name = lookup.return_value_links[the_row].parent.parent.td(index: 2).text
+          @user_name = lookup.return_value_links[the_row].parent.parent.td(index: 3).text
+          @email_address =  lookup.return_value_links[the_row].parent.parent.td(index: 4).text
 
-          page.return_value_links[the_row].click
+          lookup.return_value_links[the_row].click
         end
       end
 end #IACUCPersonnel

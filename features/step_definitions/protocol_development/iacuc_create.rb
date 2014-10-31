@@ -82,7 +82,6 @@ When /(IACUC Protocol Creator |)assigns the created location to a Procedure on t
   @iacuc_protocol = create IACUCProtocolObject
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
-
   @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, room: rand(100..999), species: @species.species)
 end
 

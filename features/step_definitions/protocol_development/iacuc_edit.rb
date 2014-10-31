@@ -79,9 +79,8 @@ When  /reopens the IACUC Protocol without saving the changes$/ do
 end
 
 When /attempts to add a Species with non-integers as the species count$/ do
-  #count error message only displays a max of 8 characters so we will use that as our max for count
+  #count error message only displays a max of 8 characters so we will use that as our max characters for the count
   @species = create SpeciesObject, count: random_alphanums(8)
-
   @errors = [
       "#{@species.count} is not a valid integer."
   ]
@@ -112,7 +111,6 @@ When /adds (.*) personnel members? to the IACUC Protocol$/ do |num|
   count = {'one' => 1, 'two' => 2}
   @personnel = create IACUCPersonnel
   @personnel2 = create IACUCPersonnel if count[num] > 1
-
 end
 
 When /edits the Principles of (.*)/ do |principle|
@@ -129,10 +127,13 @@ When /edits the Principles of (.*)/ do |principle|
 end
 
 When /attempts to add a Special Review to generate error messages$/ do
-  @special_review = create  SpecialReviewObject, type: nil, approval_status: nil,
-                            application_date: rand(130000..999999), approval_date: rand(130000..999999),
-                            expiration_date: rand(130000..999999),
-                            press: nil
+  @special_review = create  SpecialReviewObject,
+                            type:             nil,
+                            approval_status:  nil,
+                            application_date: rand(130000..999999),
+                            approval_date:    rand(130000..999999),
+                            expiration_date:  rand(130000..999999),
+                            press:            nil
   @errors = [
       'Type is a required field.',
       'Approval Status is a required field.',
@@ -144,19 +145,24 @@ end
 
 When /attempts to add a Special Review for human subjects, status approved, and an exemption$/ do
 
-  @special_review = create  SpecialReviewObject, type: 'Human Subjects', approval_status: 'Approved',
+  @special_review = create  SpecialReviewObject,
+                            type:             'Human Subjects',
+                            approval_status:  'Approved',
                             exemption_number: '::random::',
-                            press: nil
+                            press:            nil
   @errors = [
       'Protocol Number is a required field for Human Subjects/Approved.',
-      'Cannot select Exemption # for Human Subjects/Approved',
+      'Cannot select Exemption # for Human Subjects/Approved'
   ]
 end
 
 When /attempts to add a Special Review to generate error messages for incorrect date structures$/ do
-  @special_review = create  SpecialReviewObject, application_date: tomorrow[:date_w_slashes], approval_date: right_now[:date_w_slashes],
-                            expiration_date: yesterday[:date_w_slashes], exemption_number: '::random::',
-                            press: nil
+  @special_review = create  SpecialReviewObject,
+                            application_date: tomorrow[:date_w_slashes],
+                            approval_date:    right_now[:date_w_slashes],
+                            expiration_date:  yesterday[:date_w_slashes],
+                            exemption_number: '::random::',
+                            press:            nil
   @errors = [
       'Approval Date should be the same or later than Application Date.',
       'Expiration Date should be the same or later than Approval Date.',
@@ -183,9 +189,9 @@ When /(IACUC Protocol Creator |)edits the (first |second | )Special Review on th
   the_type_array.delete(@special_review.type)
 
   @special_review_edit.edit index:           "#{index[line_item]}",
-                            type:   the_type_array.sample,
+                            type:            the_type_array.sample,
                             approval_status: '::random::',
-                            press: 'save'
+                            press:           'save'
 end
 
 And /edits the location name on the maintenance document$/ do
