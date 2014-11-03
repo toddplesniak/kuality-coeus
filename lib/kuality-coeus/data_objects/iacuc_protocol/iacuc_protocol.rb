@@ -3,10 +3,13 @@ class IACUCProtocolObject < DataFactory
   include StringFactory, Navigation, DateFactory, Protocol
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
-               :protocol_project_type, :lay_statement_1, :alternate_search_required,
+               :protocol_project_type, :lay_statement_1,
+               #theThreeRs
+               :alternate_search_required, :reduction, :refinement, :replacement,
+               #others
                :procedures, :location, :document_id,
-               :species, :organization, :old_organization_address
-
+               :species, :organization, :old_organization_address, :species_modify, :withdrawl_reason,
+               :principles, :doc
 
   def initialize(browser, opts={})
     @browser = browser
@@ -21,7 +24,7 @@ class IACUCProtocolObject < DataFactory
         alternate_search_required: 'No',
         personnel:           collection('ProtocolPersonnel')
     }
-    @lookup_class = ProtocolLookup
+    @lookup_class = IACUCProtocolLookup
     set_options(defaults.merge(opts))
   end
 
@@ -35,6 +38,7 @@ class IACUCProtocolObject < DataFactory
       @initiator=doc.initiator
       @submission_status=doc.submission_status
       @expiration_date=doc.expiration_date
+      @protocol_number=doc.protocol_number
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title, :lay_statement_1
       doc.protocol_project_type.pick!(@protocol_project_type)
@@ -49,17 +53,17 @@ class IACUCProtocolObject < DataFactory
       @search_key = { protocol_number: @protocol_number }
     end
 
-    #if you want to do more than just submit a protocol then this needs to be set to 'yes' or 'no'
-    alternate_search_required unless @alternate_search_required.nil?
+    theThreeRs alternate_search_required: @alternate_search_required, reduction: @reduction, refinement: @refinement, replacement: @replacement
   end
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
     open_document
-    on(IACUCProtocolOverview).send(damballa(tab)) #unless @browser.frm.dt(class: 'licurrent').button.alt == tab
+    on(IACUCProtocolOverview).send(damballa(tab))
   end
 
   def view_document
+    #use this view when you are on the document and want to completely reload the document.
     visit(Researcher).doc_search
     on DocumentSearch do |search|
       search.document_id.set @document_id
@@ -68,31 +72,34 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
-  def alternate_search_required
-    view "The Three R's"
-    on TheThreeRs do |page|
-      page.expand_all
-      page.alternate_search_required.fit @alternate_search_required
-
-      page.save
+  def view_by_protocol_number(protocol_number=@protocol_number)
+    visit(Researcher).search_iacuc_protocols
+    on ProtocolLookup do |search|
+      search.protocol_number.set protocol_number
+      search.search
+      search.active_yes.set
+      #Parameter needed for Amendment which creates a unique protocol number with 4 extra digits at the end
+      #example base protocol number 1410000010 then amendment becomes 1410000010A001
+      search.edit_item("#{protocol_number}")
     end
   end
 
-  def submit_for_review opts={}
-    @review ||= {
-        submission_type: '::random::',
-        review_type: '::random::',
-        type_qualifier: '::random::'
+  def theThreeRs opts={}
+    @principles = {
+      alternate_search_required: 'No'
     }
-    @review.merge!(opts)
+    @principles.merge!(opts)
 
-    view 'IACUC Protocol Actions'
-    on IACUCSubmitForReview do |page|
+    view "The Three R's"
+    on TheThreeRs do |page|
       page.expand_all
-      page.submission_type.pick! @review[:submission_type]
-      page.review_type.pick! @review[:review_type]
-      page.type_qualifier.pick! @review[:type_qualifier]
-      page.submit
+
+      page.reduction.fit @principles[:reduction]
+      page.refinement.fit @principles[:refinement]
+      page.replacement.fit @principles[:replacement]
+
+      page.alternate_search_required.fit @principles[:alternate_search_required]
+      page.save
     end
   end
 
@@ -111,28 +118,11 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
-  def add_species_group opts={}
-    @species ||= {
-        name: random_alphanums_plus(10, 'Species '),
-        species: '::random::',
-        pain_category: '::random::',
-        count_type: '::random::',
-        count: rand(1..21)
-    }
-    @species.merge!(opts)
-
-    view 'Species Groups'
-    on SpeciesGroups do |page|
-      page.expand_all
-      page.species_group_field.fit @species[:name]
-      page.species_count.fit @species[:count]
-      page.species.pick! @species[:species]
-      page.pain_category.pick! @species[:pain_category]
-      page.count_type.pick! @species[:count_type]
-      page.add_species
-
-      page.save
-    end
+  def add_organization opts={}
+    view 'Protocol'
+    raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
+    @organization = make OrganizationObject, opts
+    @organization.create
   end
 
   def add_protocol_exception opts={}
@@ -152,6 +142,28 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
+  # -----
+  # Protocol Actions
+  # -----
+  def submit_for_review opts={}
+    @review ||= {
+        submission_type: '::random::',
+        review_type: '::random::',
+        type_qualifier: '::random::'
+    }
+    @review.merge!(opts)
+
+    view 'IACUC Protocol Actions'
+    on IACUCSubmitForReview do |page|
+      page.expand_all
+      page.submission_type.pick! @review[:submission_type]
+      page.review_type.pick! @review[:review_type]
+      page.type_qualifier.pick! @review[:type_qualifier]
+
+      page.submit
+    end
+  end
+
   def admin_approve
     view 'IACUC Protocol Actions'
     on AdministrativelyApproveProtocol do |page|
@@ -161,13 +173,32 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_it
   end
 
+  def admin_approve_amendment
+    view_by_protocol_number(@amendment[:protocol_number])
+    view 'IACUC Protocol Actions'
+    on AdministrativelyApproveProtocol do |page|
+      page.expand_all
+      page.submit
+    end
+    on(NotificationEditor).send_it
+
+    # navigate to protocol using protocol numberthen save document id
+    # because when approving an amendment this information changes
+    # and user is left on the amendment without any indication
+    # of what the new document id is.
+    view_by_protocol_number
+    on ProtocolActions do |page|
+      page.headerarea.wait_until_present
+      @document_id = page.document_id
+    end
+  end
+
   def request_to_deactivate
     view 'IACUC Protocol Actions'
     on RequestToDeactivate do |page|
       page.expand_all
       page.submit
-
-      #First time the status changes to pending and need to deactivate a second time
+      #First time the status changes to 'pending' and need to deactivate a second time
       page.expand_all
       page.submit
     end
@@ -183,26 +214,106 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_it
   end
 
+  def withdraw
+    view 'IACUC Protocol Actions'
+    on WithdrawProtocol do |page|
+      page.expand_all
+      page.withdrawal_reason.fit @withdrawl_reason
+      page.submit
+    end
+  end
+
   def lift_hold
     view 'IACUC Protocol Actions'
     on LiftHold do |page|
       page.expand_all
       page.submit
     end
-    on(NotificationEditor).send_it if   on(NotificationEditor).send_button.present?
+    on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
   end
 
-  def add_procedure opts={}
-    view 'Procedures'
-    @procedures = make IACUCProceduresObject, opts
-    @procedures.create
+  def create_amendment opts={}
+    @amendment = {
+        summary: random_alphanums_plus,
+        sections: [['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+                    'Protocol Organizations', 'Questionnaire', 'General Info',
+                    'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
+    }
+    @amendment.merge!(opts)
+    view 'IACUC Protocol Actions'
+
+    on CreateAmendment do |page|
+      page.expand_all
+      page.summary.set @amendment[:summary]
+      @amendment[:sections].each do |sect|
+        page.amend(sect).set
+      end
+      page.create
+    end
+    confirmation('yes')
+
+    #Amendment has a different header with 9 fields instead of the normal 6 fields
+    gather_document_info
+    @amendment[:protocol_number] = @doc[:protocol_number]
+    @amendment[:document_id] = @doc[:document_id]
+
+    @document_id = on(IACUCProtocolActions).document_id
   end
 
-  def add_organization opts={}
-    view 'Protocol'
-    raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
-    @organization = make OrganizationObject, opts
-    @organization.create
+  def suspend
+    view 'IACUC Protocol Actions'
+    on Suspend do |page|
+      page.expand_all
+      page.submit
+    end
+  end
+
+  def expire
+    view 'IACUC Protocol Actions'
+    on Expire do |page|
+      page.expand_all
+      page.submit
+    end
+  end
+
+  def terminate
+    view 'IACUC Protocol Actions'
+    on Terminate do |page|
+      page.expand_all
+      page.submit
+    end
+  end
+
+  def action(page_class)
+    #can be used with IACUC Protocol Actions with submit button
+    #Assign to Agenda, Hold, Suspend, Expire, Terminate
+    view 'IACUC Protocol Actions'
+    pageKlass = Kernel.const_get(page_class.split.map(&:capitalize).join(''))
+    on pageKlass do |page|
+      page.expand_all
+
+      #TODO:: Add to this method to make more robust
+      page.submit
+    end
+    on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
+  end
+
+  # For Amendment document with 9 header area fields
+  def gather_document_info
+    keys=[]
+    values=[]
+    @doc={}
+
+    on IACUCProtocolOverview do |page|
+      # collecting the keys from the header table
+      page.headerarea.ths.each {|k| keys << k.text.gsub(':', ' ').gsub('#', 'number').strip.gsub(' ', '_').downcase.to_sym }
+      # collecting the values from the header table
+      page.headerarea.tds.each {|v| values << v.text }
+    end
+    # turning the two arrays into a usable hash
+    @doc = Hash[[keys, values].transpose]
+    #removing empty key value pairs
+    @doc.delete_if {|k,v| v.nil? or k==:"" }
   end
 
 end #IACUCProtocolObject

@@ -1,5 +1,6 @@
 class IACUCProtocolOverview < KCProtocol
 
+  expected_element :headerarea
   #removed the method created in the KCProtocol, because
   # of medusa method in search_results_table
   undefine :medusa

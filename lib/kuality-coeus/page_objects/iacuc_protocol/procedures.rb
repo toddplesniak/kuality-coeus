@@ -2,7 +2,7 @@ class IACUCProcedures < KCProtocol
 
   #Tabs
   element(:procedures_tab_div) { |b| b.frm.div(id: 'tab-ProcedureDetails-div') }
-  p_action(:select_procedure_tab) { |tab, b| b.procedures_tab_div.button(value: tab).click; b.loading }
+  p_action(:select_procedure_tab) { |tab, b| b.procedures_tab_div.button(value: tab).when_present.click; b.loading }
 
   #Procedures
   #Checkboxes. no tags
@@ -25,18 +25,36 @@ class IACUCProcedures < KCProtocol
   #Location
   element(:location_type) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationTypeCode') }
   element(:location_name) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationId') }
+
+  # This returns an array of the location names. Purpose is for when 2 or more unique location names are needed
+  # We will create and array of names, then delete the used name before sampling the array for the pick method
+  value(:location_name_array) { |arr, b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationId').options.each {|oh| arr << oh.text } }
+
   element(:location_room) { |b| b.frm.text_field(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationRoom') }
   element(:location_description) { |b| b.frm.textarea(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.studyGroupLocationDescription') }
 
   p_action(:add_location) { |index_list=0, b| b.frm.button(name: "methodToCall.addProcedureLocation.document.protocolList[#{index_list}].iacucProtocolStudyGroupBeans[].iacucProtocolStudyGroupDetailBeans[].line").click; b.loading }
 
+  # When Location line item is added there is an info line that must be used to identify the edit procedures button
+  # because there are no html tags or index numbers for those elements.
+  element(:info_line) {|line_number='1',b| b.frm.table(id: 'procedureLocationsTableId').th(class: 'infoline', text: "#{line_number.to_s}") }
+  value(:info_line_number) { |room_num, b| b.frm.text_field(title: 'Room', value: "#{room_num}").parent.parent.parent.th.text }
+  action(:location_edit_procedures) { |info_line_number, b| b.frm.th(text: "#{info_line_number}").parent.link(id: 'editProcedureLink').click }
+
+  # action(:location_delete_old_way) { |info_line_number, b| b.frm.th(text: "#{info_line_number}").parent.button(name: /^methodToCall.deleteProcedureLocation.line/).click; b.loading }
+  action(:location_delete) { |index,b| b.frm.button(name: /^methodToCall.deleteProcedureLocation.line#{index}/).click; b.loading }
+
   element(:location_table) { |b| b.frm.table(id: 'procedureLocationsTableId') }
-  action(:location_edit_procedures) { |b| b.frm.link(id: 'editProcedureLink').click }
+
+  #Location Added
+  p_element(:location_type_added) { |index, b| b.frm.select(name: "document.protocolList[0].iacucProtocolStudyGroupLocations[#{index}].locationTypeCode") }
+  p_element(:location_name_added) { |index, b| b.frm.select(name: "document.protocolList[0].iacucProtocolStudyGroupLocations[#{index}].locationId") }
+  p_element(:location_room_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].iacucProtocolStudyGroupLocations[#{index}].locationRoom") }
+  p_element(:location_description_added) { |index, b| b.frm.textarea(name: "document.protocolList[0].iacucProtocolStudyGroupLocations[#{index}].studyGroupLocationDescription") }
 
   #Summary
   value(:summary_custom_data) { |b| b.frm.div(align: 'left', index: 1).text }
   value(:summary_personnel) { |b| b.frm.div(align: 'left', index: 2).text }
   value(:summary_locations) { |b| b.frm.div(align: 'left', index: 3).text }
-
-
 end
+

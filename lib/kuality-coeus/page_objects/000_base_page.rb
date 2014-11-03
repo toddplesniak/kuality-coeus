@@ -97,7 +97,7 @@ class BasePage < PageFactory
     def search_results_table
       element(:results_table) { |b| b.frm.table(id: 'row') }
 
-      action(:edit_item) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'edit').click; p.use_new_tab; p.close_parents }
+      action(:edit_item) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'edit').when_present.click; p.use_new_tab; p.close_parents }
       alias_method :edit_person, :edit_item
 
       action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
@@ -176,7 +176,7 @@ class BasePage < PageFactory
       element(:add_approval_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.approvalDate') }
       element(:add_expiration_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.expirationDate') }
       element(:add_exemption_number) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.exemptionTypeCodes') }
-
+      alias_method :add_exemption, :add_exemption_number
       action(:add) { |b| b.frm.button(name: 'methodToCall.addSpecialReview.anchorSpecialReview').click }
 
       p_element(:type_code) { |index, b| b.frm.select(id: /specialReviews\[#{index}\].specialReviewTypeCode/) }
@@ -184,6 +184,18 @@ class BasePage < PageFactory
 
       value(:types) { |b| b.frm.selects(id: /specialReviewTypeCode/).map{ |field| field.selected_options[0].text }.delete_at(0) }
 
+      #added lines
+      p_element(:type_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].specialReviewTypeCode") }
+      p_element(:approval_status_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].approvalTypeCode") }
+      p_element(:protocol_number_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].protocolNumber") }
+      p_element(:application_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].applicationDate") }
+      p_element(:approval_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].approvalDate") }
+      p_element(:expiration_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].expirationDate") }
+      p_element(:exemption_number_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].exemptionTypeCodes") }
+      alias_method :exemption_added, :exemption_number_added
+      p_element(:comments_added) { |index, b| b.frm.textarea(name: "document.protocolList[0].specialReviews[#{index}].comments") }
+
+      p_action(:delete) { |index, b| b.frm.button(name: "methodToCall.deleteSpecialReview.line#{index}.anchor0.validate0").click }
     end
 
     def custom_data

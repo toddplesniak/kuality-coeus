@@ -141,6 +141,9 @@ class IRBProtocolObject < DataFactory
     view 'Protocol Actions'
     @expedited_approval = make ExpeditedApprovalObject, opts
     @expedited_approval.create
+
+    #FIXME!
+    # on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
   end
 
   # TODO: Finish this off...

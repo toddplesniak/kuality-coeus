@@ -26,8 +26,8 @@ class OrganizationObject < DataFactory
         on OrganizationLookup do |lookup|
           lookup.search
           return_random_organization
-          @organization_id = page.organization_id.value
         end
+        @organization_id = page.organization_id.value
       else
         page.organization_id.fit @organization_id
       end
@@ -39,16 +39,16 @@ class OrganizationObject < DataFactory
   end
 
   def return_random_organization
-    on IACUCProtocolOverview do |page|
-    the_row = rand(page.return_value_links.length)
+    on OrganizationLookup do |lookup|
+    the_row = rand(lookup.return_value_links.length)
     #need to capture the organization data that will be selected
-    @organization_id = page.return_value_links[the_row].parent.parent.td(index: 1).text
-    @organization_name = page.return_value_links[the_row].parent.parent.td(index: 2).text
-    @organization_address = page.return_value_links[the_row].parent.parent.td(index: 3).text
-    @federal_employer_id =  page.return_value_links[the_row].parent.parent.td(index: 4).text
-    @congressional_district =  page.return_value_links[the_row].parent.parent.td(index: 5).text
-    @contact_address_id =  page.return_value_links[the_row].parent.parent.td(index: 6).text
-    page.return_value_links[the_row].click
+    @organization_id = lookup.return_value_links[the_row].parent.parent.td(index: 1).text
+    @organization_name = lookup.return_value_links[the_row].parent.parent.td(index: 2).text
+    @organization_address = lookup.return_value_links[the_row].parent.parent.td(index: 3).text
+    @federal_employer_id =  lookup.return_value_links[the_row].parent.parent.td(index: 4).text
+    @congressional_district =  lookup.return_value_links[the_row].parent.parent.td(index: 5).text
+    @contact_address_id =  lookup.return_value_links[the_row].parent.parent.td(index: 6).text
+    lookup.return_value_links[the_row].click
     end
   end
 
