@@ -159,10 +159,9 @@ When /(IACUC Administrator |)suspends the amendment for the IACUC Protocol$/ do 
   @iacuc_protocol.suspend
 end
 
-When /(IACUC Administrator |)submits an? (.*) action on the iacuc protocol$/ do |role_name, action|
+When /(IACUC Administrator |)(suspends?|terminates?|expires?) the iacuc protocol$/ do |role_name, action|
   case role_name
     when 'IACUC Administrator '
       steps '* log in with the IACUC Administrator user'
   end
-  @iacuc_protocol.action("#{action}")
 end
