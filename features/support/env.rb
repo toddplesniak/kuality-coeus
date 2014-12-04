@@ -49,6 +49,7 @@ After do |scenario|
   if scenario.failed?
     @browser.screenshot.save 'screenshot.png'
     embed 'screenshot.png', 'image/png'
+    DEBUG.message "Failed on page: #{@browser.url}"
   end
   # Log out if not already
   # @browser.goto "#{$base_url+$context}logout.do"
