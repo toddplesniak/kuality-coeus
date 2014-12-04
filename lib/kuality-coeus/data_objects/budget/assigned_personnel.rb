@@ -1,0 +1,154 @@
+class AssignedPerson < DataFactory
+
+  include Utilities, DateFactory
+
+  attr_reader :person, :object_code, :group, :start_date,
+              :end_date, :percent_effort, :percent_charged,
+              :period_type, :requested_salary
+  attr_accessor :monthly_base_salary, :inflation_rate, :rate_start_date
+
+  def initialize(browser, opts={})
+    @browser = browser
+    percent = rand(99)+1
+    defaults = {
+      object_code:         '::random::',
+      group:               'Default',
+      percent_effort:      percent.to_s,
+      percent_charged:     (percent*0.8).round(2).to_s,
+      period_type:         '::random::',
+      monthly_base_salary: 0.0,
+      inflation_rate:      0.0,
+      rate_start_date:     "07/01/#{right_now[:year]}"
+    }
+    set_options(defaults.merge(opts))
+    requires :person
+  end
+
+  def create
+    # Navigation to this point must be done by the parent Period object
+    on AddPersonnelToPeriod do |page|
+      # These three fields have been pulled out of the
+      # fill_out method because of some sort of
+      # low-level bug that causes Selenium to complain
+      # that they are no longer in the page DOM.
+      # A TODO in the future should be to test adding
+      #  these fields back to the fill_out list, to
+      # see if the bug has been addressed.
+      page.object_code.pick! @object_code
+      page.percent_effort.set @percent_effort
+      page.percent_charged.set @percent_charged
+      fill_out page, :person, :group,
+               :start_date, :end_date, :period_type
+      @start_date ||= page.start_date.value
+      @end_date ||= page.end_date.value
+      page.assign_to_period
+    end
+    # FIXME:
+    # Because it's possible for there to be multiple people assigned to
+    # a single object code, it is inappropriate to select whether to apply
+    # inflation to an object code within a single assigned person.
+    # As such, this code does not really belong in this method or this class.
+    # However, until such time as we have scenarios that test multiple assigned
+    # persons in an object code, it's simpler just to have the inflation setup
+    # taken care of here...
+    on(AssignPersonnelToPeriods).details_and_rates_of @object_code
+    on DetailsAndRates do |page|
+      fill_out page, :apply_inflation
+      page.save_changes
+    end
+    on(AssignPersonnelToPeriods).save
+  end
+
+  def requested_salary
+    sm = start_month_days == days_in_start_month || full_months_count<2 ? 0 : start_month_calculated_salary
+    em = end_month_days == days_in_end_month ? monthly_calculated_salary : end_month_calculated_salary
+    #((full_months_count*monthly_calculated_salary) + sm + em).round(2)
+    ((full_months_count*monthly_calculated_salary) + (monthly_inflation_cost*inflated_months_count) + sm + em + end_month_inflation_cost).round(2)
+  end
+
+  private
+
+  def start_month_days
+    days_prior = start.day-1
+    days_in_start_month - days_prior
+  end
+
+  def end_month_days
+    end_d.day
+  end
+
+  def days_in_start_month
+    days_in_month(start.year, start.month)
+  end
+
+  def days_in_end_month
+    days_in_month(end_d.year, end_d.month)
+  end
+
+  def monthly_calculated_salary
+    monthly_base_salary*perc_chrgd
+  end
+
+  def monthly_inflation_cost
+    monthly_calculated_salary*(@inflation_rate.to_f/100)
+  end
+
+  def start_month_daily_salary
+    monthly_base_salary/days_in_start_month
+  end
+
+  def end_month_daily_salary
+    monthly_base_salary/days_in_start_month
+  end
+
+  def start_month_calculated_salary
+    start_month_daily_salary*start_month_days*perc_chrgd
+  end
+
+  def end_month_calculated_salary
+    end_month_daily_salary*end_month_days*perc_chrgd
+  end
+
+  def end_month_inflation_cost
+    end_month_calculated_salary*(@inflation_rate.to_f/100)
+  end
+
+  def start
+    datify @start_date
+  end
+
+  def end_d
+    datify @end_date
+  end
+
+  def rate_start
+    datify @rate_start_date
+  end
+
+  # Note that this calculation under-counts the full months if the End Day is the last day of
+  # the month...
+  def full_months_count
+    (end_d.year - start.year)*12 + end_d.month - start.month - (end_d.day >= start.day ? 0 : 1)
+  end
+
+  # Note that this calculation under-counts the full months if the End Day is the last day of
+  # the month...
+  def inflated_months_count
+    (end_d.year - rate_start.year)*12 + end_d.month - rate_start.month - (end_d.day >= rate_start.day ? 0 : 1)
+  end
+
+  def perc_chrgd
+    @percent_charged.to_f/100
+  end
+
+end
+
+class AssignedPersonnelCollection < CollectionFactory
+
+  contains AssignedPerson
+
+  def person(name)
+    self.find { |p| p.person==name }
+  end
+
+end

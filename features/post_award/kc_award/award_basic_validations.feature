@@ -36,7 +36,7 @@ Feature: Basic Award Validations
   Scenario: The anticipated amount is less than the obligated amount
     When  the Award Modifier creates an Award with more obligated than anticipated amounts
     Then  an error should appear that says the anticipated amount must be equal to or more than obligated
-
+  @proposal
   Scenario: Attempt to link an IP that has not been approved
     Given the Proposal Creator submits a new Proposal into routing
     And   the OSP Administrator submits the Proposal to its sponsor
@@ -55,7 +55,7 @@ Feature: Basic Award Validations
     And   adds a $0.00 Subaward to the Award
     When  data validation is turned on for the Award
     Then  an error is shown that says the subaward's amount can't be zero
-  @test
+
   Scenario: Missing required field in F&A Rate entry
     Given the Award Modifier creates an Award
     When  the Award Modifier adds an F&A rate to the Award but misses a required field
@@ -86,7 +86,7 @@ Feature: Basic Award Validations
     And   adds an item of approved equipment to the Award
     When  the AM adds a duplicate item of approved equipment to the Award
     Then  an error should appear that says the approved equipment can't have duplicates
-  @test
+
   Scenario: Cancelling and Restarting a T&M document
     Given a User exists with the role: 'Time And Money Modifier'
     And   the Award Modifier creates an Award

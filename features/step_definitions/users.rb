@@ -103,6 +103,16 @@ Given /^a User exists that can be a PI for Grants.gov proposals$/ do
   $users[-1].create unless $users[-1].exists?
 end
 
+Given /^a User exists with a '(.*)' appointment type$/ do |type|
+  make_user(user: UserObject::USERS.with_appointment_type(type), type: type)
+  $users[-1].create unless $users[-1].exists?
+
+  # This is here until Coeus fixes the user-related stuff.
+  DEBUG.do{$users.admin.log_out}
+
+
+end
+
 Given /^an AOR User exists$/ do
   # TODO: Using the username here is cheating. Fix this.
   @aor = make_user(user: 'warrens', type: 'AOR')

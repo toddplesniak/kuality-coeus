@@ -20,13 +20,13 @@ Feature: Proposal Workflows and Routing
     Given the Proposal Creator submits a new Proposal into routing
     When  the OSPApprover user approves the Proposal
     Then  the principal investigator can access the Proposal from their action list
-    And   the approval buttons appear on the Proposal Summary and Proposal Action pages
+    And   the user can approve the Proposal
 
   Scenario: Approval Requests are sent to OSP representatives
     When  the Proposal Creator submits a new Proposal into routing
     Then  the OSPApprover can access the Proposal from their action list
-    And   the approval buttons appear on the Proposal Summary and Proposal Action pages
-  @test
+    And   the user can approve the Proposal
+
   Scenario: Proposal is recalled
     Given the Proposal Creator submits a new Proposal into routing
     When  I recall the Proposal
@@ -41,7 +41,7 @@ Feature: Proposal Workflows and Routing
     And   the Proposal Creator user creates a Budget Version with cost sharing for the Proposal
     And   finalizes the Budget Version
     And   marks the Budget Version complete
-    And   completes the required custom fields on the Proposal
+    And   completes the required supplemental info on the Proposal
     When  the Proposal is submitted
     Then  the OSP Administrator can override the cost sharing amount
 

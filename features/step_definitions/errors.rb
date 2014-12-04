@@ -4,9 +4,8 @@
 #----------------------#
 Then /^an error should appear that says (.*)$/ do |error|
   errors = {'to select a valid unit' => 'Please select a valid Unit.',
-            'a key person role is required' => 'Key Person Role is a required field.',
+            'a key person role is required' => 'Key Person\'s role will be: Required',
             'the credit split is not a valid percentage' => 'Credit Split is not a valid percentage.',
-            'only one PI is allowed' => 'Only one proposal role of Principal Investigator is allowed.',
             'the Award has no PI' => 'There is no Principal Investigator selected. Please enter a Principal Investigator',
             'only one PI is allowed in the Contacts' => 'Only one Principal Investigator is allowed',
             'the IP can not be added because it\'s not fully approved' => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
@@ -17,8 +16,7 @@ Then /^an error should appear that says (.*)$/ do |error|
             %|I need to select the 'Other' revision type| => %|The revision 'specify' field is only applicable when the revision type is "Other"|,
             'an original proposal ID is needed'=>'Please provide an original institutional proposal ID that has been previously submitted to Grants.gov for a Change\/Corrected Application.',
             'the prior award number is required'=> %|require the sponsor's prior award number in the "sponsor proposal number."|,
-            'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.',
-            'a valid sponsor is required' => 'A valid Sponsor Code (Sponsor) must be selected.',
+            'a valid sponsor is required' => 'Sponsor: A valid Sponsor (Sponsor) must be selected.',
             'the Account ID may only contain letters or numbers' => 'The Account ID (Account ID) may only consist of letters or digits.',
             'the Award\'s title contains invalid characters' => 'The Award Title (Title) may only consist of visible characters, spaces, or tabs.',
             'the anticipated amount must be equal to or more than obligated' => 'The Anticipated Amount must be greater than or equal to Obligated Amount.',
@@ -27,6 +25,12 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the fiscal year is not valid' => 'not found is not a valid date.',
             'the approved equipment can\'t have duplicates' => 'Approved Equipment Vendor, Model and Item must be unique',
             'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.',
+            'the start date must be before the end' => 'Project Start Date: The Project Start Date (Start Dt) must be before the Project End Date (End Dt).',
+            'the project title can\'t contain special characters' => 'Project Title: Can be any character',
+            'the IP ID can only have alphanumeric characters' => 'Original Institutional Proposal ID: Can only be alphanumeric characters ',
+            'the Award ID is invalid' => 'Award ID: Award ID is invalid.',
+            'the deadline time is not valid' => 'Sponsor Deadline Time: DeadlineTime is invalid.',
+            'a valid IP ID must be selected' => 'Original Institutional Proposal ID: A valid Original Institutional Proposal ID (Original Institutional Proposal ID) must be selected.',
             'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.'
   }
   $current_page.errors.should include errors[error]
@@ -37,18 +41,24 @@ Then /^an error requiring at least one unit for the co-investigator is shown$/ d
 end
 
 Then /^an error about un-certified personnel is shown$/ do
-  $current_page.validation_errors_and_warnings.should include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].first_name} #{@proposal.key_personnel[0].last_name}.|
+  on(DataValidation).errors.should include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].first_name} #{@proposal.key_personnel[0].last_name}.|
+end
+
+Then /^an error should say the credit split does not equal 100%$/ do
+  on(DataValidation).validation_errors_and_warnings.should include "The Investigators #{@split_type} Credit Split does not equal 100%."
 end
 
 Then /^an error is shown that says (.*)$/ do |error|
   errors = { 'there are duplicate organizations' => 'There is a duplicate organization name.',
              'there is no principal investigator' => 'There is no Principal Investigator selected. Please enter a Principal Investigator.',
              'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.',
+             'the sponsor deadline has passed' => 'Sponsor deadline date is in the past, relative to the current date.',
              'a project start date is required for the T&M Document' => 'Project Start Date is required when creating a Time &amp; Money document',
              'there are duplicate cost share lines' => 'A duplicate row has been entered.',
              'the subaward\'s amount can\'t be zero' => 'Approved Subaward amount must be greater than zero.'
   }
-  $current_page.validation_errors_and_warnings.should include errors[error]
+
+  on(DataValidation).validation_errors_and_warnings.should include errors[error]
 end
 
 Then /^errors about the missing terms are shown$/ do
@@ -64,6 +74,14 @@ end
 
 Then /^an error is shown that indicates the user is already an investigator$/ do
   $current_page.errors.should include %|#{@first_name} #{@last_name} already holds Investigator role.|
+end
+
+Then /^an error message says the date must be in a valid format$/ do
+  $current_page.errors.should include @date_error
+end
+
+Then /^an error message says the start date must be before the end$/ do
+  $current_page.errors.should include @date_error
 end
 
 Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
@@ -90,14 +108,6 @@ Then /^the Award should throw an error saying (.*)/ do |error|
     'the Award\'s PI requires at least one unit' => "At least one Unit is required for #{@award.key_personnel.principal_investigator.full_name}"
   }
   $current_page.errors.should include errors[error]
-end
-
-Then /^an error should say that the (cost share|F&A rate) percentage can only have 2 decimal places$/ do |type|
-  items = {
-      'cost share' => [:cost_sharing, :percentage],
-      'F&A rate'   => [:fa_rates, :rate]
-  }
-  $current_page.errors.should include "Invalid value #{@award.send(items[type][0])[0].send(items[type][1])}: at most 2 digits may follow the decimal point."
 end
 
 #-----------------------#
@@ -133,4 +143,8 @@ end
 
 Then /^there are no errors on the page$/ do
   $current_page.errors.size.should==0
+end
+
+And /^there are no data validation errors or warnings$/ do
+  on(DataValidation).errors_list.should_not be_present
 end

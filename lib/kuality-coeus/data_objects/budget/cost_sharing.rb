@@ -2,14 +2,14 @@ class CostSharingObject < DataFactory
 
   include StringFactory
 
-  attr_reader :project_period, :percentage, :source_account, :amount
+  attr_reader :period, :percentage, :source_account, :amount
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
         percentage:     '0.00',
-        source_account: random_alphanums_plus,
+        source_account: random_alphanums,
         amount:         '0.00'
     }
     set_options(defaults.merge(opts))
@@ -17,31 +17,31 @@ class CostSharingObject < DataFactory
 
   def create
     view
-    on DistributionAndIncome do |page|
-      page.expand_all
-      page.add_cost_share_period.fit @project_period
-      page.add_cost_share_percentage.fit @percentage
-      page.add_cost_share_source_account.fit @source_account
-      page.add_cost_share_amount.fit @amount
-      page.add_cost_share
-      page.save
+    on CostSharing do |page|
+      page.add_cost_sharing
     end
+    on AddLine do |page|
+      fill_out page, :period, :percentage, :source_account, :amount
+      page.add
+    end
+    on(CostSharing).save
   end
 
   def view
     # Note: Currently assumes we're already viewing
     # the budget document!
-    on(Parameters).distribution__income
+    on(BudgetSidebar).cost_sharing
   end
 
   def edit(opts)
     view
-    on DistributionAndIncome do |page|
-      page.expand_all
-      page.cost_sharing_project_period(@source_account, @amount).fit opts[:project_period]
-      page.cost_sharing_percentage(@source_account, @amount).fit opts[:percentage]
-      page.cost_sharing_source_account(@source_account, @amount).fit opts[:source_account]
-      page.cost_sharing_amount(@source_account, @amount).fit opts[:amount]
+    on CostSharing do |page|
+      page.period(@source_account, @amount).pick! opts[:period]
+      page.percentage(@source_account, @amount).fit opts[:percentage]
+      page.amount(@source_account, @amount).fit opts[:amount]
+      # NOTE: This needs to be last so that the @source_account still matches for the
+      # other three fields...
+      page.source_account(@source_account, @amount).fit opts[:source_account]
       page.save
     end
     update_options(opts)

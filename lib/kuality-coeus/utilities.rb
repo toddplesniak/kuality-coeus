@@ -28,6 +28,16 @@ module Utilities
     random_dollar_value(100)
   end
 
+  def days_in_month(year, month)
+    Date.new(year, month, -1).day.to_i
+  end
+  module_function :days_in_month
+
+  def datify(date_string)
+    Date.strptime date_string, '%m/%d/%Y'
+  end
+  module_function :datify
+
   private
 
   def snakify(item)

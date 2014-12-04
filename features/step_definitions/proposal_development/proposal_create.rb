@@ -16,6 +16,12 @@ Given /^(the (.*) |)creates a (\d+)-year project Proposal$/ do |text, role_name,
                     project_end_date: "12/31/#{next_year[:year].to_i+(@years-1)}"
 end
 
+And /creates a Proposal that doesn't span the fiscal year cutoff$/ do
+  @proposal =create ProposalDevelopmentObject,
+                    project_start_date: "01/01/#{next_year[:year]}",
+                    project_end_date: "0#{rand(6)+1}/#{rand(15)+10}/#{next_year[:year]}"
+end
+
 Given /^(the (.*) |)creates a (\d+)-year, '(.*)' Proposal$/ do |text, role_name, year_count, activity_type|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @years=year_count.to_i
@@ -28,26 +34,16 @@ end
 When /^(the (.*) |)creates a Proposal while missing a required field$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text==''
   # Pick a field at random for the test...
-  required_field = [ 'Proposal Type', 'Activity Type', 'Project Title',
-       'Sponsor Code',
-       'Project Start Date', 'Project End Date'
+  required_field = [ 'Proposal Type', 'Activity Type', 'Project Title'#,
+       #'Sponsor Code',
+       #'Project Start Date', 'Project End Date'
           ].sample
   # Properly set the nil value depending on the field type...
   required_field=~/Type/ ? value='select' : value=''
   # Transform the field name to the appropriate symbol...
   field = damballa(required_field.gsub('Code','id'))
   @proposal = create ProposalDevelopmentObject, field=>value
-  text = ' is a required field.'
-  @required_field_error = case(required_field)
-                            when 'Project End Date'
-                              "#{required_field} (End Dt)#{text}"
-                            when 'Project Title'
-                              "#{required_field} (Title)#{text}"
-                            when 'Sponsor Code'
-                              "#{required_field} (Sponsor)#{text}"
-                            else
-                              "#{required_field} (#{required_field})#{text}"
-  end
+  @required_field_error = "#{required_field}: Required"
 end
 
 When /^(the (.*) |)creates a Proposal with an? '(.*)' sponsor type$/ do |text, role_name, type|
@@ -84,9 +80,47 @@ Given /^(the (.*) |)creates a Proposal without a sponsor deadline date$/ do |tex
   @proposal = create ProposalDevelopmentObject, sponsor_deadline_date: ''
 end
 
+Given /(the (.*) |)creates a Proposal with a sponsor deadline in the past$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
+  @proposal = create ProposalDevelopmentObject, sponsor_deadline_date: last_year[:date_w_slashes]
+end
+
+Given /creates a Proposal with an invalid sponsor deadline time/ do
+  @proposal = create ProposalDevelopmentObject, sponsor_deadline_time: '99:99'
+end
+
+Given /creates a Proposal with an invalid project date$/ do
+  date = ['Start', 'End'].sample
+  @date_error = "Project #{date} Date: Must be a date in the following format(s): MM/dd/yy, MM/dd/yyyy, MM-dd-yy, MM-dd-yyyy, yyyy-MM-dd"
+  @proposal = create ProposalDevelopmentObject, damballa("Project #{date} Date") => in_a_year[:short_date]
+end
+
+Given /creates a Proposal with an end date prior to the start date$/ do
+  @proposal = create ProposalDevelopmentObject, project_start_date: right_now[:date_w_slashes], project_end_date: a_year_ago[:date_w_slashes]
+end
+
+Given /creates a Proposal with a project title containing extended characters$/ do
+  @proposal = create ProposalDevelopmentObject, project_title: random_high_ascii(200)
+end
+
+Given /creates a non-'New' Proposal with a non-alphanumeric IP ID/ do
+  type = %w{Renewal Continuation Resubmission Revision}.sample
+  @proposal = create ProposalDevelopmentObject, proposal_type: type, original_ip_id: '!@#$%^'
+end
+
+Given /creates a non-'New' Proposal with an invalid Award ID/ do
+  type = %w{Renewal Continuation Resubmission Revision}.sample
+  @proposal = create ProposalDevelopmentObject, proposal_type: type, award_id: 'abcd1234'
+end
+
+Given /creates a non-'New' Proposal with an IP ID that doesn't exist/ do
+  type = %w{Renewal Continuation Resubmission Revision}.sample
+  @proposal = create ProposalDevelopmentObject, proposal_type: type, original_ip_id: '98765432'
+end
+
 When /^(the (.*) |)submits the Proposal into routing$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text==''
-  @proposal.submit
+  @proposal.submit ProposalDevelopmentObject
 end
 
 When /^I? ?completes? the Proposal$/ do
@@ -95,13 +129,17 @@ When /^I? ?completes? the Proposal$/ do
   @proposal.add_custom_data
 end
 
-When /completes? the required custom fields on the Proposal$/ do
-  @proposal.add_custom_data
+When /completes? the required supplemental info on the Proposal$/ do
+  @proposal.add_supplemental_info
 end
 
 When /^I? ?add (.*) as an? (.*) to the proposal permissions$/ do |username, role|
   @proposal.permissions.send("#{damballa(role)}s") << username
   @proposal.permissions.assign
+end
+
+And /answers the Proposal's questionnaire$/ do
+  @proposal.fill_out_questionnaire
 end
 
 When /^I? ?save and close the Proposal document$/ do
@@ -114,7 +152,7 @@ And /^the (.*) submits a new Proposal into routing$/ do |role_name|
     * the #{role_name} creates a Proposal
     * adds a principal investigator to the Proposal
     * sets valid credit splits for the Proposal
-    * completes the required custom fields on the Proposal
+    * completes the required supplemental info on the Proposal
     * the #{role_name} submits the Proposal into routing
 }
 end
@@ -160,5 +198,5 @@ end
 Given /^(the (.*) user |)creates a Proposal with these Performance Site Locations: (.*)$/ do |text, role_name, psl|
   steps %{ * I log in with the #{role_name} user } unless text==''
   locations = psl.split(',')
-  @proposal = create ProposalDevelopemntObject, performance_site_locations: locations
+  @proposal = create ProposalDevelopmentObject, performance_site_locations: locations
 end

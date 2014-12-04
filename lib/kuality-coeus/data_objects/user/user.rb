@@ -107,6 +107,13 @@ class UserYamlCollection < Hash
     self.find_all{|user| user[1][:primary_dept_code]==code }.shuffle
   end
 
+  def with_appointment_type(type)
+    self.find_all{|user|
+      !user[1][:appointmentz].nil? &&
+      !(user[1][:appointmentz].find { |app| app[:type]==type }).nil?
+    }.shuffle[0][0]
+  end
+
   # Note: This method returns the username of a matching user record. It does NOT
   # return an array of all matching users.
   def grants_gov_pi
@@ -131,13 +138,16 @@ class UserObject < DataFactory
               :groups, :roles, :role_qualifiers, :addresses, :phones, :emails,
               :primary_title, :directory_title, :citizenship_type, :role,
               :era_commons_user_name, :graduate_student_count, :billing_element,
-              :directory_department,
+              :directory_department, :appointments,
               :type
 
   USERS = UserYamlCollection[YAML.load_file("#{File.dirname(__FILE__)}/users.yml")]
 
   def initialize(browser, opts={})
-    @browser = browser
+    @browser =      browser
+    @roles =        collection('UserRoles')
+    @groups =       collection('UserGroups')
+    @appointments = collection('Appointments')
 
     defaults={
         description:      random_alphanums,
@@ -155,11 +165,9 @@ class UserObject < DataFactory
         phones:           [{type:   'Work',
                             number:  '602-840-7300',
                             default: :set }],
-        rolez:            [{id: '106', qualifiers: [{:unit=>'000001'}]}],
-        groups:           collection('UserGroups')
+        rolez:            [{name: 'unassigned', qualifiers: [{:unit=>'000001'}]}],
     }
     defaults.merge!(opts)
-    @roles = collection('UserRoles')
 
     if opts.empty? # then we want to make the admin user...
       options = {user_name: 'admin', first_name: 'admin', last_name: 'admin'}
@@ -180,7 +188,9 @@ class UserObject < DataFactory
     set_options options
 
     @user_name=random_letters(16) if @user_name==:nil
-    @rolez.each { |role| role[:user_name]=@user_name; @roles << make(UserRoleObject, role) } unless @rolez.nil?
+    @rolez.each { |role| @roles << make(UserRoleObject, role) } unless @rolez.nil?
+    @appointmentz.each { |appt| @appointments << make(AppointmentObject, appt) } unless @appointmentz.nil?
+    @appointmentz=nil
     @rolez=nil
     @full_name = "#{@first_name} #{@last_name}"
 
@@ -310,39 +320,35 @@ class UserObject < DataFactory
         log_in.username.set @user_name
         log_in.login
       end
-      visit(Researcher).logout_button.wait_until_present
+      on(Header).doc_search_link.wait_until_present
       $current_user=self
     end
   end
   alias_method :log_in, :sign_in
 
   def sign_out
-    if $cas
-      on(BasePage).close_extra_windows
-      @browser.goto "#{$base_url+$cas_context}logout"
-    else
-      visit(Researcher)
-      visit(login_class).close_extra_windows
-      on BasePage do |page|
-        page.logout if page.logout_button.present?
-      end
-    end
+    on(BasePage).close_extra_windows
+    @browser.goto "#{$base_url+$context}kr-krad/login?methodToCall=logout&viewId=DummyLoginView"
     $current_user=nil
   end
   alias_method :log_out, :sign_out
 
   def exist?
     $users.admin.log_in if $current_user==nil
-    visit PersonLookup do |search|
+    visit SystemAdmin do |page|
+      page.person
+    end
+    on PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
       begin
+        search.results_table.wait_until_present(2)
         if search.item_row(@user_name).present?
           # TODO!
           # This is a coding abomination to include
           # this here, but it's here until I can come
           # up with a better solution...
-          @principal_id = search.item_row(@user_name).link(title: /^Person Principal ID=\d+/).text
+          @principal_id = search.item_row(@user_name).link(title: /Person Principal ID=\d+/).text
           return true
         else
           return false

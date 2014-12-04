@@ -78,8 +78,3 @@ When /^I? ?add and mark complete all the required attachments$/ do
   attachments[@proposal.opportunity_id].shuffle.each { |type| @proposal.add_proposal_attachment type: type, file_name: 'test.pdf', status: 'Complete' }
   @proposal.key_personnel.each { |person| @proposal.add_personnel_attachment person: person.full_name, type: 'Biosketch', file_name: 'test.pdf' }
 end
-
-When /adds? a Co-Investigator to the Proposal$/ do
-  @proposal.add_key_person role: 'Co-Investigator'
-  on(KeyPersonnel).save
-end

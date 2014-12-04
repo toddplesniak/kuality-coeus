@@ -33,9 +33,9 @@ Then /^The proposal route log's 'Pending Action Requests' should include '(.*)'$
   end
 end
 
-Then /^The S2S tab should become available$/ do
-  @proposal.view 'S2S'
-  on(S2S).s2s_header.should be_present
+Then /^The S2S opportunity search should become available$/ do
+  @proposal.view 'S2S Opportunity Search'
+  expect{on(S2S).find_opportunity_button}.to be_present
 end
 
 When /^The Proposal's 'Future Action Requests' should include 'PENDING APPROVE' for the principal investigator$/ do
@@ -55,7 +55,7 @@ When /^I? ?push the Proposal's project start date ahead (\d+) years?$/ do |year|
   @proposal.edit project_start_date: new_date
 end
 
-When /^(the Proposal Creator |)pushes the end date (\d+) more years?$/ do |usr, year|
+When /(the Proposal Creator |)pushes the Proposal end date (\d+) more years?$/ do |usr, year|
   steps %|* I log in with the Proposal Creator user| if usr=='the Proposal Creator '
   new_year=@proposal.project_end_date[/\d+$/].to_i+year.to_i
   new_date="#{@proposal.project_end_date[/^\d+\/\d+/]}/#{new_year}"
