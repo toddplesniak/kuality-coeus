@@ -21,7 +21,6 @@ class SpecialReviewObject < DataFactory
     }
 
     set_options(defaults.merge(opts))
-    # requires :document_id, :doc_header
   end
 
   def create
@@ -56,7 +55,6 @@ class SpecialReviewObject < DataFactory
   end
 
   def view
-    # open_document
     on(Proposal).special_review unless on_page?(on(SpecialReview).add_type)
   end
 

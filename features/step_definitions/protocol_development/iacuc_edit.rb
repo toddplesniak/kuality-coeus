@@ -197,3 +197,38 @@ end
 And /edits the location name on the maintenance document$/ do
   @location_name.edit location_name: random_alphanums
 end
+
+When /the (IACUC Administrator |)approves the amendment for the IACUC Protocol$/ do |role_name|
+  case role_name
+    when 'IACUC Administrator '
+      steps '* log in with the IACUC Administrator user'
+  end
+  # amendment needed a special method
+  @iacuc_protocol.admin_approve_amendment
+end
+
+When /(IACUC Administrator |)suspends the amendment for the IACUC Protocol$/ do |role_name|
+  case role_name
+    when 'IACUC Administrator '
+      steps '* log in with the IACUC Administrator user'
+  end
+  @iacuc_protocol.suspend
+end
+
+When /(IACUC Administrator |)(suspends?|terminates?|expires?) the iacuc protocol$/ do |role_name, action|
+  case role_name
+    when 'IACUC Administrator '
+      steps '* log in with the IACUC Administrator user'
+  end
+
+  case action
+    when 'suspends'
+      @iacuc_protocol.suspend
+    when 'terminates'
+      @iacuc_protocol.terminate
+    when 'expires'
+      @iacuc_protocol.expire
+    else
+      @iacuc_protocol.action(action)
+  end
+end

@@ -90,20 +90,6 @@ And /the IRB Admin closes the Protocol$/ do
   end
 end
 
-And /the principal investigator approves the Protocol$/ do
-  @irb_protocol.principal_investigator.log_in
-
-  # TODO: This is probably not the right pathway through the UI...
-  visit(Researcher).action_list
-  on(ActionList).filter
-  on ActionListFilter do |page|
-    page.document_title.set @irb_protocol.protocol_number
-    page.filter
-  end
-  on(ActionList).open_review(@irb_protocol.protocol_number)
-  @irb_protocol.view 'Protocol Actions'
-end
-
 And /submits? an expedited approval on the Protocol with a date of last year$/ do
   @irb_protocol.submit_expedited_approval approval_date: last_year[:date_w_slashes]
 end
@@ -142,28 +128,4 @@ When /submits? the Protocol to the Committee for expedited review, with an appro
           * submits an expedited approval on the Protocol with a date of last year|
 end
 
-When /the (IACUC Administrator |)approves the amendment for the IACUC Protocol$/ do |role_name|
-  case role_name
-    when 'IACUC Administrator '
-      steps '* log in with the IACUC Administrator user'
-  end
-  # amendment needed a special method
-  @iacuc_protocol.admin_approve_amendment
-end
-
-When /(IACUC Administrator |)suspends the amendment for the IACUC Protocol$/ do |role_name|
-  case role_name
-    when 'IACUC Administrator '
-      steps '* log in with the IACUC Administrator user'
-  end
-  @iacuc_protocol.suspend
-end
-
-When /(IACUC Administrator |)submits an? (.*) action on the iacuc protocol$/ do |role_name, action|
-  case role_name
-    when 'IACUC Administrator '
-      steps '* log in with the IACUC Administrator user'
-  end
-  @iacuc_protocol.action("#{action}")
-end
 

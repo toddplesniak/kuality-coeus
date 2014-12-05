@@ -82,7 +82,6 @@ class BasePage < PageFactory
     def tab_buttons
       action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present.click; b.loading }
       element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
-      
     end
 
     def tiny_buttons
@@ -103,10 +102,12 @@ class BasePage < PageFactory
       action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
 
       action(:item_row) { |match, b| b.results_table.row(text: /#{Regexp.escape(match)}/m) }
+      action(:item_row_title) { |match, b| b.results_table.row(title: /#{Regexp.escape(match)}/m) }
       # Note: Use this when you need to click the "open" link on the target row
       action(:open) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'open').click; p.use_new_tab; p.close_parents }
       # Note: Use this when the link itself is the text you want to match
       p_action(:open_item) { |match, b| b.frm.link(text: /#{Regexp.escape(match)}/).click; b.use_new_tab; b.close_parents }
+      p_element(:find_item) { |match, b| b.frm.link(text: /#{Regexp.escape(match)}/) }
       p_action(:delete_item) { |match, p| p.item_row(match).link(text: 'delete').click; p.use_new_tab; p.close_parents }
 
       p_action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
@@ -116,12 +117,16 @@ class BasePage < PageFactory
 
       p_value(:docs_w_status) { |status, b| array = []; (b.results_table.rows.find_all{|row| row[3].text==status}).each { |row| array << row[0].text }; array }
 
+      action(:set_random_checkbox_from_array) {|arry,b| b.results_table.checkbox(title: arry.sample).set }
+      action(:search_result_checkboxes) {|b| array=[]; b.results_table.checkboxes.each {|boxes| array << boxes.title}; array }
+
       # Used as the catch-all "document opening" method for conditional navigation,
       # when we can't know whether the current user will have edit permissions.
       # Note: The assumption is that there is only one item returned in the search,
       # so the method needs no identifying parameter. If more items are returned hopefully
       # you want the automation to click on the first item listed...
       action(:medusa) { |b| b.frm.link(text: /medusa|edit|view/).click; b.use_new_tab; b.close_parents }
+
     end
 
     def results_multi_select
@@ -129,6 +134,7 @@ class BasePage < PageFactory
       action(:select_all_from_this_page) { |b| b.frm.button(title: 'Select all rows from this page').click }
       action(:return_selected) { |b| b.frm.button(title: 'Return selected results').click; b.loading }
       p_action(:check_item) { |item, b| b.item_row(item).checkbox.set }
+      p_action(:check_item_title) { |item, b| b.item_row_title(item).checkbox.set }
     end
 
     def budget_header_elements

@@ -1,5 +1,7 @@
 class SponsorTermLookup < Lookups
 
+  results_multi_select
+
   expected_element :sponsor_term_id
 
   element(:last_button) { |b| b.frm.link(text: 'Last') }

@@ -32,6 +32,8 @@ kuality = Kuality.new basic[:browser]
 Before do
   # Get the browser object
   @browser = kuality.browser
+  # clear browser cache for when multiple scenarios are run and pages fail to load correctly
+  @browser.cookies.clear
   # Clean out any users that might exist
   $users.clear
   $current_user=nil

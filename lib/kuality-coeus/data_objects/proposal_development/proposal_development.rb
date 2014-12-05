@@ -82,7 +82,21 @@ class ProposalDevelopmentObject < DataFactory
   alias_method :add_principal_investigator, :add_key_person
 
   def add_special_review opts={}
-    @special_review.add merge_settings(opts)
+    @special_review = {
+        #human Subjects and Animal Usage do not allow for editing dates
+        type: ['Recombinant DNA', 'Radioactive Isotopes', 'Biohazard Materials', 'International Programs', 'Space Change', 'TLO Review - No conflict (A)', 'TLO review - Reviewed, no conflict (B1)', 'TLO Review - Potential Conflict (B2)', 'TLO PR-Previously Reviewed', 'Foundation Relations'].sample,
+        approval_status: '::random::'
+    }
+    @special_review.merge!(opts)
+
+    view 'Special Review'
+    on SpecialReview do |page|
+      page.add_type.pick! @special_review[:type]
+      page.add_approval_status.pick! @special_review[:approval_status]
+      page.add_application_date.fit @special_review[:application_date]
+      page.add_approval_date.fit @special_review[:approval_date]
+      page.add
+    end
   end
 
   def add_budget_version opts={}
@@ -282,12 +296,30 @@ class ProposalDevelopmentObject < DataFactory
 
   def approve_from_action_list
     visit(Researcher).action_list
-    on(ActionList).filter
-    on ActionListFilter do |page|
-      page.document_title.set @project_title
-      page.filter
+    # Action list is a crafty mistress
+    if on(ActionList).find_item(@document_id).exists?
+      on(ActionList).open_item(@document_id)
+    else
+      # change the number of results displayed if the result was not present
+      on(ActionList).preferences
+      on WorkflowPreferences do |page|
+        page.action_list_page_size.set 500 #max size for kc-dly is 500
+        page.save
+      end
+
+      if on(ActionList).find_item(@document_id).exists?
+        on(ActionList).open_item(@document_id)
+      else
+        # delve deeper into finding the item on the action list using project title
+        on(ActionList).filter
+        on ActionListFilter do |page|
+          page.document_title.set @project_title
+          page.filter
+        end
+        on(ActionList).open_item(@document_id)
+      end
     end
-    on(ActionList).open_item(@document_id)
+
     on(ProposalSummary).approve
   end
 
