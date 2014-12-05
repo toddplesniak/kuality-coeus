@@ -32,6 +32,12 @@ Feature: Project Personnel in Proposal Budget Versions
     When  a Project Person is assigned to Budget period 1, with no salary inflation
     Then  the Project Person's requested salary for the Budget period is as expected
 
+  Scenario: Adding Project Person with Salary and Inflation Rate
+    Given the Proposal Creator sets the inflation rate of the Budget's on-campus administrative salaries to 7 percent
+    And   adds an employee to the Budget personnel
+    When  an 'Administrative Staff - On' person is assigned to Budget period 1
+    Then  the Project Person's requested salary for the Budget period is as expected
+
 =begin
   M5.4.2.c	Period Type Control	The system shall require a period type be entered before saving an assignment of personnel to period
   M5.4.3.b	Start Date Default	The system shall automatically populate the start date with the start date of that period

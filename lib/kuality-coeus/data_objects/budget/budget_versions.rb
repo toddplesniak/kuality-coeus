@@ -2,12 +2,12 @@ class BudgetVersionsObject < DataFactory
 
   include StringFactory
 
-  attr_reader :document_id, :status, :summary,
+  attr_reader :document_id, :status, :summary, :modular,
               :project_start_date, :project_end_date, :total_direct_cost_limit,
               :budget_periods, :unrecovered_fa_rate_type, :f_and_a_rate_type,
               :submit_cost_sharing, :residual_funds, :total_cost_limit,
               :subaward_budgets, :personnel
-  attr_accessor :name, :version
+  attr_accessor :name
 
   def_delegator :@budget_periods, :period
 
@@ -35,6 +35,8 @@ class BudgetVersionsObject < DataFactory
       add.name.wait_until_present
       add.name.set @name
       add.type @summary
+      # This only appears when the sponsor is NIH...
+      add.modular(@modular) unless @modular.nil?
       add.create_budget
     end
     get_budget_periods
@@ -72,36 +74,6 @@ class BudgetVersionsObject < DataFactory
   def view(tab)
     @open_budget.call
     on(BudgetSidebar).send(damballa(tab.to_s))
-  end
-
-  def copy_all_periods(new_name)
-    @open_budget.call
-
-    new_version_number='x'
-    on(BudgetVersions).copy @name
-    on(Confirmation).copy_all_periods
-    on BudgetVersions do |copy|
-      copy.name_of_copy.set new_name
-      copy.save
-      new_version_number=copy.version(new_name)
-    end
-    new_bv = self.clone
-    new_bv.name=new_name
-    new_bv.version=new_version_number
-    new_bv
-  end
-
-  def copy_one_period(new_name, version)
-    # pending resolution of a bug
-  end
-
-  def default_periods
-    view 'Periods And Totals'
-    on PeriodsAndTotals do |page|
-      page.reset_to_period_defaults
-    end
-    @budget_periods.clear
-    get_budget_periods
   end
 
   def add_subaward_budget(opts={})
@@ -179,10 +151,6 @@ class BudgetVersionsCollection < CollectionsFactory
 
   def budget(name)
     self.find { |budget| budget.name==name }
-  end
-
-  def copy_all_periods(name, new_name)
-    self << self.budget(name).copy_all_periods(new_name)
   end
 
   def complete

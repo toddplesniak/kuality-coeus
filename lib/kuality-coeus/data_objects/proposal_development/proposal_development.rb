@@ -97,7 +97,9 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def add_budget_version opts={}
-    opts[:version] ||= (@budget_versions.size+1).to_s
+    # FIXME: We should not be hard-coding the NIH sponsor code, here.
+    # We need to come up with a smarter way to do this:
+    opts[:modular] ||= ['Y','N'].sample if @sponsor_id=='000340'
     @budget_versions.add merge_settings(opts)
   end
 

@@ -39,9 +39,16 @@ And /^the Budget Version personnel list shows the correct roles$/ do
   end
 end
 
-And /(assigns )?a Project Person( is assigned)? to Budget period (\d+), with no salary inflation$/ do |x, y, number|
+And /a Project Person is assigned to Budget period (\d+), with no salary inflation$/ do |number|
   assignee = @budget_version.personnel.full_names.sample
   @budget_version.period(number).assign_person person: assignee, apply_inflation: 'No'
+  @project_person = @budget_version.period(number).assigned_personnel.person(assignee)
+end
+
+And /an? '(.*)' person is assigned to Budget period (\d+)/ do |object_code, number|
+  assignee = @budget_version.personnel.full_names.sample
+  # TODO: Fix the whole @inflation thing. See: budget_rates.rb step definitions for where it's coming from.
+  @budget_version.period(number).assign_person person: assignee, object_code: object_code, inflation_rate: @inflation
   @project_person = @budget_version.period(number).assigned_personnel.person(assignee)
 end
 

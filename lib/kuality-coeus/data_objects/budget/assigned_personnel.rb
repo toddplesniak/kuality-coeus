@@ -17,8 +17,7 @@ class AssignedPerson < DataFactory
       percent_charged:     (percent*0.8).round(2).to_s,
       period_type:         '::random::',
       monthly_base_salary: 0.0,
-      inflation_rate:      0.0,
-      rate_start_date:     "07/01/#{right_now[:year]}"
+      inflation_rate:      0.0
     }
     set_options(defaults.merge(opts))
     requires :person
@@ -41,6 +40,9 @@ class AssignedPerson < DataFactory
                :start_date, :end_date, :period_type
       @start_date ||= page.start_date.value
       @end_date ||= page.end_date.value
+      #TODO: This really needs to be set by either scraping the UI, or a Rates Data Object somehow.
+      # For now, just going to keep things simple.
+      @rate_start_date ||= "07/01/#{end_d.year}"
       page.assign_to_period
     end
     # FIXME:
@@ -62,7 +64,6 @@ class AssignedPerson < DataFactory
   def requested_salary
     sm = start_month_days == days_in_start_month || full_months_count<2 ? 0 : start_month_calculated_salary
     em = end_month_days == days_in_end_month ? monthly_calculated_salary : end_month_calculated_salary
-    #((full_months_count*monthly_calculated_salary) + sm + em).round(2)
     ((full_months_count*monthly_calculated_salary) + (monthly_inflation_cost*inflated_months_count) + sm + em + end_month_inflation_cost).round(2)
   end
 

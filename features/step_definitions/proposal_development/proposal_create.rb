@@ -51,18 +51,19 @@ When /^(the (.*) |)creates a Proposal with an? '(.*)' sponsor type$/ do |text, r
   @proposal = create ProposalDevelopmentObject, sponsor_type_code: type
 end
 
-Given /^(the (.*) |)creates a Proposal with (\D+) as the sponsor$/ do |text, role_name, sponsor_name|
+Given /^(the (.*) |)creates a Proposal with (.*) as the sponsor$/ do |text, role_name, sponsor_code|
   steps %{ * I log in with the #{role_name} user } unless text == ''
-  # First, we have to get the sponsor ID based on the sponsor_name string...
-  visit(Maintenance).sponsor
-  sponsor_code=''
-  on SponsorLookup do |search|
-    search.sponsor_name.set sponsor_name
-    search.search
-    sponsor_code = search.get_sponsor_code(sponsor_name)
-  end
-  # Now we can create the proposal with the proper sponsor ID...
   @proposal = create ProposalDevelopmentObject, sponsor_id: sponsor_code
+end
+
+Given /^(the (.*) |)creates a '(.*)' Proposal with (.*) as the sponsor$/ do |text, role_name, type, sponsor_code|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
+  @proposal = create ProposalDevelopmentObject, sponsor_id: sponsor_code, proposal_type: type
+end
+
+Given /^(the (.*) |)creates a '(.*)' activity type Proposal with (.*) as the sponsor$/ do |text, role_name, type, sponsor_code|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
+  @proposal = create ProposalDevelopmentObject, sponsor_id: sponsor_code, activity_type: type
 end
 
 Given /^(the (.*) |)creates a Proposal with a type of '(.*)'$/ do |text, role_name, type|

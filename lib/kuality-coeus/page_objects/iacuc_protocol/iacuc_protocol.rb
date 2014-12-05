@@ -4,11 +4,13 @@ class IACUCProtocolOverview < KCProtocol
   # of medusa method in search_results_table
   undefine :medusa
 
-
   description_field
   tiny_buttons
-  search_results_table
-  protocol_common
+
+  #DEBUG: These are commented out until I can
+  # fix merge problems with Todd...
+  #search_results_table
+  #protocol_common
 
   # Required Fields
   element(:protocol_project_type) { |b| b.frm.select(name: 'document.protocolList[0].protocolProjectTypeCode') }
