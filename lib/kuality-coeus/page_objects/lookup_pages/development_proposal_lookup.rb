@@ -8,5 +8,6 @@ class DevelopmentProposalLookup < Lookups
 
   element(:results_table) { |b| b.table(id: 'uLookupResults_layout') }
   p_action(:edit_proposal) { |match, b| b.results_table.row(text: /#{match}/).link(text: 'edit').click }
+  p_action(:view_proposal) { |match, b| b.results_table.row(text: /#{match}/).link(text: 'view').click }
 
 end

@@ -24,4 +24,8 @@ class Header < BasePage
     end
   }
 
+  action(:log_out) { |b| b.link(text: /User:/).click; b.link(text: 'Logout').click }
+
+  action(:action_list) { |b| b.link(text: 'Action List').click }
+
 end

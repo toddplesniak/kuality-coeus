@@ -1,3 +1,5 @@
+# This is pre-6.0 UI. Needs to be removed when the 5.x UI is replaced.
+# See the modal_dialogs.rb file for the new Notification Editor definitions.
 class NotificationEditor < BasePage
 
   global_buttons
@@ -19,4 +21,5 @@ class NotificationEditor < BasePage
   value(:institutional_proposal_number) { |b| b.message.text[/(?<=is )\d+/] }
 
   element(:notification_editor_div) { |b| b.frm.div(id: 'tab-NotificationEditor-div') }
+
 end

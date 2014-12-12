@@ -43,6 +43,7 @@ class ProposalDevelopmentObject < DataFactory
     on(Header).researcher
     on(ResearcherMenu).create_proposal
     on CreateProposal do |doc|
+      set_sponsor_code
       # Because of the Date Picker box that appears when clicking on the
       # Date fields, we need this special handling here. Otherwise
       # the select lists might not all get filled out, causing the
@@ -50,7 +51,6 @@ class ProposalDevelopmentObject < DataFactory
       fill_out doc, :project_start_date, :project_end_date
       doc.date_picker.button(text: 'Done').click if doc.date_picker.button(text: 'Done').present?
       fill_out doc,  :project_title, :proposal_type, :activity_type, :lead_unit
-      set_sponsor_code
       doc.save_and_continue
       return if doc.errors.size > 0
     end
@@ -120,26 +120,27 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def make_institutional_proposal
-    visit(Researcher).search_institutional_proposals
+    on(Header).researcher
+    on(ResearcherMenu).search_institutional_proposals
     on InstitutionalProposalLookup do |look|
       fill_out look, :institutional_proposal_number
       look.search
       look.open @institutional_proposal_number
     end
     doc_id = on(InstitutionalProposal).document_id
-    @cd = @custom_data.data_object_copy if @custom_data
+    @si = @supplemental_info.data_object_copy if @supplemental_info
     ip = make InstitutionalProposalObject, dev_proposal_number: @proposal_number,
          proposal_type: @proposal_type,
          activity_type: @activity_type,
          project_title: @project_title,
-         special_review: @special_review.copy,
-         custom_data: @cd,
+         compliance: @compliance.copy,
+         supplemental_info: @si,
          document_id: doc_id,
          proposal_number: @institutional_proposal_number,
          nsf_science_code: @nsf_science_code,
          sponsor_id: @sponsor_id
-    @budget_versions.complete.budget_periods.each do |period|
-      period.cost_sharing_distribution_list.each do |cost_share|
+    @budget_versions.complete.budget_periods.each { |period|
+      period.cost_sharing_distribution_list.each { |cost_share|
         cs_item = make IPCostSharingObject,
                   percentage: cost_share.percentage,
                   source_account: cost_share.source_account,
@@ -147,7 +148,7 @@ class ProposalDevelopmentObject < DataFactory
                   amount: cost_share.amount,
                   type: 'funded'
         ip.cost_sharing << cs_item
-        period.unrecovered_fa_dist_list.each do |fna|
+        period.unrecovered_fa_dist_list.each { |fna|
           f_n_a = make IPUnrecoveredFAObject,
                   fiscal_year: fna.fiscal_year,
                   index: fna.index,
@@ -157,10 +158,10 @@ class ProposalDevelopmentObject < DataFactory
                   source_account: fna.source_account,
                   amount: fna.amount
           ip.unrecovered_fa << f_n_a
-        end unless period.unrecovered_fa_dist_list.empty?
-      end
-    end unless @budget_versions.empty?
-    @key_personnel.each do |person|
+        } unless period.unrecovered_fa_dist_list.empty?
+      }
+    } unless @budget_versions.empty?
+    @key_personnel.each { |person|
       project_person = make ProjectPersonnelObject, full_name: person.full_name,
                             first_name: person.first_name, last_name: person.last_name,
                             lead_unit: person.home_unit, role: person.role,
@@ -170,7 +171,7 @@ class ProposalDevelopmentObject < DataFactory
                             document_id: doc_id, search_key: { institutional_proposal_number: doc_id },
                             lookup_class: InstitutionalProposalLookup, doc_header: 'KC Institutional Proposal'
       ip.project_personnel << project_person
-    end
+    }
     ip
   end
 
@@ -180,14 +181,16 @@ class ProposalDevelopmentObject < DataFactory
 
   def recall(reason=random_alphanums)
     @recall_reason=reason
-
-    on(ProposalActions).recall
-    on Confirmation do |conf|
+    view 'Summary/Submit'
+    on(ProposalSummary).recall
+    on Recall do |conf|
       conf.reason.set @recall_reason
       conf.yes
     end
-    open_document
-    @status=on(Proposal).document_status
+
+    DEBUG.snap @browser
+
+    @status=on(DocumentHeader).document_status
   end
 
   def reject
@@ -211,28 +214,31 @@ class ProposalDevelopmentObject < DataFactory
         to_sponsor:   :submit_to_sponsor,
         to_s2s: :submit_to_s2s
     }
-    view 'Proposal Actions'
-    on(ProposalActions).send(types[type])
+    view 'Summary/Submit'
     case(type)
-        when :to_sponsor
-          on NotificationEditor do |page|
-            # A breaking of the design pattern, here,
-            # but we have no alternative...
-            @status=page.document_status
-            @institutional_proposal_number=page.institutional_proposal_number
-            page.send_fyi
+      when :to_sponsor
 
-          end
-        when :to_s2s
-          view :s2s
-          on S2S do |page|
-            @status=page.document_status
-          end
-        else
-          on ProposalActions do |page|
-            page.data_validation_header.wait_until_present
-            @status=page.document_status
-          end
+
+        # FIXME! This needs to be removed when bug is fixed... https://jira.kuali.org/browse/KRAFDBCK-12041
+        on(Header).researcher
+        on(ResearcherMenu).search_proposals
+        view 'Summary/Submit'
+
+
+        on(ProposalSummary).submit_to_sponsor
+        on SendNotifications do |page|
+          @institutional_proposal_number=page.institutional_proposal_number
+          page.send_notifications
+        end
+        # FIXME! Need to get the @status value updated here!
+      when :to_s2s
+        view :s2s
+        on S2S do |page|
+          @status=page.document_status
+        end
+      else
+        on(ProposalSummary).submit_for_review
+        @status=on(NewDocumentHeader).document_status
     end
   end
 
@@ -242,13 +248,7 @@ class ProposalDevelopmentObject < DataFactory
   # what you want to do then this method will need to be
   # rethought...
   def resubmit
-    view 'Proposal Actions'
-    on(ProposalActions).submit_to_sponsor
-    on ResubmissionOptions do |page|
-      page.generate_new_version_of_original.set
-      page.continue
-      @status=page.document_status
-    end
+    raise 'Fix this method'
   end
 
   # Note: This method does not navigate because
@@ -264,40 +264,48 @@ class ProposalDevelopmentObject < DataFactory
     submit :ba
   end
 
-  def approve
-    view 'Proposal Summary'
-    on ProposalSummary do |page|
-      page.approve
-    end
-    view 'Proposal Summary'
-    on ProposalSummary do |page|
-    @status=page.document_status
-    end
+  def approve(future=:no)
+    view 'Summary/Submit'
+    on(ProposalSummary).approve
+    on(ReceiveRequests).send(future) unless future.nil?
+    # TODO: Need some means of updating the @status variable here!
   end
 
-  def approve_from_action_list
-    visit(Researcher).action_list
+  def approve_from_action_list(future=:no)
+    on(Header).action_list
     on(ActionList).filter
     on ActionListFilter do |page|
-      page.document_title.set @project_title
+      page.document_title.set @project_title[0..18]
       page.filter
     end
     on(ActionList).open_item(@document_id)
     on(ProposalSummary).approve
+
+    on(ReceiveRequests).send(future) unless future.nil?
+
+    on(ProposalSummary) do |page|
+      page.wait_until { page.messages.size > 0 }
+    end
+    # TODO: Need some means of updating the @status variable here!
   end
 
   alias :sponsor_code :sponsor_id
 
-  #TODO: Parameterize this method..
-  def copy_to_new_document
-    view :proposal_actions
-    on ProposalActions do |page|
-      page.expand_all
-      page.select_lead_unit.select @lead_unit
-      page.include_questionnaires.set
-      page.copy_proposal
+  def copy_to_new_document(lead_unit, budget=:clear, budget_version=nil, attachments=:clear, questionnaire=:clear)
+    view 'Proposal Details'
+    on(NewDocumentHeader).copy
+    on CopyToNewDocument do |page|
+      page.lead_unit.select lead_unit
+      page.include_budget.send(budget)
+      page.budget_version.pick budget_version
+      page.include_attachments.send(attachments)
+      page.include_questionnaire.send(questionnaire)
+      page.copy
     end
-    new_doc_num = on(Proposal).document_id
+
+    #TODO: There's more stuff to do, here. When the system doesn't throw an exception at this spot!
+
+    new_doc_num = on(NewDocumentHeader).document_id
     new_prop_dev = data_object_copy
     new_prop_dev.set_new_doc_number new_doc_num
 
@@ -306,13 +314,7 @@ class ProposalDevelopmentObject < DataFactory
 
   def set_new_doc_number(new_doc_number)
     @document_id = new_doc_number
-    #TODO: See if we can use #get with the @document_id in this hash and if that will
-    # eliminate the need for this line...
-    @search_key[:document_id]=new_doc_number
-    notify_collections new_doc_number
-    [@custom_data, @permissions].each do |var|
-      var.update_doc_id(new_doc_number) unless var.nil?
-    end
+
   end
 
   # =======
@@ -332,7 +334,12 @@ class ProposalDevelopmentObject < DataFactory
         on DevelopmentProposalLookup do |search|
           search.proposal_number.set @proposal_number
           search.search
-          search.edit_proposal @proposal_number
+          # FIXME...
+          begin
+            search.edit_proposal @proposal_number
+          rescue
+            search.view_proposal @proposal_number
+          end
         end
       end
     }
@@ -371,7 +378,7 @@ class ProposalDevelopmentObject < DataFactory
         fill_out look, :sponsor_type_code
         look.search
         look.results_table.wait_until_present
-        look.page_links.to_a.sample.click if look.page_links.size > 0
+        look.page_links.to_a.sample.click if look.page_links.size > 1
         look.select_random
       end
       @sponsor_id=on(CreateProposal).sponsor_code.value
@@ -380,4 +387,4 @@ class ProposalDevelopmentObject < DataFactory
     end
   end
 
-end
+end # ProposalDevelopmentObject

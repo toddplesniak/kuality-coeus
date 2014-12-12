@@ -49,7 +49,7 @@ class Lookups < BasePage
     def dialog_ui
       action(:search) { |b| b.frm.button(id: 'ufuknop').click; b.results_table.wait_until_present }
       element(:results_table) { |b| b.frm.table(id: 'uLookupResults_layout') }
-      action(:select_random) { |b| b.select_links.to_a.sample.click; b.header.wait_while_present }
+      action(:select_random) { |b| b.select_links.to_a.sample.click; b.loading; b.header.wait_while_present }
       element(:select_links) { |b| b.results_table.links(text: 'select') }
     end
 

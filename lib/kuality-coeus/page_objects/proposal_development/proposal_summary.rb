@@ -1,7 +1,9 @@
 class ProposalSummary < BasePage
 
   links 'Proposal Summary', 'Personnel', 'Credit Allocation', 'Questionnaire', 'Supplemental Info',
-        'View Route Log', 'More Actions'
-  buttons 'Submit for Review'
+        'View Route Log', 'More Actions', 'Compliance', 'Attachments', 'Keywords'
+  buttons 'Submit for Review', 'Approve', 'Disapprove', 'Reject', 'Recall', 'Submit to Sponsor'
+
+  value(:messages) { |b| b.lis(class: 'uif-infoMessageItem').map{|li| li.text} }
 
 end

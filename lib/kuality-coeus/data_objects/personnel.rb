@@ -105,12 +105,11 @@ module Personnel
       log_in.login
     end
     $current_user=self
-    visit Researcher
   end
   alias :sign_in :log_in
 
   def log_out
-    visit(Researcher).logout
+    on(Header).log_out
     $current_user=nil
   end
   alias :sign_out :log_out

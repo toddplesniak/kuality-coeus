@@ -1,4 +1,4 @@
-@Proposal
+@Proposal @failing
 Feature: Permissions in a Proposal
 
   As a Proposal Aggregator, I want to be able to assign others permissions to a proposal,
@@ -6,16 +6,16 @@ Feature: Permissions in a Proposal
   they are capable of performing with it.
 
   Background: A proposal creator user creates a proposal
-    * Users exist with the following roles: Proposal Creator, Unassigned
+    * Users exist with the following roles: Proposal Creator, unassigned
     * the Proposal Creator creates a Proposal
 
   Scenario: The proposal creator is automatically an aggregator
-    When  I visit the Proposal's Permissions page
-    Then  the Proposal Creator user is listed as an Aggregator in the proposal permissions
+    When  the Proposal Creator visits the Proposal's Access page
+    Then  the Proposal Creator user is listed as an Aggregator Document Level in the proposal permissions
 
   Scenario Outline: A Proposal Aggregator can assign various roles to a proposal documents permissions
-    When  I assign the Unassigned user as a <Role> in the proposal permissions
-    Then  the Unassigned user can access the Proposal
+    When  I assign the unassigned user as a <Role> in the proposal permissions
+    Then  the unassigned user can access the Proposal
     And   their proposal permissions allow them to <Permissions>
 
     Examples:
@@ -28,13 +28,13 @@ Feature: Permissions in a Proposal
   Scenario: Narrative Writers can't edit budget details
     Given the Proposal Creator user creates a Budget Version for the Proposal
     When  I assign the Unassigned user as a Narrative Writer in the proposal permissions
-    Then  the Unassigned user can access the Proposal
+    Then  the unassigned user can access the Proposal
     And   their proposal permissions do not allow them to edit budget details
 
   Scenario Outline: Proposal permissions are not passed onto future proposals created by the same creator
-    Given I assign the Unassigned user as a <Role> in the proposal permissions
+    Given I assign the unassigned user as a <Role> in the proposal permissions
     When  the Proposal Creator creates a second Proposal
-    Then  the Unassigned user should not be listed as a <Role> in the second Proposal
+    Then  the unassigned user should not be listed as a <Role> in the second Proposal
 
   Examples:
     | Role             |
@@ -52,15 +52,15 @@ Feature: Permissions in a Proposal
 
   Examples:
     | Role             |
-    | Unassigned       |
+    | unassigned       |
     | Proposal Creator |
 
   Scenario Outline: Visit a recalled proposal as users with the permissions necessary to edit the document in varying ways
-    Given I assign the Unassigned user as a <Role> in the proposal permissions
+    Given I assign the unassigned user as a <Role> in the proposal permissions
     And   complete the Proposal
     And   submit the Proposal
     When  I recall the Proposal
-    Then  the Unassigned user can access the Proposal
+    Then  the unassigned user can access the Proposal
     And   their proposal permissions allow them to <Permissions>
 
   Examples:

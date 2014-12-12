@@ -76,12 +76,8 @@ Then /^an error is shown that indicates the user is already an investigator$/ do
   expect($current_page.errors).to include(%|#{@first_name} #{@last_name} already holds Investigator role.|)
 end
 
-Then /^an error message says the date must be in a valid format$/ do
-  $current_page.errors.should include @date_error
-end
-
-Then /^an error message says the start date must be before the end$/ do
-  $current_page.errors.should include @date_error
+Then /^an error message says (the date must be in a valid format|the start date must be before the end)$/ do |x|
+  expect(@date_error).to be_one_of $current_page.errors
 end
 
 Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
@@ -131,7 +127,7 @@ end
 # Required Fields        #
 #------------------------#
 Then /^an error should appear saying the field is required$/ do
-  expect($current_page.errors).to include @required_field_error
+  expect(@required_field_error).to be_one_of $current_page.errors
 end
 
 #------------------------#

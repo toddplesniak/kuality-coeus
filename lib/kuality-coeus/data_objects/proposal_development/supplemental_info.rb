@@ -19,7 +19,7 @@ class SupplementalInfoObject < DataFactory
   def create
     view
     on SupplementalInfo do |create|
-      create.asdf
+      create.asdf if create.asdf_link.present?
       fill_out create, :billing_element
       create.personnel_items_for_review
       fill_out create, :graduate_student_count

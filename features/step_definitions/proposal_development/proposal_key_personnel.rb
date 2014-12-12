@@ -41,15 +41,15 @@ When /^I? ?sets? valid credit splits for the Proposal$/ do
   @proposal.set_valid_credit_splits
 end
 
-And /^the user can approve the Proposal$/ do
-  # TODO
+And /can approve the Proposal$/ do
+  expect{
+    on(ProposalSummary).approve
+  }.not_to raise_error
 end
 
 When /^the (.*) user approves the Proposal$/ do |role|
   get(role).sign_in
-  @proposal.view :proposal_summary
-  on(ProposalSummary).approve
-  on(Confirmation).yes
+  @proposal.approve
 end
 
 When /add the (.*) user as a (.*) to the key personnel Proposal roles$/ do |user_role, proposal_role|

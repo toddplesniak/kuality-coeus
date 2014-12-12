@@ -1,4 +1,4 @@
-When /^I? ?recall the Proposal$/ do
+When /^the Proposal is recalled$/ do
   @proposal.recall
 end
 
@@ -108,9 +108,8 @@ end
 And /^the OSPApprover and principal investigator approve the New Proposal$/ do
   steps '* I log in with the OSPApprover user'
   @new_proposal_version.approve_from_action_list
-  on(Confirmation).no
   @new_proposal_version.key_personnel.principal_investigator.log_in
-  @new_proposal_version.approve_from_action_list
+  @new_proposal_version.approve_from_action_list nil
 end
 
 And /^the OSP Administrator resubmits the New Proposal$/ do
@@ -120,5 +119,5 @@ And /^the OSP Administrator resubmits the New Proposal$/ do
 end
 
 Then /^it is still possible to copy the Proposal$/ do
-  expect{@proposal.copy_to_new_document}.not_to raise_error
+  expect{@proposal.copy_to_new_document '000001 - University'}.not_to raise_error
 end

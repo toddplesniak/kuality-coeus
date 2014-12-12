@@ -66,7 +66,7 @@ class BasePage < PageFactory
       value(:section_header) { |b| b.h3.span(class: 'uif-headerText-span').text }
       action(:more) { |b| b.link(text: 'more...').click }
       value(:document_id) { |b| b.div(data_label: 'Doc Nbr').p.text }
-      value(:document_status) { |b| b.div(data_label: 'Status').text }
+      value(:document_status) { |b| b.div(data_label: 'Status').p.text }
       value(:created) { |b| b.div(data_label: 'Created').p.text }
       value(:initiator) { |b| b.div(data_label: 'Initiator').text }
       value(:proposal_number) { |b| b.div(data_label: 'Proposal Nbr').text }

@@ -17,8 +17,9 @@ module DEBUG
     end
 
     def inspect object
+      puts
       puts "Inspection of #{object.class}..."
-      puts object.inspect
+      puts object.pretty_inspect
     end
 
     def inspects *objects

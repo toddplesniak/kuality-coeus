@@ -86,42 +86,49 @@ Given /(the (.*) |)creates a Proposal with a sponsor deadline in the past$/ do |
   @proposal = create ProposalDevelopmentObject, sponsor_deadline_date: last_year[:date_w_slashes]
 end
 
-Given /creates a Proposal with an invalid sponsor deadline time/ do
+Given /(the (.*) |)creates a Proposal with an invalid sponsor deadline time/ do  |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @proposal = create ProposalDevelopmentObject, sponsor_deadline_time: '99:99'
 end
 
-Given /creates a Proposal with an invalid project date$/ do
+Given /(the (.*) |)creates a Proposal with an invalid project date$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   date = ['Start', 'End'].sample
   @date_error = "Project #{date} Date: Must be a date in the following format(s): MM/dd/yy, MM/dd/yyyy, MM-dd-yy, MM-dd-yyyy, yyyy-MM-dd"
   @proposal = create ProposalDevelopmentObject, damballa("Project #{date} Date") => in_a_year[:short_date]
 end
 
-Given /creates a Proposal with an end date prior to the start date$/ do
+Given /(the (.*) |)creates a Proposal with an end date prior to the start date$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @proposal = create ProposalDevelopmentObject, project_start_date: right_now[:date_w_slashes], project_end_date: a_year_ago[:date_w_slashes]
 end
 
-Given /creates a Proposal with a project title containing extended characters$/ do
+Given /(the (.*) |)creates a Proposal with a project title containing extended characters$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @proposal = create ProposalDevelopmentObject, project_title: random_high_ascii(200)
 end
 
-Given /creates a non-'New' Proposal with a non-alphanumeric IP ID/ do
+Given /(the (.*) |)creates a non-'New' Proposal with a non-alphanumeric IP ID/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   type = %w{Renewal Continuation Resubmission Revision}.sample
   @proposal = create ProposalDevelopmentObject, proposal_type: type, original_ip_id: '!@#$%^'
 end
 
-Given /creates a non-'New' Proposal with an invalid Award ID/ do
+Given /(the (.*) |)creates a non-'New' Proposal with an invalid Award ID/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   type = %w{Renewal Continuation Resubmission Revision}.sample
   @proposal = create ProposalDevelopmentObject, proposal_type: type, award_id: 'abcd1234'
 end
 
-Given /creates a non-'New' Proposal with an IP ID that doesn't exist/ do
+Given /(the (.*) |)creates a non-'New' Proposal with an IP ID that doesn't exist/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   type = %w{Renewal Continuation Resubmission Revision}.sample
   @proposal = create ProposalDevelopmentObject, proposal_type: type, original_ip_id: '98765432'
 end
 
 When /^(the (.*) |)submits the Proposal into routing$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text==''
-  @proposal.submit ProposalDevelopmentObject
+  @proposal.submit
 end
 
 When /^I? ?completes? the Proposal$/ do
@@ -151,9 +158,10 @@ end
 And /^the (.*) submits a new Proposal into routing$/ do |role_name|
   steps %{
     * the #{role_name} creates a Proposal
+    * completes the required supplemental info on the Proposal
     * adds a principal investigator to the Proposal
     * sets valid credit splits for the Proposal
-    * completes the required supplemental info on the Proposal
+    * answers the Proposal's questionnaire
     * the #{role_name} submits the Proposal into routing
 }
 end
