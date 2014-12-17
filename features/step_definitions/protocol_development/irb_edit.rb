@@ -14,11 +14,8 @@ And /submits? the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
 end
 
-And /(IRB Administrator |)assigns? reviewers to the Protocol/ do |change_user|
-  case change_user
-    when 'IRB Administrator '
-      steps '* log in with the IRB Administrator user'
-  end
+And /(the (.*) |)assigns? reviewers to the Protocol/ do |text, change_user|
+  steps %{ * log in with the #{change_user} user } unless text == ''
   @irb_protocol.view 'Protocol Actions'
   @irb_protocol.assign_primary_reviewers
   @irb_protocol.assign_secondary_reviewers
@@ -140,28 +137,4 @@ When /submits? the Protocol to the Committee for expedited review, with an appro
           * assigns reviewers to the Protocol
           * assigns the Protocol to reviewers
           * submits an expedited approval on the Protocol with a date of last year|
-end
-
-When /the (IACUC Administrator |)approves the amendment for the IACUC Protocol$/ do |role_name|
-  case role_name
-    when 'IACUC Administrator '
-      steps '* log in with the IACUC Administrator user'
-  end
-  # amendment needed a special method
-  @iacuc_protocol.admin_approve_amendment
-end
-
-When /(IACUC Administrator |)suspends the amendment for the IACUC Protocol$/ do |role_name|
-  case role_name
-    when 'IACUC Administrator '
-      steps '* log in with the IACUC Administrator user'
-  end
-  @iacuc_protocol.suspend
-end
-
-When /(IACUC Administrator |)(suspends?|terminates?|expires?) the iacuc protocol$/ do |role_name, action|
-  case role_name
-    when 'IACUC Administrator '
-      steps '* log in with the IACUC Administrator user'
-  end
 end

@@ -8,8 +8,8 @@ class IACUCProtocolObject < DataFactory
                :alternate_search_required, :reduction, :refinement, :replacement,
                #others
                :procedures, :location, :document_id,
-               :species, :organization, :old_organization_address, :species_modify, :withdrawl_reason,
-               :principles, :doc
+               :species, :organization, :old_organization_address, :species_modify, :withdrawal_reason,
+               :principles, :doc, :amendment
 
   def initialize(browser, opts={})
     @browser = browser
@@ -77,7 +77,7 @@ class IACUCProtocolObject < DataFactory
     on ProtocolLookup do |search|
       search.protocol_number.set protocol_number
       search.search
-      search.active_yes.set
+      search.active('yes')
       #Parameter needed for Amendment which creates a unique protocol number with 4 extra digits at the end
       #example base protocol number 1410000010 then amendment becomes 1410000010A001
       search.edit_item("#{protocol_number}")
@@ -146,19 +146,19 @@ class IACUCProtocolObject < DataFactory
   # Protocol Actions
   # -----
   def submit_for_review opts={}
-    @review ||= {
+    review ||= {
         submission_type: '::random::',
         review_type: '::random::',
         type_qualifier: '::random::'
     }
-    @review.merge!(opts)
+    review.merge!(opts)
 
     view 'IACUC Protocol Actions'
     on IACUCSubmitForReview do |page|
       page.expand_all
-      page.submission_type.pick! @review[:submission_type]
-      page.review_type.pick! @review[:review_type]
-      page.type_qualifier.pick! @review[:type_qualifier]
+      page.submission_type.pick! review[:submission_type]
+      page.review_type.pick! review[:review_type]
+      page.type_qualifier.pick! review[:type_qualifier]
 
       page.submit
     end
@@ -182,7 +182,7 @@ class IACUCProtocolObject < DataFactory
     end
     on(NotificationEditor).send_it
 
-    # navigate to protocol using protocol numberthen save document id
+    # navigate to protocol using protocol number then save document id
     # because when approving an amendment this information changes
     # and user is left on the amendment without any indication
     # of what the new document id is.
@@ -218,7 +218,7 @@ class IACUCProtocolObject < DataFactory
     view 'IACUC Protocol Actions'
     on WithdrawProtocol do |page|
       page.expand_all
-      page.withdrawal_reason.fit @withdrawl_reason
+      page.withdrawal_reason.fit @withdrawal_reason
       page.submit
     end
   end

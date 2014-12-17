@@ -11,6 +11,5 @@ class InstituteRatesLookup < Lookups
   element(:rate_type_code) { |b| b.frm.text_field(name: 'rateTypeCode') }
   element(:rate) { |b| b.frm.text_field(name: 'instituteRate') }
   element(:unit_number) { |b| b.frm.text_field(name: 'unitNumber') }
-  action(:active) { |val, b| b.frm.radio(name: 'active', value: val).set }
 
 end

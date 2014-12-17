@@ -64,7 +64,7 @@ class BasePage < PageFactory
            'Delete Proposal', 'disapprove',
            'Generate All Periods', 'Calculate All Periods', 'Default Periods',
            'Calculate Current Period', 'Send Notification'
-      action(:save) { |b| b.save_button.click; b.loading }
+      action(:save) { |b| b.save_button.when_present.click; b.loading }
       action(:submit){ |b| b.frm.button(title: 'submit').click; b.loading; b.awaiting_doc }
       element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
       action(:approve) { |b| b.approve_button.click; b.loading; b.awaiting_doc }
@@ -169,7 +169,9 @@ class BasePage < PageFactory
     end
 
     def special_review
+      value(:type_options) { |b| b.add_type.options }
       element(:add_type) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.specialReviewTypeCode') }
+      value(:approval_status_options) {|b| b.add_approval_status.options }
       element(:add_approval_status) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.approvalTypeCode') }
       element(:add_protocol_number) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.protocolNumber') }
       element(:add_application_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.applicationDate') }

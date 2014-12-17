@@ -4,7 +4,8 @@ class SpecialReviewObject < DataFactory
 
   attr_reader :type, :approval_status, :document_id, :protocol_number,
               :application_date, :approval_date, :expiration_date,
-              :exemption_number, :doc_type, :index
+              :exemption_number, :doc_type, :index,
+              :the_type_array, :the_approval_status_array
 
   def initialize(browser, opts={})
     @browser = browser
@@ -42,6 +43,15 @@ class SpecialReviewObject < DataFactory
   def edit opts={}
     view
     on SpecialReview do |edit|
+      the_type_array =[]
+      edit.add_type.options.each { |optns| the_type_array << optns.text }
+      the_approval_status_array = []
+      edit.approval_status_options.each { |stat| the_approval_status_array << stat.text }
+      #need to remove the current type from array to ensure the proper edit
+      opts[:type] = (the_type_array - ['select', 'Human Subjects', 'Animal Usage', opts[:type] ]).sample if opts[:edit_type] == true
+      #need to remove the current status from array to ensure the proper edit
+      opts[:approval_status] = (the_approval_status_array - ['select', opts[:approval_status] ]).sample if opts[:edit_approval_status] == true
+
       edit.type_added(opts[:index]).pick! opts[:type]
       edit.approval_status_added(opts[:index]).pick! opts[:approval_status]
       edit.exemption_number_added(opts[:index]).pick! opts[:exemption_number]
@@ -51,7 +61,7 @@ class SpecialReviewObject < DataFactory
       edit.expiration_date_added(opts[:index]).fit opts[:expiration_date]
       edit.send(opts[:press]) unless opts[:press].nil?
     end
-    set_options(opts)
+    update_options(opts)
   end
 
   def view

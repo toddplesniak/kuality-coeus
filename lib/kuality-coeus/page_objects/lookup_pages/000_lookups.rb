@@ -27,5 +27,6 @@ class Lookups < BasePage
   action(:create_new) { |b| b.create_button.click; b.loading }
   alias_method :create, :create_new
 
+  p_action(:active) { |yes_no_both, b| b.frm.radio(name: 'active', title: "Active - #{yes_no_both.capitalize}").set }
 end
 

@@ -27,9 +27,13 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the fiscal year is not valid' => 'not found is not a valid date.',
             'the approved equipment can\'t have duplicates' => 'Approved Equipment Vendor, Model and Item must be unique',
             'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.',
-            'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.'
+            'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.',
+            'the protocol number is required for human subjects' => 'Protocol Number is a required field for Human Subjects/Approved.',
+            'human subject cannot have exemptions' => 'Cannot select Exemption # for Human Subjects/Approved',
+            'organization id is required' => 'Organization Id is a required field.',
+            'organization type is required' => 'Organization Type is a required field.'
   }
-  $current_page.errors.should include errors[error]
+  expect($current_page.errors).to include errors[error]
 end
 
 Then /^an error requiring at least one unit for the co-investigator is shown$/ do
@@ -122,6 +126,39 @@ end
 #------------------------#
 Then /^an error should appear saying the field is required$/ do
   expect($current_page.errors).to include @required_field_error
+end
+
+Then /^error messages should appear for the required fields on the Special Review$/ do
+  required_fields = ['Type', 'Approval Status']
+  required_fields.map! {|req| "#{req} is a required field." }
+
+  required_fields.each do |err|
+    expect($current_page.errors).to include err
+  end
+end
+
+
+#------------------------#
+# Protocols -IRB & IACUC #
+#------------------------#
+And /^error messages should appear for invalid dates on the Special Review$/ do
+  special_review_dates = [:application_date, :approval_date, :expiration_date]
+  special_review_dates.map! {|date_type| "#{@special_review.send(date_type)} is not a valid date."}
+
+  special_review_dates.each do |err|
+    expect($current_page.errors).to include err
+  end
+end
+
+Then /^error messages should appear for incorrect date structures on the Special Review$/ do
+  errors = [
+      'Approval Date should be the same or later than Application Date.',
+      'Expiration Date should be the same or later than Approval Date.',
+      'Expiration Date should be the same or later than Application Date.'
+  ]
+  errors.each do |err|
+    expect($current_page.errors).to include err
+  end
 end
 
 #------------------------#

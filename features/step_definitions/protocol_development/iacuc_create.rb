@@ -1,13 +1,10 @@
-When /(IACUC Protocol Creator |)creates an? IACUC Protocol$/ do |role_name|
-  case role_name
-    when 'IACUC Protocol Creator '
-      steps '* I log in with the IACUC Protocol Creator user'
-  end
+When /^(the (.*) |)creates an? IACUC Protocol$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
 end
 
-Given /^the IACUC Protocol Creator submits an IACUC Protocol for admin review$/ do
-  steps '* I log in with the IACUC Protocol Creator user'
+Given /^(the (.*) |)submits an IACUC Protocol for admin review$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
 end
@@ -21,11 +18,10 @@ And /^the IACUC Administrator approves a submitted IACUC Protocol$/ do
   @iacuc_protocol.admin_approve
 end
 
-When /^the IACUC Protocol Creator attempts to create an IACUC Protocol but misses a required field$/ do
+When /^the IACUC Protocol Creator creates an IACUC Protocol but misses a required field$/ do
   steps %{ * I log in with the IACUC Protocol Creator user }
   # Pick a field at random for the test...
-  required_field = ['Description', 'Lay Statement 1', 'Lead Unit', 'Title'
-  ].sample
+  required_field = ['Description', 'Lay Statement 1', 'Lead Unit', 'Title'].sample
   field = damballa(required_field)
   @iacuc_protocol = create IACUCProtocolObject, field=>' ', alternate_search_required: nil
   text = ' is a required field.'
@@ -44,26 +40,19 @@ And /the IACUC Administrator creates an? IACUC Committee with an? area of resear
   @committee.add_area_of_research
 end
 
-And /(IACUC Protocol Creator |)creates an IACUC Protocol with one Species$/ do |role_name|
-  case role_name
-    when 'IACUC Protocol Creator '
-      steps '* I log in with the IACUC Protocol Creator user'
-  end
+And /^(the (.*) |)creates an? IACUC Protocol with one Species$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
   @species = create SpeciesObject
 end
 
-When /adds a Species with all options$/ do
+When /adds a Species with all fields completed$/ do
   @species = create SpeciesObject, strain: random_alphanums_plus, usda_covered: :set, procedure_summary: random_alphanums_plus(20)
 end
 
-When /adds a (second |)Species to the IACUC Protocol$/ do |species_number|
-  case species_number
-    when ''
-      @species = create SpeciesObject
-    when 'second '
-      @species2 = create SpeciesObject
-  end
+When /adds a (second |)Species to the IACUC Protocol$/ do |count|
+  species_number = {'' => '', 'second ' => '2'}
+  set("@species#{species_number[count]}", (create SpeciesObject))
 end
 
 When /^the Application Administrator creates a new Location type maintenance document$/ do
@@ -74,40 +63,27 @@ And /adds a location name to the location type maintenance document$/ do
   @location_name = create IACUCLocationNameMaintenanceObject, location_type_code: @location_type.location_type
 end
 
-When /(IACUC Protocol Creator |)assigns the created location to a Procedure on the IACUC Protocol$/ do |role_name|
-  case role_name
-    when 'IACUC Protocol Creator '
-      steps '* I log in with the IACUC Protocol Creator user'
-  end
+When /^(the (.*) |)assigns the created location to a Procedure on the IACUC Protocol$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
   @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, room: rand(100..999), species: @species.species)
 end
 
-Given /(IACUC Protocol Creator |)creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |role_name|
-  case role_name
-    when 'IACUC Protocol Creator '
-      steps '* I log in with the IACUC Protocol Creator user'
-  end
+Given /^(the (.*) |)creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject, reduction: random_alphanums_plus(2000), refinement: random_alphanums_plus(2000), replacement: random_alphanums_plus(2000)
 end
 
-And /(IACUC Protocol Creator |)submits an Amendment for review on the IACUC Protocol$/ do |role_name|
-  case role_name
-    when 'IACUC Protocol Creator '
-      steps '* I log in with the IACUC Protocol Creator user'
-  end
+And /^(the (.*) |)submits an Amendment for review on the IACUC Protocol$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol.create_amendment
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review', submission_type: 'Amendment'
 end
 
-And  /(IACUC Protocol Creator |)creates an IACUC Protcol with the edited location name for a Procedure$/ do |role_name|
-  case role_name
-    when 'IACUC Protocol Creator '
-      steps '* I log in with the IACUC Protocol Creator user'
-  end
-
+And /^(the (.*) |)creates an IACUC Protcol with the edited location name for a Procedure$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
