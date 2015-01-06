@@ -24,6 +24,7 @@ class IACUCProtocolObject < DataFactory
         alternate_search_required: 'No',
         personnel:           collection('ProtocolPersonnel')
     }
+
     @lookup_class = IACUCProtocolLookup
     set_options(defaults.merge(opts))
   end
@@ -40,6 +41,7 @@ class IACUCProtocolObject < DataFactory
       @expiration_date=doc.expiration_date
       @protocol_number=doc.protocol_number
       doc.expand_all
+
       fill_out doc, :description, :protocol_type, :title, :lay_statement_1
       doc.protocol_project_type.pick!(@protocol_project_type)
     end
@@ -53,7 +55,6 @@ class IACUCProtocolObject < DataFactory
       @search_key = { protocol_number: @protocol_number }
     end
 
-    theThreeRs alternate_search_required: @alternate_search_required, reduction: @reduction, refinement: @refinement, replacement: @replacement
   end
 
   def view(tab)

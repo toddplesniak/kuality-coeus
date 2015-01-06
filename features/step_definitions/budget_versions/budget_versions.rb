@@ -4,12 +4,17 @@ When /^(the (.*) user |)creates a Budget Version for the Proposal$/ do |text, ro
   @budget_version = @proposal.budget_versions[0]
 end
 
+When /a Budget Version is created for the Proposal$/ do
+  @proposal.add_budget_version
+  @budget_version = @proposal.budget_versions[0]
+end
+
 When /^I add a subaward budget to the Budget Version$/ do
   @budget_version.add_subaward_budget
 end
 
 Then /^opening the Budget Version will display a warning about the date change$/ do
-  @budget_version.open_budget
+  @budget_version.view 'Periods And Totals'
   on(Parameters).warnings.should include 'The Project Start and/or End Dates have changed from the previous version of this budget. Please update the Project Start and/or End Dates.'
 end
 

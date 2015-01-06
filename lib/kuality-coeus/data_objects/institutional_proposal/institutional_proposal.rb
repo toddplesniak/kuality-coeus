@@ -17,7 +17,7 @@ class InstitutionalProposalObject < DataFactory
         activity_type:     '::random::',
         sponsor_id:        '::random::',
         project_personnel: collection('ProjectPersonnel'),
-        special_review:    collection('SpecialReview'),
+        compliance:        collection('Compliance'),
         cost_sharing:      collection('IPCostSharing'),
         unrecovered_fa:    collection('IPUnrecoveredFA'),
         description:       random_alphanums_plus,

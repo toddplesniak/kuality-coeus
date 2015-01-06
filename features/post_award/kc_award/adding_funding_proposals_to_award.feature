@@ -7,7 +7,7 @@ Feature: Adding Multiple Funding Proposals to an Award
 
   Background:
     * a User exists with the role 'Award Modifier' in unit '000001'
-    * 2 Approved Institutional Proposals with cost share, unrecovered F&A, and special review exist
+    * 2 Approved Institutional Proposals with cost share, unrecovered F&A, and compliance exist
     * the enable.award.FnA.validation parameter is set to 0
 
   Scenario: Latest Funding Proposal linked to new Award overwrites some data
@@ -25,7 +25,7 @@ Feature: Adding Multiple Funding Proposals to an Award
     Given the Award Modifier starts an Award with the first Funding Proposal
     When  the Award Modifier adds the second Funding Proposal to the unsaved Award, merge type 'Merge'
     Then  the Title, Activity Type, NSF Science Code, and Sponsor still match the first Proposal
-  @test
+
   Scenario: Link Multiple Proposals, Replace
     Given the Award Modifier creates an Award with the first Funding Proposal
     When  the second Funding Proposal is added to the Award, as a replacement

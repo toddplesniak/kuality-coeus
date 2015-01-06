@@ -17,3 +17,10 @@ class Researcher < BasePage
   #IRB and IACUC both have title: Search Protocols needed to find section for IACUC as IRB is the first Search Protocols on the page
   action(:search_iacuc_protocols) { |b| b.div(class: 'portlet-title', text: 'IACUC Protocols').parent.parent.link(title: 'Search Protocols').click }
 end
+
+class ResearcherMenu < BasePage
+
+  links 'Create Proposal', 'All My Proposals', 'Search Proposals', 'Create IRB Protocol', 'Search Proposal Log',
+        'Search Institutional Proposals', 'Create IACUC Protocol'
+
+end

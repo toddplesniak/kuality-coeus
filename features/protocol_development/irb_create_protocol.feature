@@ -11,7 +11,7 @@ Feature: Creating IRB Protocols
     Then  an error is shown that indicates the lead unit code is invalid
 
   Scenario: IRB Protocol missing required field
-    Given the Protocol Creator creates an IRB Protocol but misses a required field
+    When  the Protocol Creator creates an IRB Protocol but misses a required field
     Then  an error should appear saying the field is required
 
   Scenario: Committee Adv Submission Days and IRB Protocol Review

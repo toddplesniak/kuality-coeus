@@ -1,9 +1,10 @@
-When /^I? ?visit the Proposal's (.*) page$/ do |page|
+When /^the (.*) visits the Proposal's (.*) page$/ do |user, page|
+  get(user).sign_in
   @proposal.view page
 end
 
-Then /^the (.*) user is listed as an? (.*) in the proposal permissions$/ do |username, role|
-  on(Permissions).assigned_role(get(username).user_name).should include role
+Then /^the (.*) user is listed as an? (.*) in the proposal permissions$/ do |user, role|
+  on(Permissions).role_of(get(user).user_name).should==role
 end
 
 When /^I? ?assign the (.*) user as an? (.*) in the proposal permissions$/ do |system_role, role|
@@ -14,86 +15,29 @@ end
 
 Then /^the (.*) user can access the Proposal$/ do |role|
   get(role).sign_in
-  @proposal.view 'Proposal'
-  on(Proposal).required_fields_div.should be_present
+  @proposal.view
+
 end
 
 Then /^their proposal permissions do not allow them to edit budget details$/ do
-  expect{@proposal.edit(project_title: 'edit')}.not_to raise_error
-  expect{@budget_version.open_budget}.not_to raise_error
-  expect{@budget_version.edit(total_direct_cost_limit: '100')}.to raise_error(Watir::Exception::UnknownObjectException, /unable to locate element/)
+  raise 'This ain\t done!'
 end
 
 And /^their proposal permissions allow them to edit all parts of the Proposal$/ do
-  on Proposal do |page|
-    page.save_button.should be_present
-    page.abstracts_and_attachments
-  end
-  on AbstractsAndAttachments do |page|
-    page.save_button.should be_present
-    page.custom_data
-  end
-  on PDCustomData do |page|
-    page.save_button.should be_present
-    page.key_personnel
-  end
-  on KeyPersonnel do |page|
-    page.save_button.should be_present
-    page.permissions
-  end
-  on Permissions do |page|
-    page.save_button.should be_present
-    page.proposal_actions
-  end
-  on ProposalActions do |page|
-    page.save_button.should be_present
-    page.special_review
-  end
-  on SpecialReview do |page|
-    page.save_button.should be_present
-  end
+  raise 'This ain\t done!'
 end
 
 And /^their proposal permissions allow them to update the Budget, not the narrative$/ do
-  expect{
-    @proposal.add_proposal_attachment file_name: 'test.pdf', type: 'Narrative'
-  }.to raise_error
-  expect{@proposal.add_budget_version}.not_to raise_error
+  raise 'This ain\t done!'
+
 end
 
 And /^their proposal permissions allow them to only read the Proposal$/ do
-  on Proposal do |page|
-    page.save_button.should_not be_present
-    page.abstracts_and_attachments
-  end
-  on AbstractsAndAttachments do |page|
-    page.save_button.should_not be_present
-    page.custom_data
-  end
-  on PDCustomData do |page|
-    page.save_button.should_not be_present
-    page.key_personnel
-  end
-  on KeyPersonnel do |page|
-    page.save_button.should_not be_present
-    page.permissions
-  end
-  on Permissions do |page|
-    page.save_button.should_not be_present
-    page.proposal_actions
-  end
-  on ProposalActions do |page|
-    page.save_button.should_not be_present
-    page.special_review
-  end
-  on SpecialReview do |page|
-    page.save_button.should_not be_present
-  end
+  raise 'This ain\t done!'
 end
 
 And /^their proposal permissions allow them to delete the Proposal$/ do
-  on(Proposal).proposal_actions
-  expect{@proposal.delete}.not_to raise_error
+  raise 'This ain\t done!'
 end
 
 When /^I? ?add an additional proposal role to the (.*) user$/ do |system_role|
@@ -132,11 +76,6 @@ end
 
 Then /^the OSP Administrator can override the cost sharing amount$/ do
   steps '* I log in with the OSP Administrator user'
-  @proposal.view 'Proposal Actions'
-  on ProposalActions do |page|
-    page.expand_all
-    expect{page.budget_field.select 'Cost Sharing Amount'}.not_to raise_error
-    page.budget_changed_value.set '100'
-    expect{page.add_budget_change_data}.not_to raise_error
-  end
+  @proposal.view
+  # TODO
 end
