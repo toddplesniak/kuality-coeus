@@ -1,24 +1,24 @@
 class SpecialReviewObject < DataFactory
 
-  include StringFactory, Navigation
+  include StringFactory
+  include Navigation
 
   attr_reader :type, :approval_status, :document_id, :protocol_number,
               :application_date, :approval_date, :expiration_date,
-              :exemption_number, :doc_type, :index,
-              :the_type_array, :the_approval_status_array
+              :exemption_number, :doc_type
 
   def initialize(browser, opts={})
     @browser = browser
 
     defaults = {
-                      # Subset of drop-down selection, excluding Human Subjects and Animal Usage,
-                      # because those options require special handling.
-      type:            ['Recombinant DNA','Biohazard Materials','International Programs','Space Change',
-                        'TLO Review - No conflict (A)','TLO review - Reviewed, no conflict (B1)',
-                        'TLO Review - Potential Conflict (B2)','TLO PR-Previously Reviewed','Foundation Relations'
-                        ].sample,
-      approval_status: '::random::',
-      press: 'save'
+        # Subset of drop-down selection, excluding Human Subjects and Animal Usage,
+        # because those options require special handling.
+        type:            ['Recombinant DNA','Biohazard Materials','International Programs','Space Change',
+                          'TLO Review - No conflict (A)','TLO review - Reviewed, no conflict (B1)',
+                          'TLO Review - Potential Conflict (B2)','TLO PR-Previously Reviewed','Foundation Relations'
+        ].sample,
+        approval_status: '::random::',
+        press: 'save'
     }
 
     set_options(defaults.merge(opts))
@@ -35,7 +35,6 @@ class SpecialReviewObject < DataFactory
       add.add_expiration_date.fit @expiration_date
       add.add_exemption_number.pick! @exemption_number
       add.add
-
       add.send(@press) unless @press.nil?
     end
   end
@@ -65,6 +64,7 @@ class SpecialReviewObject < DataFactory
   end
 
   def view
+    # Navigation assumes already on the document
     on(Proposal).special_review unless on_page?(on(SpecialReview).add_type)
   end
 

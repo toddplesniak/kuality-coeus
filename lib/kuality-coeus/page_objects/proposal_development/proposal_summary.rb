@@ -1,10 +1,9 @@
-class ProposalSummary < ProposalDevelopmentDocument
+class ProposalSummary < BasePage
 
-  expected_element :proposal_summary_div
+  links 'Proposal Summary', 'Personnel', 'Credit Allocation', 'Questionnaire', 'Supplemental Info',
+        'View Route Log', 'More Actions', 'Compliance', 'Attachments', 'Keywords'
+  buttons 'Submit for Review', 'Approve', 'Disapprove', 'Reject', 'Recall', 'Submit to Sponsor'
 
-  element(:proposal_summary_div) { |b| b.frm.div(id: 'tab-ProposalSummary-div') }
-  
-  element(:disapprove_button) { |b| b.frm.button(name: 'methodToCall.disapprove') }
-  element(:reject_button) { |b| b.frm.button(name: 'methodToCall.reject') }
+  value(:messages) { |b| b.lis(class: 'uif-infoMessageItem').map{|li| li.text} }
 
 end

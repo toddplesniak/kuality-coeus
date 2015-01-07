@@ -8,4 +8,12 @@ module Transforms
 
   CHECK = { set: true, clear: false }
 
+  MONTHS = { 'TEMPORARY EMPLOYEE' => 1,
+             'SUMMER EMPLOYEE' => 3,
+             '9M DURATION' => 9,
+             '10M DURATION' => 10,
+             '11M DURATION' => 11,
+             '12M DURATION' => 12
+  }
+
 end

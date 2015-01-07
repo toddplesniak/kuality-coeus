@@ -5,6 +5,7 @@ class SponsorTemplate < BasePage
   tab_buttons
   global_buttons
   error_messages
+  validation_elements
 
   #Mandatory/Required Components
   element(:payment_basis) { |b| b.frm.select(name: 'document.newMaintainableObject.basisOfPaymentCode') }

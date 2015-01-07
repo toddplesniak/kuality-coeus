@@ -1,17 +1,20 @@
 When /^(the (.*) |)creates an? IACUC Protocol$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
+  @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
 end
 
 Given /^(the (.*) |)submits an IACUC Protocol for admin review$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
+  @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
 end
 
 And /^the IACUC Administrator approves a submitted IACUC Protocol$/ do
   steps '* I log in with the IACUC Protocol Creator user'
   @iacuc_protocol = create IACUCProtocolObject
+  @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
 
   steps '* log in with the IACUC Administrator user'
@@ -23,7 +26,7 @@ When /^the IACUC Protocol Creator creates an IACUC Protocol but misses a require
   # Pick a field at random for the test...
   required_field = ['Description', 'Lay Statement 1', 'Lead Unit', 'Title'].sample
   field = damballa(required_field)
-  @iacuc_protocol = create IACUCProtocolObject, field=>' ', alternate_search_required: nil
+  @iacuc_protocol = create IACUCProtocolObject, field=>' '
   text = ' is a required field.'
   errors = {
       description: "Document Description (Description)#{text}",
@@ -66,6 +69,8 @@ end
 When /^(the (.*) |)assigns the created location to a Procedure on the IACUC Protocol$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
+  @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
+
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
   @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, room: rand(100..999), species: @species.species)
@@ -73,7 +78,11 @@ end
 
 Given /^(the (.*) |)creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
-  @iacuc_protocol = create IACUCProtocolObject, reduction: random_alphanums_plus(2000), refinement: random_alphanums_plus(2000), replacement: random_alphanums_plus(2000)
+  @iacuc_protocol = create IACUCProtocolObject
+  @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
+
+  @iacuc_protocol.theThreeRs(reduction: random_alphanums_plus(2000), refinement: random_alphanums_plus(2000), replacement: random_alphanums_plus(2000))
+
 end
 
 And /^(the (.*) |)submits an Amendment for review on the IACUC Protocol$/ do |text, role_name|
@@ -85,6 +94,8 @@ end
 And /^(the (.*) |)creates an IACUC Protcol with the edited location name for a Procedure$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
+  @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
+
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
   @procedures.set_location location_name: @location_name.location_name,  species: @species.species

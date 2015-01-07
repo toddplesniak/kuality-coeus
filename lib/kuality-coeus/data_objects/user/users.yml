@@ -28,8 +28,7 @@ unassigneduser: # AKA: "Principal Name
       :number:  602-597-5350
       :default: :clear
   :rolez:
-    - :id:   '106'
-      :name: Unassigned
+    - :name: unassigned
       :qualifiers:
         - :unit: '000001'
 poolej: # AKA: "Principal Name
@@ -78,20 +77,16 @@ poolej: # AKA: "Principal Name
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '107'
-      :name: Viewer
+    - :name: Viewer
       :qualifiers:
         - :unit: '000001'
-    - :id:   '110'
-      :name: Aggregator
+    - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-    - :id:   '109'
-      :name: Narrative Writer
+    - :name: Narrative Writer
       :qualifiers:
         - :unit: '000001'
-    - :id:   '108'
-      :name: Budget Creator
+    - :name: Budget Creator
       :qualifiers:
         - :unit: '000001'
 cleganeg:  # AKA: "Principal Name"
@@ -139,8 +134,7 @@ cleganeg:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '100'
-      :name: OSPApprover
+    - :name: OSPApprover
       :qualifiers:
         - :unit:
 starka:  # AKA: "Principal Name"
@@ -183,12 +177,10 @@ starka:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '110'
-      :name: Aggregator
+    - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-    - :id:   '111'
-      :name: Proposal Creator
+    - :name: Proposal Creator
       :qualifiers:
         - :unit: '000001'
 martelld:  # AKA: "Principal Name"
@@ -231,8 +223,7 @@ martelld:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '110'
-      :name: Aggregator
+    - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
 warrens:  # AKA: "Principal Name"
@@ -279,18 +270,15 @@ warrens:  # AKA: "Principal Name"
     - '2002' # OSP Superuser
     - '2003' # ProposalAdmin
   :rolez:
-    - :id:   '131'
-      :name: OSP Administrator
+    - :name: OSP Administrator
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
-    - :id:   '130'
-      :name: Proposal Submission
+    - :name: Proposal Submission
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
-    - :id:   '110'
-      :name: Aggregator
+    - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
 lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in any proposal's workflow.
@@ -333,8 +321,7 @@ lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in 
       :type:    Work
       :default: :set
   :rolez:
-    - :id:  '131'
-      :name: OSP Administrator
+    - :name: OSP Administrator
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
@@ -378,17 +365,14 @@ wcoyne: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '129'
-     :name: Protocol Creator
+   - :name: Protocol Creator
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :clear
-   - :id:   '104'
-     :name: Protocol Viewer
+   - :name: Protocol Viewer
      :qualifiers:
        - :unit: '000001'
-   - :id:   '105'
-     :name: Protocol Aggregator
+   - :name: Protocol Aggregator
      :qualifiers:
        - :unit: '000001'
    - :id:   '1421'
@@ -435,17 +419,14 @@ mlinkous: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '127'
-     :name: IRB Reviewer
+   - :name: IRB Reviewer
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :clear
-   - :id:   '99'
-     :name: IRB Approver
+   - :name: IRBApprover
      :qualifiers:
        - :unit:
-   - :id:   '149'
-     :name: IRBApprover-Nested
+   - :name: IACUC ProtocolApprover
      :qualifiers:
        - :unit:
 smalkmus: # AKA: "Principal Name"
@@ -488,25 +469,20 @@ smalkmus: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '99'
-     :name: IRB Approver
+   - :name: IRBApprover
      :qualifiers:
        -
-   - :id:   '104'
-     :name: Protocol Viewer
+   - :name: Protocol Viewer
      :qualifiers:
        - :unit: '000001'
-   - :id:   '105'
-     :name: Protocol Aggregator
+   - :name: Protocol Aggregator
      :qualifiers:
        - :unit: '000001'
-   - :id:   '128'
-     :name: IRB Administrator
+   - :name: IRB Administrator
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :clear
-   - :id:   '149'
-     :name: Protocol Approver
+   - :name: Protocol Approver
      :qualifiers:
        - :unit:
 kwagner: # AKA: "Principal Name"
@@ -549,8 +525,7 @@ kwagner: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '126'
-     :name: Award Modifier
+   - :name: Award Modifier
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :set
@@ -595,8 +570,7 @@ vchesnutt: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '02'
-     :name: Award Budget Modifier
+   - :name: Award Budget Modifier
      :qualifiers:
        - :unit: '000001'
 dkensrue: # AKA: "Principal Name"
@@ -639,16 +613,13 @@ dkensrue: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '131'
-     :name: OSP Administrator
+   - :name: OSP Administrator
      :qualifiers:
        - :unit: '000001'
-   - :id:   '140'
-     :name: Create Proposal Log
+   - :name: Create Proposal Log
      :qualifiers:
        - :unit: '000001'
-   - :id:   '117'
-     :name: Institutional Proposal Maintainer
+   - :name: Institutional Proposal Maintainer
      :qualifiers:
        - :unit: '000001'
 mtwain: # AKA: "Principal Name"
@@ -691,8 +662,7 @@ mtwain: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '113'
-     :name: Award Budget Aggregator
+   - :name: Award Budget Aggregator
      :qualifiers:
        - :unit: '000001'
 jamesr: # AKA: "Principal Name"
@@ -735,13 +705,11 @@ jamesr: # AKA: "Principal Name"
      :type:    Work
      :default: :set
   :rolez:
-   - :id:   '154'
-     :name: Time And Money Modifier
+   - :name: Time And Money Modifier
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :set
-   - :id:   '123'
-     :name: Award Viewer
+   - :name: Award Viewer
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :set
@@ -786,13 +754,11 @@ dbyrne:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '131'
-      :name: OSP Administrator
+    - :name: OSP Administrator
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
-    - :id:   '130'
-      :name: Proposal Submission
+    - :name: Proposal Submission
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
@@ -841,8 +807,7 @@ kcrimson:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '1428'
-      :name: Modify Sponsor Template
+    - :name: Modify Sponsor Template
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
@@ -895,6 +860,55 @@ greyjoy:  # AKA: "Principal Name"
       :name: Modify Subaward
       :qualifiers:
         - :unit:
+mukoss:
+  :user_name:        mukoss
+  :description:      bla
+  :affiliation_type: Faculty
+  :campus_code:      'UN - UNIVERSITY'
+  :first_name:       MASON
+  :last_name:        KOSS
+  :primary_title:    Mukoss Primary Title
+  :directory_title:  Mukoss Directory Title
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :addresses:
+    - :type:    Work
+      :line_1:  1150 Kuali Drive
+      :city:    Coeus
+      :state:   MASSACHUSETTS
+      :country: United States
+      :zip:     53421
+      :default: :set
+  :phones:
+    - :type:    Work
+      :number:  321-321-1229
+      :default: :set
+    - :type:    Facsimile
+      :number:  321-321-1290
+      :default: :clear
+  :emails:
+    - :email:   kcnotification@gmail.com
+      :type:    Work
+      :default: :set
+  :appointmentz:
+    - :unit:                '000001'
+      :job_code:            AA004
+      :type:                12M DURATION
+      :salary:              120000.0
+      :start_date:          01/01/2000
+      :job_title:           Researcher
+      :preferred_job_title: Master Researcher
+    - :unit:                '000001'
+      :job_code:            AA025
+      :type:                SUMMER EMPLOYEE
+      :salary:              60000.0
+      :start_date:          01/01/2000
+      :job_title:           Researcher
+      :preferred_job_title: Master Researcher
+  :rolez:
+    - :name:
+      :id:
+      :qualifiers:
+        - :unit:
 bbob:  # AKA: "Principal Name"
   :user_name:        bbob
   :description:      IACUC Protocol Aggregator
@@ -941,8 +955,7 @@ bbob:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '1422'
-      :name: IACUC Protocol Aggregator
+    - :name: IACUC Protocol Aggregator
       :qualifiers:
         - :unit: '000001'
 ttim:  # AKA: "Principal Name"
@@ -991,8 +1004,7 @@ ttim:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '1423'
-      :name: Modify IACUC Protocols
+    - :name: Modify IACUC Protocols
       :qualifiers:
         - :unit: '000001'
 jjones:  # AKA: "Principal Name"
@@ -1041,8 +1053,7 @@ jjones:  # AKA: "Principal Name"
       :type:    Work
       :default: :set
   :rolez:
-    - :id:   '1610'
-      :name: IACUC Administrator
+    - :name: IACUC Administrator
       :qualifiers:
       - :unit: '000001'
         :descends_hierarchy: :set

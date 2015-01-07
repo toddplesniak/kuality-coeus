@@ -9,4 +9,5 @@ Feature: Sponsor Term Creation
     Given a User exists with the role: 'Application Administrator'
 
   Scenario: Submit a new Sponsor Term with a missing required field
-    When the Application Administrator user submits a new Sponsor Term
+    When the Application Administrator user submits a new Sponsor Term with a missing required field
+    Then an error should appear saying the field is required

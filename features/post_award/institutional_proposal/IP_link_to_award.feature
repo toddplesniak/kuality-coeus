@@ -27,7 +27,7 @@ Feature: Linking an Institutional Proposal to a KC Award
     And   marks the Budget Version complete
     And   adds a principal investigator to the Proposal
     And   sets valid credit splits for the Proposal
-    And   completes the required custom fields on the Proposal
+    And   completes the required supplemental info on the Proposal
     And   submits the Proposal into routing
     And   the OSPApprover approves the Proposal without future approval requests
     And   the principal investigator approves the Proposal
