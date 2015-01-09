@@ -8,7 +8,7 @@ Feature: Protocol actions for IACUC
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
 
-  @wip @KCIAC-256
+  @KCIAC-256
   Scenario: Suspend a IACUC Protocol with an amendment
     Given the IACUC Administrator approves a submitted IACUC Protocol
     And   the IACUC Protocol Creator submits an Amendment for review on the IACUC Protocol
@@ -16,19 +16,19 @@ Feature: Protocol actions for IACUC
     And   suspends the IACUC Protocol
     Then  the IACUC Protocol submission status should be Suspended
 
-  @wip @KCIAC-256
+  @KCIAC-256
   Scenario: Terminate an IACUC Protocol
     When the IACUC Administrator approves a submitted IACUC Protocol
     And  terminates the IACUC Protocol
     Then the IACUC Protocol submission status should be Terminated
 
-  @wip @KCIAC-256
+  @KCIAC-256
   Scenario: Expire an IACUC Protocol
     When the IACUC Administrator approves a submitted IACUC Protocol
     And  expires the IACUC Protocol
     Then the IACUC Protocol status should be Expired
 
-  @wip @KCIAC-256
+  @KCIAC-256
   Scenario: Withdraw a submitted IACUC Protocol
     Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
     When  the IACUC Administrator withdrawals the IACUC Protocol
