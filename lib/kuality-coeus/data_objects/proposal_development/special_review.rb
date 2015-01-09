@@ -47,9 +47,12 @@ class SpecialReviewObject < DataFactory
       the_approval_status_array = []
       edit.approval_status_options.each { |stat| the_approval_status_array << stat.text }
       #need to remove the current type from array to ensure the proper edit
-      opts[:type] = (the_type_array - ['select', 'Human Subjects', 'Animal Usage', opts[:type] ]).sample if opts[:edit_type] == true
+      current_type = edit.type_added(opts[:index]).selected_options.first.text
+      opts[:type] = (the_type_array - ['select', 'Human Subjects', 'Animal Usage', current_type ]).sample if opts[:edit_type] == true
+
       #need to remove the current status from array to ensure the proper edit
-      opts[:approval_status] = (the_approval_status_array - ['select', opts[:approval_status] ]).sample if opts[:edit_approval_status] == true
+      current_status = edit.approval_status_added(opts[:index]).selected_options.first.text
+      opts[:approval_status] = (the_approval_status_array - ['select', current_status]).sample if opts[:edit_approval_status] == true
 
       edit.type_added(opts[:index]).pick! opts[:type]
       edit.approval_status_added(opts[:index]).pick! opts[:approval_status]

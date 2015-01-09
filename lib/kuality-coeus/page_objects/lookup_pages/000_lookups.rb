@@ -1,5 +1,7 @@
 class Lookups < BasePage
 
+  p_action(:active) { |yes_no_both, b| b.frm.radio(id: "active#{yes_no_both.capitalize}").set }
+
   class << self
 
     # We must override the method in the base page because of the iframe container in the new UI...
@@ -9,9 +11,7 @@ class Lookups < BasePage
 
     def old_ui
       element(:results_table) { |b| b.frm.table(id: 'row') }
-      p_action(:active) { |yes_no_both, b| b.frm.radio(name: 'active', title: "Active - #{yes_no_both.capitalize}").set }
 
-    
       action(:edit_item) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'edit').click; p.use_new_tab; p.close_parents }
       alias_method :edit_person, :edit_item
 
@@ -70,6 +70,5 @@ class Lookups < BasePage
       page_url url
     end
 
-
-     end #self
-end  #Lookups
+  end #self
+end #Lookups

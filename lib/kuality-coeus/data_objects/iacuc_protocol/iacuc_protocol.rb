@@ -30,7 +30,8 @@ class IACUCProtocolObject < DataFactory
   end
 
   def create
-    visit(Researcher).create_iacuc_protocol
+    on(Header).researcher
+    on(ResearcherMenu).create_iacuc_protocol
 
     on IACUCProtocolOverview do |doc|
       @document_id=doc.document_id
@@ -65,7 +66,7 @@ class IACUCProtocolObject < DataFactory
 
   def view_document
     #use this view when you are on the document and want to completely reload the document.
-    visit(Researcher).doc_search
+    on(Header).doc_search
     on DocumentSearch do |search|
       search.document_id.set @document_id
       search.search
@@ -74,7 +75,8 @@ class IACUCProtocolObject < DataFactory
   end
 
   def view_by_protocol_number(protocol_number=@protocol_number)
-    visit(Researcher).search_iacuc_protocols
+    on(Header).researcher
+    on(ResearcherMenu).iacuc_search_protocols
     on ProtocolLookup do |search|
       search.protocol_number.set protocol_number
       search.search

@@ -32,7 +32,6 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the deadline time is not valid' => 'Sponsor Deadline Time: DeadlineTime is invalid.',
             'a valid IP ID must be selected' => 'Original Institutional Proposal ID: A valid Original Institutional Proposal ID (Original Institutional Proposal ID) must be selected.',
             'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.',
-            'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.',
             'the protocol number is required for human subjects' => 'Protocol Number is a required field for Human Subjects/Approved.',
             'human subject cannot have exemptions' => 'Cannot select Exemption # for Human Subjects/Approved',
             'organization id is required' => 'Organization Id is a required field.',

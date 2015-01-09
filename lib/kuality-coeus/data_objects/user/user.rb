@@ -317,12 +317,11 @@ class UserObject < DataFactory
     unless $current_user==self
       $current_user.sign_out if $current_user
       visit login_class do |log_in|
-        # DEBUG.message "login class is:: #{login_class.inspect}"
         log_in.username.set @user_name
         log_in.login
       end
-      # DEBUG.message 'wait for something?'
-      # on(Header).doc_search_link.wait_until_present
+      on(Header).doc_search_link.wait_until_present
+
       $current_user=self
     end
   end

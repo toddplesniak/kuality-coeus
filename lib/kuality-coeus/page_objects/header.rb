@@ -1,4 +1,5 @@
 class Header < BasePage
+
   expected_element :doc_search_link
 
   # Header links
