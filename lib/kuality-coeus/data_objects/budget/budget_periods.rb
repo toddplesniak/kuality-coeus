@@ -1,6 +1,6 @@
 class BudgetPeriodObject < DataFactory
 
-  include StringFactory
+  include StringFactory, Utilities
 
   attr_reader :start_date, :end_date, :total_sponsor_cost,
               :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,
@@ -28,15 +28,10 @@ class BudgetPeriodObject < DataFactory
   end
 
   def create
-    @open_budget.call
-    on PeriodsAndTotals do |create|
-      create.period_start_date.fit @start_date
-      create.period_end_date.fit @end_date
-      create.total_sponsor_cost.fit @total_sponsor_cost
-      fill_out create, :direct_cost, :cost_sharing, :cost_limit, :direct_cost_limit
-      create.fa_cost.fit @f_and_a_cost
-      create.unrecovered_fa_cost.fit @unrecoverd_f_and_a
-      create.add_budget_period
+    view 'Periods And Totals'
+    on(PeriodsAndTotals).add_budget_period
+    on AddBudgetPeriod do |create|
+      # TODO!
     end
     initialize_unrecovered_fa @unrecovered_f_and_a
   end
@@ -50,7 +45,17 @@ class BudgetPeriodObject < DataFactory
       dollar_fields.each do |field|
         edit.send("#{field}_of", @number).fit opts[field]
       end
-      edit.save
+      edit.save_period @number
+
+      if opts.keys.include?(:start_date) || opts.keys.include?(:end_date)
+
+
+        DEBUG.message
+        on(ChangePeriod).yes
+
+
+      end
+
       return if edit.errors.size > 0
     end
     @datified = Utilities.datify @start_date
@@ -81,7 +86,7 @@ class BudgetPeriodObject < DataFactory
       page.view_period @number
       page.assign_personnel @number
     end
-    @assigned_personnel.add opts
+       @assigned_personnel.add opts
   end
 
   def add_participant_support opts={}
@@ -90,7 +95,18 @@ class BudgetPeriodObject < DataFactory
   end
 
   def delete
+    view 'Periods And Totals'
+    on(PeriodsAndTotals).delete_period(@number)
+  end
 
+  def get_dollar_field_values
+    view 'Periods And Totals'
+    on PeriodsAndTotals do |page|
+      page.edit_period @number
+      dollar_fields.each do |field|
+        set(field, page.send("#{field}_of", @number).value)
+      end
+    end
   end
 
   def dollar_fields
@@ -144,5 +160,7 @@ class BudgetPeriodsCollection < CollectionsFactory
   def total_sponsor_cost
     self.collect{ |period| period.total_sponsor_cost.to_f }.inject(0, :+)
   end
+
+
 
 end # BudgetPeriodsCollection

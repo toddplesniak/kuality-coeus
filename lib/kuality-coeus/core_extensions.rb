@@ -4,4 +4,8 @@ class String
     array.include? self
   end
 
+  def value
+    self
+  end
+
 end

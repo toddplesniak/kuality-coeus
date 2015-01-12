@@ -52,11 +52,11 @@ And /an? '(.*)' person is assigned to Budget period (\d+)/ do |object_code, numb
   @project_person = @budget_version.period(number).assigned_personnel.person(assignee)
 end
 
-And /^assigns a Project Person to Budget period (\d+) at (.+)% charge$/ do |number, charge|
+And /assigns a '(.*)' Person to Period (\d+), where the charged percentage is lower than the effort$/ do |object_code, number|
   assignee = @budget_version.personnel.full_names.sample
-  # Note: % effort must be included here to ensure it is not lower than the charged amount, because that
-  # would throw an error...
-  @budget_version.period(number).assign_person person: assignee, percent_effort: charge, percent_charged: charge
+  effort = rand(80)+20
+  charge = rand(effort-5)+1
+  @budget_version.period(number).assign_person person: assignee, percent_effort: effort.to_s, percent_charged: charge.to_s, object_code: object_code
   @project_person = @budget_version.period(number).assigned_personnel.person(assignee)
 end
 

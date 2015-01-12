@@ -1,6 +1,4 @@
-class AddLine < BasePage
-
-  expected_element :dialog
+class AddLine < Dialogs
 
   # Cost Sharing...
   element(:period) { |b| b.dialog.select(name: "newCollectionLines['budget.budgetCostShares'].projectPeriod") }
@@ -17,6 +15,6 @@ class AddLine < BasePage
 
   buttons 'Add', 'Cancel'
 
-  element(:dialog) { |b| b.section(class: 'modal fade uif-cssGridGroup in') }
+  element(:dialog_header) { |b| b.section(class: 'modal fade uif-cssGridGroup in') }
 
 end

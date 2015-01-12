@@ -36,8 +36,8 @@ class AssignedPerson < DataFactory
       page.object_code.pick! @object_code
       page.percent_effort.set @percent_effort
       page.percent_charged.set @percent_charged
-      fill_out page, :person, :group,
-               :start_date, :end_date, :period_type
+      page.person.select /#{@person}/
+      fill_out page, :group, :start_date, :end_date, :period_type
       @start_date ||= page.start_date.value
       @end_date ||= page.end_date.value
       #TODO: This really needs to be set by either scraping the UI, or a Rates Data Object somehow.
@@ -67,6 +67,20 @@ class AssignedPerson < DataFactory
     ((full_months_count*monthly_calculated_salary) + (monthly_inflation_cost*inflated_months_count) + sm + em + end_month_inflation_cost).round(2)
   end
 
+  def cost_sharing
+    sm = start_month_days == days_in_start_month || full_months_count<2 ? 0 : start_month_calc_cost_share
+    em = end_month_days == days_in_end_month ? monthly_calc_cost_share : end_mnth_calc_cost_sharing
+    ((full_months_count*monthly_calc_cost_share) + sm + em ).round(2)
+  end
+
+  def rate_cost(rate)
+    (requested_salary*(rate.to_f/100)).round(2)
+  end
+
+  def rate_cost_sharing(rate)
+    (cost_sharing*(rate.to_f/100)).round(2)
+  end
+
   private
 
   def start_month_days
@@ -90,6 +104,10 @@ class AssignedPerson < DataFactory
     monthly_base_salary*perc_chrgd
   end
 
+  def monthly_calc_cost_share
+    monthly_base_salary*cost_sharing_percentage
+  end
+
   def monthly_inflation_cost
     monthly_calculated_salary*(@inflation_rate.to_f/100)
   end
@@ -99,15 +117,23 @@ class AssignedPerson < DataFactory
   end
 
   def end_month_daily_salary
-    monthly_base_salary/days_in_start_month
+    monthly_base_salary/end_month_days
   end
 
   def start_month_calculated_salary
     start_month_daily_salary*start_month_days*perc_chrgd
   end
 
+  def start_month_calc_cost_share
+    start_month_daily_salary*start_month_days*cost_sharing_percentage
+  end
+
   def end_month_calculated_salary
     end_month_daily_salary*end_month_days*perc_chrgd
+  end
+
+  def end_mnth_calc_cost_sharing
+    end_month_daily_salary*end_month_days*cost_sharing_percentage
   end
 
   def end_month_inflation_cost
@@ -140,6 +166,10 @@ class AssignedPerson < DataFactory
 
   def perc_chrgd
     @percent_charged.to_f/100
+  end
+
+  def cost_sharing_percentage
+    (@percent_effort.to_f-@percent_charged.to_f)/100
   end
 
 end

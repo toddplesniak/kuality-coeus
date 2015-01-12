@@ -16,7 +16,7 @@ Feature: Proposal Actions Validations
   Scenario: Sponsor deadline date is missing
     Given the Proposal Creator creates a Proposal without a sponsor deadline date
     When  data validation is activated
-    Then  an error is shown that says sponsor deadline date not entered
+    Then  a warning is shown that says sponsor deadline date not entered
 
   Scenario: Sponsor deadline date has passed
     Given the Proposal Creator creates a Proposal with a sponsor deadline in the past

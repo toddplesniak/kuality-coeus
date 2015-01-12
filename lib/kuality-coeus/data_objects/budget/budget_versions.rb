@@ -6,7 +6,7 @@ class BudgetVersionsObject < DataFactory
               :project_start_date, :project_end_date, :total_direct_cost_limit,
               :budget_periods, :unrecovered_fa_rate_type, :f_and_a_rate_type,
               :submit_cost_sharing, :residual_funds, :total_cost_limit,
-              :subaward_budgets, :personnel
+              :subaward_budgets, :personnel, :institute_rates
   attr_accessor :name
 
   def_delegator :@budget_periods, :period
@@ -40,6 +40,8 @@ class BudgetVersionsObject < DataFactory
       add.create_budget
     end
     get_budget_periods
+    on(BudgetSidebar).rates
+    @institute_rates = on(Rates).rates
   end
 
   def add_period opts={}
@@ -60,8 +62,9 @@ class BudgetVersionsObject < DataFactory
   end
 
   def edit opts={}
-
-    on Parameters do |edit|
+    raise 'This method needs work!'
+    view 'Some thing goes here'
+    on Stuff do |edit|
       edit.parameters unless edit.parameters_button.parent.class_name=='tabright tabcurrent'
       edit_fields opts, edit, :final, :total_direct_cost_limit
       edit.budget_status.fit opts[:status]
@@ -74,6 +77,26 @@ class BudgetVersionsObject < DataFactory
   def view(tab)
     @open_budget.call
     on(BudgetSidebar).send(damballa(tab.to_s))
+  end
+
+  def copy_all_periods new_name
+    view 'Periods And Totals'
+    on(NewDocumentHeader).budget_versions
+    on(BudgetsDialog).copy @name
+    on CopyThisBudgetVersion do |page|
+      page.budget_name.set new_name
+      page.copy_periods 'Y'
+      page.copy_budget
+    end
+    new_bv = self.data_object_copy
+    new_bv.name=new_name
+    new_bv
+  end
+
+  def reset_to_period_defaults
+    view 'Periods And Totals'
+    on(PeriodsAndTotals).reset_to_period_defaults
+    get_budget_periods
   end
 
   def add_subaward_budget(opts={})
@@ -105,6 +128,17 @@ class BudgetVersionsObject < DataFactory
     end
   end
 
+  def submit_with_proposal
+    @navigate.call
+    on(ProposalSidebar).budget
+    on(Budgets).submit_with_proposal @name
+  end
+
+  def complete
+    view 'Periods And Totals'
+    on(PeriodsAndTotals).complete_budget
+  end
+
   def update_from_parent(navigate_method)
     @navigate=navigate_method
   end
@@ -123,7 +157,9 @@ class BudgetVersionsObject < DataFactory
     }
   end
 
+  # Note: Assumes we're already on the Periods And Totals page...
   def get_budget_periods
+    @budget_periods.clear
     on PeriodsAndTotals do |page|
       1.upto(page.period_count) do |number|
         page.edit_period number
@@ -138,6 +174,7 @@ class BudgetVersionsObject < DataFactory
                       cost_limit: page.cost_limit_of(number).value.groom,
                       direct_cost_limit: page.direct_cost_limit_of(number).value.groom
         @budget_periods << period
+        page.save_period number
       end
     end
     @budget_periods.number!

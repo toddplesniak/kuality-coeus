@@ -32,8 +32,6 @@ World Utilities
 
 Before do
   # Get the browser object
-
-  # REMOVE when logging in/out is fixed!!!
   kuality = Kuality.new basic[:browser]
 
   @browser = kuality.browser
@@ -51,6 +49,7 @@ After do |scenario|
     embed 'screenshot.png', 'image/png'
     DEBUG.message "Failed on page: #{@browser.url}"
   end
+  # TODO: This stuff needs to be fixed when logging out works...
   # Log out if not already
   # @browser.goto "#{$base_url+$context}logout.do"
 

@@ -11,7 +11,6 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the IP can not be added because it\'s not fully approved' => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
             'the approval should occur later than the application' => 'Approval Date should be the same or later than Application Date.',
             'not to select other roles alongside aggregator' => 'Do not select other roles when Aggregator is selected.',
-            'only one version can be final' => 'Only one Budget Version can be marked "Final".',
             'a revision type must be selected' => 'S2S Revision Type must be selected when Proposal Type is Revision.',
             %|I need to select the 'Other' revision type| => %|The revision 'specify' field is only applicable when the revision type is "Other"|,
             'an original proposal ID is needed'=>'Please provide an original institutional proposal ID that has been previously submitted to Grants.gov for a Change\/Corrected Application.',
@@ -52,7 +51,7 @@ Then /^an error should say the credit split does not equal 100%$/ do
   on(DataValidation).validation_errors_and_warnings.should include "The Investigators #{@split_type} Credit Split does not equal 100%."
 end
 
-Then /^an error is shown that says (.*)$/ do |error|
+Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
   errors = { 'there are duplicate organizations' => 'There is a duplicate organization name.',
              'there is no principal investigator' => 'There is no Principal Investigator selected. Please enter a Principal Investigator.',
              'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.',

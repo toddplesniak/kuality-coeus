@@ -1,10 +1,8 @@
-class AddProjectPersonnel < BasePage
-
-  expected_element :header
+class AddProjectPersonnel < Dialogs
 
   buttons 'Search', 'Cancel', 'Add Selected Personnel'
 
-  element(:header) { |b| b.h4(id: 'PropBudget-ProjectPersonnelPage-Wizard_header') }
+  element(:dialog_header) { |b| b.h4(id: 'PropBudget-ProjectPersonnelPage-Wizard_header') }
 
   element(:search_for) { |b| b.select(name: 'addProjectPersonnelHelper.lineType') }
   element(:user_name) { |b| b.text_field(name: %|addProjectPersonnelHelper.lookupFieldValues['principalName']|) }

@@ -51,3 +51,33 @@ class SendNotifications < Dialogs
   value(:institutional_proposal_number) { |b| b.message.text[/(?<=is )\d+/] }
 
 end # Send Notifications
+
+class BudgetsDialog < Dialogs
+  
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-BudgetVersions-Dialog_headerWrapper') }
+  p_action(:copy) { |name, b| b.target_row(name).button.click; b.link(text: 'Copy').click }
+
+  p_element(:submission_message) { |name, b| b.target_row(name)[0].div(class: 'uif-messageField submissionMessage') }
+  
+  private
+  
+  element(:budgets_table) { |b| b.div(title: 'Budget').tbody }
+  p_element(:target_row) { |name, b| b.budgets_table.trs.find{|r| r[0].link.text==name } }
+
+end # BudgetsDialog
+
+class CopyThisBudgetVersion < Dialogs
+  
+  element(:dialog_header) { |b| b.header(id: 'PropDev-BudgetPage-CopyBudgetDialog_headerWrapper') }
+  element(:budget_name) { |b| b.text_field(name: 'copyBudgetDto.budgetName') }
+  p_element(:copy_periods) { |value, b| b.radio(name: 'copyBudgetDto.allPeriods', value: value).set }
+
+  buttons 'Copy Budget', 'Cancel'
+
+end
+
+class ChangePeriod < Dialogs
+  
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-PeriodsPage-ChangePeriodDialog_headerWrapper') }
+
+end

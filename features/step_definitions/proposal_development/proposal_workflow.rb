@@ -50,7 +50,14 @@ And /^the (.*) approves the Proposal (with|without) future approval requests$/ d
   steps %{* I log in with the #{role_name} user }
   # Move to Transforms???
   conf = {'with' => :yes, 'without' => :no}
-  @proposal.approve_from_action_list(conf[future_requests])
+  #@proposal.approve(conf[future_requests])
+
+  # Need this debug code because of the problem of the OSP Approver not being able
+  # to find the proposal via search...
+  DEBUG.do {
+    @proposal.approve_from_action_list(conf[future_requests])
+  }
+
 end
 
 Then /^I should only have the option to submit the proposal to its sponsor$/ do

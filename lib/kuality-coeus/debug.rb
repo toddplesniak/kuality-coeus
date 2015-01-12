@@ -14,6 +14,20 @@ module DEBUG
     def do message='Performing debug code block...', &block
       puts message
       yield block
+      puts 'Successfully completed debug code!'
+      puts 'Now back to your regularly scheduled program...'
+    end
+
+    def inspect_watir_element(element)
+      puts "Visible: #{element.visible?}"
+      puts 'Style:'
+      puts element.style
+      puts 'Tag name:'
+      puts element.tag_name
+      puts 'Parent:'
+      puts element.parent
+      puts 'HTML:'
+      puts element.outer_html
     end
 
     def inspect object
@@ -26,8 +40,8 @@ module DEBUG
       objects.each { |o| inspect o }
     end
 
-    def snap(b)
-      b.screenshot.save 'debug_capture.png'
+    def snap(b, png='debug_capture')
+      b.screenshot.save "#{png}.png"
     end
 
   end

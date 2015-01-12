@@ -221,7 +221,3 @@ end
 And /opens the Award$/ do
   @award.view :award
 end
-
-Then /^the cost share percentage should round to 2 decimal places$/ do
-  on(Commitments).page.cost_sharing_percentage(@award.cost_sharing[0].source, @award.cost_sharing[0].commitment_amount).value.should =~ /\.\d{2}/
-end

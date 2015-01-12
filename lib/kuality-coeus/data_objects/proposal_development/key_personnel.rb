@@ -120,14 +120,17 @@
   end
 
   def certification
-    if @certified
-      view 'Personnel'
-      on(KeyPersonnel).proposal_person_certification_of @full_name
-      CERTIFICATION_QUESTIONS.each { |q| on(KeyPersonnel).send(q, @full_name, get(q)) }
-    else
-      CERTIFICATION_QUESTIONS.each { |q| set(q, nil) }
+    # TODO: Make this more robust for Key Persons...
+    unless @role=='Key Person'
+      if @certified
+        view 'Personnel'
+        on(KeyPersonnel).proposal_person_certification_of @full_name
+        CERTIFICATION_QUESTIONS.each { |q| on(KeyPersonnel).send(q, @full_name, get(q)) }
+      else
+        CERTIFICATION_QUESTIONS.each { |q| set(q, nil) }
+      end
+      on(KeyPersonnel).save
     end
-    on(KeyPersonnel).save
   end
 
   def update_from_parent(navigate)

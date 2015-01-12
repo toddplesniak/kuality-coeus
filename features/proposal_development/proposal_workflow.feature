@@ -11,7 +11,7 @@ Feature: Proposal Workflows and Routing
   Scenario: Approval Requests for a Proposal are sent
     When the Proposal Creator submits a new Proposal into routing
     Then the Proposal status should be Approval Pending
-  @failing
+
   Scenario: Copying a submitted Proposal
     When the Proposal Creator submits a new Proposal into routing
     Then it is still possible to copy the Proposal

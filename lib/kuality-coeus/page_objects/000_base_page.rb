@@ -1,3 +1,4 @@
+# coding: UTF-8
 class BasePage < PageFactory
 
   action(:use_new_tab) { |b| b.windows.last.use }
@@ -26,6 +27,7 @@ class BasePage < PageFactory
 
   value(:htm) { |b| b.frm.html }
   value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
+  value(:no_frame_noko) { |b| WatirNokogiri::Document.new(b.html) }
 
   class << self
 
@@ -123,12 +125,8 @@ class BasePage < PageFactory
     end
 
     def budget_header_elements
-      action(:return_to_proposal) { |b| b.frm.button(name: 'methodToCall.returnToProposal').click; b.loading }
-      action(:return_to_award) { |b| b.frm.button(name: 'methodToCall.returnToAward').click; b.loading }
-      buttons 'Budget Versions', 'Parameters', 'Rates', 'Summary', 'Personnel', 'Non-Personnel',
-              'Distribution & Income', 'Budget Actions'
-      # Need the _tab suffix because of method collisions
-      action(:modular_budget_tab) { |b| b.frm.button(value: 'Modular Budget').click }
+      links 'Data Validation', 'Budget Settings', 'Summary', 'Budget Versions', 'Autocalculate Periods'
+      buttons 'Recalculate with changes', 'Reset to period defaults', '« Return to proposal'
     end
 
     def budget_versions_elements
