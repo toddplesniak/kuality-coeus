@@ -321,6 +321,7 @@ class UserObject < DataFactory
         log_in.login
       end
       on(Header).doc_search_link.wait_until_present
+
       $current_user=self
     end
   end
@@ -328,7 +329,13 @@ class UserObject < DataFactory
 
   def sign_out
     on(BasePage).close_extra_windows
-    @browser.goto "#{$base_url+$context}kr-krad/login?methodToCall=logout&viewId=DummyLoginView"
+
+    # TODO! remove this when all testing is done on KC 6.0
+    if $context == 'kc-dly/'
+      @browser.goto "#{$base_url+$cas_context}logout"
+    else
+      @browser.goto "#{$base_url+$context}kr-krad/login?methodToCall=logout&viewId=DummyLoginView"
+    end
     $current_user=nil
   end
   alias_method :log_out, :sign_out

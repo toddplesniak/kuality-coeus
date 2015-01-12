@@ -64,7 +64,7 @@ Feature: Basic Award Validations
   Scenario: Terms are not entered in the Award
     Given the Award Modifier creates an Award
     When  data validation is turned on for the Award
-    Then  errors about the missing terms are shown
+    Then  errors about the missing Award terms are shown
 
   Scenario: Contact's Credit Splits not valid
     Given the Award Modifier creates an Award

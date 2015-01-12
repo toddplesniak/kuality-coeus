@@ -1,8 +1,8 @@
-class ProtocolLookup < Lookups
+class IACUCProtocolLookup < Lookups
 
   expected_element :protocol_number
 
-  url_info 'Protocols', 'kra.irb.Protocol'
+  url_info 'Search Protocols', 'kra.iacuc.IacucProtocol'
 
   old_ui
 

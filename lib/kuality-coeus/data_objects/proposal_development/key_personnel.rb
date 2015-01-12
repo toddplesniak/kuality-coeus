@@ -24,7 +24,7 @@
       submitted_financial_disclosures: 'Y',
       lobbying_activities:             'Y',
       excluded_from_transactions:      'Y',
-      familiar_with_pla:               'Y',
+      familiar_with_pla:               'Y'
     }
 
     set_options(defaults.merge(opts))

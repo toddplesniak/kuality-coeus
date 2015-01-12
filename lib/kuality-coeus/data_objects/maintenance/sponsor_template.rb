@@ -27,7 +27,10 @@ class SponsorTemplateObject < DataFactory
       @status=add.document_status
       add.expand_all
       fill_out add, :description, :template_description, :template_status, :payment_basis, :payment_method
-      set_sponsor_terms
+    end
+
+    set_sponsor_terms
+    on SponsorTemplate do |add|
       add.submit
     end
 
@@ -38,12 +41,12 @@ class SponsorTemplateObject < DataFactory
   # =========
 
   def set_sponsor_terms
-
     on(SponsorTemplate).find_sponsor_term
     on SponsorTermLookup do |look|
       look.search
-      look.return_random
+      look.return_random_checkbox if :sponsor_term == '::random::'
+      look.return_selected
     end
   end
 
-end
+end #SponsorTemplateObject

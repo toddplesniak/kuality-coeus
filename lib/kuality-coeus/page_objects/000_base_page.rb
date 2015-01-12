@@ -5,6 +5,7 @@ class BasePage < PageFactory
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
+  action(:loading_old) { |b| b.frm.image(alt: 'working...').wait_while_present }
   action(:loading) { |b| b.image(alt: 'Loading...').wait_while_present(60) }
   element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
   action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
@@ -20,7 +21,8 @@ class BasePage < PageFactory
   element(:save_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.save') }
   value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
 
-  element(:workarea_div) { |b| b.frm.div(id: 'Uif-Application') }
+  element(:workarea_div) { |b| b.frm.div(id: 'workarea') }
+  element(:workarea_div_new) { |b| b.frm.div(id: 'Uif-Application') }
 
   value(:htm) { |b| b.frm.html }
   value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
@@ -82,7 +84,7 @@ class BasePage < PageFactory
            'Delete Proposal', 'disapprove',
            'Generate All Periods', 'Calculate All Periods', 'Default Periods',
            'Calculate Current Period', 'Send Notification'
-      action(:save) { |b| b.save_button.click; b.loading }
+      action(:save) { |b| b.save_button.when_present.click; b.loading }
       action(:submit){ |b| b.frm.button(title: 'submit').click; b.loading; b.awaiting_doc }
       element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
       action(:approve) { |b| b.approve_button.click; b.loading; b.awaiting_doc }
@@ -100,7 +102,6 @@ class BasePage < PageFactory
     def tab_buttons
       action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present.click; b.loading }
       element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
-      
     end
 
     def tiny_buttons
@@ -117,6 +118,8 @@ class BasePage < PageFactory
       action(:select_all_from_this_page) { |b| b.frm.button(title: 'Select all rows from this page').click }
       action(:return_selected) { |b| b.frm.button(title: 'Return selected results').click; b.loading }
       p_action(:check_item) { |item, b| b.item_row(item).checkbox.set }
+      action(:select_random_checkbox) { |b| b.frm.tbody.tr(index: (rand(b.frm.tbody.trs.length))  ).checkbox.set }
+      action(:return_random_checkbox) { |b| b.select_random_checkbox; b.return_selected }
     end
 
     def budget_header_elements
@@ -156,15 +159,25 @@ class BasePage < PageFactory
       end
     end
 
+    def protocol_header_elements
+      buttons 'Proposal', 'S2S', 'Key Personnel', 'Special Review', 'Custom Data',
+              'Abstracts and Attachments', 'Questions', 'Budget Versions', 'Permissions',
+              'Proposal Summary', 'Proposal Actions', 'Medusa'
+
+      element(:header_table) { |b| b.frm.table(class: 'headerinfo') }
+    end
+
     def special_review
+      value(:type_options) { |b| b.add_type.options }
       element(:add_type) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.specialReviewTypeCode') }
+      value(:approval_status_options) {|b| b.add_approval_status.options }
       element(:add_approval_status) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.approvalTypeCode') }
       element(:add_protocol_number) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.protocolNumber') }
       element(:add_application_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.applicationDate') }
       element(:add_approval_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.approvalDate') }
       element(:add_expiration_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.expirationDate') }
       element(:add_exemption_number) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.exemptionTypeCodes') }
-
+      alias_method :add_exemption, :add_exemption_number
       action(:add) { |b| b.frm.button(name: 'methodToCall.addSpecialReview.anchorSpecialReview').click }
 
       p_element(:type_code) { |index, b| b.frm.select(id: /specialReviews\[#{index}\].specialReviewTypeCode/) }
@@ -172,6 +185,18 @@ class BasePage < PageFactory
 
       value(:types) { |b| b.frm.selects(id: /specialReviewTypeCode/).map{ |field| field.selected_options[0].text }.delete_at(0) }
 
+      #added lines
+      p_element(:type_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].specialReviewTypeCode") }
+      p_element(:approval_status_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].approvalTypeCode") }
+      p_element(:protocol_number_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].protocolNumber") }
+      p_element(:application_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].applicationDate") }
+      p_element(:approval_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].approvalDate") }
+      p_element(:expiration_date_added) { |index, b| b.frm.text_field(name: "document.protocolList[0].specialReviews[#{index}].expirationDate") }
+      p_element(:exemption_number_added) { |index, b| b.frm.select(name: "document.protocolList[0].specialReviews[#{index}].exemptionTypeCodes") }
+      alias_method :exemption_added, :exemption_number_added
+      p_element(:comments_added) { |index, b| b.frm.textarea(name: "document.protocolList[0].specialReviews[#{index}].comments") }
+
+      p_action(:delete) { |index, b| b.frm.button(name: "methodToCall.deleteSpecialReview.line#{index}.anchor0.validate0").click }
     end
 
     # TODO: Remove this, as it is old UI stuff...
@@ -282,8 +307,8 @@ class BasePage < PageFactory
     def elementate(type, text)
       el_name=damballa("#{text}_element")
       act_name=damballa(text)
-      element(el_name) { |b| b.send(type, text: text) }
-      action(act_name) { |b| b.send(type, text: text).click; b.loading }
+      element(el_name) { |b| b.frm.send(type, text: text) }
+      action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
     end
 
     # Used for getting rid of the space and comma in the full name

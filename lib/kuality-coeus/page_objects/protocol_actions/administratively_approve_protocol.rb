@@ -7,5 +7,5 @@ class AdministrativelyApproveProtocol < KCProtocol
   element(:action_date) { |b| b.frm.text_field(name: 'actionHelper.protocolAdminApprovalBean.actionDate') }
 
   element(:approve_div) { |b| b.frm.div(id: 'tab-:AdministrativelyApproveProtocol-div') }
-  action(:submit) { |b| b.approve_div.button(name: /^methodToCall.grantAdminApproval.anchor/).click; b.loading; b.awaiting_doc }
+  action(:submit) { |b| b.approve_div.button(name: /^methodToCall.grantAdminApproval.anchor/).when_present.click; b.loading; b.awaiting_doc }
 end

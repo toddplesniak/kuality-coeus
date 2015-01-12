@@ -52,5 +52,4 @@ class ProtocolOverview < KCProtocol
   action(:participant_add) { |b| b.frm.button(name: 'methodToCall.addProtocolParticipant.anchorParticipantTypes').click }
   #TODO: Create table options to maintain the partipant types and counts. Also so that counts can be updated.
 
-
 end

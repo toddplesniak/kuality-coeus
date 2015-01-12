@@ -31,9 +31,13 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the Award ID is invalid' => 'Award ID: Award ID is invalid.',
             'the deadline time is not valid' => 'Sponsor Deadline Time: DeadlineTime is invalid.',
             'a valid IP ID must be selected' => 'Original Institutional Proposal ID: A valid Original Institutional Proposal ID (Original Institutional Proposal ID) must be selected.',
-            'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.'
+            'the allowable range for fiscal years' => 'Fiscal Year must be between 1900 and 2499.',
+            'the protocol number is required for human subjects' => 'Protocol Number is a required field for Human Subjects/Approved.',
+            'human subject cannot have exemptions' => 'Cannot select Exemption # for Human Subjects/Approved',
+            'organization id is required' => 'Organization Id is a required field.',
+            'organization type is required' => 'Organization Type is a required field.'
   }
-  $current_page.errors.should include errors[error]
+  expect($current_page.errors).to include errors[error]
 end
 
 Then /^an error requiring at least one unit for the co-investigator is shown$/ do
@@ -61,10 +65,16 @@ Then /^an error is shown that says (.*)$/ do |error|
   on(DataValidation).validation_errors_and_warnings.should include errors[error]
 end
 
-Then /^errors about the missing terms are shown$/ do
+Then /^errors about the missing Award terms are shown$/ do
   ['Equipment Approval', 'Invention','Prior Approval','Property','Publication',
-   'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions']
-  .each { |term| $current_page.validation_errors_and_warnings.should include "There must be at least one #{term} Terms defined." }
+  'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions']
+  .each { |term| expect($current_page.errors).to include("There must be at least one #{term} Terms defined.") }
+end
+
+Then /^errors about the missing Sponsor terms are shown$/ do
+  ['Equipment Approval', 'Invention','Prior Approval','Property', 'Referenced Document',
+   'Rights In Data', 'Travel Restrictions','Publication', 'Subaward Approval']
+      .each { |term| expect($current_page.errors).to include("No < #{term} Terms > terms are selected for the current award. Please add a term.") }
 end
 
 # TODO: Move to the big step def.
@@ -119,7 +129,7 @@ end
 
 Then /^(errors|an error) should appear warning that the field contents are not valid$/ do |x|
   @errors.each do |err|
-    $current_page.errors.should include err
+    expect($current_page.errors).to include err
   end
 end
 
@@ -128,6 +138,39 @@ end
 #------------------------#
 Then /^an error should appear saying the field is required$/ do
   expect(@required_field_error).to be_one_of $current_page.errors
+end
+
+Then /^error messages should appear for the required fields on the Special Review$/ do
+  required_fields = ['Type', 'Approval Status']
+  required_fields.map! {|req| "#{req} is a required field." }
+
+  required_fields.each do |err|
+    expect($current_page.errors).to include err
+  end
+end
+
+
+#------------------------#
+# Protocols -IRB & IACUC #
+#------------------------#
+And /^error messages should appear for invalid dates on the Special Review$/ do
+  special_review_dates = [:application_date, :approval_date, :expiration_date]
+  special_review_dates.map! {|date_type| "#{@special_review.send(date_type)} is not a valid date."}
+
+  special_review_dates.each do |err|
+    expect($current_page.errors).to include err
+  end
+end
+
+Then /^error messages should appear for incorrect date structures on the Special Review$/ do
+  errors = [
+      'Approval Date should be the same or later than Application Date.',
+      'Expiration Date should be the same or later than Approval Date.',
+      'Expiration Date should be the same or later than Application Date.'
+  ]
+  errors.each do |err|
+    expect($current_page.errors).to include err
+  end
 end
 
 #------------------------#

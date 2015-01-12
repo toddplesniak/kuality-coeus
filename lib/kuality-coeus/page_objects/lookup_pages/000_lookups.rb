@@ -1,5 +1,7 @@
 class Lookups < BasePage
 
+  p_action(:active) { |yes_no_both, b| b.frm.radio(id: "active#{yes_no_both.capitalize}").set }
+
   class << self
 
     # We must override the method in the base page because of the iframe container in the new UI...
@@ -68,7 +70,5 @@ class Lookups < BasePage
       page_url url
     end
 
-  end
-
-
-end
+  end #self
+end #Lookups

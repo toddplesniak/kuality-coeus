@@ -1,5 +1,7 @@
 class Proposal < BasePage
 
+  protocol_header_elements
+
   value(:feedback) { |b| b.frm.div(class: 'left-errmsg').text }
 
   # Required fields

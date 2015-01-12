@@ -20,6 +20,8 @@ class RoleObject < DataFactory
       'Create Proposal Log'               => '140',
       'Departments Awards Viewer'         => '121',
       'IACUC ProtocolApprover'            => '1622',
+      'IACUC Administrator'               => '1610',
+      'IACUC Protocol Creator'            => '1421',
       'Institutional Proposal Maintainer' => '117',
       'Institutional Proposal Viewer'     => '118',
       'IRB Administrator'                 => '128',

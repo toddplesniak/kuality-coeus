@@ -14,11 +14,8 @@ And /submits? the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
 end
 
-And /(IRB Administrator |)assigns? reviewers to the Protocol/ do |change_user|
-  case change_user
-    when 'IRB Administrator '
-      steps '* log in with the IRB Administrator user'
-  end
+And /(the (.*) |)assigns? reviewers to the Protocol/ do |text, change_user|
+  steps %{ * log in with the #{change_user} user } unless text == ''
   @irb_protocol.view 'Protocol Actions'
   @irb_protocol.assign_primary_reviewers
   @irb_protocol.assign_secondary_reviewers

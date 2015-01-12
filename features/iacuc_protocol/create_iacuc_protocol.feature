@@ -2,10 +2,12 @@
 Feature: Creating IACUC Protocols
 
   As a researcher I want the ability to create a protocol for animal subjects
+  [KCTEST-34] IACUC Protocol should display an error message when a required field is missed on the Protocol tab
+  [KCTEST-912] IACUC Protocol Creator can add personnel member to the procedure
+  [KCTEST-928,929,930] ThreeRs should be editable and display edits when saved
 
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
-
 
   Scenario: Create a IACUC proposal
     When the IACUC Protocol Creator creates an IACUC Protocol
@@ -14,24 +16,23 @@ Feature: Creating IACUC Protocols
 
   @KCTEST-34
   Scenario: IACUC Protocol overview is missing a required field
-    When the IACUC Protocol Creator attempts to create an IACUC Protocol but misses a required field
-    Then  an error should appear saying the field is required
+    When the IACUC Protocol Creator creates an IACUC Protocol but misses a required field
+    Then an error should appear saying the field is required
 
-  @KC-TA-5417
-  Scenario: IACUC Admin deactivates an IACUC Protocol
-    Given the IACUC Administrator approves a submitted IACUC Protocol
-    When  the IACUC Administrator deactivates the IACUC Protocol
-    Then  the IACUC Protocol status should be Deactivated
+  @KCTEST-912
+   Scenario: Personnel with qualifications can be added to a procedure and display on summary
+    When the IACUC Protocol Creator creates an IACUC Protocol
+    And  adds 1 personnel member to the IACUC Protocol
+    Then the personnel member added to the IACUC Protocol is present
+    When adds a Species group to the IACUC Protocol
+    And  adds a Procedure to the IACUC Protocol
+    And  adds a person to the procedure for the species with qualifications
+    Then the procedures summary will display qualifications for the personnel
 
-  @KC-TA-5417
-  Scenario: IACUC Admin lifts a hold on an IACUC Protocol that was placed on hold
-    Given the IACUC Administrator approves a submitted IACUC Protocol
-    And   places the IACUC Protocol on hold
-    When  lifts the hold placed on the IACUC Protocol
-    Then  the IACUC Protocol submission status should be Lift Hold
-
-  @KCTEST-881
-  Scenario: Verify the expiration date is set after the IACUC Protocol is approved
-    Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
-    When the IACUC Administrator approves the IACUC Protocol
-    Then  the expiration date is set for the Protocol
+  @KCTEST-928 @KCTEST-929 @KCTEST-930 @unit-testy
+  Scenario: The Three Principles fields can be edited
+    Given the IACUC Protocol Creator creates an IACUC Protocol with the three principles, reduction, refinement, replacement
+    And   edits the Principles of reduction
+    And   edits the Principles of refinement
+    And   edits the Principles of replacement
+    Then  the three principles should have the edited values after saving the IACUC Protocol
