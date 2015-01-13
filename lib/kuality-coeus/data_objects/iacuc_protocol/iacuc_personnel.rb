@@ -18,13 +18,15 @@ class IACUCPersonnel <  DataFactory
         on ProtocolPersonnel do |page|
           page.expand_all
           page.employee_search
+        end
 
-          on KcPersonLookup do |lookup|
-            lookup.kcperson_id.fit @kcperson_id
-            lookup.search
-            return_random_person
-          end
+        on KcPersonLookup do |lookup|
+          lookup.kcperson_id.fit @kcperson_id
+          lookup.search
+          return_random_person
+        end
 
+        on ProtocolPersonnel do |page|
           page.protocol_role.pick @protocol_role
           page.add_person
           page.save
@@ -33,7 +35,9 @@ class IACUCPersonnel <  DataFactory
 
       def view(tab)
         raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-        on(IACUCProtocolOverview).send(damballa(tab))
+        on(KCProtocol).send(damballa(tab))
+        #DEBUG us this instead? 
+        # on(IACUCProtocolOverview).send(damballa(tab))
       end
 
       def return_random_person

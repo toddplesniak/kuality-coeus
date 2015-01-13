@@ -35,7 +35,8 @@ class IRBProtocolObject < DataFactory
   end
 
   def create
-    visit(Researcher).create_irb_protocol
+    on(Header).researcher
+    on(ResearcherMenu).create_irb_protocol
     on ProtocolOverview do |doc|
       @document_id=doc.document_id
       @doc_header=doc.doc_title

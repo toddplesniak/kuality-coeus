@@ -4,24 +4,35 @@ class IACUCProceduresObject < DataFactory
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :protocol_project_type, :lay_statement_1, :alternate_search_required, :location,
-               :set_location
+               :set_location,
+               :procedure_list, :procedure_name, :qualifications
 
   def initialize(browser, opts={})
     @browser = browser
+    # the order of objects in this array correspond to the line index on the page
+    @procedure_list =  ['Analgesics', 'Anesthesia', 'Paralytics',
+                      'Survival', 'Multiple Major Survival',
+                      'Non-survival', 'Medical Device Testing',
+                      'Food/water restriction (not prior to surgery)',
+                      'Chemical Method', 'Physical Method',
+                      'Radioactive isotopes', 'Aversive Stimuli', 'Irradiation',
+                      'Nutritional studies', 'Blood sampling',
+                      'Immunization', 'Antibody Production',
+                      'Chemical restraint', 'Physical restraint']
 
     defaults = {
-        procedure_index: rand(18),
-        species_name_type: '::random::'
+        procedure_name: @procedure_list.sample,
+        species_name_type: '::random::',
+        qualifications: random_alphanums
     }
     set_options(defaults.merge(opts))
   end
 
   def create
+    @procedure_index = @procedure_list.index(@procedure_name)
     view 'Procedures'
     on IACUCProcedures do |page|
       page.expand_all
-
-      #Procedures checkboxes do not have unique tags, have to use index number.
       page.category(@procedure_index).set
       page.select_species(@procedure_index).pick! @species_name_type
       page.add_species(@procedure_index)
@@ -39,16 +50,19 @@ class IACUCProceduresObject < DataFactory
     on(IACUCProcedures).select_procedure_tab(tab.downcase)
   end
 
-  def assign_procedure
+  def assign_personnel(person_name, procedure_name)
     view_procedure_details 'Personnel'
-    on IACUCProcedures do |page|
-      page.edit_procedures
-      page.all_procedures
-      page.save_procedure
+    on(IACUCProceduresPersonnel).edit_procedures(person_name)
+
+    on IACUCProceduresPersonnelDialogue do |page|
+      page.procedure(procedure_name)
+      page.qualifications.fit @qualifications
+      page.save
     end
   end
 
   def set_location opts={}
+    # TODO:: make this set location method better
     #Room Number required for setting the procedure to location
     @location ||= {
         description: random_alphanums,
@@ -61,7 +75,7 @@ class IACUCProceduresObject < DataFactory
 
     view 'Procedures'
     view_procedure_details 'Location'
-    on IACUCProcedures do |page|
+    on IACUCProceduresLocation do |page|
       page.location_type.pick! @location[:type]
       page.location_room.fit @location[:room]
       page.location_description.fit @location[:description]
@@ -71,7 +85,7 @@ class IACUCProceduresObject < DataFactory
       if page.info_line('1').present? && @location[:name] == '::random::'
        loc_names = []
        # Creating an array of location names from the select list
-       on(IACUCProcedures).location_name_array(loc_names)
+       page.location_name_array(loc_names)
        # Deleting the existing location name at index zero
        loc_names.delete(page.location_name_added(0).selected_options.first.text)
        page.location_name.pick! loc_names.sample
@@ -88,16 +102,20 @@ class IACUCProceduresObject < DataFactory
       @info_line_number = page.info_line_number(@location[:room])
       page.location_edit_procedures(@info_line_number)
 
-      # Select the specific species checkbox if provided otherwise select the ALL option.
+    end
+
+    # Select the specific species checkbox if provided otherwise select the ALL option.
+    on IACUCProceduresPersonnelDialogue do |page|
       if page.all_group.parent.text.strip == @location[:species]
         page.all_group.set
       else
         page.all_procedures
       end
-      page.save_procedure
       page.save
     end
-  end
+
+    on(IACUCProceduresLocation).save
+  end #set_location
 
   def edit_location opts={}
     @location ||= {
@@ -106,7 +124,7 @@ class IACUCProceduresObject < DataFactory
     @location.merge!(opts)
     view 'Procedures'
     view_procedure_details 'Location'
-    on IACUCProcedures do |page|
+    on IACUCProceduresLocation do |page|
       page.expand_all
       page.location_type_added(@location[:index]).pick! @location[:type]
       page.location_name_added(@location[:index]).pick! @location[:name]
@@ -120,7 +138,9 @@ class IACUCProceduresObject < DataFactory
     view 'Procedures'
     on IACUCProcedures do |page|
       page.expand_all
-      view_procedure_details 'Location'
+    end
+    view_procedure_details 'Location'
+    on IACUCProceduresLocation do |page|
       page.location_delete(line_index.to_s)
       on(Confirmation).yes if on(Confirmation).yes_button.present?
       page.save

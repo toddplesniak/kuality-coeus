@@ -4,6 +4,8 @@ class ProtocolLookup < Lookups
 
   url_info 'Protocols', 'kra.irb.Protocol'
 
+  old_ui
+
   element(:protocol_number) { |b| b.frm.text_field(name: 'protocolNumber') }
 
   element(:active_yes) { |b| b.frm.radio(name: 'active', value: 'Y') }

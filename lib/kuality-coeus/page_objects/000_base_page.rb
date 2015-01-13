@@ -1,3 +1,4 @@
+# coding: UTF-8
 class BasePage < PageFactory
 
   action(:use_new_tab) { |b| b.windows.last.use }
@@ -5,7 +6,8 @@ class BasePage < PageFactory
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
-  action(:loading) { |b| b.frm.image(alt: 'working...').wait_while_present }
+  action(:loading_old) { |b| b.frm.image(alt: 'working...').wait_while_present }
+  action(:loading) { |b| b.image(alt: 'Loading...').wait_while_present(60) }
   element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
   action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
   action(:processing_document) { |b| b.frm.div(text: /The document is being processed. You will be returned to the document once processing is complete./ ).wait_while_present }
@@ -21,9 +23,11 @@ class BasePage < PageFactory
   value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
 
   element(:workarea_div) { |b| b.frm.div(id: 'workarea') }
+  element(:workarea_div_new) { |b| b.frm.div(id: 'Uif-Application') }
 
   value(:htm) { |b| b.frm.html }
   value(:noko) { |b| WatirNokogiri::Document.new(b.htm) }
+  value(:no_frame_noko) { |b| WatirNokogiri::Document.new(b.html) }
 
   class << self
 
@@ -31,6 +35,12 @@ class BasePage < PageFactory
       titles.each do |title|
         action(damballa(title)) { |b| b.frm.button(class: 'globalbuttons', title: title).click; b.loading }
       end
+    end
+
+    # New UI...
+    def document_buttons
+      action(:back) { |b| b.button(data_submit_data: '{"methodToCall":"navigate","actionParameters[navigateToPageId]":"PropDev-OrganizationLocationsPage"}').click }
+      buttons 'Save', 'Save and Continue', 'Close'
     end
 
     def document_header_elements
@@ -54,6 +64,18 @@ class BasePage < PageFactory
       element(:headerarea) { |b| b.frm.div(id: 'headerarea') }
     end
 
+    def new_doc_header
+      element(:title_element) { |b| b.h1(id: /header/).span(class: 'uif-headerText-span') }
+      value(:document_title) { |b| b.title_element.text }
+      value(:section_header) { |b| b.h3.span(class: 'uif-headerText-span').text }
+      action(:more) { |b| b.link(text: 'more...').click }
+      value(:document_id) { |b| b.div(data_label: 'Doc Nbr').p.text }
+      value(:document_status) { |b| b.div(data_label: 'Status').p.text }
+      value(:created) { |b| b.div(data_label: 'Created').p.text }
+      value(:initiator) { |b| b.div(data_label: 'Initiator').text }
+      value(:proposal_number) { |b| b.div(data_label: 'Proposal Nbr').text }
+    end
+
     # Included here because this is such a common field in KC
     def description_field
       element(:description) { |b| b.frm.text_field(name: 'document.documentHeader.documentDescription') }
@@ -64,7 +86,7 @@ class BasePage < PageFactory
            'Delete Proposal', 'disapprove',
            'Generate All Periods', 'Calculate All Periods', 'Default Periods',
            'Calculate Current Period', 'Send Notification'
-      action(:save) { |b| b.save_button.click; b.loading }
+      action(:save) { |b| b.save_button.when_present.click; b.loading }
       action(:submit){ |b| b.frm.button(title: 'submit').click; b.loading; b.awaiting_doc }
       element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
       action(:approve) { |b| b.approve_button.click; b.loading; b.awaiting_doc }
@@ -93,57 +115,19 @@ class BasePage < PageFactory
       action(:add) { |b| b.frm.button(name: 'methodToCall.addNotificationRecipient.anchor').click; b.loading }
     end
 
-    def search_results_table
-      element(:results_table) { |b| b.frm.table(id: 'row') }
-
-      action(:edit_item) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'edit').when_present.click; p.use_new_tab; p.close_parents }
-      alias_method :edit_person, :edit_item
-
-      action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
-
-      action(:item_row) { |match, b| b.results_table.row(text: /#{Regexp.escape(match)}/m) }
-      action(:item_row_title) { |match, b| b.results_table.row(title: /#{Regexp.escape(match)}/m) }
-      # Note: Use this when you need to click the "open" link on the target row
-      action(:open) { |match, p| p.results_table.row(text: /#{Regexp.escape(match)}/m).link(text: 'open').click; p.use_new_tab; p.close_parents }
-      # Note: Use this when the link itself is the text you want to match
-      p_action(:open_item) { |match, b| b.frm.link(text: /#{Regexp.escape(match)}/).click; b.use_new_tab; b.close_parents }
-      p_element(:find_item) { |match, b| b.frm.link(text: /#{Regexp.escape(match)}/) }
-      p_action(:delete_item) { |match, p| p.item_row(match).link(text: 'delete').click; p.use_new_tab; p.close_parents }
-
-      p_action(:return_value) { |match, p| p.item_row(match).link(text: 'return value').click }
-      p_action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
-      action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
-      element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
-
-      p_value(:docs_w_status) { |status, b| array = []; (b.results_table.rows.find_all{|row| row[3].text==status}).each { |row| array << row[0].text }; array }
-
-      action(:set_random_checkbox_from_array) {|arry,b| b.results_table.checkbox(title: arry.sample).set }
-      action(:search_result_checkboxes) {|b| array=[]; b.results_table.checkboxes.each {|boxes| array << boxes.title}; array }
-
-      # Used as the catch-all "document opening" method for conditional navigation,
-      # when we can't know whether the current user will have edit permissions.
-      # Note: The assumption is that there is only one item returned in the search,
-      # so the method needs no identifying parameter. If more items are returned hopefully
-      # you want the automation to click on the first item listed...
-      action(:medusa) { |b| b.frm.link(text: /medusa|edit|view/).click; b.use_new_tab; b.close_parents }
-
-    end
-
     def results_multi_select
       action(:select_all_from_all_pages) { |b| b.frm.button(title: 'Select all rows from all pages').click }
       action(:select_all_from_this_page) { |b| b.frm.button(title: 'Select all rows from this page').click }
       action(:return_selected) { |b| b.frm.button(title: 'Return selected results').click; b.loading }
       p_action(:check_item) { |item, b| b.item_row(item).checkbox.set }
+      action(:select_random_checkbox) { |b| b.frm.tbody.tr(index: (rand(b.frm.tbody.trs.length))  ).checkbox.set }
+      action(:return_random_checkbox) { |b| b.select_random_checkbox; b.return_selected }
       p_action(:check_item_title) { |item, b| b.item_row_title(item).checkbox.set }
     end
 
     def budget_header_elements
-      action(:return_to_proposal) { |b| b.frm.button(name: 'methodToCall.returnToProposal').click; b.loading }
-      action(:return_to_award) { |b| b.frm.button(name: 'methodToCall.returnToAward').click; b.loading }
-      buttons 'Budget Versions', 'Parameters', 'Rates', 'Summary', 'Personnel', 'Non-Personnel',
-              'Distribution & Income', 'Budget Actions'
-      # Need the _tab suffix because of method collisions
-      action(:modular_budget_tab) { |b| b.frm.button(value: 'Modular Budget').click }
+      links 'Data Validation', 'Budget Settings', 'Summary', 'Budget Versions', 'Autocalculate Periods'
+      buttons 'Recalculate with changes', 'Reset to period defaults', '« Return to proposal'
     end
 
     def budget_versions_elements
@@ -174,8 +158,18 @@ class BasePage < PageFactory
       end
     end
 
+    def protocol_header_elements
+      buttons 'Proposal', 'S2S', 'Key Personnel', 'Special Review', 'Custom Data',
+              'Abstracts and Attachments', 'Questions', 'Budget Versions', 'Permissions',
+              'Proposal Summary', 'Proposal Actions', 'Medusa'
+
+      element(:header_table) { |b| b.frm.table(class: 'headerinfo') }
+    end
+
     def special_review
+      value(:type_options) { |b| b.add_type.options }
       element(:add_type) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.specialReviewTypeCode') }
+      value(:approval_status_options) {|b| b.add_approval_status.options }
       element(:add_approval_status) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.approvalTypeCode') }
       element(:add_protocol_number) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.protocolNumber') }
       element(:add_application_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.applicationDate') }
@@ -204,6 +198,7 @@ class BasePage < PageFactory
       p_action(:delete) { |index, b| b.frm.button(name: "methodToCall.deleteSpecialReview.line#{index}.anchor0.validate0").click }
     end
 
+    # TODO: Remove this, as it is old UI stuff...
     def custom_data
       element(:graduate_student_count) { |b| b.target_row('Graduate Student Count').text_field }
       element(:billing_element) { |b| b.target_row('Billing Element').text_field }
@@ -247,6 +242,15 @@ class BasePage < PageFactory
       value(:error_messages_div) { |b| b.noko.div(class: 'error') }
     end
 
+    def new_error_messages
+      value(:errors) do |b|
+        errs = []
+        b.error_lis.each { |li| errs << li.text }
+        errs.flatten
+      end
+      element(:error_lis) { |b| b.lis(class: 'uif-errorMessageItem') }
+    end
+
     def validation_elements
       element(:validation_button) { |b| b.frm.button(name: 'methodToCall.activate') }
       action(:show_data_validation) { |b| b.frm.button(id: 'tab-DataValidation-imageToggle').click; b.validation_button.wait_until_present }
@@ -284,6 +288,10 @@ class BasePage < PageFactory
       buttons_text.each { |button| elementate(:button, button) }
     end
 
+    def select(method_name, attrib, value)
+      element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}) unless b.select(attrib => value).visible?; b.select(attrib => value) }
+    end
+
     # Use this to define methods to click on the green
     # buttons on the page, all of which can be identified
     # by the title tag. The method takes a hash, where the key
@@ -296,11 +304,14 @@ class BasePage < PageFactory
     end
 
     def elementate(type, text)
-      identifiers={:link=>:text, :button=>:value}
-      el_name=damballa("#{text}_#{type}")
+      el_name=damballa("#{text}_element")
       act_name=damballa(text)
-      element(el_name) { |b| b.frm.send(type, identifiers[type]=>text) }
-      action(act_name) { |b| b.frm.send(type, identifiers[type]=>text).click }
+      element(el_name) { |b| b.frm.send(type, text: text) }
+
+      # DEBUG.message
+      action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
+      # action(act_name) { |b| b.send(type, text: text).click; b.loading }
+
     end
 
     # Used for getting rid of the space and comma in the full name

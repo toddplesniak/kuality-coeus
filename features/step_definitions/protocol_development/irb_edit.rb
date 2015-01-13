@@ -14,11 +14,8 @@ And /submits? the Protocol to the Committee for review$/ do
   @irb_protocol.submit_for_review committee: @committee.name
 end
 
-And /(IRB Administrator |)assigns? reviewers to the Protocol/ do |change_user|
-  case change_user
-    when 'IRB Administrator '
-      steps '* log in with the IRB Administrator user'
-  end
+And /(the (.*) |)assigns? reviewers to the Protocol/ do |text, change_user|
+  steps %{ * log in with the #{change_user} user } unless text == ''
   @irb_protocol.view 'Protocol Actions'
   @irb_protocol.assign_primary_reviewers
   @irb_protocol.assign_secondary_reviewers
@@ -90,6 +87,21 @@ And /the IRB Admin closes the Protocol$/ do
   end
 end
 
+#DEBUG can we remove this?
+And /the principal investigator approves the Protocol$/ do
+  @irb_protocol.principal_investigator.log_in
+
+  # TODO: This is probably not the right pathway through the UI...
+  visit(Researcher).action_list
+  on(ActionList).filter
+  on ActionListFilter do |page|
+    page.document_title.set @irb_protocol.protocol_number
+    page.filter
+  end
+  on(ActionList).open_review(@irb_protocol.protocol_number)
+  @irb_protocol.view 'Protocol Actions'
+end
+
 And /submits? an expedited approval on the Protocol with a date of last year$/ do
   @irb_protocol.submit_expedited_approval approval_date: last_year[:date_w_slashes]
 end
@@ -127,5 +139,3 @@ When /submits? the Protocol to the Committee for expedited review, with an appro
           * assigns the Protocol to reviewers
           * submits an expedited approval on the Protocol with a date of last year|
 end
-
-

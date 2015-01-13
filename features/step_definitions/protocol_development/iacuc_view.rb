@@ -1,78 +1,36 @@
 Then /^the IACUC Protocol (submission status|status) should be (.*)$/ do |status_field, status_message|
     @iacuc_protocol.view 'Protocol'
-    #Need to collect page info because amendment has 9 fields that are different from the default 6.
     @iacuc_protocol.gather_document_info
-    case status_field
-      when 'submission status'
-        expect(@iacuc_protocol.doc[:submission_status]).to eq status_message
-      when 'status'
-        expect(@iacuc_protocol.doc[:status]).to eq status_message
-    end
+    expect(@iacuc_protocol.doc[damballa(status_field).to_sym]).to eq status_message
 end
 
 Then /^the summary will display the location of the procedure$/ do
-  on IACUCProcedures do |page|
-    page.select_procedure_tab 'summary'
+  on(IACUCProcedures).select_procedure_tab 'summary'
+  on IACUCProceduresSummary do |page|
     page.expand_all
-    expect(page.summary_locations).to include @procedures.location[:type]
-    expect(page.summary_locations).to include @procedures.location[:description]
-    expect(page.summary_locations).to include @procedures.location[:room].to_s
-    expect(page.summary_locations).to include @procedures.location[:name]
+    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include @procedures.location[field].to_s}
   end
 end
 
-Then /^the edited location information should be dispalyed on the IACUC Protocol$/ do
-  on IACUCProcedures do |page|
-    page.save
-    page.reload
-    on(Confirmation).yes if on(Confirmation).yes_button.present?
+Then /^the edited location information should be displayed in the Procedure summary$/ do
+  [:room, :name, :description].each { |field| expect(on(IACUCProceduresSummary).summary_locations).to include @procedures_edit.location[field].to_s}
+end
 
-    page.select_procedure_tab 'summary'
+Then /^the (first |second )location is not listed in the Procedure summary$/ do |count|
+  procedure = {'first ' => '', 'second ' => '2'}
+  on(IACUCProcedures).select_procedure_tab 'summary'
+  on IACUCProceduresSummary do |page|
     page.expand_all
-
-    expect(page.summary_locations).to include @procedures_edit.location[:description]
-    expect(page.summary_locations).to include @procedures_edit.location[:room].to_s
-    expect(page.summary_locations).to include @procedures_edit.location[:name]
+    [:room, :name, :description].each { |field| expect(page.summary_locations).to_not include get("@procedures#{procedure[count]}").location[field].to_s}
   end
 end
 
-Then /^the (first|second) location is not listed on the IACUC Protocol$/ do |count|
-  on IACUCProcedures do |page|
-    page.select_procedure_tab 'summary'
+And /^the (first |second )location is listed on the IACUC Protocol$/ do |count|
+  procedure = {'first ' => '', 'second ' => '2'}
+  on(IACUCProcedures).select_procedure_tab 'summary'
+  on IACUCProceduresSummary do |page|
     page.expand_all
-
-    case count
-      when 'first'
-        expect(page.summary_locations).to_not include @procedures.location[:description]
-        expect(page.summary_locations).to_not include @procedures.location[:room].to_s
-        expect(page.summary_locations).to_not include @procedures.location[:name]
-      when 'second'
-        expect(page.summary_locations).to_not include @procedures2.location[:description]
-        expect(page.summary_locations).to_not include @procedures2.location[:room].to_s
-        expect(page.summary_locations).to_not include @procedures2.location[:name]
-    end
-
-  end
-end
-
-And /^the (first|second) location is listed on the IACUC Protocol$/ do |count|
-  on IACUCProcedures do |page|
-    page.select_procedure_tab 'summary'
-    page.expand_all
-
-    case count
-      when 'first'
-        expect(page.summary_locations).to include @procedures.location[:type]
-        expect(page.summary_locations).to include @procedures.location[:description]
-        expect(page.summary_locations).to include @procedures.location[:room].to_s
-        expect(page.summary_locations).to include @procedures.location[:name]
-      when 'second'
-        expect(page.summary_locations).to include @procedures2.location[:type]
-        expect(page.summary_locations).to include @procedures2.location[:description]
-        expect(page.summary_locations).to include @procedures2.location[:room].to_s
-        expect(page.summary_locations).to include @procedures2.location[:name]
-    end
-
+    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include get("@procedures#{procedure[count]}").location[field].to_s}
   end
 end
 
@@ -81,9 +39,9 @@ Then /^the expiration date is set for the Protocol$/ do
   expect(on(KCProtocol).expiration_date).to_not equal nil
 end
 
-Then /the ?(.*) Organization that was added should display on the IACUC Protocol$/ do |count|
+Then /^the (.*)Organization that was added should display on the IACUC Protocol$/ do |count|
   on IACUCProtocolOverview do |page|
-    index = { '' => 1, 'first' => 1, 'second' => 2 }
+    index = { '' => 1, 'first ' => 1, 'second ' => 2 }
     expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organization.organization_id
   end
 end
@@ -105,14 +63,14 @@ Then /^on the IACUC Protocol the contact information for the added Organization 
   end
 end
 
-Then /^the group name, species, pain category, count type, species count should match the (.*) values$/ do |count|
-  index = {'modified' => 0}
+Then /^the group name, species, pain category, count type, species count should match the modified values$/ do
+  line_item = 0
   on SpeciesGroups do |page|
-    expect(page.group_added_value(index[count])).to eq @species.group
-    expect(page.count_added_value(index[count])).to eq @species.count.to_s
-    expect(page.species_added_value(index[count])).to eq @species.species
-    expect(page.pain_category_added_value(index[count])).to eq @species.pain_category
-    expect(page.count_type_added_value(index[count])).to eq @species.count_type
+    expect(page.group_added_value(line_item)).to eq @species.group
+    expect(page.count_added_value(line_item)).to eq @species.count.to_s
+    expect(page.species_added_value(line_item)).to eq @species.species
+    expect(page.pain_category_added_value(line_item)).to eq @species.pain_category
+    expect(page.count_type_added_value(line_item)).to eq @species.count_type
   end
 end
 
@@ -128,10 +86,15 @@ Then /^the (.*) Species added should be the only Species on the IACUC Protocol$/
   end
 end
 
-Then /^both personnel added to the IACUC Protocol are present$/ do
+Then /^(\d+ |the )?personnel members? added to the IACUC Protocol (is|are) present$/ do |count, isare|
+  count == 'the ' ? counts = 1 : counts = count.to_i
   on ProtocolPersonnel do |page|
-    expect(page.added_personnel_name(@personnel.full_name, @personnel.protocol_role)).to exist
-    expect(page.added_personnel_name(@personnel2.full_name, @personnel2.protocol_role)).to exist
+    while counts > 1
+      expect(page.added_personnel_name((get("@personnel#{counts.to_s}")).full_name, get("@personnel#{counts.to_s}").protocol_role)).to exist
+      counts -= 1
+    end
+    # Handle for '1' or 'the'
+      expect(page.added_personnel_name(@personnel.full_name, @personnel.protocol_role)).to exist if counts <= 1
   end
 end
 
@@ -141,54 +104,31 @@ Then /^the three principles should have the edited values after saving the IACUC
     page.refresh
     on(IACUCProtocolOverview).description.wait_until_present
     @iacuc_protocol.view "The Three R's"
-
-    expect(page.reduction.value).to eq @iacuc_protocol.principles[:reduction]
-    expect(page.refinement.value).to eq @iacuc_protocol.principles[:refinement]
-    expect(page.replacement.value).to eq @iacuc_protocol.principles[:replacement]
+    principle = ['reduction', 'refinement', 'replacement']
+    principle.each {|prince| expect(page.send(prince).value).to eq @iacuc_protocol.principles[prince.to_sym] }
     page.save
 
-    page.reduction_expand
-    page.continue_button.wait_until_present
-    expect(page.reduction.value).to eq @iacuc_protocol.principles[:reduction]
-    page.continue
-
-    page.refinement_expand
-    page.continue_button.wait_until_present
-    expect(page.refinement.value).to eq @iacuc_protocol.principles[:refinement]
-    page.continue
-
-    page.replacement_expand
-    page.continue_button.wait_until_present
-    expect(page.replacement.value).to eq @iacuc_protocol.principles[:replacement]
-    page.continue
+    principle.each do |prince|
+      page.send("#{prince}_expand")
+      page.continue_button.wait_until_present
+      expect(page.send(prince).value).to eq @iacuc_protocol.principles[prince.to_sym]
+      page.continue
+    end
   end
 end
 
 Then /(first |second |)Special Review should (not |)be displayed on the IACUC Protocol$/ do |count, to_be_or_not_to_be|
-  index = {'' => 0, 'first ' => 0, 'second ' => 1}
+  index = {'' => [0,''], 'first ' => [0,''], 'second ' => [1,'2'] }
   on SpecialReview do |page|
     page.reload
     on(Confirmation).yes if on(Confirmation).yes_button.present?
-
-    case to_be_or_not_to_be
-      when 'not ' #Special should NOT be displayed
-        if index[count] == ['second ']
-          expect(page.type_added(index[count]).selected_options.first.text).to_not eq @special_review2.type
-          expect(page.approval_status_added(index[count]).selected_options.first.text).to_not eq @special_review2.approval_status
-        else
-          expect(page.type_added(index[count]).selected_options.first.text).to_not eq @special_review.type
-          expect(page.approval_status_added(index[count]).selected_options.first.text).to_not eq @special_review.approval_status
-        end
-      else  #If special reviwer SHOULD be displayed
-        if index[count] == ['second ']
-          expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review2.type
-          expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review2.approval_status
-        else
-          expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review.type
-          expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review.approval_status
-        end
+    if to_be_or_not_to_be == 'not '
+      expect(page.type_added(index[count][0]).selected_options.first.text).to_not eq get("@special_review#{index[count][1]}").type
+      expect(page.approval_status_added(index[count][0]).selected_options.first.text).to_not eq get("@special_review#{index[count][1]}").approval_status
+    else
+      expect(page.type_added(index[count][0]).selected_options.first.text).to eq get("@special_review#{index[count][1]}").type
+      expect(page.approval_status_added(index[count][0]).selected_options.first.text).to eq get("@special_review#{index[count][1]}").approval_status
     end
-
   end
 end
 
@@ -199,5 +139,25 @@ And /^the (first |)edited Special Review should display on the IACUC Protocol$/ 
     on(Confirmation).yes if on(Confirmation).yes_button.present?
     expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review_edit.type
     expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review_edit.approval_status
+  end
+end
+
+# ----
+# Procedures Tab
+# ----
+
+#assusmes we are already on the Procedures tab
+And /reloads? the IACUC Protocol to the procedures summary tab$/ do
+  on(IACUCProcedures).reload
+  on(Confirmation).yes if on(Confirmation).yes_button.present?
+  on(IACUCProcedures).select_procedure_tab 'summary'
+  on(IACUCProceduresSummary).expand_all
+end
+
+Then /^the procedures summary will display qualifications for the personnel$/ do
+  on(IACUCProcedures).select_procedure_tab 'summary'
+  on IACUCProceduresSummary do |page|
+    page.view_qualification(@personnel.full_name)
+    expect(page.qualification_dialog).to include @procedures.qualifications
   end
 end

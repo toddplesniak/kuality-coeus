@@ -26,7 +26,9 @@ Then /^the new Award should not have any subawards or T&M document$/ do
 end
 
 Then /^the new Award's transaction type is 'New'$/ do
-  expect(on(Award).transaction_type.selected_options[0].text).to include('New')
+  @award_2.view :award
+  on(Award).transaction_type.selected?('New').should be_true
+  #DEBUG expect(on(Award).transaction_type.selected_options[0].text).to include('New')
 end
 
 Then /^the child Award's project end date should be the same as the parent, and read-only$/ do

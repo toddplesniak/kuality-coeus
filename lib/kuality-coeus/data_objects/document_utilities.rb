@@ -1,6 +1,9 @@
 module DocumentUtilities
 
-  CREDIT_SPLITS = { recognition: 'Recognition', responsibility: 'Responsibility', space: 'Space', financial: 'Financial' }
+  CREDIT_SPLITS = { recognition: 'Recognition',
+                    responsibility: 'Responsibility',
+                    space: 'Space',
+                    financial: 'Financial' }
 
   # This method simply sets all the credit splits to
   # equal values based on how many persons and units
@@ -20,36 +23,14 @@ module DocumentUtilities
     # Now we update the KeyPersonObjects' instance variables
     # for their own splits as well as for their units
     @key_personnel.with_units.each do |person|
-      person.edit splits
+      person.update_splits splits
       units_split = (100.0/person.units.size).round(2)
-      # Make a temp container for the units we're updating...
-      units = []
-      person.units.each { |unit| units << {:number=>unit[:number]} }
-      # Iterate through the units, updating their credit splits with the
-      # valid split amount...
-      units.each do |unit|
-        CREDIT_SPLITS.keys.each { |item| unit[item]=units_split }
+      unit_splits = {}
+      CREDIT_SPLITS.keys.each { |type| unit_splits.store(type, units_split) }
+      person.units.each do |unit|
+        person.update_unit_splits(unit[:number], unit_splits)
       end
-      person.update_unit_credit_splits units
     end
   end
-
-  private
-
-  def set_sponsor_id
-    if @sponsor_id=='::random::'
-      on(page_class).lookup_sponsor
-      on SponsorLookup do |look|
-        fill_out look, :sponsor_type_code
-        look.search
-        look.page_links[rand(look.page_links.size)].click if look.page_links.size > 0
-        look.return_random
-      end
-      @sponsor_id=on(page_class).sponsor_id.value
-    else
-      on(page_class).sponsor_id.fit @sponsor_id
-    end
-  end
-  alias_method :set_sponsor_code, :set_sponsor_id
 
 end

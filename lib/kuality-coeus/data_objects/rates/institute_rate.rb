@@ -182,7 +182,7 @@ class InstituteRateObject < DataFactory
       fill_out look, :activity_type_code, :fiscal_year, :rate_class_code,
                :rate_type_code, :unit_number
       look.on_off_campus campus_lookup[@on_off_campus_flag]
-      look.active ''
+      look.active('both')
       look.search
     end
   end

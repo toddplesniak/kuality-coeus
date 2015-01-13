@@ -8,8 +8,8 @@ class IACUCProtocolObject < DataFactory
                :alternate_search_required, :reduction, :refinement, :replacement,
                #others
                :procedures, :location, :document_id,
-               :species, :organization, :old_organization_address, :species_modify, :withdrawl_reason,
-               :principles, :doc
+               :species, :organization, :old_organization_address, :species_modify, :withdrawal_reason,
+               :principles, :doc, :amendment
 
   def initialize(browser, opts={})
     @browser = browser
@@ -24,12 +24,14 @@ class IACUCProtocolObject < DataFactory
         alternate_search_required: 'No',
         personnel:           collection('ProtocolPersonnel')
     }
+
     @lookup_class = IACUCProtocolLookup
     set_options(defaults.merge(opts))
   end
 
   def create
-    visit(Researcher).create_iacuc_protocol
+    on(Header).researcher
+    on(ResearcherMenu).create_iacuc_protocol
 
     on IACUCProtocolOverview do |doc|
       @document_id=doc.document_id
@@ -40,6 +42,7 @@ class IACUCProtocolObject < DataFactory
       @expiration_date=doc.expiration_date
       @protocol_number=doc.protocol_number
       doc.expand_all
+
       fill_out doc, :description, :protocol_type, :title, :lay_statement_1
       doc.protocol_project_type.pick!(@protocol_project_type)
     end
@@ -53,7 +56,6 @@ class IACUCProtocolObject < DataFactory
       @search_key = { protocol_number: @protocol_number }
     end
 
-    theThreeRs alternate_search_required: @alternate_search_required, reduction: @reduction, refinement: @refinement, replacement: @replacement
   end
 
   def view(tab)
@@ -63,8 +65,8 @@ class IACUCProtocolObject < DataFactory
   end
 
   def view_document
-    #use this view when you want to completely reload the document.
-    visit(Researcher).doc_search
+    #use this view when you are on the document and want to completely reload the document.
+    on(Header).doc_search
     on DocumentSearch do |search|
       search.document_id.set @document_id
       search.search
@@ -73,11 +75,12 @@ class IACUCProtocolObject < DataFactory
   end
 
   def view_by_protocol_number(protocol_number=@protocol_number)
-    visit(Researcher).search_iacuc_protocols
+    on(Header).researcher
+    on(ResearcherMenu).iacuc_search_protocols
     on ProtocolLookup do |search|
       search.protocol_number.set protocol_number
       search.search
-      search.active_yes.set
+      search.active('yes')
       #Parameter needed for Amendment which creates a unique protocol number with 4 extra digits at the end
       #example base protocol number 1410000010 then amendment becomes 1410000010A001
       search.edit_item("#{protocol_number}")
@@ -146,19 +149,19 @@ class IACUCProtocolObject < DataFactory
   # Protocol Actions
   # -----
   def submit_for_review opts={}
-    @review ||= {
+    review ||= {
         submission_type: '::random::',
         review_type: '::random::',
         type_qualifier: '::random::'
     }
-    @review.merge!(opts)
+    review.merge!(opts)
 
     view 'IACUC Protocol Actions'
     on IACUCSubmitForReview do |page|
       page.expand_all
-      page.submission_type.pick! @review[:submission_type]
-      page.review_type.pick! @review[:review_type]
-      page.type_qualifier.pick! @review[:type_qualifier]
+      page.submission_type.pick! review[:submission_type]
+      page.review_type.pick! review[:review_type]
+      page.type_qualifier.pick! review[:type_qualifier]
 
       page.submit
     end
@@ -182,7 +185,7 @@ class IACUCProtocolObject < DataFactory
     end
     on(NotificationEditor).send_it
 
-    # navigate to protocol using protocol numberthen save document id
+    # navigate to protocol using protocol number then save document id
     # because when approving an amendment this information changes
     # and user is left on the amendment without any indication
     # of what the new document id is.
@@ -218,7 +221,7 @@ class IACUCProtocolObject < DataFactory
     view 'IACUC Protocol Actions'
     on WithdrawProtocol do |page|
       page.expand_all
-      page.withdrawal_reason.fit @withdrawl_reason
+      page.withdrawal_reason.fit @withdrawal_reason
       page.submit
     end
   end
@@ -288,7 +291,6 @@ class IACUCProtocolObject < DataFactory
     #can be used with IACUC Protocol Actions with submit button
     #Assign to Agenda, Hold, Suspend, Expire, Terminate
     view 'IACUC Protocol Actions'
-    # @document_id = on(IACUCProtocolActions).document_id
     pageKlass = Kernel.const_get(page_class.split.map(&:capitalize).join(''))
     on pageKlass do |page|
       page.expand_all

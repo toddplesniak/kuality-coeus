@@ -13,7 +13,7 @@ Given /^(\d+) Approved Institutional Proposals? exists?$/ do |count|
   }
 end
 
-Given /^(\d+) Approved Institutional Proposals? with cost share, unrecovered F&A, and special review exists?$/ do |count|
+Given /^(\d+) Approved Institutional Proposals? with cost share, unrecovered F&A, and compliance exists?$/ do |count|
   @ips = []
   count.to_i.times {
     steps %q{

@@ -10,10 +10,10 @@ Then /^the (principal investigator|OSPApprover) can access the Proposal from the
     @proposal.principal_investigator.log_in
   end
   expect {
-    visit(Researcher).action_list
+    on(Header).action_list
     on(ActionList).filter
     on ActionListFilter do |page|
-      page.document_title.set @proposal.project_title
+      page.document_title.set @proposal.project_title[0..18]
       page.filter
     end
     on(ActionList).open_item(@proposal.document_id)

@@ -27,10 +27,13 @@ World StringFactory
 World DateFactory
 World Utilities
 
-kuality = Kuality.new basic[:browser]
+# Uncomment when fix to logging in/out arrives
+#kuality = Kuality.new basic[:browser]
 
 Before do
   # Get the browser object
+  kuality = Kuality.new basic[:browser]
+
   @browser = kuality.browser
   # clear browser cache for when multiple scenarios are run and pages fail to load correctly
   @browser.cookies.clear
@@ -48,8 +51,13 @@ After do |scenario|
     embed 'screenshot.png', 'image/png'
     DEBUG.message "Failed on page: #{@browser.url}"
   end
+  # TODO: This stuff needs to be fixed when logging out works...
   # Log out if not already
-  @browser.goto "#{$base_url+$context}logout.do"
+  # @browser.goto "#{$base_url+$context}logout.do"
+
+  # A temp solution while the logout problem exists...
+  @browser.close
 end
 
-at_exit { kuality.browser.close }
+# Uncomment when fix to logging in/out arrives
+#at_exit { kuality.browser.close }
