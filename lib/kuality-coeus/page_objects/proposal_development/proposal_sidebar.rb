@@ -15,7 +15,7 @@ class ProposalSidebar < BasePage
   action(:compliance) { |b| b.span(text: 'Compliance').click; b.loading }
   action(:attachments) { |b| b.span(text: 'Attachments').click; b.loading }
   action(:questionnaire) { |b| b.span(text: 'Questionnaire').click; b.loading }
-  action(:budget) { |b| b.span(text: 'Budget').click; b.loading }
+  action(:budget) { |b| b.link(name: 'PropDev-BudgetPage').click; b.loading }
   action(:access) { |b| b.span(text: 'Access').click; b.loading }
   action(:supplemental_information) { |b| b.span(text: 'Supplemental Information').click; b.loading }
   action(:summary_submit) { |b| b.span(text: 'Summary/Submit').click; b.loading }

@@ -1,6 +1,6 @@
 class AddProjectPersonnel < Dialogs
 
-  buttons 'Search', 'Cancel', 'Add Selected Personnel'
+  new_buttons 'Search', 'Cancel', 'Add Selected Personnel'
 
   element(:dialog_header) { |b| b.h4(id: 'PropBudget-ProjectPersonnelPage-Wizard_header') }
 

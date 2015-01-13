@@ -1,6 +1,6 @@
 class EditPersonnel < BasePage
   
-  buttons 'Save Changes'
+  new_buttons 'Save Changes'
   
   element(:job_code) { |b| b.text_field(name: 'addProjectPersonnelHelper.editBudgetPerson.jobCode') }
   element(:appointment_type) { |b| b.select(name: 'addProjectPersonnelHelper.editBudgetPerson.appointmentTypeCode') }

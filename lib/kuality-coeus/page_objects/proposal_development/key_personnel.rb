@@ -2,7 +2,7 @@ class KeyPersonnel < BasePage
 
   document_buttons
   
-  buttons 'Add Personnel'
+  new_buttons 'Add Personnel'
 
   new_error_messages
 

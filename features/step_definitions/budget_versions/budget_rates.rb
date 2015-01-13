@@ -40,9 +40,25 @@ When /the '(.*)' '(.*)' rate for the '(.*)' personnel is unapplied$/ do |rate_cl
   steps "* un-applies the '#{rate_class}' '#{type}' for the '#{object_code}' personnel"
 end
 
+When /inflation is un\-applied for the '(.*)' personnel$/ do |object_code|
+  @budget_version.view :assign_personnel
+  on(AssignPersonnelToPeriods).details_and_rates_of object_code
+  on DetailsAndRates do |page|
+    page.apply_inflation.clear
+    page.save_changes
+  end
+end
+
 And /^the Period's Direct Cost is lowered by the expected amount$/ do
   @budget_version.view 'Periods And Totals'
   on PeriodsAndTotals do |page|
     page.direct_cost_of(1).to_f.should==@budget_version.period(1).direct_cost.to_f-@rate_cost.to_f
+  end
+end
+
+And /^the Period's Direct Cost is lower than before$/ do
+  @budget_version.view 'Periods And Totals'
+  on PeriodsAndTotals do |page|
+    page.direct_cost_of(1).to_f.should < @budget_version.period(1).direct_cost.to_f
   end
 end

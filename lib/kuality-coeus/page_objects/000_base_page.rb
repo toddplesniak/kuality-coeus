@@ -37,10 +37,10 @@ class BasePage < PageFactory
       end
     end
 
-    # New UI...
+    # New UI. Don't use in Page Classes for 5.x...
     def document_buttons
       action(:back) { |b| b.button(data_submit_data: '{"methodToCall":"navigate","actionParameters[navigateToPageId]":"PropDev-OrganizationLocationsPage"}').click }
-      buttons 'Save', 'Save and Continue', 'Close'
+      new_buttons 'Save', 'Save and Continue', 'Close', 'Cancel'
     end
 
     def document_header_elements
@@ -281,6 +281,17 @@ class BasePage < PageFactory
     # Don't use this with links that are contained in the iframes...
     def links(*links_text)
       links_text.each { |link| elementize(:link, link) }
+    end
+
+    # Use this for 6.0 UI buttons only!
+    # TODO: Remove this method when 5.x UI is gone.
+    def new_buttons(*text)
+      text.each { |button|
+        el_name=damballa("#{button}_element")
+        act_name=damballa(button)
+        element(el_name) { |b| b.send(:button, text: button) }
+        action(act_name) { |b| b.send(:button, text: button).click; b.loading }
+      }
     end
 
     def buttons(*buttons_text)
