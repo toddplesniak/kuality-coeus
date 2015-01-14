@@ -22,7 +22,7 @@ Feature: Employee Salary Rate Costs and Cost Share
     When  the 'Employee Benefits' 'Research Rate' rate for the 'Research Staff - On' personnel is unapplied
     Then  the Period's Direct Cost is lowered by the expected amount
 
-  Scenario: Unapplying the inflation rate
+  Scenario: Unapplying the inflation rate for an employee
     Given the Proposal Creator creates a Proposal with a 'Research' activity type
     And   creates a Budget Version for the Proposal
     And   adds an employee to the Budget personnel
