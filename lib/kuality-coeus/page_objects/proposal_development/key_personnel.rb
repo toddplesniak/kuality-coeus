@@ -45,6 +45,16 @@ class KeyPersonnel < BasePage
     end
   end
 
+  action(:expand_all_personnel) { |b| b.spans(class: 'icon-caret-right').each{|xpand| xpand.click unless xpand.style=='display: none;'; b.loading} }
+  action(:last_page) { |b|
+    if b.last_link.present?
+      b.last_link.click
+      #FIXME!
+      sleep 4
+    end
+  }
+  element(:last_link) { |b| b.link(text: 'Last') }
+
   tabs 'Details', 'Organization', 'Extended Details', 'Degrees', 'Unit Details', 'Person Training Details', 'Proposal Person Certification'
 
 end

@@ -42,9 +42,12 @@
       page.key_person_role.fit @key_person_role
       page.add_person
     end
+    on(KeyPersonnel).last_page
     on KeyPersonnel do |person|
+      person.expand_all_personnel
       @user_name=person.user_name_of(@full_name)
       person.save
+      person.last_page
       return unless person.errors.empty?
       person.organization_of @full_name
       @home_unit=person.home_unit_of(@full_name)
@@ -73,6 +76,8 @@
   def edit opts={}
     view 'Personnel'
     on KeyPersonnel do |page|
+      page.last_page
+      page.expand_all_personnel
       page.role_of(@full_name).pick! opts[:role]
       page.key_person_role_of(@full_name).fit opts[:key_person_role]
       page.save

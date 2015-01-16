@@ -13,14 +13,19 @@ Feature: Employee Salary Rate Costs and Cost Share
     Then  the Project Person's requested salary for the Budget period is as expected
     And   the Person's Rates show correct costs and cost sharing amounts
 
-  Scenario: Unapplying the Research Rate for an employee
+  Scenario Outline: Unapplying the Research Rate for an employee
     Given the Proposal Creator creates a Proposal with a 'Research' activity type
     And   creates a Budget Version for the Proposal
     And   adds an employee to the Budget personnel
-    And   a 'Research Staff - On' person is assigned to Budget period 1
+    And   a '<Role>' person is assigned to Budget period 1
     And   notes the Budget Period's summary totals
-    When  the 'Employee Benefits' 'Research Rate' rate for the 'Research Staff - On' personnel is unapplied
+    When  the '<Class>' '<Type>' rate for the '<Role>' personnel is unapplied
     Then  the Period's Direct Cost is lowered by the expected amount
+
+    Examples:
+    | Role                      | Class             | Type          |
+    | Research Staff - On       | Employee Benefits | Research Rate |
+    | Administrative Staff - On | Vacation          | Vacation      |
 
   Scenario: Unapplying the inflation rate for an employee
     Given the Proposal Creator creates a Proposal with a 'Research' activity type

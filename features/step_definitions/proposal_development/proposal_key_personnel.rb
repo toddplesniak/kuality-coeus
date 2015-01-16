@@ -66,3 +66,38 @@ end
 And /changes the Proposal's co\-investigator to a key person$/ do
   @proposal.co_investigator.edit role: 'Key Person', key_person_role: random_alphanums
 end
+
+And /^(\d+) key persons can be added to the Proposal$/ do |number|
+  number.to_i.times do
+    @proposal.view 'Personnel'
+    on(KeyPersonnel).add_personnel
+    on(AddPersonnel) do |page|
+      page.employee.set
+      names = []
+      while names.empty?
+        page.last_name.set("*#{%w{b c e f g h j k l o p r s t u v w y}.sample}*")
+        page.continue
+
+        # We need to exclude the set of test users from the list
+        # of names we'll randomly select from...
+        names = page.returned_full_names - $users.full_names
+        names.delete_if { |name| name.scan(' ').size != 1 }
+
+        DEBUG.inspect names
+
+        if names.empty?
+          page.go_back
+        end
+      end
+      name = names.sample
+      page.select_person name
+      page.continue
+    end
+    # Assign the role...
+    on AddPersonnel do |page|
+      page.set_role 'KP'
+      page.key_person_role.set random_alphanums
+      page.add_person
+    end
+  end
+end

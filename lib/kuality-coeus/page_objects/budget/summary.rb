@@ -1,4 +1,4 @@
-class Summary < BudgetDocument
+class Summary < BasePage
 
 
 

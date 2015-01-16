@@ -9,7 +9,7 @@ class BudgetSidebar < BasePage
   element(:project_personnel_link) { |b| b.link(name: 'PropBudget-ProjectPersonnelPage') }
   action(:project_personnel) { |b| b.personnel_costs unless b.project_personnel_link.present?; b.project_personnel_link.click;  b.loading }
   action(:assign_personnel) { |b| b.personnel_costs unless b.assign_personnel_link.present?; b.assign_personnel_link.when_present.click; b.loading }
-  action(:non_personnel_costs) { |b| b.link(data_submit_data: 'PropBudget-NonPersonnelCostsPage').click; b.loading }
+  action(:non_personnel_costs) { |b| b.link(name: 'PropBudget-NonPersonnelCostsPage').click; b.loading }
   action(:subawards) { |b| b.link(name: 'PropBudget-SubawardsPage').click; b.loading }
   action(:institutional_commitments) { |b| b.link(text: /Institutional Commitments/).click; b.link(name: 'PropBudget-UnrecoveredFandAPage').wait_until_present }
   element(:cost_sharing_link) { |b| b.link(name: 'PropBudget-CostSharingPage') }
