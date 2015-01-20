@@ -78,7 +78,7 @@ class ProposalDevelopmentObject < DataFactory
     view 'Proposal Details'
     on ProposalDetails do |edit|
       edit_fields opts, edit, :project_title, :project_start_date, :proposal_type,
-                              :project_end_date
+                              :project_end_date, :activity_type
       # TODO: Add more stuff here as necessary
       edit.save
     end

@@ -121,3 +121,10 @@ end
 Then /^it is still possible to copy the Proposal$/ do
   expect{@proposal.copy_to_new_document '000001 - University'}.not_to raise_error
 end
+
+And /changes the Proposal's activity type$/ do
+  current_activity = @proposal.activity_type
+  @proposal.view 'Proposal Details'
+  activities = on(ProposalDetails).activity_type.options.map{ |opt| opt.text }[1..-1]-[current_activity]
+  @proposal.edit activity_type: activities.sample
+end

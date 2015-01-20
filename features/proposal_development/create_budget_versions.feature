@@ -40,3 +40,9 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
     Given the Proposal Creator pushes the Proposal end date 2 more years
     When  the Budget Version's periods are reset to defaults
     Then  the Budget Version should have two more budget periods
+
+  Scenario: Changing the Proposal's activity type
+    Given the Proposal Creator changes the Proposal's activity type
+    When  the Budget Version is opened
+    Then  the Budget can be synced to the new rates
+    And   the Budget's rates are updated

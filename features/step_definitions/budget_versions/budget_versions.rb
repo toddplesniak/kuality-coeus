@@ -173,3 +173,8 @@ end
 And /^notes the Budget Period's summary totals$/ do
   @budget_version.period(1).get_dollar_field_values
 end
+
+And /^the Budget Version is opened$/ do
+  @proposal.view 'Budget'
+  on(Budgets).open @budget_version.name
+end

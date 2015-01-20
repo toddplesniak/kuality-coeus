@@ -89,3 +89,12 @@ Then /^the Period's direct cost is the same as the assigned non-personnel's tota
     page.direct_cost_of(1).should == @budget_version.period(1).non_personnel_costs[0].total_base_cost
   end
 end
+
+And /^the Budget can be synced to the new rates$/ do
+  on(SyncBudgetRates).yes
+end
+
+And /^the Budget's rates are updated$/ do
+  @budget_version.view 'Rates'
+  expect{@budget_version.institute_rates}.not_to eq(on(Rates).rates)
+end

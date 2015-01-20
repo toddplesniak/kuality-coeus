@@ -20,7 +20,7 @@ class Dialogs < BasePage
 
   expected_element :dialog_header
 
-  buttons 'OK', 'Yes', 'No'
+  new_buttons 'OK', 'Yes', 'No'
 
 end # Dialogs
 
@@ -79,5 +79,11 @@ end
 class ChangePeriod < Dialogs
   
   element(:dialog_header) { |b| b.header(id: 'PropBudget-PeriodsPage-ChangePeriodDialog_headerWrapper') }
+
+end
+
+class SyncBudgetRates < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
 
 end
