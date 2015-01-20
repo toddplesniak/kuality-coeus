@@ -6,7 +6,7 @@ class BudgetPeriodObject < DataFactory
               :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,
               :cost_sharing, :cost_limit, :direct_cost_limit, :datified,
               :budget_name, :cost_sharing_distribution_list, :unrecovered_fa_dist_list,
-              :participant_support, :assigned_personnel
+              :participant_support, :assigned_personnel, :non_personnel_costs
               #TODO: Add support for this:
               :number_of_participants
   attr_accessor :number
@@ -18,7 +18,8 @@ class BudgetPeriodObject < DataFactory
       cost_sharing_distribution_list: collection('CostSharing'),
       unrecovered_fa_dist_list:       collection('UnrecoveredFA'),
       participant_support:            collection('ParticipantSupport'),
-      assigned_personnel:             collection('AssignedPersonnel')
+      assigned_personnel:             collection('AssignedPersonnel'),
+      non_personnel_costs:            collection('NonPersonnelCosts')
     }
 
     set_options(defaults.merge(opts))
@@ -86,7 +87,13 @@ class BudgetPeriodObject < DataFactory
       page.view_period @number
       page.assign_personnel @number
     end
-       @assigned_personnel.add opts
+    @assigned_personnel.add opts
+  end
+
+  def assign_non_personnel_cost opts={}
+    view :non_personnel_costs
+    on(NonPersonnelCosts).view_period @number
+    @non_personnel_costs.add opts
   end
 
   def add_participant_support opts={}

@@ -33,7 +33,27 @@ And /^un\-applies the '(.*)' '(.*)' for the '(.*)' personnel$/ do |rate_class, t
     page.rates
     @rate_cost = page.rate_amounts.find{ |rate| rate[:class]==rate_class && rate[:type]==type }[:rate_cost]
     page.apply(rate_class, type).clear
+    page.save_changes
   end
+end
+
+And /^un\-applies the lab allocation rates for the non-personnel cost$/ do
+  @budget_version.view :non_personnel_costs
+  on(NonPersonnelCosts).details_of @budget_version.period(1).non_personnel_costs[0].object_code_name
+  on EditAssignedNonPersonnel do |page|
+    page.rates_tab
+    {'Employee Benefits'=>'EB on LA',
+     'Lab Allocation - M&S'=> 'Lab Allocation - M&S',
+     'Lab Allocation - Salaries'=> 'Lab Allocation - Salaries',
+     'Lab Allocation - Utilities'=> 'Lab Allocation - Utilities',
+     'Vacation'=> 'Vacation on LA' }.
+        each_pair{ |k,v| page.apply(k,v).clear }
+    page.save_changes
+  end
+end
+
+When /^the lab allocation rates for the non-personnel cost are unapplied$/ do
+  steps '* un-applies the lab allocation rates for the non-personnel cost'
 end
 
 When /the '(.*)' '(.*)' rate for the '(.*)' personnel is unapplied$/ do |rate_class, type, object_code|
@@ -52,7 +72,7 @@ end
 And /^the Period's Direct Cost is lowered by the expected amount$/ do
   @budget_version.view 'Periods And Totals'
   on PeriodsAndTotals do |page|
-    page.direct_cost_of(1).to_f.should==@budget_version.period(1).direct_cost.to_f-@rate_cost.to_f
+    page.direct_cost_of(1).to_f.should==(@budget_version.period(1).direct_cost.to_f-@rate_cost.to_f).round(2)
   end
 end
 
@@ -60,5 +80,12 @@ And /^the Period's Direct Cost is lower than before$/ do
   @budget_version.view 'Periods And Totals'
   on PeriodsAndTotals do |page|
     page.direct_cost_of(1).to_f.should < @budget_version.period(1).direct_cost.to_f
+  end
+end
+
+Then /^the Period's direct cost is the same as the assigned non-personnel's total base cost$/ do
+  @budget_version.view 'Periods And Totals'
+  on PeriodsAndTotals do |page|
+    page.direct_cost_of(1).should == @budget_version.period(1).non_personnel_costs[0].total_base_cost
   end
 end

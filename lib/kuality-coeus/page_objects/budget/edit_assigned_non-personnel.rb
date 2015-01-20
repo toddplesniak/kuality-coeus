@@ -4,7 +4,7 @@ class EditAssignedNonPersonnel < BasePage
 
   action(:details_tab) { |b| b.tab_list.li(text: 'Details').link.click }
   action(:cost_sharing_tab) { |b| b.tab_list.li(text: 'Cost Sharing').link.click }
-  action(:rates_tab) { |b| b.tab_list.li(text: 'Rates').link.click }
+  action(:rates_tab) { |b| b.tab_list.li(text: 'Rates').link.click; b.rates_table.wait_until_present(15) }
 
   # Details
   element(:start_date) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.budgetLineItem.startDate') }
@@ -41,6 +41,6 @@ class EditAssignedNonPersonnel < BasePage
   element(:modal_div) { |b| b.div(data_parent: 'PropBudget-NonPersonnelCostsPage-EditNonPersonnel-Dialog') }
   element(:tab_list) { |b| b.modal_div.ul }
   value(:noko_rates_table) { |b| b.no_frame_noko.div(data_parent: 'PropBudget-NonPersonnelCostsPage-EditNonPersonnel-Dialog').tbody }
-
+  element(:rates_table) { |b| b.modal_div.tbody }
 
 end

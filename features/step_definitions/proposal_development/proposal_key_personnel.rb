@@ -82,9 +82,6 @@ And /^(\d+) key persons can be added to the Proposal$/ do |number|
         # of names we'll randomly select from...
         names = page.returned_full_names - $users.full_names
         names.delete_if { |name| name.scan(' ').size != 1 }
-
-        DEBUG.inspect names
-
         if names.empty?
           page.go_back
         end
