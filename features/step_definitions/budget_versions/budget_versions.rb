@@ -15,7 +15,7 @@ end
 
 Then /^opening the Budget Version will display a warning about the date change$/ do
   @budget_version.view 'Periods And Totals'
-  on(Parameters).warnings.should include 'The Project Start and/or End Dates have changed from the previous version of this budget. Please update the Project Start and/or End Dates.'
+  on(PeriodsAndTotals).warnings.should include 'The Project Start and/or End Dates have changed from the previous version of this budget. Please update the Project Start and/or End Dates.'
 end
 
 When /^correcting the Budget Version date will remove the warning$/ do
@@ -104,8 +104,8 @@ Then /^all budget periods get recreated, zeroed, and given default date ranges$/
   end
 end
 
-When /finalizes? the Budget Version$/ do
-  @budget_version.submit_with_proposal
+When /includes the Budget Version for submission$/ do
+  @budget_version.include_for_submission
 end
 
 When /marks? the Budget Version complete$/ do
@@ -154,6 +154,8 @@ And /^adjusts the budget period's cost sharing amount so all funds are allocated
 end
 
 Then /^the Budget Version is no longer editable$/ do
+  on(Header).researcher
+  on(ResearcherMenu).search_proposals
   @budget_version.view 'Periods And Totals'
   on PeriodsAndTotals do |page|
     page.add_budget_period_element.should_not be_present

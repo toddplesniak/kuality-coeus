@@ -7,7 +7,7 @@ class Budgets < BasePage
                               b.loading
   }
 
-  p_action(:submit_with_proposal) { |name, b| b.action_button_of(name).click; b.row_of(name).link(text: 'Submit with Proposal').when_present.click }
+  p_action(:include_for_submission) { |name, b| b.action_button_of(name).click; b.row_of(name).link(text: 'Include for Submission').when_present.click }
 
   p_element(:action_button_of) { |name, b| b.row_of(name).button }
   p_element(:row_of) { |name, b| b.tr(text: /#{name}/) }

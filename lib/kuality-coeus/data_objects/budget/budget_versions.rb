@@ -128,10 +128,10 @@ class BudgetVersionsObject < DataFactory
     end
   end
 
-  def submit_with_proposal
+  def include_for_submission
     @navigate.call
     on(ProposalSidebar).budget
-    on(Budgets).submit_with_proposal @name
+    on(Budgets).include_for_submission @name
   end
 
   def complete

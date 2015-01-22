@@ -31,7 +31,21 @@ And /^the Budget personnel list shows the (.*)'s job code, salary, and appointme
   end
 end
 
-And /^the Budget Version personnel list shows the correct roles$/ do
+And /^the Proposal Creator syncs the Budget's personnel with the Proposal$/ do
+  @budget_version.view 'Project Personnel'
+  on(BudgetPersonnel).sync_from_proposal
+end
+
+Then /^the Budget personnel should match the Proposal personnel$/ do
+  @budget_version.view 'Project Personnel'
+
+  budget_personnel = on(BudgetPersonnel).project_personnel_info.map{ |i| i[:person] }
+
+  @proposal.key_personnel.each { |p| budget_personnel.should include p.full_name  }
+
+end
+
+And /^the Budget's personnel list shows the correct roles$/ do
   abbreviations = { 'Principal Investigator' => 'PI', 'Co-Investigator' => 'COI', 'Key Person' => 'KP' }
   @budget_version.view 'Project Personnel'
   @proposal.key_personnel.each do |person|

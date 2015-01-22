@@ -33,6 +33,14 @@ When /adds? a principal investigator to the Proposal$/ do
   @proposal.add_principal_investigator
 end
 
+When /^various personnel are added to the Proposal$/ do
+  steps %|
+    * add a principal investigator to the Proposal
+    * add a co-investigator to the Proposal
+    * add a key person to the Proposal
+  |
+end
+
 Given /^I? ?adds? the Grants.Gov user as the Proposal's PI$/ do
   @proposal.add_principal_investigator last_name: $users.grants_gov_pi.last_name, first_name: $users.grants_gov_pi.first_name
 end

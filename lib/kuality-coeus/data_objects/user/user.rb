@@ -188,7 +188,7 @@ class UserObject < DataFactory
     set_options options
 
     @user_name=random_letters(16) if @user_name==:nil
-    @rolez.each { |role| @roles << make(UserRoleObject, role) } unless @rolez.nil?
+    @rolez.each { |role| @roles << make(UserRoleObject, role) } unless @rolez.nil? || @rolez[0][:name].nil?
     @appointmentz.each { |appt| @appointments << make(AppointmentObject, appt) } unless @appointmentz.nil?
     @appointmentz=nil
     @rolez=nil
