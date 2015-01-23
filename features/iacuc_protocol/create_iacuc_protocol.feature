@@ -16,6 +16,7 @@ Feature: Creating IACUC Protocols
     When the IACUC Protocol Creator attempts to create an IACUC Protocol but misses a required field
     Then  an error should appear saying the field is required
 
+
   @wip @KCTEST-912
    Scenario: The system shall allow multiple personnel to be chosen for each add species/groups row.
     Given the IACUC Protocol Creator creates an IACUC Protocol
