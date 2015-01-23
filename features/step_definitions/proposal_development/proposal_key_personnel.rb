@@ -71,10 +71,6 @@ Then /^the same person cannot be added to the Proposal personnel again$/ do
   expect{@proposal.add_key_person role: 'Co-Investigator', last_name: @last_name, first_name: @first_name}.to raise_error
 end
 
-And /changes the Proposal's co\-investigator to a key person$/ do
-  @proposal.co_investigator.edit role: 'Key Person', key_person_role: random_alphanums
-end
-
 And /^(\d+) key persons can be added to the Proposal$/ do |number|
   number.to_i.times do
     @proposal.view 'Personnel'

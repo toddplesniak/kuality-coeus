@@ -10,7 +10,8 @@ When /^I? ?add a to-be-named person to the Budget personnel$/ do
   @budget_version.add_project_personnel type: 'To Be Named'
 end
 
-And /adds the '(.*)' User to the Budget personnel$/ do |type|
+And /^the Proposal Creator adds the '(.*)' User to the Budget personnel$/ do |type|
+  steps '* log in with the Proposal Creator user'
   user = $users.type(type)
   appointment = user.appointments.type(type)
   @budget_version.add_project_personnel full_name: user.full_name,
@@ -38,11 +39,8 @@ end
 
 Then /^the Budget personnel should match the Proposal personnel$/ do
   @budget_version.view 'Project Personnel'
-
   budget_personnel = on(BudgetPersonnel).project_personnel_info.map{ |i| i[:person] }
-
   @proposal.key_personnel.each { |p| budget_personnel.should include p.full_name  }
-
 end
 
 And /^the Budget's personnel list shows the correct roles$/ do

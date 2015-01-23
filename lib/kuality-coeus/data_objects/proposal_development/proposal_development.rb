@@ -324,11 +324,15 @@ class ProposalDevelopmentObject < DataFactory
   def navigate
     lambda{
       begin
-        condition = on(NewDocumentHeader).document_title==@doc_header
+        there = on(NewDocumentHeader).document_title==@doc_header
       rescue
-        condition = false
+        there = false
       end
-      unless condition
+      unless there
+
+        # TODO: Need this to be more robust. What if you're in the 5.2 UI? This can't
+        # navigate from there...
+        visit Landing
         on(Header).researcher
         on(ResearcherMenu).search_proposals
         on DevelopmentProposalLookup do |search|

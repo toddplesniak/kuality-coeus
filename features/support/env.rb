@@ -27,13 +27,9 @@ World StringFactory
 World DateFactory
 World Utilities
 
-# Uncomment when fix to logging in/out arrives
-#kuality = Kuality.new basic[:browser]
+kuality = Kuality.new basic[:browser]
 
 Before do
-  # Get the browser object
-  kuality = Kuality.new basic[:browser]
-
   @browser = kuality.browser
   # Clean out any users that might exist
   $users.clear
@@ -49,13 +45,7 @@ After do |scenario|
     embed 'screenshot.png', 'image/png'
     DEBUG.message "Failed on page: #{@browser.url}"
   end
-  # TODO: This stuff needs to be fixed when logging out works...
-  # Log out if not already
-  # @browser.goto "#{$base_url+$context}logout.do"
-
-  # A temp solution while the logout problem exists...
-  @browser.close
+  @browser.cookies.clear
 end
 
-# Uncomment when fix to logging in/out arrives
-#at_exit { kuality.browser.close }
+at_exit { kuality.browser.close }

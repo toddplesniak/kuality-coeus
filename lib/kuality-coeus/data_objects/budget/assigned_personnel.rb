@@ -117,7 +117,7 @@ class AssignedPerson < DataFactory
   end
 
   def end_month_daily_salary
-    monthly_base_salary/end_month_days
+    monthly_base_salary/days_in_end_month
   end
 
   def start_month_calculated_salary
@@ -158,10 +158,9 @@ class AssignedPerson < DataFactory
     (end_d.year - start.year)*12 + end_d.month - start.month - (end_d.day >= start.day ? 0 : 1)
   end
 
-  # Note that this calculation under-counts the full months if the End Day is the last day of
-  # the month...
   def inflated_months_count
-    (end_d.year - rate_start.year)*12 + end_d.month - rate_start.month - (end_d.day >= rate_start.day ? 0 : 1)
+    x = end_d.month - rate_start.month
+    x < 0 ? end_d.month + (12 - rate_start.month) : x
   end
 
   def perc_chrgd

@@ -77,9 +77,7 @@
   def edit opts={}
     view 'Personnel'
     on KeyPersonnel do |page|
-      page.expand_all_personnel
-      page.role_of(@full_name).pick! opts[:role]
-      page.key_person_role_of(@full_name).fit opts[:key_person_role]
+      # TODO
       page.save
     end
     update_options(opts)

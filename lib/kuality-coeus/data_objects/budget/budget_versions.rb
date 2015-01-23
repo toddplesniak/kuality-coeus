@@ -149,7 +149,12 @@ class BudgetVersionsObject < DataFactory
 
   def open_budget
     lambda{
-      unless on(NewDocumentHeader).document_title[/: .+/]==": #{@name}"
+      begin
+        there = on(NewDocumentHeader).document_title[/: .+/]==": #{@name}"
+      rescue Watir::Exception::UnknownObjectException
+        there = false
+      end
+      unless there
         @navigate.call
         on(ProposalSidebar).budget
         on(Budgets).open @name
