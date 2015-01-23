@@ -2,7 +2,7 @@ class DevelopmentProposalLookup < Lookups
 
   expected_element :proposal_number
 
-  buttons 'Search'
+  new_buttons 'Search'
 
   element(:proposal_number) { |b| b.text_field(name: 'lookupCriteria[proposalNumber]') }
 

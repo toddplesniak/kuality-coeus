@@ -78,7 +78,7 @@ class ProposalDevelopmentObject < DataFactory
     view 'Proposal Details'
     on ProposalDetails do |edit|
       edit_fields opts, edit, :project_title, :project_start_date, :proposal_type,
-                              :project_end_date
+                              :project_end_date, :activity_type
       # TODO: Add more stuff here as necessary
       edit.save
     end
@@ -324,11 +324,15 @@ class ProposalDevelopmentObject < DataFactory
   def navigate
     lambda{
       begin
-        condition = on(NewDocumentHeader).document_title==@doc_header
+        there = on(NewDocumentHeader).document_title==@doc_header
       rescue
-        condition = false
+        there = false
       end
-      unless condition
+      unless there
+
+        # TODO: Need this to be more robust. What if you're in the 5.2 UI? This can't
+        # navigate from there...
+        visit Landing
         on(Header).researcher
         on(ResearcherMenu).search_proposals
         on DevelopmentProposalLookup do |search|

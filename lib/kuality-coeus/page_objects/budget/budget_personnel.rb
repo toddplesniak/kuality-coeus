@@ -1,7 +1,7 @@
 class BudgetPersonnel < BasePage
 
   document_buttons
-  buttons 'Add Personnel', 'Sync from Proposal'
+  new_buttons 'Add Personnel', 'Sync from Proposal'
 
   # Returns an Array. Each element in the Array corresponds to a data row in the
   # Personnel table. The key/value pairs of each Hash is Column=>Cell Contents.
@@ -9,7 +9,8 @@ class BudgetPersonnel < BasePage
     items= []
     b.personnel_rows.each { |row|
       items << {
-          person:           row.p.text.strip,
+          person:           row.p.text[/.*(?= \()/],
+          role:             row.p.text[/(?<=\()\w+/],
           job_code:         row.td(index: 1).span.text[/\w+/],
           appointment_type: row.td(index: 2).text.strip,
           base_salary:      row.td(index: 3).text.strip

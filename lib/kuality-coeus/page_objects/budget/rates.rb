@@ -1,4 +1,4 @@
-class Rates < BudgetDocument
+class Rates < BasePage
 
   buttons 'Sync All Rates', 'Refresh All Rates'
   links 'Research F & A', 'Fringe Benefits', 'Inflation', 'Vacation', 'Lab Allocation - Salaries', 'Lab Allocation - Other', 'Other'

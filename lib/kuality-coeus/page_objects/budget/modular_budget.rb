@@ -1,4 +1,4 @@
-class ModularBudget < BudgetDocument
+class ModularBudget < BasePage
 
   element(:budget_period) { |b| b.frm.select(name: 'modularSelectedPeriod') }
   action(:update_view) { |b| b.frm.button(name: 'methodToCall.updateView').click; b.loading }

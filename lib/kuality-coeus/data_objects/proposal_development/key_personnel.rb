@@ -32,6 +32,9 @@
     @full_name="#{@first_name} #{@last_name}"
   end
 
+  # Note: This data object does not support a situation
+  # where there are multiple pages of key personnel on a
+  # Proposal...
   def create
     view 'Personnel'
     on(KeyPersonnel).add_personnel
@@ -74,8 +77,7 @@
   def edit opts={}
     view 'Personnel'
     on KeyPersonnel do |page|
-      page.role_of(@full_name).pick! opts[:role]
-      page.key_person_role_of(@full_name).fit opts[:key_person_role]
+      # TODO
       page.save
     end
     update_options(opts)

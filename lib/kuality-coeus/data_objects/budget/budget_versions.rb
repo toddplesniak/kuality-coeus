@@ -128,10 +128,10 @@ class BudgetVersionsObject < DataFactory
     end
   end
 
-  def submit_with_proposal
+  def include_for_submission
     @navigate.call
     on(ProposalSidebar).budget
-    on(Budgets).submit_with_proposal @name
+    on(Budgets).include_for_submission @name
   end
 
   def complete
@@ -149,7 +149,12 @@ class BudgetVersionsObject < DataFactory
 
   def open_budget
     lambda{
-      unless on(NewDocumentHeader).document_title[/: .+/]==": #{@name}"
+      begin
+        there = on(NewDocumentHeader).document_title[/: .+/]==": #{@name}"
+      rescue Watir::Exception::UnknownObjectException
+        there = false
+      end
+      unless there
         @navigate.call
         on(ProposalSidebar).budget
         on(Budgets).open @name

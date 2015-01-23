@@ -16,3 +16,15 @@ class CASLogin < BasePage
   action(:login) { |b| b.login_button.click }
 
 end
+
+class Logout < BasePage
+
+  page_url "#{$base_url+$context}kr-krad/login?methodToCall=logout&viewId=DummyLoginView"
+
+end
+
+class Landing < BasePage
+
+  page_url "#{$base_url+$context}kc-krad/landingPage?"
+
+end

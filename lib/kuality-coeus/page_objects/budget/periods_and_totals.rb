@@ -4,9 +4,9 @@ class PeriodsAndTotals < BasePage
   budget_header_elements
   new_error_messages
 
-  buttons 'Complete Budget', 'Add Budget Period'
+  new_buttons 'Complete Budget', 'Add Budget Period'
 
-  value(:warnings) { |b| b.div(text: 'TO DO!')  }
+  value(:warnings) { |b| raise 'Fix this when https://jira.kuali.org/browse/KRAFDBCK-12072 is resolved.'  }
 
   p_action(:edit_period) { |period_number, b| b.button(id: /_line#{period_number.to_i-1}$/).click; b.loading }
   p_action(:delete_period) { |period_number, b| b.button(id: "PropBudget-PeriodsPage-CollectionGroup_del_line#{period_number.to_i-1}").click; b.loading }

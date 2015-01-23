@@ -8,7 +8,7 @@ class AddPersonnel < BasePage
 
   element(:results_table) { |b| b.div(data_parent: 'PropDev-PersonnelPage-Wizard').table }
 
-  value(:returned_full_names) { |b| names=[]; b.results_table.rows.each{ |row| names << row[1].text }; names[1..-1] }
+  value(:returned_full_names) { |b| b.results_table.tbody.tr.text=='No records found' ? [] : b.results_table.tbody.trs.map{ |row| row[1].text } - ['Notification System'] }
 
   element(:checkboxes) { |b| b.results_table.checkboxes }
   element(:radios) { |b| b.results_table.radios }
@@ -29,7 +29,7 @@ class AddPersonnel < BasePage
 
   element(:key_person_role) { |b| b.text_field(name: "addKeyPersonHelper.parameterMap['keyPersonProjectRole']") }
   
-  buttons 'Go back', 'Search', 'Add Person'
+  new_buttons 'Go back', 'Search', 'Add Person'
   action(:continue) { |b| b.button(text: 'Continue...').click; b.loading }
 
 end

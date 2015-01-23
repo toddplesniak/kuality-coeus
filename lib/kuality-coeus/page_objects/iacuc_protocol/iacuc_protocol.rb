@@ -1,17 +1,10 @@
 class IACUCProtocolOverview < KCProtocol
 
   expected_element :headerarea
-  #DEBUG
-  #removed the method created in the KCProtocol, because
-  # of medusa method in search_results_table
-  # undefine :medusa
 
   description_field
   tiny_buttons
 
-  #DEBUG: These are commented out until I can
-  # fix merge problems with Todd...
-  #search_results_table
   protocol_common
 
   # Required Fields

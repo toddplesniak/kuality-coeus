@@ -2,7 +2,7 @@ class KeyPersonnel < BasePage
 
   document_buttons
   
-  buttons 'Add Personnel'
+  new_buttons 'Add Personnel'
 
   new_error_messages
 
@@ -46,6 +46,15 @@ class KeyPersonnel < BasePage
       p_action("#{damballa(text)}_of") { |name, b| b.section_of(name).link(text: text).click; b.loading }
     end
   end
+
+  action(:last_page) { |b|
+    if b.last_link.present?
+      b.last_link.click
+      #FIXME!
+      sleep 4
+    end
+  }
+  element(:last_link) { |b| b.link(text: 'Last') }
 
   tabs 'Details', 'Organization', 'Extended Details', 'Degrees', 'Unit Details', 'Person Training Details', 'Proposal Person Certification'
 

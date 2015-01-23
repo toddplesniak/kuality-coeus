@@ -3,10 +3,7 @@ class CreateProposal < BasePage
   expected_element :project_title
 
   new_error_messages
-
-  # buttons 'Cancel', 'Save and continue'
-  action(:cancel) { |b| b.button(text: 'Cancel').click; b.loading }
-  action(:save_and_continue) { |b| b.button(text: 'Save and continue').click; b.loading }
+  document_buttons
 
   element(:proposal_type) { |b| b.select(:name=>'document.developmentProposal.proposalTypeCode') }
   element(:lead_unit) { |b| b.select(:name=>'document.developmentProposal.ownedByUnitNumber') }

@@ -29,6 +29,9 @@ module DEBUG
       puts 'HTML:'
       puts element.outer_html
     end
+    alias_method :watir_element_inspect, :inspect_watir_element
+    alias_method :element_inspect, :inspect_watir_element
+    alias_method :inspect_element, :inspect_watir_element
 
     def inspect object
       puts

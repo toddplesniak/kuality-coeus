@@ -1,6 +1,6 @@
 class SpecialReview < BasePage
 
-  Navigation
+  #navigation
   special_review
   validation_elements
   error_messages

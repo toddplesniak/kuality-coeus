@@ -37,10 +37,10 @@ class BasePage < PageFactory
       end
     end
 
-    # New UI...
+    # New UI. Don't use in Page Classes for 5.x...
     def document_buttons
       action(:back) { |b| b.button(data_submit_data: '{"methodToCall":"navigate","actionParameters[navigateToPageId]":"PropDev-OrganizationLocationsPage"}').click }
-      buttons 'Save', 'Save and Continue', 'Close'
+      new_buttons 'Save', 'Save and Continue', 'Close', 'Cancel'
     end
 
     def document_header_elements
@@ -288,6 +288,7 @@ class BasePage < PageFactory
     def buttons(*buttons_text)
       buttons_text.each { |button| elementate(:button, button) }
     end
+    alias_method :new_buttons, :buttons
 
     def select(method_name, attrib, value)
       element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}) unless b.select(attrib => value).visible?; b.select(attrib => value) }
@@ -317,7 +318,7 @@ class BasePage < PageFactory
         element(el_name) { |b| b.frm.send(type, text: text) }
         action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
       else
-        element(el_name) { |b| b.frm.send(type, text: text) }
+        element(el_name) { |b| b.send(type, text: text) }
         action(act_name) { |b| b.send(type, text: text).click; b.loading }
      end
 

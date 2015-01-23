@@ -33,8 +33,7 @@ end
 
 Given /^(the (.*) |)creates a Proposal with a '(.*)' activity type$/ do |text, role_name, activity_type|
   steps %{ * I log in with the #{role_name} user } unless text == ''
-  @proposal =create ProposalDevelopmentObject,
-                    activity_type: activity_type
+  @proposal = create ProposalDevelopmentObject, activity_type: activity_type
 end
 
 When /^(the (.*) |)creates a Proposal while missing a required field$/ do |text, role_name|

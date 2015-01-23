@@ -188,7 +188,7 @@ class UserObject < DataFactory
     set_options options
 
     @user_name=random_letters(16) if @user_name==:nil
-    @rolez.each { |role| @roles << make(UserRoleObject, role) } unless @rolez.nil?
+    @rolez.each { |role| @roles << make(UserRoleObject, role) } unless @rolez.nil? || @rolez[0][:name].nil?
     @appointmentz.each { |appt| @appointments << make(AppointmentObject, appt) } unless @appointmentz.nil?
     @appointmentz=nil
     @rolez=nil
@@ -329,13 +329,7 @@ class UserObject < DataFactory
 
   def sign_out
     on(BasePage).close_extra_windows
-
-    # TODO! remove this when all testing is done on KC 6.0
-    if $context == 'kc-dly/'
-      @browser.goto "#{$base_url+$cas_context}logout"
-    else
-      @browser.goto "#{$base_url+$context}kr-krad/login?methodToCall=logout&viewId=DummyLoginView"
-    end
+    visit Logout
     $current_user=nil
   end
   alias_method :log_out, :sign_out

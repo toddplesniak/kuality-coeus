@@ -33,6 +33,14 @@ When /adds? a principal investigator to the Proposal$/ do
   @proposal.add_principal_investigator
 end
 
+When /^various personnel are added to the Proposal$/ do
+  steps %|
+    * add a principal investigator to the Proposal
+    * add a co-investigator to the Proposal
+    * add a key person to the Proposal
+  |
+end
+
 Given /^I? ?adds? the Grants.Gov user as the Proposal's PI$/ do
   @proposal.add_principal_investigator last_name: $users.grants_gov_pi.last_name, first_name: $users.grants_gov_pi.first_name
 end
@@ -63,6 +71,34 @@ Then /^the same person cannot be added to the Proposal personnel again$/ do
   expect{@proposal.add_key_person role: 'Co-Investigator', last_name: @last_name, first_name: @first_name}.to raise_error
 end
 
-And /changes the Proposal's co\-investigator to a key person$/ do
-  @proposal.co_investigator.edit role: 'Key Person', key_person_role: random_alphanums
+And /^(\d+) key persons can be added to the Proposal$/ do |number|
+  number.to_i.times do
+    @proposal.view 'Personnel'
+    on(KeyPersonnel).add_personnel
+    on(AddPersonnel) do |page|
+      page.employee.set
+      names = []
+      while names.empty?
+        page.last_name.set("*#{%w{b c e f g h j k l o p r s t u v w y}.sample}*")
+        page.continue
+
+        # We need to exclude the set of test users from the list
+        # of names we'll randomly select from...
+        names = page.returned_full_names - $users.full_names
+        names.delete_if { |name| name.scan(' ').size != 1 }
+        if names.empty?
+          page.go_back
+        end
+      end
+      name = names.sample
+      page.select_person name
+      page.continue
+    end
+    # Assign the role...
+    on AddPersonnel do |page|
+      page.set_role 'KP'
+      page.key_person_role.set random_alphanums
+      page.add_person
+    end
+  end
 end
