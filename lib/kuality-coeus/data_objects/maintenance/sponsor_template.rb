@@ -44,7 +44,6 @@ class SponsorTemplateObject < DataFactory
   # =========
 
   def set_sponsor_terms
-    DEBUG.pause(60)   # alt: 'Multiple Value Search on Sponsor Term'
     on(SponsorTemplate).find_sponsor_term
     # This SponsorTermLookup shows results with checkboxes and
     # is not the same as the lookup on the Maintence => Sponsor Terms link

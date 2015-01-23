@@ -79,6 +79,7 @@ class BasePage < PageFactory
     # Included here because this is such a common field in KC
     def description_field
       element(:description) { |b| b.frm.text_field(name: 'document.documentHeader.documentDescription') }
+      element(:description_no_frm) { |b| b.text_field(name: 'document.documentHeader.documentDescription') }
     end
 
     def global_buttons
@@ -159,7 +160,7 @@ class BasePage < PageFactory
     end
 
     def protocol_header_elements
-      buttons 'Proposal', 'S2S', 'Key Personnel', 'Special Review', 'Custom Data',
+      buttons_frame 'Proposal', 'S2S', 'Key Personnel', 'Special Review', 'Custom Data',
               'Abstracts and Attachments', 'Questions', 'Budget Versions', 'Permissions',
               'Proposal Summary', 'Proposal Actions', 'Medusa'
 
@@ -292,6 +293,10 @@ class BasePage < PageFactory
       element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}) unless b.select(attrib => value).visible?; b.select(attrib => value) }
     end
 
+    def buttons_frame(*buttons_text)
+      # for buttons with a frame element
+      buttons_text.each { |button| elementate(:button, button, true) }
+    end
     # Use this to define methods to click on the green
     # buttons on the page, all of which can be identified
     # by the title tag. The method takes a hash, where the key
@@ -303,14 +308,18 @@ class BasePage < PageFactory
       end
     end
 
-    def elementate(type, text)
+    def elementate(type, text, frame=false)
       el_name=damballa("#{text}_element")
       act_name=damballa(text)
-      element(el_name) { |b| b.frm.send(type, text: text) }
 
-      # DEBUG.message
-      action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
-      # action(act_name) { |b| b.send(type, text: text).click; b.loading }
+      if frame == true
+        #for the old UI with a frame element (aka: Non-Krad)
+        element(el_name) { |b| b.frm.send(type, text: text) }
+        action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
+      else
+        element(el_name) { |b| b.frm.send(type, text: text) }
+        action(act_name) { |b| b.send(type, text: text).click; b.loading }
+     end
 
     end
 

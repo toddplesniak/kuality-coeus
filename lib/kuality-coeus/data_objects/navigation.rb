@@ -28,7 +28,12 @@ module Navigation
   def navigate
     on(BasePage).close_extra_windows
     if @lookup_class == DocumentSearch
-      visit(Researcher).doc_search
+      if on(Header).doc_search_element.present?
+        on(Header).doc_search
+      else #you are on old ui and navigate to doc search this way
+        visit(Researcher).doc_search
+      end
+
     else
       visit @lookup_class
     end
@@ -41,7 +46,12 @@ module Navigation
       begin
         page.results_table.wait_until_present(5)
       rescue Watir::Wait::TimeoutError
-        visit(Researcher).doc_search
+        if on(Header).doc_search_element.present?
+
+          on(Header).doc_search
+        else #you are on old ui and navigate to doc search this way
+          visit(Researcher).doc_search
+          end
         on DocumentSearch do |search|
           search.document_id.set @document_id
           search.search

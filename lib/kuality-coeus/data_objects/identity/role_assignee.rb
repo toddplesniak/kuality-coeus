@@ -19,6 +19,7 @@ class RoleAssigneeObject < DataFactory
 
   def create
     on Role do |page|
+      page.description.wait_until_present
       page.description.set random_alphanums
       page.assignee_type_code.select @type_code
       page.assignee_id.set @member_identifier

@@ -5,6 +5,8 @@ class Group < BasePage
   global_buttons
   tab_buttons
 
+  expected_element :type_code
+
   value(:id) { |b| b.overview_tab.table[0][1].text }
 
   # DANGER! 

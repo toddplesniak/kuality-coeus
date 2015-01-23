@@ -15,6 +15,8 @@ class KeyPersonnel < BasePage
   p_value(:role_of) { |name, b| b.section_of(name).div(data_label: 'Proposal Person Role Id').text }
   p_element(:key_person_role_of) { |name, b| b.section_of(name).text_field(name: /projectRole/) }
 
+  action(:expand_all_personnel) { |b| b.spans(class: 'icon-caret-right').each{|xpand| xpand.click unless xpand.style=='display: none;'; b.loading} }
+
   # Organization
 
   p_value(:home_unit_of) { |name, b| b.section_of(name).div(data_label: 'Home Unit').text }

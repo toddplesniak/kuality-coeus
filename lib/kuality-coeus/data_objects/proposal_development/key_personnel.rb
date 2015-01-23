@@ -43,6 +43,7 @@
       page.add_person
     end
     on KeyPersonnel do |person|
+      person.expand_all_personnel
       @user_name=person.user_name_of(@full_name)
       person.save
       return unless person.errors.empty?
