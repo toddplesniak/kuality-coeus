@@ -70,7 +70,6 @@ And /changes the contact information on the added Organization$/ do
   @iacuc_protocol.organization.clear_contact(@iacuc_protocol.organization.organization_id)
   #select a new address from the search
   @iacuc_protocol.organization.add_contact_info(@iacuc_protocol.organization.organization_id)
-
 end
 
 When  /reopens the IACUC Protocol without saving the changes$/ do
