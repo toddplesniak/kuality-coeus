@@ -4,7 +4,7 @@ class PeriodsAndTotals < BasePage
   budget_header_elements
   new_error_messages
 
-  new_buttons 'Complete Budget', 'Add Budget Period'
+  buttons 'Complete Budget', 'Add Budget Period'
 
   value(:warnings) { |b| raise 'Fix this when https://jira.kuali.org/browse/KRAFDBCK-12072 is resolved.'  }
 

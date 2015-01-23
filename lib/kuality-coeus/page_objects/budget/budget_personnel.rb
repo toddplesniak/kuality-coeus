@@ -1,7 +1,7 @@
 class BudgetPersonnel < BasePage
 
   document_buttons
-  new_buttons 'Add Personnel', 'Sync from Proposal'
+  buttons 'Add Personnel', 'Sync from Proposal'
 
   # Returns an Array. Each element in the Array corresponds to a data row in the
   # Personnel table. The key/value pairs of each Hash is Column=>Cell Contents.
