@@ -40,7 +40,7 @@ class BasePage < PageFactory
     # New UI. Don't use in Page Classes for 5.x...
     def document_buttons
       action(:back) { |b| b.button(data_submit_data: '{"methodToCall":"navigate","actionParameters[navigateToPageId]":"PropDev-OrganizationLocationsPage"}').click }
-      new_buttons 'Save', 'Save and Continue', 'Close', 'Cancel'
+      buttons 'Save', 'Save and Continue', 'Close', 'Cancel'
     end
 
     def document_header_elements
@@ -79,6 +79,7 @@ class BasePage < PageFactory
     # Included here because this is such a common field in KC
     def description_field
       element(:description) { |b| b.frm.text_field(name: 'document.documentHeader.documentDescription') }
+      element(:description_no_frm) { |b| b.text_field(name: 'document.documentHeader.documentDescription') }
     end
 
     def global_buttons
@@ -122,6 +123,7 @@ class BasePage < PageFactory
       p_action(:check_item) { |item, b| b.item_row(item).checkbox.set }
       action(:select_random_checkbox) { |b| b.frm.tbody.tr(index: (rand(b.frm.tbody.trs.length))  ).checkbox.set }
       action(:return_random_checkbox) { |b| b.select_random_checkbox; b.return_selected }
+      p_action(:check_item_title) { |item, b| b.item_row_title(item).checkbox.set }
     end
 
     def budget_header_elements
@@ -158,7 +160,7 @@ class BasePage < PageFactory
     end
 
     def protocol_header_elements
-      buttons 'Proposal', 'S2S', 'Key Personnel', 'Special Review', 'Custom Data',
+      buttons_frame 'Proposal', 'S2S', 'Key Personnel', 'Special Review', 'Custom Data',
               'Abstracts and Attachments', 'Questions', 'Budget Versions', 'Permissions',
               'Proposal Summary', 'Proposal Actions', 'Medusa'
 
@@ -283,17 +285,6 @@ class BasePage < PageFactory
       links_text.each { |link| elementize(:link, link) }
     end
 
-    # Use this for 6.0 UI buttons only!
-    # TODO: Remove this method when 5.x UI is gone.
-    def new_buttons(*text)
-      text.each { |button|
-        el_name=damballa("#{button}_element")
-        act_name=damballa(button)
-        element(el_name) { |b| b.send(:button, text: button) }
-        action(act_name) { |b| b.send(:button, text: button).click; b.loading }
-      }
-    end
-
     def buttons(*buttons_text)
       buttons_text.each { |button| elementate(:button, button) }
     end
@@ -302,6 +293,10 @@ class BasePage < PageFactory
       element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}) unless b.select(attrib => value).visible?; b.select(attrib => value) }
     end
 
+    def buttons_frame(*buttons_text)
+      # for buttons with a frame element
+      buttons_text.each { |button| elementate(:button, button, true) }
+    end
     # Use this to define methods to click on the green
     # buttons on the page, all of which can be identified
     # by the title tag. The method takes a hash, where the key
@@ -313,11 +308,19 @@ class BasePage < PageFactory
       end
     end
 
-    def elementate(type, text)
+    def elementate(type, text, frame=false)
       el_name=damballa("#{text}_element")
       act_name=damballa(text)
-      element(el_name) { |b| b.frm.send(type, text: text) }
-      action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
+
+      if frame == true
+        #for the old UI with a frame element (aka: Non-Krad)
+        element(el_name) { |b| b.frm.send(type, text: text) }
+        action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
+      else
+        element(el_name) { |b| b.send(type, text: text) }
+        action(act_name) { |b| b.send(type, text: text).click; b.loading }
+     end
+
     end
 
     # Used for getting rid of the space and comma in the full name

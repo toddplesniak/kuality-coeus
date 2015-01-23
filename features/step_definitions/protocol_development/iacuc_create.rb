@@ -24,12 +24,11 @@ end
 When /^the IACUC Protocol Creator creates an IACUC Protocol but misses a required field$/ do
   steps %{ * I log in with the IACUC Protocol Creator user }
   # Pick a field at random for the test...
-  required_field = ['Description', 'Lay Statement 1', 'Lead Unit', 'Title'].sample
+  required_field = ['Lay Statement 1', 'Lead Unit', 'Title'].sample
   field = damballa(required_field)
   @iacuc_protocol = create IACUCProtocolObject, field=>' '
   text = ' is a required field.'
   errors = {
-      description: "Document Description (Description)#{text}",
       lay_statement_1: "Lay Statement 1 (Lay Statement 1)#{text}",
       lead_unit: "#{required_field} (#{required_field})#{text}",
       title: "Title (Title)#{text}"

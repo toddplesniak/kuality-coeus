@@ -79,7 +79,6 @@ class CommitteeMemberObject < DataFactory
       log_in.login
     end
     $current_user=self
-    visit Researcher
   end
 
   def sign_out

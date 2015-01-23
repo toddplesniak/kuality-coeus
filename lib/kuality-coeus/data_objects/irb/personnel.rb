@@ -17,8 +17,22 @@ class ProtocolPersonnelObject < DataFactory
   end
 
   def create
-    get_person
-    on page_class do |page|
+    #adds a person to the protocol
+    on ProtocolPersonnel do |page|
+      page.employee_search if @type == 'employee'
+      page.non_employee_search if @type == 'non-employee'
+    end
+
+    on KcPersonLookup do |lookup|
+        lookup.last_name.fit @last_name
+        lookup.first_name.fit @first_name
+        lookup.user_name.fit @user_name
+        lookup.search
+
+        lookup.return_value(@full_name)
+    end
+
+    on ProtocolPersonnel do |page|
       page.protocol_role.fit @role
       page.add_person
       page.save

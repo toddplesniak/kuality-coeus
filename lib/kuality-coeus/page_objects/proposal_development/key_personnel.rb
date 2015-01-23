@@ -1,8 +1,8 @@
 class KeyPersonnel < BasePage
 
   document_buttons
-  
-  new_buttons 'Add Personnel'
+
+  buttons 'Add Personnel'
 
   new_error_messages
 
@@ -14,6 +14,8 @@ class KeyPersonnel < BasePage
   p_element(:era_commons_name_of) { |name, b| b.section_of(name).text_field(name: /eraCommonsUserName/) }
   p_value(:role_of) { |name, b| b.section_of(name).div(data_label: 'Proposal Person Role Id').text }
   p_element(:key_person_role_of) { |name, b| b.section_of(name).text_field(name: /projectRole/) }
+
+  action(:expand_all_personnel) { |b| b.spans(class: 'icon-caret-right').each{|xpand| xpand.click unless xpand.style=='display: none;'; b.loading} }
 
   # Organization
 
@@ -45,7 +47,6 @@ class KeyPersonnel < BasePage
     end
   end
 
-  action(:expand_all_personnel) { |b| b.spans(class: 'icon-caret-right').each{|xpand| xpand.click unless xpand.style=='display: none;'; b.loading} }
   action(:last_page) { |b|
     if b.last_link.present?
       b.last_link.click

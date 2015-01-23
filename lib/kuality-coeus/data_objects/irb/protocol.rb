@@ -7,7 +7,7 @@ class IRBProtocolObject < DataFactory
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :reviews,
+               :reviews, :schedule_date,
                # Withdraw
                :withdrawal_reason,
                # Amendment
@@ -35,7 +35,8 @@ class IRBProtocolObject < DataFactory
   end
 
   def create
-    visit(Researcher).create_irb_protocol
+    on(Header).researcher
+    on(ResearcherMenu).create_irb_protocol
     on ProtocolOverview do |doc|
       @document_id=doc.document_id
       @doc_header=doc.doc_title

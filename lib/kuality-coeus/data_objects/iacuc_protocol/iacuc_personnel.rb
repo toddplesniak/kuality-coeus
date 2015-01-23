@@ -36,6 +36,8 @@ class IACUCPersonnel <  DataFactory
       def view(tab)
         raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
         on(KCProtocol).send(damballa(tab))
+        #DEBUG us this instead? 
+        # on(IACUCProtocolOverview).send(damballa(tab))
       end
 
       def return_random_person

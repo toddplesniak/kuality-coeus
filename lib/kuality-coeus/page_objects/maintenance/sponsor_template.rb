@@ -14,6 +14,6 @@ class SponsorTemplate < BasePage
   #Required to Submit
   element(:template_description) { |b| b.frm.text_field(name: 'document.newMaintainableObject.description') }
   element(:template_status) { |b| b.frm.select(name: 'document.newMaintainableObject.statusCode') }
-  action(:find_sponsor_term) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.SponsorTerm!!).((``)).(:;templateTerms;:).((%true%)).((~~)).anchor').click; b.loading }
+  action(:find_sponsor_term) { |b| b.frm.button(alt: 'Multiple Value Search on Sponsor Term').click; b.loading }
 
 end
