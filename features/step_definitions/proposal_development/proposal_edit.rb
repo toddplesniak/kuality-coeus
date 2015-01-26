@@ -95,7 +95,7 @@ end
 
 And /^the Proposal Creator copies the Proposal to a new one, as a continuation$/ do
   steps '* I log in with the Proposal Creator user'
-  @new_proposal_version = @proposal.copy_to_new_document
+  @new_proposal_version = @proposal.copy
   @new_proposal_version.edit proposal_type: 'Continuation', original_ip_id: @institutional_proposal.proposal_number
 
 end
@@ -120,6 +120,10 @@ end
 
 Then /^it is still possible to copy the Proposal$/ do
   expect{@proposal.copy_to_new_document '000001 - University'}.not_to raise_error
+end
+
+And /^the Proposal is copied to a different lead unit$/ do
+  @copied_proposal = @proposal.copy 'BL-BL'
 end
 
 And /changes the Proposal's activity type$/ do

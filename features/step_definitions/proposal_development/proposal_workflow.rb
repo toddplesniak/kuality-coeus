@@ -47,7 +47,12 @@ And /^the principal investigator approves the Proposal$/ do
 end
 
 And /^the (.*) approves the Proposal (with|without) future approval requests$/ do |role_name, future_requests|
-  steps %{* I log in with the #{role_name} user }
+  if role_name=='principal investigator'
+    @proposal.principal_investigator.log_in
+  else
+    steps %{* I log in with the #{role_name} user }
+  end
+
   # Move to Transforms???
   conf = {'with' => :yes, 'without' => :no}
   #@proposal.approve(conf[future_requests])
@@ -57,7 +62,6 @@ And /^the (.*) approves the Proposal (with|without) future approval requests$/ d
   DEBUG.do {
     @proposal.approve_from_action_list(conf[future_requests])
   }
-
 end
 
 Then /^I should only have the option to submit the proposal to its sponsor$/ do

@@ -15,7 +15,6 @@ Feature: Proposal Key Personnel Validations
 
     Examples:
     | Type           | Value  |
-    | Responsibility | 100.01 |
     | Financial      | 1000   |
     | Recognition    | -0.01  |
 

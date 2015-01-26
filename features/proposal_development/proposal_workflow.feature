@@ -57,7 +57,7 @@ Feature: Proposal Workflows and Routing
     And   the principal investigator approves the Proposal
     When  I log in again with the OSPApprover user
     Then  I should not see the option to approve the Proposal
-
+  @test
   Scenario: Approval has been granted so an OSP Admin submits the Proposal to its sponsor
     Given a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
     And   the Proposal Creator submits a new Proposal into routing

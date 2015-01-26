@@ -291,7 +291,7 @@ class ProposalDevelopmentObject < DataFactory
 
   alias :sponsor_code :sponsor_id
 
-  def copy_to_new_document(lead_unit, budget=:clear, budget_version=nil, attachments=:clear, questionnaire=:clear)
+  def copy(lead_unit, budget=:clear, budget_version=nil, attachments=:clear, questionnaire=:clear)
     view 'Proposal Details'
     on(NewDocumentHeader).copy
     on CopyToNewDocument do |page|

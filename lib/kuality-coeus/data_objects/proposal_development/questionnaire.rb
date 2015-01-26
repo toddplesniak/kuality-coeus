@@ -20,9 +20,6 @@ class QuestionnaireObject < DataFactory
     view
     on Questions do |cq|
       cq.generic_demo_questionnaire unless cq.generic_demo_questionnaire_li.class_name=='active'
-
-      DEBUG.watir_element_inspect cq.radio(value: 'Y', name: 'questionnaireHelper.answerHeaders[1].questions[0].answers[0].answer')
-
       ordered_fill cq, :inventor, :rights, :non_university_investigators, :position_0
       # TODO: Add more position fields...
       cq.save_and_continue
