@@ -63,7 +63,21 @@ class AssignedPerson < DataFactory
 
   def requested_salary
     sm = start_month_days == days_in_start_month || full_months_count<2 ? 0 : start_month_calculated_salary
+
+    DEBUG.message 'Start month:'
+    DEBUG.inspect sm
+
     em = end_month_days == days_in_end_month ? monthly_calculated_salary : end_month_calculated_salary
+
+    DEBUG.message 'End month:'
+    DEBUG.inspect em
+
+    DEBUG.message 'Full months count:'
+    DEBUG.inspect full_months_count
+
+    DEBUG.message 'Monthly calculated salary:'
+    DEBUG.inspect monthly_calculated_salary
+
     ((full_months_count*monthly_calculated_salary) + (monthly_inflation_cost*inflated_months_count) + sm + em + end_month_inflation_cost).round(2)
   end
 
@@ -152,10 +166,13 @@ class AssignedPerson < DataFactory
     datify @rate_start_date
   end
 
-  # Note that this calculation under-counts the full months if the End Day is the last day of
-  # the month...
+
   def full_months_count
-    (end_d.year - start.year)*12 + end_d.month - start.month - (end_d.day >= start.day ? 0 : 1)
+    # Is the start month full?
+    s = start.day > 1 ? 0 : 1
+    # Is the end month full?
+    e = end_d.day == days_in_end_month ? 0 : 1
+    (end_d.year - start.year)*12 + end_d.month - start.month - s - e
   end
 
   def inflated_months_count
