@@ -29,7 +29,7 @@ class AddPersonnel < BasePage
 
   element(:key_person_role) { |b| b.text_field(name: "addKeyPersonHelper.parameterMap['keyPersonProjectRole']") }
   
-  new_buttons 'Go back', 'Search', 'Add Person'
+  buttons 'Go back', 'Search', 'Add Person'
   action(:continue) { |b| b.button(text: 'Continue...').click; b.loading }
 
 end

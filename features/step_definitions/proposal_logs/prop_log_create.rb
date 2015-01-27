@@ -69,7 +69,8 @@ When /^the Create Proposal Log user submits a new Temporary Proposal Log$/ do
 end
 
 Then /^the Proposal Log's status should reflect it has been (.*)$/ do |status|
-  on(Researcher).search_proposal_log
+  on(Header).researcher
+  on(ResearcherMenu).search_proposal_log
   on ProposalLogLookup do |page|
     page.proposal_number.set @temp_proposal_log.number
     page.search

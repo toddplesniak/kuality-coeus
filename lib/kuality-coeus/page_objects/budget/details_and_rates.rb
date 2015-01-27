@@ -1,6 +1,6 @@
 class DetailsAndRates < BasePage
 
-  new_buttons 'Close', 'Apply To Later Periods'
+  buttons 'Close', 'Apply To Later Periods'
 
   action(:general) { |b| b.tab_list.li(text: 'General').link.click }
   action(:rates) { |b| b.tab_list.li(text: 'Rates').link.click }

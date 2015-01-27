@@ -31,6 +31,8 @@ When /^I ? ?creates? an Award with a missing required field$/ do
   @award = create AwardObject, field=>value
   text = ' is a required field.'
   @required_field_error = case(required_field)
+                            when 'Lead Unit'
+                              "#{required_field} ID (#{required_field} ID)#{text}"
                             when 'Award Title'
                               "#{required_field} (Title)#{text}"
                             when 'Transaction Type', 'Award Status', 'Activity Type', 'Award Type', 'Project End Date', 'Lead Unit ID'

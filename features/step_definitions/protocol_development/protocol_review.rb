@@ -3,7 +3,7 @@ Then /^the assigned reviewers get a Protocol Review$/ do
   reviewers.each do |rev_name|
     reviewer = @committee.member(rev_name)
     reviewer.sign_in
-    visit(Researcher).action_list
+    on(Header).action_list
     on(ActionList).filter
     on ActionListFilter do |page|
       page.document_title.set @irb_protocol.protocol_number
@@ -20,7 +20,7 @@ And /the primary reviewer submits review comments/ do
   pr_name = @irb_protocol.primary_reviewers[0]
   primary_reviewer = @committee.member(pr_name)
   primary_reviewer.sign_in
-  visit(Researcher).action_list
+  on(Header).action_list
   on(ActionList).filter
   on ActionListFilter do |page|
     page.document_title.set @irb_protocol.protocol_number

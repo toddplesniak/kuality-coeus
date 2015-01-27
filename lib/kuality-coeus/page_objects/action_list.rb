@@ -32,6 +32,7 @@ class ActionList < BasePage
 
   p_value(:action_requested) { |item_id, b| b.item_row(item_id).tds[b.action_requested_column].text }
   p_value(:route_status) { |item_id, b| b.item_row(item_id).tds[b.route_status_column].text }
+  element(:preferences) { |b| b.frm.button(name: 'methodToCall.viewPreferences').click; b.loading }
   element(:filter_button) { |b| b.frm.button(name: 'methodToCall.viewFilter') }
   action(:filter) { |b| b.filter_button.click; b.loading }
   action(:take_actions) { |b| b.frm.link(id: 'takeMassActions').click; b.loading }

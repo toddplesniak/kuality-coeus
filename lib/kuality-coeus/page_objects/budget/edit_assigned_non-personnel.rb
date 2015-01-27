@@ -1,6 +1,6 @@
 class EditAssignedNonPersonnel < BasePage
 
-  new_buttons 'Save Changes'
+  buttons 'Save Changes'
 
   action(:details_tab) { |b| b.tab_list.li(text: 'Details').link.click }
   action(:cost_sharing_tab) { |b| b.tab_list.li(text: 'Cost Sharing').link.click }

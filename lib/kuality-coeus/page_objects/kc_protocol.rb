@@ -5,7 +5,7 @@ class KCProtocol < BasePage
   global_buttons
   error_messages
 
-  buttons 'Protocol', 'Personnel', 'Questionnaire', 'Custom Data', 'Special Review',
+  buttons_frame 'Protocol', 'Personnel', 'Questionnaire', 'Custom Data', 'Special Review',
           'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa', 'Online Review',
           "The Three R's", 'Species/Groups', 'Procedures', 'Protocol Exception', 'IACUC Protocol Actions'
 

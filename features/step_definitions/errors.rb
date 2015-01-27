@@ -76,6 +76,14 @@ Then /^errors about the missing Sponsor terms are shown$/ do
       .each { |term| expect($current_page.errors).to include("No < #{term} Terms > terms are selected for the current award. Please add a term.") }
 end
 
+Then /^errors about the missing template terms are shown$/ do
+  @errors = ['Invention', 'Travel Restrictions', 'Subaward Approval', 'Rights In Data', 'Referenced Document', 'Publication', 'Property', 'Prior Approval']
+  @errors.collect! {|sponsor_term| 'No < '+ sponsor_term + ' Terms > terms are selected for the current award. Please add a term.'}
+  @errors.each do |err|
+    expect($current_page.errors).to include err
+  end
+end
+
 # TODO: Move to the big step def.
 Then /^an error is shown that indicates the lead unit code is invalid$/ do
   expect($current_page.errors).to include('Lead Unit is invalid.')

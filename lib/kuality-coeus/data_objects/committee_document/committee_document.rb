@@ -32,7 +32,8 @@ class CommitteeDocumentObject < DataFactory
   end
     
   def create
-    @committee_type == 'irb' ? visit(CentralAdmin).create_irb_committee : visit(CentralAdmin).create_iacuc_committee
+    on(Header).central_admin
+    @committee_type == 'irb' ? on(CentralAdmin).create_irb_committee : on(CentralAdmin).create_iacuc_committee
 
     on Committee do |comm|
       @document_id=comm.document_id

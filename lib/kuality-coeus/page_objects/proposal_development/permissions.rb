@@ -1,6 +1,6 @@
 class Permissions < BasePage
 
-  new_buttons 'Find User'
+  buttons 'Find User'
 
   element(:add_user_name) { |b| b.text_field(name: "newCollectionLines['permissionsHelper.workingUserRoles'].username") }
   #FIXME!
