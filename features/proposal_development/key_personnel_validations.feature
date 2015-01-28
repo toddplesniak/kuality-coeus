@@ -17,7 +17,7 @@ Feature: Proposal Key Personnel Validations
     | Type           | Value  |
     | Financial      | 1000   |
     | Recognition    | -0.01  |
-
+  @test
   Scenario: Data Validation of Credit Split not totalling 100%
     Given I add a Principal Investigator with a Space credit split of 99.99
     When  data validation is activated

@@ -6,7 +6,7 @@ class KeyPersonnel < BasePage
 
   new_error_messages
 
-  p_element(:section_of) { |name, b| b.h4(text: /#{name}/).parent.parent }
+  p_element(:section_of) { |name, b| b.section(data_full_name: name) }
 
   # Details
 
