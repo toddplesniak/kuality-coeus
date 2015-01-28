@@ -224,7 +224,6 @@ class ProposalDevelopmentObject < DataFactory
         on(ResearcherMenu).search_proposals
         view 'Summary/Submit'
 
-
         on(ProposalSummary).submit_to_sponsor
         on SendNotifications do |page|
           @institutional_proposal_number=page.institutional_proposal_number

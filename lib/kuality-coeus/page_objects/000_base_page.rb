@@ -40,7 +40,7 @@ class BasePage < PageFactory
     # New UI. Don't use in Page Classes for 5.x...
     def document_buttons
       action(:back) { |b| b.button(data_submit_data: '{"methodToCall":"navigate","actionParameters[navigateToPageId]":"PropDev-OrganizationLocationsPage"}').click }
-      new_buttons 'Save', 'Save and Continue', 'Close', 'Cancel'
+      buttons 'Save', 'Save and Continue', 'Close', 'Cancel'
     end
 
     def document_header_elements
@@ -306,6 +306,16 @@ class BasePage < PageFactory
     def green_buttons(links={})
       links.each_pair do |name, title|
         action(name) { |b| b.frm.link(title: title).click; b.loading }
+      end
+    end
+
+    def black_buttons(links={})
+      links.each_pair do |name, title|
+        name_search = 'search_'+name.to_s
+        #create button (+) , example: :proposal_log
+        action(name) { |b| b.p(text: title).parent.link(class: 'uif-actionLink uif-boxLayoutHorizontalItem icon-plus icon-plus').click; b.loading }
+        #search button, example: :search_proposal_log
+        action(name_search.to_sym) { |b| b.p(text: title).parent.link(class: 'uif-actionLink uif-boxLayoutHorizontalItem icon-search icon-search').click; b.loading }
       end
     end
 

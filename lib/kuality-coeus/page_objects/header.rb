@@ -39,13 +39,22 @@ class Header < BasePage
   # Has same visible problems as researcher
   action(:central_admin) { |b|
     5.times {
-      b.central_admin_link.click
-      sleep 1 unless b.central_admin_link.parent.div.visible?
-      break if b.central_admin_link.parent.div.visible?
+      # DEBUG.message 'Hot fix for visibility of Central Admin Modal'
+      b.unit_link.click
+      sleep 1 unless b.unit_link.parent.div.visible?
+      break if b.unit_link.parent.div.visible?
       b.refresh
       sleep 1
+
+      #Commented out for bug
+      # b.central_admin_link.click
+      # sleep 1 unless b.central_admin_link.parent.div.visible?
+      # break if b.central_admin_link.parent.div.visible?
+      # b.refresh
+      # sleep 1
     }
   }
-  element(:central_admin_link) { |b| b.link(text: 'CENTRAL ADMIN') }
 
+  element(:central_admin_link) { |b| b.link(text: 'CENTRAL ADMIN') }
+  element(:unit_link) { |b| b.link(text: 'UNIT') }
 end

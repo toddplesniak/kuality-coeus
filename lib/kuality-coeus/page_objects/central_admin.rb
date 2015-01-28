@@ -3,7 +3,11 @@ class CentralAdmin < BasePage
   page_url "#{$base_url+$context}portal.do?selectedTab=portalCentralAdminBody"
 
   #TODO:: Remove this as it is old ui
-  green_buttons create_award: 'Award', create_proposal_log: 'Proposal Log',
+  #DEBUG - remove once all tests using this are tested incase we have edge case with the UI
+  # green_buttons create_award: 'Award', create_proposal_log: 'Proposal Log',
+  #               create_institutional_proposal: 'Institutional Proposal', create_subaward: 'Subawards'
+
+  black_buttons create_award: 'Award', create_proposal_log: 'Proposal Log',
                 create_institutional_proposal: 'Institutional Proposal', create_subaward: 'Subawards'
 
   element(:central_admin_modal) { |b| b.link(text: 'CENTRAL ADMIN').parent.div }

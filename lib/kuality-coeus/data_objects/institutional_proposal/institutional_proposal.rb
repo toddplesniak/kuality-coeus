@@ -57,7 +57,9 @@ class InstitutionalProposalObject < DataFactory
   # This method is appropriate only in the context of creating an
   # Institutional Proposal from a Proposal Log.
   def create
-    visit(CentralAdmin).create_institutional_proposal
+    on(Header).central_admin
+    on(CentralAdmin).create_institutional_proposal
+
     on ProposalLogLookup do |look|
       look.proposal_number.set @proposal_number
       look.search

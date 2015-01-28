@@ -45,7 +45,6 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in the meeting mi
   }
   member = people[person] ? @committee.members.member(people[person]) : @irb_protocol.principal_investigator
   member.sign_in
-  DEBUG.message("the people are: #{people}")
   visit CommitteeScheduleLookup do |page|
     page.protocol_number.set @irb_protocol.protocol_number
     page.search

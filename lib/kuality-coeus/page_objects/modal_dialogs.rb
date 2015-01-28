@@ -20,7 +20,7 @@ class Dialogs < BasePage
 
   expected_element :dialog_header
 
-  new_buttons 'OK', 'Yes', 'No'
+  buttons 'OK', 'Yes', 'No'
 
 end # Dialogs
 
