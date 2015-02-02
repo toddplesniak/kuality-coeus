@@ -43,6 +43,6 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
 
   Scenario: Changing the Proposal's activity type
     Given the Proposal Creator changes the Proposal's activity type
-    When  the Budget Version is opened
-    Then  the Budget can be synced to the new rates
-    And   the Budget's rates are updated
+    And   the Budget Version is opened
+    When  the Budget is synced to the new rates
+    Then  the Budget's rates are updated

@@ -90,3 +90,8 @@ And(/^the (.*) approves the Proposal again$/) do |role_name|
   steps %{ * I log in with the #{role_name} user }
   @proposal.approve nil
 end
+
+When(/^the OSPApprover rejects the Proposal$/) do
+  steps '* I log in with the OSPApprover user'
+  @proposal.reject
+end

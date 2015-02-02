@@ -90,7 +90,7 @@ Then /^the Period's direct cost is the same as the assigned non-personnel's tota
   end
 end
 
-And /^the Budget can be synced to the new rates$/ do
+And /^the Budget is synced to the new rates$/ do
   on(SyncBudgetRates).yes
 end
 

@@ -72,7 +72,7 @@ class BudgetPeriodObject < DataFactory
 
   # TODO: All this code is problematic when there are multiple
   # Project periods. It needs some serious re-thinking for 6.0
-  def add_item_to_cost_share_dl opts={}
+  def add_item_to_cost_sharing opts={}
     defaults = {
         amount: random_dollar_value(10000),
         period: "#{@number}: #{@start_date} - #{@end_date}"

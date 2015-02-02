@@ -194,7 +194,8 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def reject
-    # TODO - Coeus is buggy right now
+    view 'Summary/Submit'
+    on(ProposalSummary).reject
   end
 
   def close
