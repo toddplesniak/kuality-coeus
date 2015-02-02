@@ -17,14 +17,11 @@ class CostSharingObject < DataFactory
 
   def create
     view
-    on CostSharing do |page|
-      page.add_cost_sharing
-    end
+    on(CostSharing).add_cost_sharing
     on AddLine do |page|
       fill_out page, :period, :percentage, :source_account, :amount
       page.add
     end
-    on(CostSharing).save
   end
 
   def view

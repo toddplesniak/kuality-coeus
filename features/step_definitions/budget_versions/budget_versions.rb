@@ -120,11 +120,6 @@ When /^(the (.*) user |)creates a Budget Version with cost sharing for the Propo
   @budget_version.period(1).cost_sharing_distribution_list.each do |cs|
     cs.edit source_account: random_alphanums
   end
-
-
-  DEBUG.inspect @budget_version.period(1)
-
-
 end
 
 And /^(the (.*) user |)creates a Budget Version with unrecovered F&A for the Proposal$/ do |text, role_name|
@@ -145,10 +140,7 @@ And /adds? unrecovered F&A to the first period of the Budget Version$/ do
 end
 
 And /^adds another item to the budget period's cost sharing distribution list$/ do
-
-  DEBUG.pause 100
-
-  @budget_version.budget_periods.period(1).add_item_to_cost_share_dl
+  @budget_version.budget_periods.period(1).add_item_to_cost_sharing_dl
 end
 
 And /^adds (\d+) more items to the budget period's cost sharing distribution list$/ do |count|
