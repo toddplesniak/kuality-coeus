@@ -18,4 +18,4 @@ Feature: Creating a proposal development document
     And   answers the Proposal's questionnaire
     And   completes the required supplemental info on the Proposal
     When  data validation is activated
-    Then  there are no data validation errors or warnings
+    Then  there are no data validation errors or warnings for the Proposal

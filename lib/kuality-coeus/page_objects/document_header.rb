@@ -18,5 +18,6 @@ class NewDocumentHeader < BasePage
   action(:copy) { |b| b.link(text: 'Copy').click; b.loading }
   action(:budget_versions) { |b| b.link(text: 'Budget Versions').when_present.click; b.loading }
   action(:autocalculate_periods) { |b| b.link(text: 'Autocalculate Periods').when_present.click; b.loading }
+  action(:data_override) { |b| b.link(text: 'Data Override').when_present.click; b.loading }
 
 end

@@ -191,7 +191,7 @@ Then /^there are no errors on the page$/ do
   $current_page.errors.size.should==0
 end
 
-And /^there are no data validation errors or warnings$/ do
+And /^there are no data validation errors or warnings for the Proposal$/ do
   on(DataValidation).errors_list.should_not be_present
   expect($current_page.errors.size).to equal(0)
 end

@@ -6,8 +6,8 @@ Feature: Proposal Workflows and Routing
   in workflow.
 
   Background:
-    * Users exist with the following roles: Proposal Creator, OSPApprover
-
+    * Users exist with the following roles: Proposal Creator, OSPApprover, OSP Administrator
+  @test
   Scenario: Approval Requests for a Proposal are sent
     When the Proposal Creator submits a new Proposal into routing
     Then the Proposal status should be Approval Pending
@@ -21,7 +21,7 @@ Feature: Proposal Workflows and Routing
     When  the OSPApprover user approves the Proposal
     Then  the principal investigator can access the Proposal from their action list
     And   can approve the Proposal
-
+  @test
   Scenario: Approval Requests are sent to OSP representatives
     When  the Proposal Creator submits a new Proposal into routing
     Then  the OSPApprover can access the Proposal from their action list
@@ -34,7 +34,6 @@ Feature: Proposal Workflows and Routing
   @failing
   Scenario: An OSP Admin overrides a budget's cost sharing amount
     Given the Budget Column's 'Cost Sharing Amount' has a lookup for 'Proposal Cost Share' that returns 'Amount'
-    And   a User exists with the role: 'OSP Administrator'
     And   the Proposal Creator creates a Proposal
     And   adds a principal investigator to the Proposal
     And   sets valid credit splits for the Proposal
@@ -57,7 +56,7 @@ Feature: Proposal Workflows and Routing
     And   the principal investigator approves the Proposal
     When  I log in again with the OSPApprover user
     Then  I should not see the option to approve the Proposal
-  @test
+  @failing
   Scenario: Approval has been granted so an OSP Admin submits the Proposal to its sponsor
     Given a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
     And   the Proposal Creator submits a new Proposal into routing
