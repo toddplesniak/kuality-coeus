@@ -64,7 +64,8 @@ class AwardObject < DataFactory
 
   def create
     @creation_date = right_now[:date_w_slashes]
-    visit(CentralAdmin).create_award
+    on(Header).central_admin
+    on(CentralAdmin).create_award
     on Award do |create|
       @doc_header=create.doc_title
       create.expand_all
@@ -109,11 +110,8 @@ class AwardObject < DataFactory
 
     DEBUG.message @document_id
 
-
     view :award
     on Award do |edit|
-
-      DEBUG.pause 300
 
       if edit.edit_button.present?
         edit.edit
@@ -292,7 +290,7 @@ class AwardObject < DataFactory
 
   def view(tab)
     open_document
-    unless on(Award).send(StringFactory.damballa("#{tab}_button")).parent.class_name=~/tabcurrent$/
+    unless on(Award).send(StringFactory.damballa("#{tab}_element")).parent.class_name=~/tabcurrent$/
       on(Award).send(StringFactory.damballa(tab.to_s))
     end
   end
@@ -304,12 +302,7 @@ class AwardObject < DataFactory
       page.award_hierarchy_link.wait_until_present
       page.submit
 
-
       DEBUG.message 'submitted?'
-      DEBUG.pause 300
-
-
-
 
       # TODO: Code for intelligently handling the appearance of this (It's a screen about validation warnings)
       confirmation
@@ -439,24 +432,15 @@ class AwardObject < DataFactory
   end
 
   def set_lead_unit
-    lu_edit = on(Award).lead_unit_id.present?
-    randomize = @lead_unit_id=='::random::'
-    if lu_edit && randomize
-
-      DEBUG.message 'We don\'t want to be here'
-
+    if @lead_unit_id == '::random::'
       on(Award).lookup_lead_unit
-      on UnitLookup do |lk|
-        lk.search
-        lk.return_random
+      on UnitLookup do |lookup|
+        lookup.search
+        lookup.return_random
       end
-    elsif lu_edit && !randomize
-
-      DEBUG.message 'We wan\'t to be here'
-
-      on(Award).lead_unit_id.fit @lead_unit_id
+      @lead_unit_id = on(Award).lead_unit_id.value
     else
-      @lead_unit_id=on(Award).lead_unit_ro
+      on(Award).lead_unit_id.fit @lead_unit_id
     end
   end
 
@@ -468,7 +452,9 @@ class AwardObject < DataFactory
   end
 
   def navigate
-    visit @lookup_class do |page|
+    on(Header).central_admin
+    on(CentralAdmin).search_award
+    on AwardLookup do |page|
       page.award_id.set @id
       page.search
       # TODO: Remove this when document search issues are resolved

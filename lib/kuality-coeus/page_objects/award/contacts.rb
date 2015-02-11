@@ -17,6 +17,7 @@ class AwardContacts < KCAwards
   p_element(:project_role) { |name, b| b.key_personnel_table.row(text: /#{Regexp.escape(name)}/).select(name: /contactRoleCode/) }
   value(:key_personnel) { |b| b.key_personnel_table.hiddens(name: /award_person.identifier_\d+/).map { |hid| hid.parent.text.strip } }
 
+  value(:get_full_name) {|b| b.frm.div(id: 'per.fullName.div').text.strip }
   # Person Details
 
   # Unit Details
@@ -34,6 +35,7 @@ class AwardContacts < KCAwards
   element(:lead_unit_radio_button) { |b| b.frm.radio(name: 'selectedLeadUnit') }
   p_element(:lead_unit_radio) { |name, unit, b| b.person_unit_row(name, unit).radio(name: 'selectedLeadUnit') }
   p_action(:delete_unit) { |name, unit, b| b.person_unit_row(name, unit).button(name: /methodToCall.deleteProjectPersonUnit/).click }
+  p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /methodToCall.deleteProjectPersonUnit/) }
 
   action(:unit_name) { |name, unit, b| b.person_unit_row(name, unit)[2].text.strip }
 

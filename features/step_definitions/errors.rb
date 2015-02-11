@@ -8,7 +8,7 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the credit split is not a valid percentage' => 'Credit Split is not a valid percentage.',
             'the Award has no PI' => 'There is no Principal Investigator selected. Please enter a Principal Investigator',
             'only one PI is allowed in the Contacts' => 'Only one Principal Investigator is allowed',
-            'the IP can not be added because it\'s not fully approved' => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
+            "the IP can not be added because it's not fully approved" => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
             'the approval should occur later than the application' => 'Approval Date should be the same or later than Application Date.',
             'not to select other roles alongside aggregator' => 'Do not select other roles when Aggregator is selected.',
             'a revision type must be selected' => 'S2S Revision Type must be selected when Proposal Type is Revision.',
@@ -17,15 +17,15 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the prior award number is required'=> %|require the sponsor's prior award number in the "sponsor proposal number."|,
             'a valid sponsor is required' => 'Sponsor: A valid Sponsor (Sponsor) must be selected.',
             'the Account ID may only contain letters or numbers' => 'The Account ID (Account ID) may only consist of letters or digits.',
-            'the Award\'s title contains invalid characters' => 'The Award Title (Title) may only consist of visible characters, spaces, or tabs.',
+            "the Award's title contains invalid characters" => 'The Award Title (Title) may only consist of visible characters, spaces, or tabs.',
             'the anticipated amount must be equal to or more than obligated' => 'The Anticipated Amount must be greater than or equal to Obligated Amount.',
             'the project period has a typo' => 'Project Period is not formatted correctly.',
             'cost share type is required' => 'Cost Share Type Code is a required field.',
             'the fiscal year is not valid' => 'not found is not a valid date.',
-            'the approved equipment can\'t have duplicates' => 'Approved Equipment Vendor, Model and Item must be unique',
+            "the approved equipment can't have duplicates" => 'Approved Equipment Vendor, Model and Item must be unique',
             'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.',
             'the start date must be before the end' => 'Project Start Date: The Project Start Date (Start Dt) must be before the Project End Date (End Dt).',
-            'the project title can\'t contain special characters' => 'Project Title: Can be any character',
+            "the project title can't contain special characters" => 'Project Title: Can be any character',
             'the IP ID can only have alphanumeric characters' => 'Original Institutional Proposal ID: Can only be alphanumeric characters ',
             'the Award ID is invalid' => 'Award ID: Award ID is invalid.',
             'the deadline time is not valid' => 'Sponsor Deadline Time: DeadlineTime is invalid.',
@@ -50,13 +50,13 @@ end
 Then /^an error should say the credit split does not equal 100%$/ do
   on(DataValidation).validation_errors_and_warnings.should include "The Investigators #{@split_type} Credit Split does not equal 100%."
 end
-
+#This step validate errors for when data validation is turned on.
 Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
   errors = { 'there are duplicate organizations' => 'There is a duplicate organization name.',
              'there is no principal investigator' => 'There is no Principal Investigator selected. Please enter a Principal Investigator.',
              'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.',
              'the sponsor deadline has passed' => 'Sponsor deadline date is in the past, relative to the current date.',
-             'a project start date is required for the T&M Document' => 'Project Start Date is required when creating a Time &amp; Money document',
+             'a project start date is required for the T&M Document' => 'Project Start Date is required when creating a Time & Money document',
              'there are duplicate cost share lines' => 'A duplicate row has been entered.',
              'the subaward\'s amount can\'t be zero' => 'Approved Subaward amount must be greater than zero.'
   }
@@ -64,10 +64,13 @@ Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
   on(DataValidation).validation_errors_and_warnings.should include errors[error]
 end
 
-Then /^errors about the missing Award terms are shown$/ do
-  ['Equipment Approval', 'Invention','Prior Approval','Property','Publication',
+Then /^errors about the missing Award terms are shown for data validation$/ do
+  errors = ['Equipment Approval', 'Invention','Prior Approval','Property','Publication',
   'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions']
-  .each { |term| expect($current_page.errors).to include("There must be at least one #{term} Terms defined.") }
+  errors.collect! {|term| "There must be at least one #{term} Terms defined." }
+  errors.each do |err|
+    expect(on(DataValidation).validation_errors_and_warnings).to include err
+  end
 end
 
 Then /^errors about the missing Sponsor terms are shown$/ do
@@ -120,7 +123,7 @@ Then /^the Award should throw an error saying (.*)/ do |error|
     'they are already in the Award Personnel' => "#{@award.key_personnel.principal_investigator.full_name} is already added to the Award Project Personnel",
     'the Award\'s PI requires at least one unit' => "At least one Unit is required for #{@award.key_personnel.principal_investigator.full_name}"
   }
-  $current_page.errors.should include errors[error]
+  expect($current_page.errors).to include errors[error]
 end
 
 #-----------------------#

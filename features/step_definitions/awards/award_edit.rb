@@ -36,6 +36,7 @@ When /^data validation is turned on for the Award$/ do
   on AwardActions do |page|
     page.expand_all
     page.turn_on_validation
+    page.save
   end
 end
 

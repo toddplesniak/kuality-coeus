@@ -1,5 +1,6 @@
 Then /^The Award PI's Lead Unit is (.*)$/ do |unit|
-  @award.principal_investigator.lead_unit.should==unit
+  on(Award).award
+  expect(on(Award).lead_unit_ro).to include unit
 end
 
 Then /^the Award's Lead Unit is changed to (.*)$/ do |unit|

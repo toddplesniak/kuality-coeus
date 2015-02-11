@@ -2,6 +2,7 @@
 class BasePage < PageFactory
 
   action(:use_new_tab) { |b| b.windows.last.use }
+
   action(:return_to_portal_window) { |b| b.portal_window.use }
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
@@ -255,7 +256,11 @@ class BasePage < PageFactory
     def validation_elements
       element(:validation_button) { |b| b.frm.button(name: 'methodToCall.activate') }
       action(:show_data_validation) { |b| b.frm.button(id: 'tab-DataValidation-imageToggle').click; b.validation_button.wait_until_present }
-      action(:turn_on_validation) { |b| b.validation_button.click; b.special_review_button.wait_until_present }
+      action(:turn_on_validation) { |b| b.validation_button.click; b.turn_off_validation_button.wait_until_present }
+
+      element(:turn_off_validation_button) { |b| b.frm.button(name: 'methodToCall.deactivate') }
+      action(:turn_off_validation) { |b| b.turn_off_validation_button.click; b.turn_off_validation_button.wait_while_present}
+
       element(:validation_errors_and_warnings) { |b| errs = []; b.validation_err_war_fields.each { |field| errs << onespace(field.html[/(?<=>).*(?=<)/]) }; errs }
       element(:validation_err_war_fields) { |b| b.frm.tds(width: '94%') }
     end
@@ -311,9 +316,10 @@ class BasePage < PageFactory
 
     def black_buttons(links={})
       links.each_pair do |name, title|
+        name_create = 'create_'+name.to_s
         name_search = 'search_'+name.to_s
         #create button (+) , example: :proposal_log
-        action(name) { |b| b.p(text: title).parent.link(class: 'uif-actionLink uif-boxLayoutHorizontalItem icon-plus icon-plus').click; b.loading }
+        action(name_create.to_sym) { |b| b.p(text: title).parent.link(class: 'uif-actionLink uif-boxLayoutHorizontalItem icon-plus icon-plus').click; b.loading }
         #search button, example: :search_proposal_log
         action(name_search.to_sym) { |b| b.p(text: title).parent.link(class: 'uif-actionLink uif-boxLayoutHorizontalItem icon-search icon-search').click; b.loading }
       end

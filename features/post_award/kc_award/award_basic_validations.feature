@@ -55,7 +55,7 @@ Feature: Basic Award Validations
     And   adds a $0.00 Subaward to the Award
     When  data validation is turned on for the Award
     Then  an error is shown that says the subaward's amount can't be zero
-
+  @KRACOEUS-8776
   Scenario: Missing required field in F&A Rate entry
     Given the Award Modifier creates an Award
     When  the Award Modifier adds an F&A rate to the Award but misses a required field
@@ -64,8 +64,8 @@ Feature: Basic Award Validations
   Scenario: Terms are not entered in the Award
     Given the Award Modifier creates an Award
     When  data validation is turned on for the Award
-    Then  errors about the missing Award terms are shown
-
+    Then  errors about the missing Award terms are shown for data validation
+  @KRACOEUS-8776
   Scenario: Contact's Credit Splits not valid
     Given the Award Modifier creates an Award
     And   adds a PI to the Award

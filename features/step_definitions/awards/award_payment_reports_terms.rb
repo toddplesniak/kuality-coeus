@@ -31,6 +31,7 @@ end
 
 And /adds an item of approved equipment to the Award$/ do
   @award.add_approved_equipment
+  on(PaymentReportsTerms).save
 end
 
 And /adds a duplicate item of approved equipment to the Award$/ do

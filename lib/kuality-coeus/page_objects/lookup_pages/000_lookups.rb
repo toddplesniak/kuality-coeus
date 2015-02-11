@@ -28,6 +28,8 @@ class Lookups < BasePage
       p_action(:select_item) { |match, p| p.item_row(match).link(text: 'select').click }
       action(:return_random) { |b| b.return_value_links.to_a.sample.click }
       element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
+      #used by Award for adding a key person wher user name is important
+      action(:select_random_with_name) { |b| b.results_table.tbody.trs.to_a.sample.link(title: /^with KC Person KcPerson/).click; b.use_new_tab }
 
       p_value(:docs_w_status) { |status, b| array = []; (b.results_table.rows.find_all{|row| row[3].text==status}).each { |row| array << row[0].text }; array }
 
@@ -51,7 +53,7 @@ class Lookups < BasePage
     def dialog_ui
       action(:search) { |b| b.frm.button(id: 'ufuknop').click; b.results_table.wait_until_present }
       element(:results_table) { |b| b.frm.table(id: 'uLookupResults_layout') }
-      action(:select_random) { |b| b.select_links.to_a.sample.click; b.loading; b.header.wait_while_present }
+      action(:select_random) { |b| b.select_links.to_a.sample.click; b.loading }
       element(:select_links) { |b| b.results_table.links(text: 'select') }
     end
 

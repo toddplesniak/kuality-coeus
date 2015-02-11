@@ -217,13 +217,13 @@ class ProposalDevelopmentObject < DataFactory
     view 'Summary/Submit'
     case(type)
       when :to_sponsor
-
-
-        # FIXME! This needs to be removed when bug is fixed... https://jira.kuali.org/browse/KRAFDBCK-12041
-        on(Header).researcher
-        on(ResearcherMenu).search_proposals
+        on(Header).doc_search
+        on DocumentSearch do |lookup|
+          lookup.document_id.fit @document_id
+          lookup.search
+          lookup.open_result @document_id
+        end
         view 'Summary/Submit'
-
         on(ProposalSummary).submit_to_sponsor
         on SendNotifications do |page|
           @institutional_proposal_number=page.institutional_proposal_number
@@ -332,17 +332,11 @@ class ProposalDevelopmentObject < DataFactory
         # TODO: Need this to be more robust. What if you're in the 5.2 UI? This can't
         # navigate from there...
         visit Landing
-        on(Header).researcher
-        on(ResearcherMenu).search_proposals
-        on DevelopmentProposalLookup do |search|
-          search.proposal_number.set @proposal_number
-          search.search
-          # FIXME...
-          begin
-            search.edit_proposal @proposal_number
-          rescue
-            search.view_proposal @proposal_number
-          end
+        on(Header).doc_search
+        on DocumentSearch do |lookup|
+          lookup.document_id.fit @document_id
+          lookup.search
+          lookup.open_result(@document_id)
         end
       end
     }
@@ -381,8 +375,8 @@ class ProposalDevelopmentObject < DataFactory
         fill_out look, :sponsor_type_code
         look.search
         look.results_table.wait_until_present
-        look.page_links.to_a.sample.click if look.page_links.size > 1
         look.select_random
+        look.loading
       end
       @sponsor_id=on(CreateProposal).sponsor_code.value
     else

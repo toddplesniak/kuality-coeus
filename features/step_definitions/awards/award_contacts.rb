@@ -5,7 +5,7 @@ Given /adds? a PI to the Award$/ do
 end
 
 And /^another Principal Investigator is added to the Award$/ do
-  @award.add_pi
+  @award.add_pi get_units: 'no'
 end
 
 When /^I? ?give the Award valid credit splits$/ do
@@ -27,6 +27,7 @@ end
 
 When /^a Co-Investigator is added to the Award$/ do
   @award.add_key_person project_role: 'Co-Investigator', key_person_role: nil
+  on(Award).save
 end
 
 When /^I? ?add the (.*) unit to the Award's PI$/ do |unit|
@@ -46,12 +47,16 @@ When /^I? ?set (.*) as the lead unit for the Award's PI$/ do |unit|
 end
 
 When /^the Award\'s PI is added again with a different role$/ do
+  on(Award).save
   pi = @award.principal_investigator
   @award.add_key_person first_name: pi.first_name, last_name: pi.last_name
 end
 
 When /^the Award's Principal Investigator has no units$/ do
+  on(AwardContacts).expand_all
+
   @award.principal_investigator.units.each do |unit|
     @award.principal_investigator.delete_unit(unit[:number])
+    on(AwardContacts).save
   end
 end
