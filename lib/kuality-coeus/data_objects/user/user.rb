@@ -166,6 +166,7 @@ class UserObject < DataFactory
                             number:  '602-840-7300',
                             default: :set }],
         rolez:            [{name: 'unassigned', qualifiers: [{:unit=>'000001'}]}],
+        groups:           collection('UserGroups')
     }
     defaults.merge!(opts)
 
@@ -266,14 +267,13 @@ class UserObject < DataFactory
       @principal_id = add.principal_id
       add.blanket_approve
     end
-
     unless extended_attributes.compact.length==0
       visit(SystemAdmin).person_extended_attributes
       on(PersonExtendedAttributesLookup).create
       on PersonExtendedAttributes do |page|
         page.expand_all
         fill_out page, :description, :primary_title, :directory_title, :citizenship_type,
-                 :era_commons_user_name, :graduate_student_count, :billing_element,
+                 :era_commons_user_name, #:graduate_student_count, :billing_element,
                  :principal_id, :directory_department
         page.blanket_approve
       end
@@ -316,7 +316,7 @@ class UserObject < DataFactory
   def sign_in
     unless $current_user==self
       $current_user.sign_out if $current_user
-      visit login_class do |log_in|
+      visit Login do |log_in|
         log_in.username.set @user_name
         log_in.login
       end
@@ -420,10 +420,6 @@ class UserObject < DataFactory
       look.edit_person @user_name
     end
     on(Person).expand_all
-  end
-
-  def login_class
-    $cas ? CASLogin : Login
   end
 
 end # UserObject

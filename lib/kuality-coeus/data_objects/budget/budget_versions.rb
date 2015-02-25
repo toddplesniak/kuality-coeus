@@ -10,6 +10,7 @@ class BudgetVersionsObject < DataFactory
   attr_accessor :name
 
   def_delegator :@budget_periods, :period
+  def_delegator :@personnel, :person
 
   def initialize(browser, opts={})
     @browser = browser
@@ -167,7 +168,6 @@ class BudgetVersionsObject < DataFactory
     @budget_periods.clear
     on PeriodsAndTotals do |page|
       1.upto(page.period_count) do |number|
-        page.edit_period number
         period = make BudgetPeriodObject, open_budget: @open_budget,
                       start_date: page.start_date_of(number).value,
                       end_date: page.end_date_of(number).value,
@@ -179,7 +179,6 @@ class BudgetVersionsObject < DataFactory
                       cost_limit: page.cost_limit_of(number).value.groom,
                       direct_cost_limit: page.direct_cost_limit_of(number).value.groom
         @budget_periods << period
-        page.save_period number
       end
     end
     @budget_periods.number!

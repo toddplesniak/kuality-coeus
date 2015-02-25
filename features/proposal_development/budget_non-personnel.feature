@@ -1,15 +1,11 @@
-Feature: Budget Non-Personnel Costs
+Feature: Adding Budget Non-Personnel Costs
 
-  Description TBW
+  As a researcher, I want to be able to add non-personnel expenses to a period of my budget.
 
   Background:
-    * a User exists with the role: 'Proposal Creator'
+    * Users exist with the following roles: Proposal Creator
+    * the Proposal Creator creates a 2-year project Proposal
+    * creates a Budget Version for the Proposal
 
-  Scenario: Unapplying rates for a non-personnel cost
-    Given the Proposal Creator creates a Proposal with a 'Research' activity type
-    And   creates a Budget Version for the Proposal
-    And   adds a non-personnel cost to the Budget period with these settings:
-          | Category Type    | Equipment   |
-          | Object Code Name | Reactor Use |
-    When  the lab allocation rates for the non-personnel cost are unapplied
-    Then  the Period's direct cost is the same as the assigned non-personnel's total base cost
+  Scenario: Add non-personnel to period 1 without cost-sharing or inflation
+    Given the Proposal Creator adds a non-personnel cost to the first Budget period
