@@ -31,8 +31,8 @@ unassigneduser: # AKA: "Principal Name
     - :name: unassigned
       :qualifiers:
         - :unit: '000001'
-spunky: # AKA: "Principal Name
-  :user_name:        spunky
+poolej: # AKA: "Principal Name
+  :user_name:        poolej
   :description:      Basic Prop Dev Aggregator With Additional Helper Roles
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
@@ -89,8 +89,8 @@ spunky: # AKA: "Principal Name
     - :name: Budget Creator
       :qualifiers:
         - :unit: '000001'
-junky:  # AKA: "Principal Name"
-  :user_name:        junky
+cleganeg:  # AKA: "Principal Name"
+  :user_name:        cleganeg
   :description:      OSP Approver User Who Can Only Approve A Proposal
   :affiliation_type: Faculty
   :campus_code:      'UN - UNIVERSITY'
@@ -137,8 +137,8 @@ junky:  # AKA: "Principal Name"
     - :name: OSPApprover
       :qualifiers:
         - :unit:
-flunky:  # AKA: "Principal Name"
-  :user_name:        flunky
+starka:  # AKA: "Principal Name"
+  :user_name:        starka
   :description:      Proposal Creator User
   :affiliation_type: Other Academic Group
   :campus_code:      'UN - UNIVERSITY'
@@ -183,8 +183,8 @@ flunky:  # AKA: "Principal Name"
     - :name: Proposal Creator
       :qualifiers:
         - :unit: '000001'
-clunky:  # AKA: "Principal Name"
-  :user_name:        clunky
+dmartell:  # AKA: "Principal Name"
+  :user_name:        dmartell
   :description:      Proposal Aggregator User
   :affiliation_type: Other Academic Group
   :campus_code:      'UN - UNIVERSITY'
@@ -226,18 +226,18 @@ clunky:  # AKA: "Principal Name"
     - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-munky:  # AKA: "Principal Name"
-  :user_name:        munky
+swarren:  # AKA: "Principal Name"
+  :user_name:        swarren
   :description:      AOR User Capable Of Submitting To Grants.Gov
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      splatt
+  :employee_id:      swarren
   :employee_status:  Active
   :employee_type:    Professional
   :base_salary:      123456.78
   :primary_department_code: '000001'
-  :first_name:       Sylvia
-  :last_name:        Platt
+  :first_name:       Sean
+  :last_name:        Warren
   :primary_title:    OSP Superuser
   :directory_title:  OSP Superuser
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
@@ -281,8 +281,8 @@ munky:  # AKA: "Principal Name"
     - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-spelunky: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in any proposal's workflow.
-  :user_name:        spelunky
+lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in any proposal's workflow.
+  :user_name:        lannister
   :description:      OSP Administrator
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
