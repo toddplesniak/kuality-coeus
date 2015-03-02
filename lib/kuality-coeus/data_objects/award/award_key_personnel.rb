@@ -28,7 +28,7 @@ class AwardKeyPersonObject < DataFactory
     on(AwardContacts).expand_all
     if @type == 'employee'
       on AwardContacts do |page|
-        page.employee_search if @type == 'employee'
+        page.employee_search
       end
 
       if @last_name == nil && @first_name == nil
@@ -56,9 +56,8 @@ class AwardKeyPersonObject < DataFactory
       end
 
     else #Non-employee
-
       on AwardContacts do |page|
-        page.non_employee_search if @type == 'non_employee'
+        page.non_employee_search
         #Non-Organizational Address Book Lookup
       end
       on NonOrgAddressBookLookup do |lookup|
@@ -76,7 +75,7 @@ class AwardKeyPersonObject < DataFactory
 
     on AwardContacts do |page|
       page.kp_project_role.select @project_role
-      page.key_person_role.fit @key_person_role if page.kp_project_role.selected_options.first.text == 'Key Person'
+      page.key_person_role.fit @key_person_role if @project_role == 'Key Person'
 
       page.add_key_person
       page.expand_all
@@ -143,6 +142,34 @@ class AwardKeyPersonObject < DataFactory
 
   def update_from_parent(id)
     @document_id=id
+  end
+
+  def update_splits opts={}
+    view 'Contacts'
+    on AwardContacts do |page|
+      page.expand_all
+      edit_item_fields opts, @full_name, page, :recognition, :responsibility, :space, :financial
+      page.save
+    end
+    update_options(opts)
+  end
+
+  def view(tab)
+    open_document
+    unless on(Award).send(StringFactory.damballa("#{tab}_element")).parent.class_name=~/tabcurrent$/
+      on(Award).send(StringFactory.damballa(tab.to_s))
+    end
+  end
+
+
+  def update_unit_splits(unit_number, opts)
+    on CombinedCreditSplit do |page|
+      opts.each do |type, value|
+        page.send("unit_#{type}", @full_name, unit_number).fit value
+      end
+      page.save
+    end
+    # @units.find{ |u| u[:number]==unit_number}.merge!(opts)
   end
 
   # ===========

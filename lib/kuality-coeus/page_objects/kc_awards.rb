@@ -31,6 +31,7 @@ class KCAwards < BasePage
         tag=term.gsub(/([\s\/])/,'')
         element("#{name}_code".to_sym) { |b| b.frm.text_field(name: "sponsorTermFormHelper.newSponsorTerms[#{index}].sponsorTermCode") }
         action("add_#{name}_term") { |b| b.frm.button(name: /addAwardSponsorTerm.+anchorAwardTerms:#{tag}Terms/).click; b.loading }
+        action("search_#{name}_term") { |b|b.frm.button(name: /methodToCall.performLookup.+anchorAwardTerms:#{term.gsub(' ','')}/).click; b.loading }
       end
     end
     

@@ -1,5 +1,5 @@
 # coding: UTF-8
-class AwardObject < DataFactory
+class OLDAwardObject < DataFactory
 
   include Navigation, DateFactory, StringFactory, DocumentUtilities
 
@@ -238,8 +238,8 @@ class AwardObject < DataFactory
   def add_payment_and_invoice opts={}
     raise "You already created a Payment & Invoice in your scenario.\nYou want to interact with that item directly, now." unless @payment_and_invoice.nil?
     view :payment_reports__terms
-    @payment_and_invoice = make PaymentInvoiceObject, opts
-    @payment_and_invoice.create
+    @payment_and_invoices = make PaymentInvoiceObject, opts
+    @payment_and_invoices.create
   end
 
   def add_report opts={}
@@ -250,7 +250,7 @@ class AwardObject < DataFactory
   end
 
   def add_terms opts={}
-    raise "You already created terms in your scenario.\nYou want to interact with that object directly, now." unless @terms.nil?
+    # raise "You already created terms in your scenario.\nYou want to interact with that object directly, now." unless @terms.nil?
     view :payment_reports__terms
     @terms = make AwardTermsObject, opts
     @terms.create
@@ -270,7 +270,7 @@ class AwardObject < DataFactory
         search_key: @search_key
     }
     if @custom_data.nil?
-      @custom_data = make CustomDataObject, defaults.merge(opts)
+      @custom_data = make AwardCustomDataObject, defaults.merge(opts)
       @custom_data.create
     end
   end
@@ -301,8 +301,6 @@ class AwardObject < DataFactory
       page.expand_all
       page.award_hierarchy_link.wait_until_present
       page.submit
-
-      DEBUG.message 'submitted?'
 
       # TODO: Code for intelligently handling the appearance of this (It's a screen about validation warnings)
       confirmation
@@ -412,6 +410,28 @@ class AwardObject < DataFactory
     end
   end
 
+
+  def set_valid_credit_splits_OLD
+    split = (100.0/@key_personnel.with_units.size).round(2)
+    splits = {}
+    CREDIT_SPLITS.keys.each{ |cs| splits.store(cs, split) }
+
+    DEBUG.message "with units array is...#{@key_personnel.with_units.inspect}..."
+      @key_personnel.with_units.each do |person|
+        person.update_splits splits
+        units_split = (100.0/person.units.size).round(2)
+        unit_splits = {}
+        CREDIT_SPLITS.keys.each { |type| unit_splits.store(type, units_split) }
+        DEBUG.message "the credit split keys are #{CREDIT_SPLITS}"
+        person.units.each do |unit|
+          DEBUG.message "00000 this is the unit that is passed #{unit[:number]}"
+          correct_unit = on(CombinedCreditSplit).find_correct_unit_name(unit[:number])
+          person.update_unit_splits(correct_unit, unit_splits)
+        end
+      end
+  end
+
+
   # ========
   private
   # ========
@@ -434,10 +454,12 @@ class AwardObject < DataFactory
   def set_lead_unit
     if @lead_unit_id == '::random::'
       on(Award).lookup_lead_unit
+      DEBUG.pause(13)
       on UnitLookup do |lookup|
         lookup.search
         lookup.return_random
       end
+      # DEBUG.pause(33)
       @lead_unit_id = on(Award).lead_unit_id.value
     else
       on(Award).lead_unit_id.fit @lead_unit_id

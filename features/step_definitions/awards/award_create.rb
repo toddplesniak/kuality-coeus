@@ -10,12 +10,12 @@ When /^the (.*) creates an Award$/ do |role_name|
   # Award's unit should be...
   lead_unit = $current_user.roles.name($current_user.role).qualifiers[0][:unit]
   raise 'Unable to determine a lead unit for the selected user. Please debug your scenario.' if lead_unit.nil?
-  @award = create AwardObject, lead_unit: lead_unit
+  @award = create AwardObject, lead_unit_id: lead_unit
 end
 
 Given /^the Award Modifier creates? an Award with (.*) as the Lead Unit$/ do |lead_unit|
   steps '* I log in with the Award Modifier user'
-  @award = create AwardObject, lead_unit: lead_unit
+  @award = create AwardObject, lead_unit_id: lead_unit
 end
 
 #----------------------#
@@ -52,10 +52,10 @@ end
 
 Given /^the Award Modifier creates an Award with an obligated amount and blank project start date$/ do
   steps '* I log in with the Award Modifier user'
-  @award = create AwardObject, project_start_date: ''
+  @award = create AwardObject, project_start_date: '', obligated_amount: '1000.00'
 end
 
 When /^the Award Modifier creates an Award with a project start date later than the obligation start date$/ do
   steps '* I log in with the Award Modifier user'
-  @award = create AwardObject, project_start_date: next_week[:date_w_slashes]
+  @award = create AwardObject, project_start_date: next_week[:date_w_slashes], obligation_start_date: tomorrow[:date_w_slashes]
 end

@@ -256,10 +256,10 @@ class BasePage < PageFactory
     def validation_elements
       element(:validation_button) { |b| b.frm.button(name: 'methodToCall.activate') }
       action(:show_data_validation) { |b| b.frm.button(id: 'tab-DataValidation-imageToggle').click; b.validation_button.wait_until_present }
-      action(:turn_on_validation) { |b| b.validation_button.click; b.turn_off_validation_button.wait_until_present }
+      action(:turn_on_validation) { |b| b.validation_button.click; b.loading; b.turn_off_validation_button.wait_until_present }
 
       element(:turn_off_validation_button) { |b| b.frm.button(name: 'methodToCall.deactivate') }
-      action(:turn_off_validation) { |b| b.turn_off_validation_button.click; b.turn_off_validation_button.wait_while_present}
+      action(:turn_off_validation) { |b| b.turn_off_validation_button.click; b.turn_off_validation_button.wait_while_present; b.loading }
 
       element(:validation_errors_and_warnings) { |b| errs = []; b.validation_err_war_fields.each { |field| errs << onespace(field.html[/(?<=>).*(?=<)/]) }; errs }
       element(:validation_err_war_fields) { |b| b.frm.tds(width: '94%') }

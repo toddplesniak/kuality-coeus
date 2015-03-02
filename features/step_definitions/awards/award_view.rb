@@ -29,7 +29,6 @@ end
 Then /^the new Award's transaction type is 'New'$/ do
   @award_2.view :award
   on(Award).transaction_type.selected?('New').should be_true
-  #DEBUG expect(on(Award).transaction_type.selected_options[0].text).to include('New')
 end
 
 Then /^the child Award's project end date should be the same as the parent, and read-only$/ do
@@ -208,8 +207,8 @@ end
 Then /^the default start and end dates are based on the F&A rate's fiscal year$/ do
   fna = @award.fa_rates[0]
   f_y = fna.fiscal_year.to_i
-  fna.start_date.should=="07/01/#{f_y-1}"
-  fna.end_date.should=="06/30/#{f_y}"
+  expect(fna.start_date).to eq "07/01/#{f_y-1}"
+  expect(fna.end_date).to eq "06/30/#{f_y}"
 end
 
 And /^returning to the Award goes to the new, pending version$/ do

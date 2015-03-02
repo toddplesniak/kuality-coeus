@@ -34,7 +34,9 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the protocol number is required for human subjects' => 'Protocol Number is a required field for Human Subjects/Approved.',
             'human subject cannot have exemptions' => 'Cannot select Exemption # for Human Subjects/Approved',
             'organization id is required' => 'Organization Id is a required field.',
-            'organization type is required' => 'Organization Type is a required field.'
+            'organization type is required' => 'Organization Type is a required field.',
+            'a project start date is required for the T&M Document' => 'Project Start Date is required when creating a Time & Money document'
+
   }
   expect($current_page.errors).to include errors[error]
 end
@@ -61,7 +63,7 @@ Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
              'the subaward\'s amount can\'t be zero' => 'Approved Subaward amount must be greater than zero.'
   }
 
-  on(DataValidation).validation_errors_and_warnings.should include errors[error]
+  expect(on(DataValidation).validation_errors_and_warnings).to include errors[error]
 end
 
 Then /^errors about the missing Award terms are shown for data validation$/ do
@@ -71,6 +73,11 @@ Then /^errors about the missing Award terms are shown for data validation$/ do
   errors.each do |err|
     expect(on(DataValidation).validation_errors_and_warnings).to include err
   end
+end
+
+Then /^errors about the obligation amount and obligation start date are shown$/ do
+['The Anticipated Amount must be greater than or equal to Obligated Amount.', 'Obligation Start Date is required when Obligated Amount is greater than zero.', 'Obligation End Date is required when Obligated Amount is greater than zero.']
+.each { |term| expect($current_page.errors).to include term}
 end
 
 Then /^errors about the missing Sponsor terms are shown$/ do
@@ -101,11 +108,12 @@ Then /^an error message says (the date must be in a valid format|the start date 
 end
 
 Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
-  @award.view :contacts
+  @award.view_tab :contacts
   on AwardContacts do |page|
+    page.expand_all
     DocumentUtilities::CREDIT_SPLITS.values.each do |type|
-      page.errors.should include "The Project Personnel #{type} Credit Split does not equal 100%"
-      page.errors.should include "The Unit #{type} Credit Split for #{@award.key_personnel.principal_investigator.full_name} does not equal 100%"
+      expect(page.errors).to include "The Project Personnel #{type} Credit Split does not equal 100%"
+      expect(page.errors).to include "The Unit #{type} Credit Split for #{@award.pi_full_name} does not equal 100%"
     end
   end
 end
@@ -115,13 +123,13 @@ end
 #-----------------------#
 
 Then /^the Award should show an error saying the project start date can't be later than the obligation date$/ do
-  $current_page.errors.should include "Award #{@award.id} Project Start Date must be before or equal to Obligation Start Date."
+  expect($current_page.errors).to include "Award #{@award.id} Project Start Date must be before or equal to Obligation Start Date."
 end
 
 Then /^the Award should throw an error saying (.*)/ do |error|
   errors = {
-    'they are already in the Award Personnel' => "#{@award.key_personnel.principal_investigator.full_name} is already added to the Award Project Personnel",
-    'the Award\'s PI requires at least one unit' => "At least one Unit is required for #{@award.key_personnel.principal_investigator.full_name}"
+    'they are already in the Award Personnel' => "#{@award.key_personnel[:principal_investigator]} is already added to the Award Project Personnel",
+    'the Award\'s PI requires at least one unit' => "At least one Unit is required for #{@award.key_personnel[:principal_investigator]}"
   }
   expect($current_page.errors).to include errors[error]
 end
