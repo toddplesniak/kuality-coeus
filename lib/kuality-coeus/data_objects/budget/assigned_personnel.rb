@@ -85,10 +85,6 @@ class AssignedPerson < DataFactory
     days_in_start_month - days_prior
   end
 
-  def end_month_days
-    end_d.day
-  end
-
   def days_in_start_month
     days_in_month(start.year, start.month)
   end
@@ -102,7 +98,7 @@ class AssignedPerson < DataFactory
   end
 
   def end_month_full?
-    end_month_days == days_in_end_month
+    end_d.day == days_in_end_month
   end
 
   def start_and_end_month_same?

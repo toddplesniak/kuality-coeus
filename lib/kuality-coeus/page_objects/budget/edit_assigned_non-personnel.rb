@@ -14,7 +14,7 @@ class EditAssignedNonPersonnel < BasePage
   element(:total_base_cost) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.budgetLineItem.lineItemCost') }
   
   element(:apply_inflation) { |b| b.checkbox(name: 'addProjectBudgetLineItemHelper.budgetLineItem.applyInRateFlag') }
-  element(:submit_cost_sharing) { |b| b.checkbox(name: 'addProjectBudgetLineItemHelper.budgetLineItem.applyInRateFlag') }
+  element(:submit_cost_sharing) { |b| b.checkbox(name: 'addProjectBudgetLineItemHelper.budgetLineItem.submitCostSharingFlag') }
   element(:on_campus) { |b| b.checkbox(name: 'addProjectBudgetLineItemHelper.budgetLineItem.onOffCampusFlag') }
 
   # Cost Sharing

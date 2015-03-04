@@ -38,6 +38,15 @@ module Utilities
   end
   module_function :datify
 
+  def difference_in_months(start, finish)
+    s = datify(start)
+    f = datify(finish)
+    raise 'First date must be earlier than second.' if s > f
+    first_full = s.day == 1 ? s : s.next_month
+    last_full_month = f.day == days_in_month(f.year, f.month) ? f.month+1 : f.month
+    12*(f.year-first_full.year) + (last_full_month - first_full.month)
+  end
+
   private
 
   def snakify(item)
