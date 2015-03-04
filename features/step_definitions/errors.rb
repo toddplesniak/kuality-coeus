@@ -5,7 +5,7 @@
 Then /^an error should appear that says (.*)$/ do |error|
   errors = {'to select a valid unit' => 'Please select a valid Unit.',
             'a key person role is required' => 'Key Person\'s role will be: Required',
-            'the credit split is not a valid percentage' => 'Credit Split is not a valid percentage.',
+            'the credit split is not a valid percentage' => 'Must be a non-negative fixed point number, with no more than 5 total digits and 2 digits to the right of the decimal point.',
             'the Award has no PI' => 'There is no Principal Investigator selected. Please enter a Principal Investigator',
             'only one PI is allowed in the Contacts' => 'Only one Principal Investigator is allowed',
             "the IP can not be added because it's not fully approved" => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
@@ -46,7 +46,7 @@ Then /^an error requiring at least one unit for the co-investigator is shown$/ d
 end
 
 Then /^an error about un-certified personnel is shown$/ do
-  on(DataValidation).errors.should include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].first_name} #{@proposal.key_personnel[0].last_name}.|
+  on(DataValidation).validation_errors_and_warnings.should include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].first_name} #{@proposal.key_personnel[0].last_name}.|
 end
 
 Then /^an error should say the credit split does not equal 100%$/ do
@@ -202,7 +202,7 @@ Then /^there are no errors on the page$/ do
   $current_page.errors.size.should==0
 end
 
-And /^there are no data validation errors or warnings$/ do
+And /^there are no data validation errors or warnings for the Proposal$/ do
   on(DataValidation).errors_list.should_not be_present
   expect($current_page.errors.size).to equal(0)
 end

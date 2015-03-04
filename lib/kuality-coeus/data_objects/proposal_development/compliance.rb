@@ -26,7 +26,7 @@ class ComplianceObject < DataFactory
     view
     on(Compliance).add_compliance_entry
     on AddNewProtocol do |add|
-      fill_out add, :type, :approval_status, :protocol_number,
+      ordered_fill add, :type, :approval_status, :protocol_number,
                :application_date, :approval_date, :expiration_date
 
       # TODO: add.add_exemption_number.fit @exemption_number

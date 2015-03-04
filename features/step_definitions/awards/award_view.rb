@@ -29,6 +29,7 @@ end
 Then /^the new Award's transaction type is 'New'$/ do
   @award_2.view :award
   on(Award).transaction_type.selected?('New').should be_true
+  #DEBUG expect(on(Award).transaction_type.selected_options[0].text).to include('New')
 end
 
 Then /^the child Award's project end date should be the same as the parent, and read-only$/ do
@@ -44,8 +45,8 @@ end
 
 Then /^the anticipated and obligated amounts are zero$/ do
   on Award do |page|
-    page.anticipated_amount.value.should=='0.00'
-    page.obligated_amount.value.should=='0.00'
+    page.anticipated_amount_ro.should=='$0.00'
+    page.obligated_amount_ro.should=='$0.00'
   end
 end
 

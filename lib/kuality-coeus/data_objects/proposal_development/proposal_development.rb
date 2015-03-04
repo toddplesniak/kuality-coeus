@@ -11,8 +11,7 @@ class ProposalDevelopmentObject < DataFactory
               :personnel_attachments, :mail_by, :mail_type, :institutional_proposal_number, :nsf_science_code,
               :original_ip_id, :award_id
   def_delegators :@key_personnel, :principal_investigator, :co_investigator
-
-
+  
   def initialize(browser, opts={})
     @browser = browser
 
@@ -22,7 +21,8 @@ class ProposalDevelopmentObject < DataFactory
       activity_type:         '::random::',
       project_title:         random_multiline(11, 1, :string),
       sponsor_id:            '::random::',
-      sponsor_type_code:     '::random::',
+      # Commented out for CX... Maybe remove permanently from defaults?
+      #sponsor_type_code:     '::random::',
       nsf_science_code:      '::random::',
       project_start_date:    next_week[:date_w_slashes],
       project_end_date:      next_year[:date_w_slashes],
@@ -103,6 +103,7 @@ class ProposalDevelopmentObject < DataFactory
     @budget_versions.add merge_settings(opts)
   end
 
+  # Note: this is not currently a Proposal requirement in CX...
   def add_supplemental_info opts={}
     @supplemental_info = prep(SupplementalInfoObject, opts)
   end
@@ -166,8 +167,8 @@ class ProposalDevelopmentObject < DataFactory
                             first_name: person.first_name, last_name: person.last_name,
                             lead_unit: person.home_unit, role: person.role,
                             project_role: person.key_person_role, units: person.units,
-                            responsibility: person.responsibility, space: person.space,
-                            financial: person.financial, recognition: person.recognition,
+                            responsibility: person.responsibility,
+                            financial: person.financial,
                             document_id: doc_id, search_key: { institutional_proposal_number: doc_id },
                             lookup_class: InstitutionalProposalLookup, doc_header: 'KC Institutional Proposal'
       ip.project_personnel << project_person
@@ -176,7 +177,7 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def delete
-
+    #TODO
   end
 
   def recall(reason=random_alphanums)
@@ -194,7 +195,8 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def reject
-    # TODO - Coeus is buggy right now
+    view 'Summary/Submit'
+    on(ProposalSummary).reject
   end
 
   def close
@@ -208,6 +210,9 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def submit(type=:s)
+
+    DEBUG.pause 100
+
     types={
         s:            :submit,
         ba:           :blanket_approve,
@@ -215,6 +220,7 @@ class ProposalDevelopmentObject < DataFactory
         to_s2s: :submit_to_s2s
     }
     view 'Summary/Submit'
+
     case(type)
       when :to_sponsor
         on(Header).doc_search
@@ -236,6 +242,7 @@ class ProposalDevelopmentObject < DataFactory
           @status=page.document_status
         end
       else
+        view 'Summary/Submit'
         on(ProposalSummary).submit_for_review
         @status=on(NewDocumentHeader).document_status
     end
@@ -290,7 +297,7 @@ class ProposalDevelopmentObject < DataFactory
 
   alias :sponsor_code :sponsor_id
 
-  def copy_to_new_document(lead_unit, budget=:clear, budget_version=nil, attachments=:clear, questionnaire=:clear)
+  def copy(lead_unit, budget=:clear, budget_version=nil, attachments=:clear, questionnaire=:clear)
     view 'Proposal Details'
     on(NewDocumentHeader).copy
     on CopyToNewDocument do |page|
@@ -313,7 +320,7 @@ class ProposalDevelopmentObject < DataFactory
 
   def set_new_doc_number(new_doc_number)
     @document_id = new_doc_number
-
+    #TODO: What else goes here?
   end
 
   # =======
@@ -372,7 +379,8 @@ class ProposalDevelopmentObject < DataFactory
       on SponsorLookup do |look|
         # Necessary here because of how the HTML gets instantiated...
         look.sponsor_name.wait_until_present(10)
-        fill_out look, :sponsor_type_code
+        # Commented out for CX...
+        #fill_out look, :sponsor_type_code
         look.search
         look.results_table.wait_until_present
         look.select_random

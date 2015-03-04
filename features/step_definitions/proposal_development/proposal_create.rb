@@ -39,9 +39,8 @@ end
 When /^(the (.*) |)creates a Proposal while missing a required field$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text==''
   # Pick a field at random for the test...
-  required_field = [ 'Proposal Type', 'Activity Type', 'Project Title'#,
-       #'Sponsor Code',
-       #'Project Start Date', 'Project End Date'
+  required_field = [ 'Proposal Type', 'Activity Type',
+           'Project Title', 'Project Start Date', 'Project End Date'
           ].sample
   # Properly set the nil value depending on the field type...
   required_field=~/Type/ ? value='select' : value=''
@@ -165,11 +164,9 @@ end
 And /^the (.*) submits a new Proposal into routing$/ do |role_name|
   steps %{
     * the #{role_name} creates a Proposal
-    * completes the required supplemental info on the Proposal
     * adds a principal investigator to the Proposal
     * sets valid credit splits for the Proposal
-    * answers the Proposal's questionnaire
-    * the #{role_name} submits the Proposal into routing
+    * submits the Proposal into routing
 }
 end
 
@@ -177,9 +174,8 @@ And /^(the (.*) |)completes the remaining required actions for an S2S submission
   steps %{ * I log in with the #{role_name} user } unless text==''
   steps %q{
     * sets valid credit splits for the Proposal
-    * add and mark complete all the required attachments
-    * create a final and complete Budget Version for the Proposal
-    * complete the required custom fields on the Proposal
+    * add and mark complete all the required S2S attachments
+    * creates a final and complete Budget Version for the Proposal
     * answer the S2S questions
         }
 end

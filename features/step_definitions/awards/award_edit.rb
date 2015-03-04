@@ -4,7 +4,7 @@ Given /I? ?add a Sponsor Contact to the Award$/ do
 end
 
 When /^an Account ID with special characters is added to the Award details$/ do
-  @award.edit account_id: random_string(5, %w{~ ! @ # $ % ^ & ž}.sample)
+  @award.edit account_id: random_string(5, %w{~ ! @ # $ % ^ & ž}.sample(2))
 end
 
 When /^the Award's title is updated to include invalid characters$/ do
@@ -18,7 +18,8 @@ end
 When /I? ?adds? the required Custom Data to the Award$/ do
   @award.add_custom_data #if @award.custom_data.nil?
 end
-
+#TODO
+#Confirm that custom data is not required in KC Award.
 When /completes? the Award requirements$/ do
    # steps '* add a report to the Award'
    steps '* add Terms to the Award'
@@ -58,7 +59,7 @@ end
 
 And /the Award Modifier edits the finalized Award$/ do
   steps '* log in with the Award Modifier user'
-  @award.edit transaction_type: '::random::', anticipated_amount: '5', obligated_amount: '5'
+  @award.edit transaction_type: '::random::', anticipated_direct: '5', obligated_direct: '5'
 end
 
 When /^the original Award is edited again$/ do

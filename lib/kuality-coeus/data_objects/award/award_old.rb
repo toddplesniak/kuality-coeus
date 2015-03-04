@@ -15,7 +15,7 @@ class OLDAwardObject < DataFactory
               :children
   attr_accessor :document_status, :document_id, :subawards, :transaction_type, :id, :anticipated_direct, :obligated_direct,
                 # These will probably need to be removed:
-                :anticipated_amount, :obligated_amount,
+                :anticipated_direct, :obligated_direct,
                 :custom_data, :description, :project_start_date, :project_end_date, :obligation_start_date,
                 :obligation_end_date, :time_and_money, :parent
   def_delegators :@key_personnel, :principal_investigator
@@ -33,9 +33,9 @@ class OLDAwardObject < DataFactory
       award_type:            '::random::',
       project_start_date:    right_now[:date_w_slashes],
       project_end_date:      in_a_year[:date_w_slashes],
-      sponsor_type_code:     '::random::',
+      sponsor_type_code:     'Federal',
       sponsor_id:            '::random::',
-      lead_unit_id:             '::random::',
+      lead_unit:             '::random::',
       obligation_start_date: right_now[:date_w_slashes],
       obligation_end_date:   in_a_year[:date_w_slashes],
       account_id:            random_alphanums(7),
@@ -243,7 +243,8 @@ class OLDAwardObject < DataFactory
   end
 
   def add_report opts={}
-    opts[:report] ||= %w{Financial IntellectualProperty Procurement Property ProposalsDue TechnicalManagement}.sample
+    #IntellectualProperty and TechnicalManagement removed because of a validation bug in CX (https://github.com/rSmart/issues/issues/289).
+    opts[:report] ||= %w{Financial Procurement Property ProposalsDue}.sample
     defaults = {award_id: @id, number: (@reports.count_of(opts[:report])+1).to_s}
     view :payment_reports__terms
     @reports.add defaults.merge(opts)
@@ -331,8 +332,8 @@ class OLDAwardObject < DataFactory
     # Clean up the data to match...
     award.subawards = nil
     award.transaction_type = 'New'
-    award.anticipated_amount = '0.00'
-    award.obligated_amount = '0.00'
+    award.anticipated_direct = '0.00'
+    award.obligated_direct = '0.00'
 
     on Award do |page|
       award.id = page.header_award_id

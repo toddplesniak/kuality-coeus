@@ -1,10 +1,10 @@
-And /sets the inflation rate of the Budget's on-campus administrative salaries to (\d+) percent/ do |percentage|
+And /sets the inflation rate of the Budget's on-campus non-student salaries to (\d+) percent/ do |percentage|
   @budget_version.view 'Rates'
   # FIXME: All this should not be hard-coded. Need to come up with better way to do this.
   # Probably, all this belongs encapsulated in a Data Object class for Budget Rates.
   on Rates do |page|
     page.inflation
-    page.applicable_rate('Administrative Salaries', 'Yes', '2016').set percentage
+    page.applicable_rate('Salaries-Non Student', 'Yes', '2016').set percentage
   end
   @inflation = percentage
 end
@@ -37,25 +37,6 @@ And /^un\-applies the '(.*)' '(.*)' for the '(.*)' personnel$/ do |rate_class, t
   end
 end
 
-And /^un\-applies the lab allocation rates for the non-personnel cost$/ do
-  @budget_version.view :non_personnel_costs
-  on(NonPersonnelCosts).details_of @budget_version.period(1).non_personnel_costs[0].object_code_name
-  on EditAssignedNonPersonnel do |page|
-    page.rates_tab
-    {'Employee Benefits'=>'EB on LA',
-     'Lab Allocation - M&S'=> 'Lab Allocation - M&S',
-     'Lab Allocation - Salaries'=> 'Lab Allocation - Salaries',
-     'Lab Allocation - Utilities'=> 'Lab Allocation - Utilities',
-     'Vacation'=> 'Vacation on LA' }.
-        each_pair{ |k,v| page.apply(k,v).clear }
-    page.save_changes
-  end
-end
-
-When /^the lab allocation rates for the non-personnel cost are unapplied$/ do
-  steps '* un-applies the lab allocation rates for the non-personnel cost'
-end
-
 When /the '(.*)' '(.*)' rate for the '(.*)' personnel is unapplied$/ do |rate_class, type, object_code|
   steps "* un-applies the '#{rate_class}' '#{type}' for the '#{object_code}' personnel"
 end
@@ -83,14 +64,7 @@ And /^the Period's Direct Cost is lower than before$/ do
   end
 end
 
-Then /^the Period's direct cost is the same as the assigned non-personnel's total base cost$/ do
-  @budget_version.view 'Periods And Totals'
-  on PeriodsAndTotals do |page|
-    page.direct_cost_of(1).should == @budget_version.period(1).non_personnel_costs[0].total_base_cost
-  end
-end
-
-And /^the Budget can be synced to the new rates$/ do
+And /^the Budget is synced to the new rates$/ do
   on(SyncBudgetRates).yes
 end
 

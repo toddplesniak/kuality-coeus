@@ -30,6 +30,7 @@ When /^I ? ?creates? an Award with a missing required field$/ do
   field = damballa(required_field)
   @award = create AwardObject, field=>value
   text = ' is a required field.'
+  # FIXME
   @required_field_error = case(required_field)
                             when 'Lead Unit'
                               "#{required_field} ID (#{required_field} ID)#{text}"
@@ -42,7 +43,7 @@ end
 
 When /^the Award Modifier creates an Award with more obligated than anticipated amounts$/ do
   steps '* I log in with the Award Modifier user'
-  @award = create AwardObject, anticipated_amount: '9999.99', obligated_amount: '10000.00'
+  @award = create AwardObject, anticipated_direct: '9999.99', obligated_direct: '10000.00'
 end
 
 Given /^the Award Modifier creates an Award including an Account ID, Account Type, Prime Sponsor, and CFDA Number$/ do

@@ -2,7 +2,6 @@
 class BasePage < PageFactory
 
   action(:use_new_tab) { |b| b.windows.last.use }
-
   action(:return_to_portal_window) { |b| b.portal_window.use }
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
@@ -47,7 +46,7 @@ class BasePage < PageFactory
     def document_header_elements
       value(:doc_title) { |b| b.headerarea.h1.text.strip }
       value(:headerinfo_table) { |b| b.noko.div(id: 'headerarea').table(class: 'headerinfo') }
-      value(:document_id) { |p| p.headerinfo_table[0].text[/\d{4}/] }
+      value(:document_id) { |p| p.headerinfo_table[0].text[/\d{5}/] }
       alias_method :doc_nbr, :document_id
       value(:document_status) { |p| p.headerinfo_table[0][3].text[/(?<=:)?.+$/] }
       value(:initiator) { |p| p.headerinfo_table[1][1].text }
@@ -267,10 +266,8 @@ class BasePage < PageFactory
 
     def combined_credit_splits
       {
-          'recognition'=>1,
-          'responsibility'=>2,
-          'space'=>3,
-          'financial'=>4
+          'responsibility'=>1,
+          'financial'=>2
       }.each do |key, value|
         # Makes methods for the person's 4 credit splits (doesn't have to take the full name of the person to work)
         # Example: page.responsibility('Joe Schmoe').set '100.00'
@@ -293,8 +290,8 @@ class BasePage < PageFactory
     def buttons(*buttons_text)
       buttons_text.each { |button| elementate(:button, button) }
     end
-    alias_method :new_buttons, :buttons
 
+    # TODO: This probably should be removed...
     def select(method_name, attrib, value)
       element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}) unless b.select(attrib => value).visible?; b.select(attrib => value) }
     end

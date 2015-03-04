@@ -53,7 +53,8 @@ class AwardObject < DataFactory
       fill_out create, :description, :transaction_type,
                :award_status, :activity_type, :award_type,
                :award_title, :project_start_date, :project_end_date,
-               :obligation_start_date, :obligation_end_date, :obligated_amount
+               :obligation_start_date, :obligation_end_date, :obligated_direct,
+               :anticipated_direct
     end
     set_lead_unit
     set_sponsor_id
@@ -88,9 +89,11 @@ class AwardObject < DataFactory
   end
 
   def view(tab)
-    open_document
+    # open_document
 
-    DEBUG.pause(3)
+    # DEBUG.pause(3)
+    navigate unless on_award?
+
 
     unless on(Award).send(StringFactory.damballa("#{tab}_element")).parent.class_name=~/tabcurrent$/
       on(Award).send(StringFactory.damballa(tab.to_s))
@@ -102,6 +105,36 @@ class AwardObject < DataFactory
       on(Award).send(StringFactory.damballa(tab.to_s))
     end
   end
+
+  def navigate
+    on(Header).central_admin
+    on(CentralAdmin).search_award
+    on AwardLookup do |page|
+      page.award_id.set @id
+      page.search
+      # TODO: Remove this when document search issues are resolved
+      begin
+        page.medusa
+      rescue Watir::Exception::UnknownObjectException
+        on(Header).doc_search
+        on DocumentSearch do |search|
+          search.document_id.set @document_id
+          search.search
+          search.open_item @document_id
+        end
+      end
+    end
+  end
+
+
+  def on_award?
+    if on(Award).headerinfo_table.exist?
+      on(Award).header_award_id==@id
+    else
+      false
+    end
+  end
+
   def set_lead_unit
     if @lead_unit_id == '::random::'
       on(Award).lookup_lead_unit

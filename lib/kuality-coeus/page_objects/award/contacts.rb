@@ -14,7 +14,6 @@ class AwardContacts < KCAwards
   element(:key_person_role) { |b| b.frm.text_field(name: 'projectPersonnelBean.newAwardContact.keyPersonRole') }
   action(:add_key_person) { |b| b.frm.button(name: 'methodToCall.addProjectPerson').click; b.loading }
 
-
   p_element(:project_role) { |name, b| b.key_personnel_table.row(text: /#{Regexp.escape(name)}/).select(name: /contactRoleCode/) }
   value(:key_personnel) { |b| b.key_personnel_table.hiddens(name: /award_person.identifier_\d+/).map { |hid| hid.parent.text.strip } }
 
@@ -68,6 +67,7 @@ class AwardContacts < KCAwards
   # ===========
   private
   # ===========
+
   element(:key_personnel_table) { |b| b.frm.table(id: 'contacts-table') }
 
   p_element(:target_key_person_div) { |name, b| b.frm.div(id: "tab-#{nsp(name)}:UnitDetails-div") }

@@ -37,24 +37,28 @@ class Header < BasePage
   action(:action_list) { |b| b.link(text: 'Action List').click }
 
   # Has same visible problems as researcher
+  # action(:central_admin) { |b|
+  #   5.times {
+  #     b.central_admin_link.click
+  #     sleep 1 unless b.central_admin_link.parent.div.visible?
+  #     break if b.central_admin_link.parent.div.visible?
+  #     b.refresh
+  #     sleep 1
+  #   }
+  # }
+  # element(:central_admin_link) { |b| b.link(text: 'CENTRAL ADMIN') }
+
+  #Central Admin not working on kc6 using UNIT for temp fix.
   action(:central_admin) { |b|
     5.times {
-      # DEBUG.message 'Hot fix for visibility of Central Admin Modal'
       b.unit_link.click
       sleep 1 unless b.unit_link.parent.div.visible?
       break if b.unit_link.parent.div.visible?
       b.refresh
       sleep 1
-
-      #Commented out for bug
-      # b.central_admin_link.click
-      # sleep 1 unless b.central_admin_link.parent.div.visible?
-      # break if b.central_admin_link.parent.div.visible?
-      # b.refresh
-      # sleep 1
     }
   }
-
-  element(:central_admin_link) { |b| b.link(text: 'CENTRAL ADMIN') }
   element(:unit_link) { |b| b.link(text: 'UNIT') }
+
+
 end

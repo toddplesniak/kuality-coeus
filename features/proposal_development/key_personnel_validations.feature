@@ -16,11 +16,11 @@ Feature: Proposal Key Personnel Validations
     Examples:
     | Type           | Value  |
     | Responsibility | 100.01 |
+    | Responsibility | -0.01  |
     | Financial      | 1000   |
-    | Recognition    | -0.01  |
 
   Scenario: Data Validation of Credit Split not totalling 100%
-    Given I add a Principal Investigator with a Space credit split of 99.99
+    Given I add a Principal Investigator with a Financial credit split of 99.99
     When  data validation is activated
     Then  an error should say the credit split does not equal 100%
 

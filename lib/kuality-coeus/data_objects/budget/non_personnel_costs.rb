@@ -2,7 +2,8 @@ class NonPersonnelCost < DataFactory
 
   include StringFactory
 
-  attr_reader :category_type, :category_code, :object_code_name, :total_base_cost
+  attr_reader :category_type, :category_code, :object_code_name, :total_base_cost,
+              :quantity, :description
 
   def initialize(browser, opts={})
     @browser = browser
@@ -10,7 +11,9 @@ class NonPersonnelCost < DataFactory
     defaults = {
       category_type:    '::random::',
       object_code_name: '::random::',
-      total_base_cost:  random_dollar_value(1000000)
+      total_base_cost:  random_dollar_value(1000000),
+      quantity:         rand(5),
+      description:      random_alphanums
     }
 
     set_options(defaults.merge(opts))
@@ -22,8 +25,8 @@ class NonPersonnelCost < DataFactory
     on AddAssignedNonPersonnel do |page|
       page.category.pick! @category_type
       page.loading
-      page.object_code_name.pick! @object_code_name
-      page.total_base_cost.fit @total_base_cost
+      fill_out page, :object_code_name, :total_base_cost,
+               :quantity, :description
       page.add_non_personnel_item
     end
   end

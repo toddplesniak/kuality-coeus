@@ -1,4 +1,4 @@
-@Proposal @failing
+@Proposal @failing #https://jira.kuali.org/browse/KRAFDBCK-12063
 Feature: Permissions in a Proposal
 
   As a Proposal Aggregator, I want to be able to assign others permissions to a proposal,
@@ -12,7 +12,7 @@ Feature: Permissions in a Proposal
   Scenario: The proposal creator is automatically an aggregator
     When  the Proposal Creator visits the Proposal's Access page
     Then  the Proposal Creator user is listed as an Aggregator Document Level in the proposal permissions
-
+  @test
   Scenario Outline: A Proposal Aggregator can assign various roles to a proposal documents permissions
     When  I assign the unassigned user as a <Role> in the proposal permissions
     Then  the unassigned user can access the Proposal
@@ -21,9 +21,9 @@ Feature: Permissions in a Proposal
     Examples:
     | Role                 | Permissions                          |
     | Aggregator           | edit all parts of the Proposal       |
-    | Budget Creator       | update the Budget, not the narrative |
-    | Delete Proposal      | delete the Proposal                  |
-    | Viewer               | only read the Proposal               |
+    #| Budget Creator       | update the Budget, not the narrative |
+    #| Delete Proposal      | delete the Proposal                  |
+    #| Viewer               | only read the Proposal               |
 
   Scenario: Narrative Writers can't edit budget details
     Given the Proposal Creator user creates a Budget Version for the Proposal

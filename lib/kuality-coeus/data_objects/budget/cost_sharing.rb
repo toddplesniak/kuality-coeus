@@ -17,14 +17,11 @@ class CostSharingObject < DataFactory
 
   def create
     view
-    on CostSharing do |page|
-      page.add_cost_sharing
-    end
+    on(CostSharing).add_cost_sharing
     on AddLine do |page|
       fill_out page, :period, :percentage, :source_account, :amount
       page.add
     end
-    on(CostSharing).save
   end
 
   def view
@@ -56,7 +53,7 @@ class CostSharingCollection < CollectionsFactory
   #TODO: Write code that will update indexes when items change their order in the list.
 
   def total_funds
-    self.collect{ |cs| cs.amount.to_f}.inject(0, :+)
+    self.collect{ |cs| cs.amount.to_f}.inject(0, :+).round(2)
   end
 
 end

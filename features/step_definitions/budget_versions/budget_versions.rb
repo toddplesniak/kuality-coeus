@@ -140,7 +140,7 @@ And /adds? unrecovered F&A to the first period of the Budget Version$/ do
 end
 
 And /^adds another item to the budget period's cost sharing distribution list$/ do
-  @budget_version.budget_periods.period(1).add_item_to_cost_share_dl
+  @budget_version.budget_periods.period(1).add_item_to_cost_sharing_dl
 end
 
 And /^adds (\d+) more items to the budget period's cost sharing distribution list$/ do |count|

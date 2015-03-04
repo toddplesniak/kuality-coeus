@@ -6,7 +6,7 @@ class KeyPersonnel < BasePage
 
   new_error_messages
 
-  p_element(:section_of) { |name, b| b.h4(text: /#{name}/).parent.parent }
+  p_element(:section_of) { |name, b| b.section(data_full_name: name) }
 
   # Details
 
@@ -29,7 +29,11 @@ class KeyPersonnel < BasePage
   # coding for it.
   p_value(:units_of) { |name, b|
     units= []
-    b.section_of(name).table().rows[1..-1].each{ |row| units << {name: row.td.text, number: row.td(index: 1).text} }
+    begin
+      b.section_of(name).table.rows[1..-1].each{ |row| units << {name: row.td.text, number: row.td(index: 1).text} }
+    rescue Watir::Exception::UnknownObjectException
+      # do nothing
+    end
     units
   }
 

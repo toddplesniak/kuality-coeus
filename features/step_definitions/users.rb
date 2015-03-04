@@ -90,6 +90,7 @@ end
 
 # TODO: This will need to be changed to add "in the same unit" as a qualifier
 Given /^Users exist with the following roles: (.*)$/ do |roles|
+  DEBUG.message "roles are #{roles}"
   roles.split(', ').each do |r|
     if $users.with_role(r).nil?
       user = make_user role: r
@@ -149,4 +150,9 @@ When /^a User exists with the roles: (.*) in the (.*) unit$/ do |roles, unit|
     make_user user: user_name
     $users[-1].create unless $users[-1].exists?
   end
+end
+
+When /^I log in with the Proposal's principal investigator$/ do
+  $users.logged_in_user.sign_out unless $users.current_user==nil
+  @proposal.key_personnel.principal_investigator.log_in
 end

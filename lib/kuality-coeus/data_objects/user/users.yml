@@ -147,7 +147,7 @@ starka:  # AKA: "Principal Name"
   :primary_title:    Director RSmart College of Science
   :directory_title:  Principal Investigator
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: pqowiuth
+  :era_commons_user_name: funkyjunky
   :graduate_student_count: '0'
   :billing_element:  bla bla bla
   :addresses:
@@ -183,8 +183,8 @@ starka:  # AKA: "Principal Name"
     - :name: Proposal Creator
       :qualifiers:
         - :unit: '000001'
-martelld:  # AKA: "Principal Name"
-  :user_name:        martelld
+dmartell:  # AKA: "Principal Name"
+  :user_name:        dmartell
   :description:      Proposal Aggregator User
   :affiliation_type: Other Academic Group
   :campus_code:      'UN - UNIVERSITY'
@@ -226,12 +226,12 @@ martelld:  # AKA: "Principal Name"
     - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-warrens:  # AKA: "Principal Name"
-  :user_name:        warrens
+swarren:  # AKA: "Principal Name"
+  :user_name:        swarren
   :description:      AOR User Capable Of Submitting To Grants.Gov
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      '00001'
+  :employee_id:      swarren
   :employee_status:  Active
   :employee_type:    Professional
   :base_salary:      123456.78
@@ -241,7 +241,7 @@ warrens:  # AKA: "Principal Name"
   :primary_title:    OSP Superuser
   :directory_title:  OSP Superuser
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: swarren
+  :era_commons_user_name: splatt
   :directory_department:  Humanities
   :graduate_student_count: '0'
   :billing_element:  bla bla bla
@@ -529,7 +529,7 @@ kwagner: # AKA: "Principal Name"
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :set
-       - :unit: BL-BL
+       - :unit: CS
 vchesnutt: # AKA: "Principal Name"
   :user_name:        vchesnutt
   :description:      Award Budget Modifier
