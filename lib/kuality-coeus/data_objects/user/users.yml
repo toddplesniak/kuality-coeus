@@ -231,7 +231,7 @@ swarren:  # AKA: "Principal Name"
   :description:      AOR User Capable Of Submitting To Grants.Gov
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      swarren
+  :employee_id:      00001
   :employee_status:  Active
   :employee_type:    Professional
   :base_salary:      123456.78
@@ -255,25 +255,26 @@ swarren:  # AKA: "Principal Name"
       :default: :set
   :phones:
     - :type:    Facsimile
-      :number:  555-555-5555
+      :number:  602-391-2172
       :default: :clear
       :country: United States
     - :type:    Work
-      :number:  480-555-1212
+      :number:  480-414-0450
       :default: :set
       :country: United States
   :emails:
-    - :email:   kc-qa-notify@rsmart.com
+    - :email:   sean.warren@rsmart.com
       :type:    Work
       :default: :set
   :groups:
-    - '2002' # OSP Superuser
-    - '2003' # ProposalAdmin
+    - '1'    # WorkflowAdmin
+    - '2001' # KcAdmin
+    - '2004' # IRBAdmin
   :rolez:
     - :name: OSP Administrator
       :qualifiers:
         - :unit: '000001'
-          :descends_hierarchy: :clear
+          :descends_hierarchy: :set
     - :name: Proposal Submission
       :qualifiers:
         - :unit: '000001'
@@ -1057,3 +1058,100 @@ jjones:  # AKA: "Principal Name"
       :qualifiers:
       - :unit: '000001'
         :descends_hierarchy: :set
+fchair:
+  :user_name:        fchair
+  :description:      Department Chair
+  :affiliation_type: Faculty
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      2233456
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      100000
+  :primary_department_code: BIO
+  :first_name:       Fred
+  :last_name:        Chair
+  :primary_title:
+  :directory_title:
+  :citizenship_type:
+  :era_commons_user_name:
+  :directory_department:
+  :graduate_student_count:
+  :billing_element:
+  :addresses:
+    - :type:    Work
+      :line_1:  8731 Winchester Road
+      :city:    Pittsburgh
+      :state:   PENNSYLVANIA
+      :country: United States
+      :zip:     15213
+      :default: :set
+  :phones:
+    - :type:    Work
+      :number:  812-555-2233
+      :default: :set
+  :emails:
+    - :email:   fchair@yourschool.edu
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :name: Proposal Creator
+      :qualifiers:
+      - :unit: CS
+    - :name: approver
+      :qualifiers:
+      - :unit: CS
+    - :name: ProtocolApprover
+      :qualifiers:
+      - :unit:
+mresearcher:
+  :user_name:        mresearcher
+  :description:      Principal Investigator
+  :affiliation_type: Faculty
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      9786950
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      80000
+  :primary_department_code: BIO
+  :first_name:       Maria
+  :last_name:        Researcher
+  :primary_title:
+  :directory_title:
+  :citizenship_type:
+  :era_commons_user_name:
+  :directory_department:
+  :graduate_student_count:
+  :billing_element:
+  :addresses:
+    - :type:    Work
+      :line_1:  456 Elm Street
+      :city:    Madison
+      :state:   WISCONSIN
+      :country: United States
+      :zip:     53532
+      :default: :set
+  :phones:
+      - :type:    Work
+        :number:  480-455-6565
+        :default: :set
+      - :type:    Facsimile
+        :number:  480-444-5670
+        :default: :clear
+  :emails:
+    - :email:   dkeogh@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :name: Proposal Creator
+      :qualifiers:
+      - :unit: BIO
+    - :name: Aggregator
+      :qualifiers:
+      - :unit: BIO
+    - :name: Institutional Proposal Viewer
+      :qualifiers:
+      - :unit: BIO
+        :descends_hierarchy: :clear
+    - :name: IACUC Protocol Aggregator
+      :qualifiers:
+      - :unit:
