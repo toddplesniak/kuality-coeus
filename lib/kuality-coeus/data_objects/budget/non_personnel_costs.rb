@@ -4,8 +4,9 @@ class NonPersonnelCost < DataFactory
 
   attr_reader :category_type, :category_code, :object_code_name, :total_base_cost,
               :cost_sharing, :start_date, :end_date,
-              #TODO:
-              :quantity, :description
+              #TODO someday:
+              :quantity, :description # These don't seem to do anything, really
+  attr_accessor :participants
 
   def initialize(browser, opts={})
     @browser = browser
@@ -28,6 +29,7 @@ class NonPersonnelCost < DataFactory
       fill_out page, :object_code_name, :total_base_cost
       page.add_non_personnel_item
     end
+    add_participants if @participants
   end
 
   def edit opts={}
@@ -43,6 +45,16 @@ class NonPersonnelCost < DataFactory
       page.save_changes
     end
     update_options opts
+  end
+
+  # Used when the category type is 'Participant Support'
+  def add_participants
+    @participants ||= rand(9)+1
+    on(NonPersonnelCosts).edit_participant_count
+    on Participants do |page|
+      page.number_of_participants.set @participants
+      page.save_changes
+    end
   end
 
 end

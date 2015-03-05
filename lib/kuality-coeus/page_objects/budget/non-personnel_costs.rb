@@ -8,6 +8,8 @@ class NonPersonnelCosts < BasePage
 
   p_action(:details_of) { |description, b| b.items_rows.find{ |item| item[0].text==description }.button().click; b.loading }
 
+  action(:edit_participant_count) { |b| b.td(text: /Participant Support/).link(text: 'edit').click; b.loading }
+
   private
 
   element(:items_rows) { |b| b.active_tab.tbody.trs.find_all{ |tr| tr.id==''} }

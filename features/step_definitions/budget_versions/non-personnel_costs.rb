@@ -52,3 +52,7 @@ And /^the applicable rate is the (.*)\-campus '(.*)' '(.*)' '(.*)' for the perio
     datify(rate[:start_date]) <= datify(@budget_version.period(1).non_personnel_costs[0].end_date)
   }[-1]
 end
+
+And /the number of participants for the category in period 1 can be specified$/ do
+  @budget_version.period(1).non_personnel_costs[0].add_participants
+end
