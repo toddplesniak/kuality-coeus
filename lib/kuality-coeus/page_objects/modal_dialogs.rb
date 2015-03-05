@@ -87,3 +87,12 @@ class SyncBudgetRates < Dialogs
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
 
 end
+
+class Participants < Dialogs
+
+  buttons 'Save Changes'
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-NonPersonnelCostsPage-EditParticipantSupport-Dialog_headerWrapper') }
+  element(:number_of_participants) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.currentTabBudgetPeriod.numberOfParticipants') }
+
+end

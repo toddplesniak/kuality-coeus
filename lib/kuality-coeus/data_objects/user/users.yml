@@ -1,4 +1,4 @@
-unassigneduser: # AKA: "Principal Name
+unassigneduser: # AKA: "Principal Name"
   :user_name:        unassigneduser
   :description:      creating user with 'unassigned' role
   :affiliation_type: Student
@@ -31,7 +31,7 @@ unassigneduser: # AKA: "Principal Name
     - :name: unassigned
       :qualifiers:
         - :unit: '000001'
-poolej: # AKA: "Principal Name
+poolej: # AKA: "Principal Name"
   :user_name:        poolej
   :description:      Basic Prop Dev Aggregator With Additional Helper Roles
   :affiliation_type: Staff
@@ -89,7 +89,7 @@ poolej: # AKA: "Principal Name
     - :name: Budget Creator
       :qualifiers:
         - :unit: '000001'
-cleganeg:  # AKA: "Principal Name"
+cleganeg:
   :user_name:        cleganeg
   :description:      OSP Approver User Who Can Only Approve A Proposal
   :affiliation_type: Faculty
@@ -137,7 +137,7 @@ cleganeg:  # AKA: "Principal Name"
     - :name: OSPApprover
       :qualifiers:
         - :unit:
-starka:  # AKA: "Principal Name"
+starka:
   :user_name:        starka
   :description:      Proposal Creator User
   :affiliation_type: Other Academic Group
@@ -183,7 +183,7 @@ starka:  # AKA: "Principal Name"
     - :name: Proposal Creator
       :qualifiers:
         - :unit: '000001'
-dmartell:  # AKA: "Principal Name"
+dmartell:
   :user_name:        dmartell
   :description:      Proposal Aggregator User
   :affiliation_type: Other Academic Group
@@ -226,7 +226,7 @@ dmartell:  # AKA: "Principal Name"
     - :name: Aggregator
       :qualifiers:
         - :unit: '000001'
-swarren:  # AKA: "Principal Name"
+swarren:
   :user_name:        swarren
   :description:      AOR User Capable Of Submitting To Grants.Gov
   :affiliation_type: Staff
@@ -326,7 +326,7 @@ lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in 
       :qualifiers:
         - :unit: '000001'
           :descends_hierarchy: :clear
-wcoyne: # AKA: "Principal Name"
+wcoyne:
   :user_name:        wcoyne
   :description:      IRB & IACUC Protocol Creator
   :affiliation_type: Staff
@@ -380,7 +380,7 @@ wcoyne: # AKA: "Principal Name"
      :name: IACUC Protocol Creator
      :qualifiers:
        - :unit: '000001'
-mlinkous: # AKA: "Principal Name"
+mlinkous:
   :user_name:        mlinkous
   :description:      IRB Protocol Reviewer/Approver
   :affiliation_type: Staff
@@ -427,10 +427,7 @@ mlinkous: # AKA: "Principal Name"
    - :name: IRBApprover
      :qualifiers:
        - :unit:
-   - :name: IACUC ProtocolApprover
-     :qualifiers:
-       - :unit:
-smalkmus: # AKA: "Principal Name"
+smalkmus:
   :user_name:        smalkmus
   :description:      IRB Protocol Administrator
   :affiliation_type: Staff
@@ -486,7 +483,7 @@ smalkmus: # AKA: "Principal Name"
    - :name: Protocol Approver
      :qualifiers:
        - :unit:
-kwagner: # AKA: "Principal Name"
+kwagner:
   :user_name:        kwagner
   :description:      Award Modifier Who Can Create Awards
   :affiliation_type: Staff
@@ -1145,13 +1142,3 @@ mresearcher:
     - :name: Proposal Creator
       :qualifiers:
       - :unit: BIO
-    - :name: Aggregator
-      :qualifiers:
-      - :unit: BIO
-    - :name: Institutional Proposal Viewer
-      :qualifiers:
-      - :unit: BIO
-        :descends_hierarchy: :clear
-    - :name: IACUC Protocol Aggregator
-      :qualifiers:
-      - :unit:
