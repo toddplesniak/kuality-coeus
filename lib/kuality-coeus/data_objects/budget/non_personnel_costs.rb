@@ -23,6 +23,9 @@ class NonPersonnelCost < DataFactory
   def create
     # Navigation is handled by the Budget Period object
     on(NonPersonnelCosts).assign_non_personnel
+    if @browser.header(id: 'PropBudget-ConfirmPeriodChangesDialog_headerWrapper').present?
+      on(ConfirmPeriodChanges).yes
+    end
     on AddAssignedNonPersonnel do |page|
       page.category.pick! @category_type
       page.loading

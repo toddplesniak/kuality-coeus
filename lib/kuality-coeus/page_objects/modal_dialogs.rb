@@ -96,3 +96,9 @@ class Participants < Dialogs
   element(:number_of_participants) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.currentTabBudgetPeriod.numberOfParticipants') }
 
 end
+
+class ConfirmPeriodChanges < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-ConfirmPeriodChangesDialog_headerWrapper') }
+
+end

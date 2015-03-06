@@ -46,7 +46,6 @@ class BudgetPeriodObject < DataFactory
       dollar_fields.each do |field|
         edit.send("#{field}_of", @number).fit opts[field]
       end
-      edit.save_period @number
       if opts.keys.include?(:start_date) || opts.keys.include?(:end_date)
         on(ChangePeriod).yes
       end
@@ -87,6 +86,9 @@ class BudgetPeriodObject < DataFactory
   def assign_non_personnel_cost opts={}
     view :non_personnel_costs
     on(NonPersonnelCosts).view_period @number
+    if @browser.header(id: 'PropBudget-ConfirmPeriodChangesDialog_headerWrapper').present?
+      on(ConfirmPeriodChanges).yes
+    end
     @non_personnel_costs.add opts
   end
 

@@ -180,3 +180,9 @@ And /^the Budget Version is opened$/ do
   @proposal.view 'Budget'
   on(Budgets).open @budget_version.name
 end
+
+And /adds a direct cost limit to all of the Budget's periods$/ do
+  @budget_version.budget_periods.each do |period|
+    period.edit direct_cost_limit: random_dollar_value(50000)
+  end
+end

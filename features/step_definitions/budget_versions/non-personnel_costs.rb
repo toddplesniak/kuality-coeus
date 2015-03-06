@@ -56,3 +56,9 @@ end
 And /the number of participants for the category in period 1 can be specified$/ do
   @budget_version.period(1).non_personnel_costs[0].add_participants
 end
+
+And /^adds a non\-personnel cost with an '(.*)' category type to all Budget Periods$/ do |type|
+  @budget_version.budget_periods.each do |period|
+    period.assign_non_personnel_cost category_type: type
+  end
+end
