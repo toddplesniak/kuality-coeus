@@ -23,7 +23,7 @@ end
 When /completes? the Award requirements$/ do
    # steps '* add a report to the Award'
    steps '* add Terms to the Award'
-   steps '* add the required Custom Data to the Award'
+   # steps '* add the required Custom Data to the Award'
    steps '* add a Payment & Invoice item to the Award'
    steps '* add a Sponsor Contact to the Award'
    steps '* add a PI to the Award'
@@ -34,12 +34,13 @@ When /^data validation is turned on for the Award$/ do
   @award.view_tab :award_actions
   on AwardActions do |page|
     page.expand_all
+    DEBUG.pause(3)
     page.turn_on_validation
   end
 end
 
 When /edits? the obligated amount and blank project start date on the award?/ do
-  @award.edit  project_start_date: '', obligated_amount: '1000.00'
+  @award.edit  project_start_date: '', obligated_direct: '1000.00'
 end
 
 #----------------------#
@@ -90,4 +91,8 @@ end
 When /^the Award Modifier cancels the Award$/ do
   steps '* log in with the Award Modifier user'
   @award.cancel
+end
+
+And /^adds the unassigned user as a Principal Investigator for the Award$/ do
+       @award.add_key_person first_name: 'PleaseDoNot', last_name: 'AddOrEditRoles'
 end

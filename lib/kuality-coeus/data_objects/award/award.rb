@@ -9,7 +9,8 @@ class AwardObject < DataFactory
                 :subaward_org_name, :subaward_amount, :custom_data, :time_and_money,
                 :version, :prior_versions, :id, :terms, :pi_full_name, :principal_investigator, :press,
                 :project_role, :key_personnel,
-                :fa_rates, :cost_sharing, :approved_equipment, :funding_proposals, :subawards
+                :fa_rates, :cost_sharing, :approved_equipment, :funding_proposals, :subawards,
+                :view
 
   def_delegators :@key_personnel, :principal_investigator
 
@@ -55,11 +56,15 @@ class AwardObject < DataFactory
                :award_title, :project_start_date, :project_end_date,
                :obligation_start_date, :obligation_end_date, :obligated_direct,
                :anticipated_direct
+
     end
     set_lead_unit
     set_sponsor_id
     on Award do |create|
-      create.save
+
+      create.send(@press) unless @press.nil?
+      #error messages are not displayed on first save...
+      create.send(@press) unless @press.nil?
       @document_id = create.header_document_id
       @id = create.award_id.strip
       @search_key = { award_id: @id }
@@ -89,15 +94,11 @@ class AwardObject < DataFactory
   end
 
   def view(tab)
-    # open_document
-
-    # DEBUG.pause(3)
     navigate unless on_award?
-
-
     unless on(Award).send(StringFactory.damballa("#{tab}_element")).parent.class_name=~/tabcurrent$/
       on(Award).send(StringFactory.damballa(tab.to_s))
     end
+
   end
 
   def view_tab(tab)
@@ -106,7 +107,24 @@ class AwardObject < DataFactory
     end
   end
 
+  def view_award
+    on(Header).doc_search
+    on DocumentSearch do |search|
+      search.document_id.set @document_id
+      search.search
+      search.open_item @document_id
+    end
+  end
+
   def navigate
+    if on(Header).krad_portal_element.exists?
+      on(Header).krad_portal
+    else
+      DEBUG.message "does not exists krad portal"
+    end
+
+    #we have gotten to a strange place without a header because of time and money need to get back from there
+    @browser.goto $base_url+$context unless on(Header).header_div.exists?
     on(Header).central_admin
     on(CentralAdmin).search_award
     on AwardLookup do |page|
@@ -123,6 +141,27 @@ class AwardObject < DataFactory
           search.open_item @document_id
         end
       end
+    end
+    # on(Award).horzontal_links.wait_until_present
+    on(Award).headerinfo_table.wait_until_present
+  end
+
+
+
+  def copy(type='new', parent=nil, descendents=:clear)
+    view :award_actions
+    on AwardActions do |copy|
+      copy.close_parents
+      DEBUG.pause(134)
+      copy.expand_all
+      copy.expand_tree
+      sleep 3 # FIXME!
+      copy.show_award_details_panel(@id) unless copy.award_div(@id).visible?
+      copy.copy_descendents(@id).send(descendents) if copy.copy_descendents(@id).enabled?
+      copy.send("copy_as_#{type}", @id)
+      copy.child_of_target_award(@id).pick! parent
+      copy.copy_award @id
+      DEBUG.pause(124)
     end
   end
 
@@ -208,7 +247,8 @@ class AwardObject < DataFactory
   end
 
   def submit
-    on(Award).award_actions
+    view :award_actions
+    DEBUG.pause(3)
     on(AwardActions).submit
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
   end
@@ -295,12 +335,6 @@ class AwardObject < DataFactory
     @approved_equipment.add(opts)
   end
 
-
-
-
-
-
-
   def add_key_person opts={}
     @key_personnel = { type: 'employee',
                        project_role: 'Principal Investigator',
@@ -348,7 +382,7 @@ class AwardObject < DataFactory
 
       case @key_personnel[:project_role]
         when 'Principal Investigator'
-          @key_personnel[:principal_investigator] = page.send(person_type).value.strip
+          @key_personnel[:principal_investigator] = page.send(person_type).value.gsub('  ', ' ').strip
         when 'Co-Investigator'
           @key_personnel[:co_investigator] = page.send(person_type).value.strip
         when 'Key Person'
@@ -361,7 +395,7 @@ class AwardObject < DataFactory
       else
         @key_personnel[:added_personnel] = page.send(person_type)
       end
-
+      DEBUG.message "Award PI is #{@key_personnel[:principal_investigator]}"
       page.add_key_person
 
       page.send(@key_personnel[:press]) unless @key_personnel[:press].nil?

@@ -76,7 +76,9 @@ Then /^errors about the missing Award terms are shown for data validation$/ do
 end
 
 Then /^errors about the obligation amount and obligation start date are shown$/ do
-['The Anticipated Amount must be greater than or equal to Obligated Amount.', 'Obligation Start Date is required when Obligated Amount is greater than zero.', 'Obligation End Date is required when Obligated Amount is greater than zero.']
+['The Anticipated Amount must be greater than or equal to Obligated Amount.',
+ 'Obligation Start Date is required when Obligated Total is greater than zero.',
+ 'Obligation End Date is required when Obligated Total is greater than zero.']
 .each { |term| expect($current_page.errors).to include term}
 end
 
@@ -113,7 +115,7 @@ Then /^errors appear on the Contacts page, saying the credit splits for the PI a
     page.expand_all
     DocumentUtilities::CREDIT_SPLITS.values.each do |type|
       expect(page.errors).to include "The Project Personnel #{type} Credit Split does not equal 100%"
-      expect(page.errors).to include "The Unit #{type} Credit Split for #{@award.pi_full_name} does not equal 100%"
+      expect(page.errors).to include "The Unit #{type} Credit Split for #{@award.key_personnel[:principal_investigator]} does not equal 100%"
     end
   end
 end

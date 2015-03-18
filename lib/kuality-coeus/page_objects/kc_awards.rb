@@ -9,8 +9,9 @@ class KCAwards < BasePage
           'Comments, Notes & Attachments', 'Award Actions', 'Medusa'
 
   value(:doc_title) { |b| b.frm.div(id: 'headerarea').h1.text.strip }
-  action(:time_and_money) { |b| b.t_m_button.click; b.loading }
+  action(:time_and_money) { |b| b.t_m_button.when_present.click; b.loading }
   element(:t_m_button) { |b| b.frm.button(name: 'methodToCall.timeAndMoney') }
+  element(:horzontal_links) { |b| b.div(id: 'horz-links') }
   # element(:headerinfo_table) { |b| b.frm.div(id: 'headerarea').table(class: 'headerinfo') }
   element(:headerinfo_table) { |b| b.frm.div(class: 'headerbox').table(class: 'headerinfo') }
   # The 'header' prefix on these method names is to prevent collision...

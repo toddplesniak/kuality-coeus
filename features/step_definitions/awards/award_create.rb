@@ -53,7 +53,7 @@ end
 
 Given /^the Award Modifier creates an Award with an obligated amount and blank project start date$/ do
   steps '* I log in with the Award Modifier user'
-  @award = create AwardObject, project_start_date: '', obligated_amount: '1000.00'
+  @award = create AwardObject, project_start_date: '', obligated_direct: '1000.00', anticipated_direct: '499.00', press: 'save'
 end
 
 When /^the Award Modifier creates an Award with a project start date later than the obligation start date$/ do

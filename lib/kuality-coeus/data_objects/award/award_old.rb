@@ -77,8 +77,8 @@ class OLDAwardObject < DataFactory
                :project_start_date, :project_end_date, :obligation_start_date,
                :obligation_end_date, :nsf_science_code, :account_id,
                :cfda_number
-      if create.obligated_amount.present?
-        fill_out create, :obligated_amount, :anticipated_amount
+      if create.obligated_direct.present?
+        fill_out create, :obligated_direct, :anticipated_direct
       else
         fill_out create, :obligated_direct, :anticipated_direct,
                          :obligated_fna, :anticipated_fna
@@ -455,7 +455,6 @@ class OLDAwardObject < DataFactory
   def set_lead_unit
     if @lead_unit_id == '::random::'
       on(Award).lookup_lead_unit
-      DEBUG.pause(13)
       on UnitLookup do |lookup|
         lookup.search
         lookup.return_random

@@ -19,7 +19,7 @@ class BasePage < PageFactory
 
   action(:form_tab) { |name, b| b.frm.h2(text: /#{name}/) }
   action(:form_status) { |name, b| b.form_tab(name).text[/(?<=\()\w+/] }
-  element(:save_button) { |b| b.frm.button(class: 'globalbuttons', name: 'methodToCall.save') }
+  element(:save_button) { |b| b.frm.button(name: 'methodToCall.save') }
   value(:notification) { |b| b.frm.div(class: 'left-errmsg').div.text }
 
   element(:workarea_div) { |b| b.frm.div(id: 'workarea') }
@@ -103,8 +103,9 @@ class BasePage < PageFactory
     end
 
     def tab_buttons
-      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present.click; b.loading }
+      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present(60).click; b.loading; b.loading_old; b.show_button.wait_while_present }
       element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
+      element(:show_button) { |b| b.button(src: '/kc-dev/kr/static/images/tinybutton-show.gif') }
     end
 
     def tiny_buttons
@@ -255,7 +256,7 @@ class BasePage < PageFactory
     def validation_elements
       element(:validation_button) { |b| b.frm.button(name: 'methodToCall.activate') }
       action(:show_data_validation) { |b| b.frm.button(id: 'tab-DataValidation-imageToggle').click; b.validation_button.wait_until_present }
-      action(:turn_on_validation) { |b| b.validation_button.click; b.loading; b.turn_off_validation_button.wait_until_present }
+      action(:turn_on_validation) { |b| b.validation_button.click; b.loading; b.loading_old; b.turn_off_validation_button.wait_until_present }
 
       element(:turn_off_validation_button) { |b| b.frm.button(name: 'methodToCall.deactivate') }
       action(:turn_off_validation) { |b| b.turn_off_validation_button.click; b.turn_off_validation_button.wait_while_present; b.loading }

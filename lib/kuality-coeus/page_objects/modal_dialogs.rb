@@ -39,12 +39,29 @@ end # Recall
 
 class SendNotifications < Dialogs
 
-  buttons 'Send Notifications'
+  buttons 'Send Notifications', 'Search for Recipients'
 
   element(:dialog_header) { |b| b.header(id: 'Kc-SendNotification-Wizard_headerWrapper') }
 
   element(:subject) { |b| b.text_field(name: 'notificationHelper.notification.subject') }
   element(:message) { |b| b.textarea(name: 'notificationHelper.notification.message') }
+  action(:employee_set) {|b| b.label(text: 'Employee').parent.radio.set }
+  action(:non_employee_set) {|b| b.label(text: 'Non Employee').parent.radio.set }
+  #DEBUG not sure this works yet
+  def get_search_results
+    value(:ben) do |b|
+      arry = []
+      b.div_results_table_body.checkboxes(name: /^addRecipientHelper.results/).each do |div|
+        if div.enabled?
+        arry << div.collect{ |div| div.name }
+        end
+      end
+      arry
+    end
+  end
+
+  element(:div_results_table_body) { |b| b.div(class: 'row multi-columns-row uif-cssGridGroup uif-boxLayoutVerticalItem clearfix').tbody }
+  action(:select_random_checkbox) { |name, b| b.div_results_table_body.checkbox(name: name).set }
 
   # Unfortunately this is necessary because it's the only way
   # to know the IP Number when it gets created
@@ -74,16 +91,16 @@ class CopyThisBudgetVersion < Dialogs
 
   buttons 'Copy Budget', 'Cancel'
 
-end
+end # CopyThisBudgetVersion
 
 class ChangePeriod < Dialogs
   
   element(:dialog_header) { |b| b.header(id: 'PropBudget-PeriodsPage-ChangePeriodDialog_headerWrapper') }
 
-end
+end  # ChangePeriod
 
 class SyncBudgetRates < Dialogs
 
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
 
-end
+end # SyncBudgetRates
