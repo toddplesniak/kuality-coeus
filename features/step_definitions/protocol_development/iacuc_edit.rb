@@ -26,6 +26,7 @@ end
 
 When /deactivates the IACUC Protocol$/ do
    @iacuc_protocol.request_to_deactivate
+  # DEBUG.pause(123)
 end
 
 And /places the IACUC Protocol on hold$/ do
@@ -63,7 +64,7 @@ end
 
 When /reopens the IACUC Protocol without saving the changes$/ do
   on(IACUCProtocolOverview).close
-  on(Confirmation).no
+  on(Confirmation).no if on(Confirmation).no_button.exists?
   @iacuc_protocol.view_document
 end
 

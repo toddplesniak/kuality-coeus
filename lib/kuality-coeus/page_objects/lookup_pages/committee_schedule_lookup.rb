@@ -2,7 +2,7 @@ class CommitteeScheduleLookup < Lookups
 
   expected_element :protocol_number
 
-  url_info 'Schedule%20Lookup','kra.committee.bo.CommitteeSchedule'
+  # url_info 'Schedule%20Lookup','kra.committee.bo.CommitteeSchedule'
 
   old_ui
 

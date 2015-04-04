@@ -50,8 +50,10 @@ class IACUCProtocolObject < DataFactory
     set_pi
     set_lead_unit
 
+    on(IACUCProtocolOverview).save
+    on(NotificationEditor).send_notification if on(NotificationEditor).send_notification_button.exists?
+
     on IACUCProtocolOverview do |doc|
-      doc.save
       @protocol_number=doc.protocol_number
       @search_key = { protocol_number: @protocol_number }
     end
@@ -60,7 +62,7 @@ class IACUCProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    open_document
+    navigate #open_document
     on(IACUCProtocolOverview).send(damballa(tab))
   end
 
@@ -73,6 +75,38 @@ class IACUCProtocolObject < DataFactory
       search.open_item @document_id
     end
   end
+
+
+  def navigate
+    if on(Header).krad_portal_element.exists?
+      on(Header).krad_portal
+    else
+      DEBUG.message "does not exists krad portal"
+    end
+
+    #we have gotten to a strange place without a header because of time and money need to get back from there
+    @browser.goto $base_url+$context unless on(Header).header_div.exists?
+    unless on_protocol?
+
+      on(Header).doc_search
+      on DocumentSearch do |search|
+        search.document_id.set @document_id
+        search.search
+        search.open_item @document_id
+      end
+
+    end
+  end
+
+  def on_protocol?
+    false
+    # if on(ProtocolOverview).headerinfo_table.exist?
+    #   on(ProtocolOverview).protocol_number==@protocol_number
+    # else
+    #   false
+    # end
+  end
+
 
   def view_by_protocol_number(protocol_number=@protocol_number)
     on(Header).researcher
@@ -204,6 +238,7 @@ class IACUCProtocolObject < DataFactory
       #First time the status changes to 'pending' and need to deactivate a second time
       page.expand_all
       page.submit
+      # unless div(class;'kul-error kul-message') Protocol action Deactivated successfully completed.'
     end
     on(NotificationEditor).send_it
   end

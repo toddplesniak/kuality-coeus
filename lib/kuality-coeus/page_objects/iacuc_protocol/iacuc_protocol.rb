@@ -1,6 +1,6 @@
 class IACUCProtocolOverview < KCProtocol
 
-  expected_element :headerarea
+  # expected_element :headerarea
 
   description_field
   tiny_buttons

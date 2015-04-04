@@ -9,6 +9,8 @@ class CentralAdmin < BasePage
                 animals: 'Animals', human_participants: 'Human Participants',
                 irb_committee: 'IRB Committee', iacuc_committee: 'IACUC Committee'
 
+  links 'IRB Schedules', 'IACUC Schedules'
+
   element(:central_admin_modal) { |b| b.link(text: 'CENTRAL ADMIN').parent.div }
   element(:create_icon_for) { |text, b| b.central_admin_modal.p(text: text).parent.link(class: 'uif-actionLink uif-boxLayoutHorizontalItem icon-plus icon-plus') }
 

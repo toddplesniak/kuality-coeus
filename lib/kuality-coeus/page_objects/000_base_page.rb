@@ -62,6 +62,8 @@ class BasePage < PageFactory
       alias_method :pi, :committee_name
       alias_method :expiration_date, :committee_name
       element(:headerarea) { |b| b.frm.div(id: 'headerarea') }
+      value(:headerinfo_table_no_frame) { |b| b.div(id: 'headerarea').table(class: 'headerinfo') }
+
     end
 
     def new_doc_header
@@ -88,7 +90,7 @@ class BasePage < PageFactory
            'Generate All Periods', 'Calculate All Periods', 'Default Periods',
            'Calculate Current Period', 'Send Notification'
       action(:save) { |b| b.save_button.when_present.click; b.loading }
-      action(:submit){ |b| b.frm.button(title: 'submit').click; b.loading; b.awaiting_doc }
+      action(:submit){ |b| b.frm.button(title: 'submit').when_present.click; b.loading; b.awaiting_doc }
       element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
       action(:approve) { |b| b.approve_button.click; b.loading; b.awaiting_doc }
       # Explicitly defining the "recall" button to keep the method name at "recall" instead of "recall_current_document"...

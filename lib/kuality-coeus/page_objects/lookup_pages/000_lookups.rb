@@ -16,6 +16,7 @@ class Lookups < BasePage
       alias_method :edit_person, :edit_item
 
       action(:edit_first_item) { |b| b.frm.link(text: 'edit').click; b.use_new_tab; b.close_parents }
+      action(:view_first_item) { |b| b.frm.link(text: 'view').click; b.use_new_tab; b.close_parents }
 
       action(:item_row) { |match, b| b.results_table.row(text: /#{Regexp.escape(match)}/m) }
       # Note: Use this when you need to click the "open" link on the target row

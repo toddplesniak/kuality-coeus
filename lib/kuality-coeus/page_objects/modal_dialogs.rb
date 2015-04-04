@@ -6,6 +6,8 @@ class Confirmation < BasePage
 
   value(:message) { |b| b.frm.table.tr.div(align: 'center').text }
   element(:yes_button) { |b| b.frm.button(name: 'methodToCall.processAnswer.button0', class: 'confirm') }
+  element(:no_button) { |b| b.frm.button(name: 'methodToCall.processAnswer.button1') }
+
   element(:reason) { |b| b.frm.textarea(name: 'reason') }
   alias_method :recall_reason, :reason
   action(:yes) { |b| b.yes_button.click; b.loading; b.awaiting_doc }
