@@ -66,6 +66,17 @@ class BudgetsDialog < Dialogs
 
 end # BudgetsDialog
 
+class CompleteBudget < Dialogs
+
+  undefine :ok
+
+  element(:dialog_header) { |b| b.header(id: 'PropDev-CompleteBudgetConfirmationDialog_headerWrapper') }
+  element(:ready) { |b| b.checkbox(name: 'submitBudgetIndicator') }
+
+  action(:ok) { |b| b.button(data_dismissdialogid: 'PropDev-CompleteBudgetConfirmationDialog').click; b.loading }
+
+end
+
 class CopyThisBudgetVersion < Dialogs
   
   element(:dialog_header) { |b| b.header(id: 'PropDev-BudgetPage-CopyBudgetDialog_headerWrapper') }
@@ -85,6 +96,12 @@ end
 class SyncBudgetRates < Dialogs
 
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
+
+end
+
+class SyncDirectCostLimit < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-NonPersonnelCosts-SyncToDirectCostLimit_headerWrapper') }
 
 end
 
