@@ -36,7 +36,7 @@ Feature: Basic Award Validations
   Scenario: The anticipated amount is less than the obligated amount
     When  the Award Modifier creates an Award with more obligated than anticipated amounts
     Then  an error should appear that says the anticipated amount must be equal to or more than obligated
-
+  @proposal
   Scenario: Attempt to link an IP that has not been approved
     Given the Proposal Creator submits a new Proposal into routing
     And   the OSP Administrator submits the Proposal to its sponsor
@@ -64,7 +64,7 @@ Feature: Basic Award Validations
   Scenario: Terms are not entered in the Award
     Given the Award Modifier creates an Award
     When  data validation is turned on for the Award
-    Then  errors about the missing terms are shown
+    Then  errors about the missing Award terms are shown
 
   Scenario: Contact's Credit Splits not valid
     Given the Award Modifier creates an Award

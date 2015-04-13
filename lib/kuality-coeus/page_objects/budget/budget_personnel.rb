@@ -1,48 +1,37 @@
-class BudgetPersonnel < BudgetDocument
+class BudgetPersonnel < BasePage
 
-  select_budget_period
-  glbl 'View Personnel Salaries'
+  document_buttons
+  buttons 'Add Personnel', 'Sync from Proposal'
 
-  action(:employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.KcPerson!!).((``)).(:;newBudgetPersons;:).((%true%)).((~~)).anchor').click }
-  action(:non_employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.NonOrganizationalRolodex!!).((``)).(:;newBudgetRolodexes;:).((%true%)).((~~)).anchor').click }
-  action(:to_be_named_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.budget.personnel.TbnPerson!!).((``)).(:;newTbnPersons;:).((%true%)).((~~)).anchor').click }
+  # Returns an Array. Each element in the Array corresponds to a data row in the
+  # Personnel table. The key/value pairs of each Hash is Column=>Cell Contents.
+  value(:project_personnel_info) { |b|
+    items= []
+    b.personnel_rows.each { |row|
+      items << {
+          person:           row.td.text[/^.*(?=\s\()/],
+          role:             row.td.span.text[/\w+/],
+          job_code:         row.td(index: 1).span.text[/(?<=\()\w+/],
+          appointment_type: row.td(index: 2).text.strip,
+          base_salary:      row.td(index: 3).text.strip
+      }
+    }
+    items
+  }
 
-  action(:job_code) { |person, b| b.pp_row(person).text_field(title: 'Job Code') }
-  action(:lookup_job_code) { |person, b| b.pp_row(person).button(name: /methodToCall.performLookup/).click }
-  action(:appointment_type) { |person, b| b.pp_row(person).select(title: 'Appointment Type') }
-  action(:base_salary) { |person, b| b.pp_row(person).text_field(title: '* Base Salary') }
-  action(:salary_effective_date) { |person, b| b.pp_row(person).text_field(title: '* Salary Effective Date') }
-  action(:salary_anniversary_date) { |person, b| b.pp_row(person).text_field(title: 'Salary Anniversary Date') }
-  action(:delete_person) { |person, b| b.pp_row(person).button(name: /methodToCall.deleteBudgetPerson.line\d+/) }
-  action(:sync_personnel) { |b| b.frm.button(name: 'methodToCall.synchToProposal').click; b.loading }
+  value(:added_personnel) { |b| names = []; b.personnel_rows.each { |tr| names << tr[0].text[/.+(?=\s\()/] }; names }
+  p_value(:proposal_role_of) { |name, b| b.person_row(name).td(index: 0).span.text[/\w+/] }
+  p_value(:salary_of) { |name, b| b.person_row(name).td(index: 3).text.strip }
+  alias_method :base_salary_of, :salary_of
+  p_value(:job_code_of) { |name, b| b.person_row(name).td(index: 1).span.text[/\w+/] }
+  p_value(:appointment_type_of) { |name, b| b.person_row(name).td(index: 2).text.strip }
 
-  element(:person) { |b| b.frm.select(name: 'newBudgetPersonnelDetails.personSequenceNumber') }
-  element(:object_code_name) { |b| b.frm.select(name: 'newBudgetLineItems[0].costElement') }
-  action(:add_details) { |b| b.frm.button(class: 'addButton').click; b.loading }
+  p_action(:details_of) { |name, b| b.person_row(name).button(text: 'Details').click; b.loading }
 
-  action(:start_date) { |person, b| b.pd_row(person).text_field(title: '* Start Date') }
-  action(:end_date) { |person, b| b.pd_row(person).text_field(title: '* End Date') }
-  action(:percent_effort) { |person, b| b.pd_row(person).text_field(title: '% Effort') }
-  action(:percent_charged) { |person, b| b.pd_row(person).text_field(title: '% Charged') }
-  action(:period_type) { |person, b| b.pd_row(person).select(title: 'Period Type') }
-  action(:requested_salary) { |person, b| b.pd_row(person).td(index: 7).text }
-  action(:calculated_fringe) { |person, b| b.pd_row(person).td(index: 8).text }
-  action(:calculate) { |person, b| b.pd_row(person).button(name: /methodToCall.calculateSalary/).click; b.loading }
-  action(:delete) { |person, b| b.pd_row(person).button(name: /methodToCall.deleteBudgetPersonnelDetails/).click; b.loading }
-
-  action(:budget_category) { |person, b| b.budget_category_fields[b.find_person_index(person)] }
-  action(:number_of_persons) { |person, b| b.num_persons_fields[b.find_person_index(person)] }
-  action(:on_off_campus) { |person, b| b.on_off_campus_fields[b.find_person_index(person)] }
-  action(:submit_cost_sharing) { |person, b| b.submit_cost_sharing_fields[b.find_person_index(person)] }
-
-  # ========
   private
-  # ========
 
-  element(:project_personnel_table) { |b| b.frm.table(id: 'budget-personnel-table') }
-  action(:pp_row) { |person, b| b.project_personnel_table.row(text: /#{Regexp.escape(person)}/) }
-  element(:budget_overview_table) { |b| b.frm.div(id: /tab-BudgetOverviewPeriod\d+-div/).div(class: 'tab-container').table }
-  element(:personnel_detail_tab) { |b| b.frm.div(id: /tab-PersonnelDetailPeriod\d+-div/) }
-  action(:pd_row) { |person, b| b.personnel_detail_tab.div(id: /tab-\d+-div/).tr(text: /#{Regexp.escape(person)}/) }
+  p_element(:person_row) { |name, b| b.personnel_table.row(text: /#{name}/) }
+  element(:personnel_table) { |b| b.div(class: 'dataTables_wrapper').tbody }
+  element(:personnel_rows) { |b| b.personnel_table.trs(class: /(even|odd)/) }
 
 end

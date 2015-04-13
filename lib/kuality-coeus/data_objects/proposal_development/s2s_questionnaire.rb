@@ -39,13 +39,6 @@ class S2SQuestionnaireObject < DataFactory
   def initialize(browser, opts={})
     @browser = browser
 
-    # PLEASE NOTE:
-    # This is a unique data object class in that
-    # it breaks the typical model for radio button
-    # methods and their associated class instance variables
-    #
-    # In general, it's not workable to set up radio button elements
-    # to use "Y" and "N" as the instance variables associated with them.
     defaults = {
         civil_service:            'N',
         potential_effects:        'N',
@@ -104,9 +97,14 @@ class S2SQuestionnaireObject < DataFactory
       end
       fill_out s2s, :explain_potential_effects, :explain_support, :pis_us_govt_agency,
                     :total_amount_requested, :former_pi, :former_institution,
-                    :explain_environmental_impact, :explain_exemption, :explain_historic_designation,
-                    :identify_countries, :explain_international_activities, :submitted_to_govt_agency,
-                    :application_date, :program
+                    # :explain_environmental_impact,
+                    # :explain_exemption, :explain_historic_designation,
+                    # :identify_countries,
+                    # :explain_international_activities,
+                    # :submitted_to_govt_agency,
+                    # :application_date,
+                    :program,
+                    :site_historic, :international_activities, :other_agencies, :subject_to_review
       s2s.save
     end
   end

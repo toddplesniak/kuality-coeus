@@ -6,6 +6,7 @@ class CommitteeDocumentObject < DataFactory
               :home_unit, :min_members_for_quorum, :maximum_protocols,
               :adv_submission_days, :review_type, :last_updated, :updated_user,
               :initiator, :members, :areas_of_research, :type, :schedule
+  def_delegators :@members, :member, :voting_members
 
   def initialize(browser, opts={})
     @browser = browser
@@ -22,14 +23,18 @@ class CommitteeDocumentObject < DataFactory
       members:                collection('CommitteeMember'),
       areas_of_research:      [],
       schedule:               collection('CommitteeSchedule'),
-      save_type:              :save
+      save_type:              :save,
+      committee_type:         'irb',
+      area_of_research:         []
     }
     @lookup_class=CommitteeLookup
     set_options(defaults.merge(opts))
   end
     
   def create
-    visit(CentralAdmin).create_irb_committee
+    on(Header).central_admin
+    @committee_type == 'irb' ? on(CentralAdmin).create_irb_committee : on(CentralAdmin).create_iacuc_committee
+
     on Committee do |comm|
       @document_id=comm.document_id
       @doc_header=comm.doc_title
@@ -55,9 +60,15 @@ class CommitteeDocumentObject < DataFactory
     end
   end
 
+  # FIXME
+  # This method will create a new committee document if
+  # the committee is in a final status. Not good!
   def view(tab)
     open_document
-    on(Committee).send(damballa(tab).to_sym)
+    on Committee do |page|
+      page.description.set @description
+      page.send(damballa(tab).to_sym)
+    end
   end
 
   def add_member opts={}
@@ -77,6 +88,19 @@ class CommitteeDocumentObject < DataFactory
     @schedule.add defaults.merge(opts)
   end
 
+  def add_area_of_research
+    open_document
+    on(Committee).area_of_research
+
+    on ResearchAreasLookup do |page|
+        page.search
+
+        research_description = page.research_descriptions.sample
+        page.check_item(research_description)
+        page.return_selected
+        @area_of_research << research_description
+      end
+  end
 end
     
       

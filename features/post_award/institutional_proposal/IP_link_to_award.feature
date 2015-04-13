@@ -27,7 +27,7 @@ Feature: Linking an Institutional Proposal to a KC Award
     And   marks the Budget Version complete
     And   adds a principal investigator to the Proposal
     And   sets valid credit splits for the Proposal
-    And   completes the required custom fields on the Proposal
+    And   completes the required supplemental info on the Proposal
     And   submits the Proposal into routing
     And   the OSPApprover approves the Proposal without future approval requests
     And   the principal investigator approves the Proposal
@@ -38,5 +38,8 @@ Feature: Linking an Institutional Proposal to a KC Award
   Scenario: KC-TS-1143 Can Link Multiple Versions of One Institutional Proposal
     Given 1 Approved Institutional Proposal exists
     And   the Award Modifier links the Funding Proposal to a new Award
-    When  the Proposal Creator copies the Proposal, generating a new version of the Institutional Proposal
+    And   the Proposal Creator copies the Proposal to a new one, as a continuation
+    And   certifies the PI and submits the copied Proposal
+    And   the OSPApprover and principal investigator approve the New Proposal
+    When  the OSP Administrator resubmits the New Proposal
     Then  the Award Modifier can merge the new version of the Institutional Proposal to the Award

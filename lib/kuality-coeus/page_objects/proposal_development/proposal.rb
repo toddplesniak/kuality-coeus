@@ -1,4 +1,6 @@
-class Proposal < ProposalDevelopmentDocument
+class Proposal < BasePage
+
+  protocol_header_elements
 
   value(:feedback) { |b| b.frm.div(class: 'left-errmsg').text }
 
@@ -41,6 +43,7 @@ class Proposal < ProposalDevelopmentDocument
 
   # When the proposal is deleted...
   value(:error_message) { |b| b.frm.table(class: 'container2').row[1].text }
+  element(:error_table) { |b| b.frm.table(class: 'container2') }
 
   # Overview tab error divs
   element(:overview_tab_errors) { |b| b.frm.div(index: 0, class: 'left-errmsg-tab').div(index: 0).divs(style: 'display:list-item;margin-left:20px;') }

@@ -3,8 +3,8 @@ class UnrecoveredFAObject < DataFactory
   include StringFactory, DateFactory, Navigation
 
   attr_reader :fiscal_year, :applicable_rate, :campus, :source_account, :amount,
-              # Note: Indexing is zero-based!
-              :index
+              # Note: Numbering is based on the number in the table!
+              :number
 
   def initialize(browser, opts={})
     @browser = browser
@@ -17,7 +17,7 @@ class UnrecoveredFAObject < DataFactory
 
   def create
     view
-    on DistributionAndIncome do |page|
+    on UnrecoveredFandA do |page|
       page.expand_all
       # TODO (obviously)
     end
@@ -26,16 +26,15 @@ class UnrecoveredFAObject < DataFactory
   def view
     # Note: Currently assumes we're already viewing
     # the budget document!
-    on(Parameters).distribution__income
+    on(BudgetSidebar).unrecovered_fna
   end
 
   def edit(opts)
     view
-    on DistributionAndIncome do |page|
-      page.expand_all
-      edit_item_fields opts, @index, page, :fiscal_year, :applicable_rate, :campus
-      page.fa_source_account(@index).fit opts[:source_account]
-      page.fa_amount(@index).fit opts[:amount]
+    on UnrecoveredFandA do |page|
+      edit_item_fields opts, @number, page, :fiscal_year, :applicable_rate, :campus
+      page.fa_source_account(@number).fit opts[:source_account]
+      page.fa_amount(@number).fit opts[:amount]
       page.save
     end
     update_options(opts)

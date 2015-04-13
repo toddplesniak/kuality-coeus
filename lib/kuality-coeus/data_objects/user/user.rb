@@ -3,11 +3,6 @@ class Users < Array
 
   include Singleton
 
-  def logged_in_user
-    self.find { |user| user.session_status == 'logged in' }
-  end
-  alias_method :current_user, :logged_in_user
-
   def user(username)
     self.find { |user| user.user_name == username }
   end
@@ -112,6 +107,13 @@ class UserYamlCollection < Hash
     self.find_all{|user| user[1][:primary_dept_code]==code }.shuffle
   end
 
+  def with_appointment_type(type)
+    self.find_all{|user|
+      !user[1][:appointmentz].nil? &&
+      !(user[1][:appointmentz].find { |app| app[:type]==type }).nil?
+    }.shuffle[0][0]
+  end
+
   # Note: This method returns the username of a matching user record. It does NOT
   # return an array of all matching users.
   def grants_gov_pi
@@ -136,16 +138,18 @@ class UserObject < DataFactory
               :groups, :roles, :role_qualifiers, :addresses, :phones, :emails,
               :primary_title, :directory_title, :citizenship_type, :role,
               :era_commons_user_name, :graduate_student_count, :billing_element,
-              :directory_department,
-              :session_status, :type
+              :directory_department, :appointments,
+              :type
 
   USERS = UserYamlCollection[YAML.load_file("#{File.dirname(__FILE__)}/users.yml")]
 
   def initialize(browser, opts={})
-    @browser = browser
+    @browser =      browser
+    @roles =        collection('UserRoles')
+    @groups =       collection('UserGroups')
+    @appointments = collection('Appointments')
 
     defaults={
-        user_name:        random_letters(16),
         description:      random_alphanums,
         affiliation_type: 'Student',
         campus_code:      'UN - UNIVERSITY',
@@ -161,11 +165,10 @@ class UserObject < DataFactory
         phones:           [{type:   'Work',
                             number:  '602-840-7300',
                             default: :set }],
-        rolez:            [{id: '106', qualifiers: [{:unit=>'000001'}]}],
+        rolez:            [{name: 'unassigned', qualifiers: [{:unit=>'000001'}]}],
         groups:           collection('UserGroups')
     }
     defaults.merge!(opts)
-    @roles = collection('UserRoles')
 
     if opts.empty? # then we want to make the admin user...
       options = {user_name: 'admin', first_name: 'admin', last_name: 'admin'}
@@ -178,23 +181,33 @@ class UserObject < DataFactory
                  when opts.key?(:role)
                    USERS.have_role(opts[:role])[0][0]
                  else
-                   :not_nil
+                   :nil
                  end
       options = USERS[@user_name].nil? ? defaults : USERS[@user_name].merge(opts)
     end
 
     set_options options
-    @rolez.each { |role| role[:user_name]=@user_name; @roles << make(UserRoleObject, role) } unless @rolez.nil?
+
+    @user_name=random_letters(16) if @user_name==:nil
+    @rolez.each { |role| @roles << make(UserRoleObject, role) } unless @rolez.nil? || @rolez[0][:name].nil?
+    @appointmentz.each { |appt| @appointments << make(AppointmentObject, appt) } unless @appointmentz.nil?
+    @appointmentz=nil
     @rolez=nil
     @full_name = "#{@first_name} #{@last_name}"
+
   end
 
+  # It's important to note that this method will work
+  # regardless of who is logged in--because if the current user
+  # is not capable of creating a new user, they will be logged out
+  # and the Admin user will log in. It's probably a good idea to
+  # revisit this approach in the future. For now, though, it
+  # makes the Cucumber scenarios a bit cleaner and simpler.
   def create
     visit(SystemAdmin).person
     begin
       on(PersonLookup).create
     rescue Watir::Exception::UnknownObjectException
-      $users.logged_in_user.sign_out
       $users.admin.log_in
       visit(SystemAdmin).person
       on(PersonLookup).create
@@ -254,14 +267,13 @@ class UserObject < DataFactory
       @principal_id = add.principal_id
       add.blanket_approve
     end
-
     unless extended_attributes.compact.length==0
       visit(SystemAdmin).person_extended_attributes
       on(PersonExtendedAttributesLookup).create
       on PersonExtendedAttributes do |page|
         page.expand_all
         fill_out page, :description, :primary_title, :directory_title, :citizenship_type,
-                 :era_commons_user_name, :graduate_student_count, :billing_element,
+                 :era_commons_user_name, #:graduate_student_count, :billing_element,
                  :principal_id, :directory_department
         page.blanket_approve
       end
@@ -301,47 +313,43 @@ class UserObject < DataFactory
   # Keep in mind...
   # - If some other user is logged in, they
   #   will be automatically logged out
-  # - This method will close all child
-  #   tabs/windows and return to the
-  #   original window
   def sign_in
-    $users.current_user.sign_out unless $users.current_user==nil
-    visit login_class do |log_in|
-      log_in.username.set @user_name
-      log_in.login
+    unless $current_user==self
+      $current_user.sign_out if $current_user
+      visit Login do |log_in|
+        log_in.username.set @user_name
+        log_in.login
+      end
+      on(Header).doc_search_link.wait_until_present
+
+      $current_user=self
     end
-    visit(Researcher).logout_button.wait_until_present
-    @session_status='logged in'
   end
   alias_method :log_in, :sign_in
 
   def sign_out
-    if $cas
-      on(BasePage).close_extra_windows
-      @browser.goto "#{$base_url+$cas_context}logout"
-    else
-      visit(Researcher)
-      visit(login_class).close_extra_windows
-      on BasePage do |page|
-        page.logout if page.logout_button.present?
-      end
-    end
-    @session_status='logged out'
+    on(BasePage).close_extra_windows
+    visit Logout
+    $current_user=nil
   end
   alias_method :log_out, :sign_out
 
   def exist?
-    $users.admin.log_in if $users.current_user==nil
-    visit PersonLookup do |search|
+    $users.admin.log_in if $current_user==nil
+    visit SystemAdmin do |page|
+      page.person
+    end
+    on PersonLookup do |search|
       search.principal_name.set @user_name
       search.search
       begin
+        search.results_table.wait_until_present(2)
         if search.item_row(@user_name).present?
           # TODO!
           # This is a coding abomination to include
           # this here, but it's here until I can come
           # up with a better solution...
-          @principal_id = search.item_row(@user_name).link(title: /^Person Principal ID=\d+/).text
+          @principal_id = search.item_row(@user_name).link(title: /Person Principal ID=\d+/).text
           return true
         else
           return false
@@ -412,10 +420,6 @@ class UserObject < DataFactory
       look.edit_person @user_name
     end
     on(Person).expand_all
-  end
-
-  def login_class
-    $cas ? CASLogin : Login
   end
 
 end # UserObject

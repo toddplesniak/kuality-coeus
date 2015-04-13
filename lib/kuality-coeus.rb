@@ -7,8 +7,8 @@ require 'watir-nokogiri'
 require 'open-uri'
 Dir["#{File.dirname(__FILE__)}/kuality-coeus/*.rb"].alphabetize.each {|f| require f }
 Dir["#{File.dirname(__FILE__)}/kuality-coeus/page_objects/*.rb"].alphabetize.each {|f| require f }
-Dir["#{File.dirname(__FILE__)}/kuality-coeus/page_objects/*/*.rb"].alphabetize.each {|f| require f }
 Dir["#{File.dirname(__FILE__)}/kuality-coeus/data_objects/*.rb"].alphabetize.each {|f| require f }
+Dir["#{File.dirname(__FILE__)}/kuality-coeus/page_objects/*/*.rb"].alphabetize.each {|f| require f }
 Dir["#{File.dirname(__FILE__)}/kuality-coeus/data_objects/*/*.rb"].alphabetize.each {|f| require f }
 
 # Initialize this class at the start of your test cases to
@@ -26,7 +26,7 @@ class Kuality
 
     @browser = Watir::Browser.new web_browser
     @browser.window.resize_to(1500,1000)
-    @browser.goto $base_url
+    @browser.goto $base_url+$context
 
     $users       = Users.instance
     $file_folder = "#{File.dirname(__FILE__)}/resources/"

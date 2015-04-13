@@ -1,16 +1,24 @@
 class IRBProtocolObject < DataFactory
 
-  include StringFactory, Navigation
+  include StringFactory, Navigation, DateFactory
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
                :funding_type, :funding_number, :source, :participant_type, :document_id, :initiator,
                :protocol_number, :status, :submission_status, :expiration_date, :personnel,
                # Submit for review...
-               :submission_type, :submission_review_type, :type_qualifier, :committee, :schedule_date,
-               :primary_reviewers, :secondary_reviewers, :reviews,
+               :reviews, :schedule_date,
                # Withdraw
-               :withdrawal_reason
+               :withdrawal_reason,
+               # Amendment
+               :amendment,
+               # Return to PI
+               :return_to_pi
+
+  def_delegators :@personnel, :principal_investigator
+  def_delegators :@reviews, :add_comment_for, :approve_review_of, :accept_comments_of, :comments_of,
+                 :mark_comments_private_for, :mark_comments_final_for, :assign_primary_reviewers,
+                 :assign_secondary_reviewers, :primary_reviewers, :secondary_reviewers
 
   def initialize(browser, opts={})
     @browser = browser
@@ -20,17 +28,15 @@ class IRBProtocolObject < DataFactory
         protocol_type:       '::random::',
         title:               random_alphanums_plus,
         lead_unit:           '::random::',
-        personnel:           collection('ProtocolPersonnel'),
-        primary_reviewers:   [],
-        secondary_reviewers: [],
-        reviews:             collection('Review')
+        personnel:           collection('ProtocolPersonnel')
     }
     @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
   end
 
   def create
-    visit(Researcher).create_irb_protocol
+    on(Header).researcher
+    on(ResearcherMenu).create_irb_protocol
     on ProtocolOverview do |doc|
       @document_id=doc.document_id
       @doc_header=doc.doc_title
@@ -41,8 +47,8 @@ class IRBProtocolObject < DataFactory
       doc.expand_all
       fill_out doc, :description, :protocol_type, :title
     end
-    set_pi
-    set_lead_unit
+      set_pi
+      set_lead_unit
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
@@ -51,59 +57,130 @@ class IRBProtocolObject < DataFactory
   end
 
   def view(tab)
+    raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
     open_document
-    on(ProtocolOverview).send(damballa(tab.to_s))
+    on(ProtocolOverview).send(damballa(tab)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
   end
 
   def submit_for_review opts={}
-    defaults = {
-        submission_type: '::random::',
-        submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
-        type_qualifier: '::random::',
-        committee: '::random::'
-    }
-    set_options(defaults.merge(opts))
-    view :protocol_actions
-    on ProtocolActions do |page|
-      page.expand_all
-      fill_out page, :submission_type, :submission_review_type, :type_qualifier,
-               :committee
-      # If the test doesn't specify a particular schedule date then
-      # we want to pick the first selectable item
-      # so as to make it most likely that there
-      # will be active committee members available...
-      # FIXME!!! FIXME!!! FIXME!!! FIXME!!! FIXME!!!
-      # TODO: This is still buggy because sometimes the schedule dates
-      # fall outside of the selectable range. FIXME!!!
-      @schedule_date ||= page.schedule_date.options[1].text
-      page.schedule_date.pick! @schedule_date
-      page.submit_for_review
-      @status=page.document_status
+    view 'Protocol Actions'
+    @reviews = make ReviewObject, opts
+    @reviews.create
+    #Need to capture the Document ID, after submit
+    #but there is one test that needs to verify maximum number of Protocol reached.
+    if @reviews.max_protocol_confirm == nil
+      on(Confirmation).yes if on(Confirmation).yes_button.present?
+      on SubmitForReview do |page|
+        @status=page.document_status
+        @document_id=page.document_id
+      end
+    else
+      puts 'Now on the Confirmation page and happy to be here without pressing any button'
     end
   end
 
-  def assign_primary_reviewers *reviewers
-    assign_reviewers 'primary', reviewers
-  end
-
-  def assign_secondary_reviewers *reviewers
-    assign_reviewers 'secondary', reviewers
+  def modify_submission_request opts={}
+    view 'Protocol Actions'
+    @reviews.modify opts
   end
 
   def withdraw(reason=random_multiline(50,4))
     @withdrawal_reason=reason
-    view :protocol_actions
-    on ProtocolActions do |page|
+    view 'Protocol Actions'
+    on WithdrawProtocol do |page|
       page.expand_all
       fill_out page, :withdrawal_reason
-      page.submit_withdrawal_reason
+      page.submit
       @status=page.document_status
       @document_id=page.document_id
     end
   end
 
-  def principal_investigator
-    @personnel.principal_investigator
+  def assign_to_agenda
+    view 'Protocol Actions'
+    on AssignToAgenda do |page|
+      page.expand_all
+      # TODO: Add more stuff here when needed.
+      page.submit
+    end
+  end
+
+  def notify_committee(committee_name)
+    view 'Protocol Actions'
+    on NotifyCommittee do |notify|
+      notify.expand_all
+      notify.committee_id.select committee_name
+
+      notify.submit
+    end
+  end
+
+  def create_amendment opts={}
+    @amendment = {
+        summary: random_alphanums_plus,
+        sections: [['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
+              'Protocol Organizations', 'Subjects', 'Questionnaire', 'General Info',
+              'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
+    }
+    @amendment.merge!(opts)
+    view 'Protocol Actions'
+
+    on CreateAmendment do |page|
+      page.expand_all
+      page.summary.set @amendment[:summary]
+      @amendment[:sections].each do |sect|
+        page.amend(sect).set
+      end
+      page.create
+    end
+
+    confirmation('yes')
+    @document_id = on(ProtocolActions).document_id
+  end
+
+  def submit_expedited_approval opts={}
+    view 'Protocol Actions'
+    @expedited_approval = make ExpeditedApprovalObject, opts
+    @expedited_approval.create
+
+    #FIXME!
+    # on(ProtocolActions).save_correspondence if on(ProtocolActions).save_correspondence_button.present?
+  end
+
+  # TODO: Finish this off...
+  def suspend
+    view 'Protocol Actions'
+    on Suspend do |page|
+      page.expand_all
+      page.x
+    end
+  end
+
+  def return_to_pi opts={}
+    @return_to_pi = { comments: random_alphanums_plus,
+                      action_date: in_a_week[:date_w_slashes] }
+    @return_to_pi.merge!(opts)
+    on ReturnToPI do |page|
+      page.action_date.fit @return_to_pi[:action_date]
+      page.comments.fit @return_to_pi[:comments]
+      page.submit
+      @document_id=page.document_id
+    end
+
+    on NotificationEditor do |page|
+      if page.notification_editor_div.present?
+        page.send_it
+      end
+    end
+  end
+
+  # TODO: This needs to be made much more robust...
+  def approve_action
+    view 'Protocol Actions'
+    on ApproveAction do |page|
+      page.expand_all
+      page.submit
+    end
   end
 
   # =======
@@ -156,60 +233,6 @@ class IRBProtocolObject < DataFactory
                 full_name: name, role: 'Principal Investigator', user_name: user_name
       @personnel << pi
     end
-  end
-
-  def prep(object_class, opts)
-    merge_settings(opts)
-    object = make object_class, opts
-    object.create
-    object
-  end
-
-  def assign_reviewers type, reviewers
-    rev = { 'primary' => @primary_reviewers, 'secondary' => @secondary_reviewers }
-    existing_reviewers = @primary_reviewers + @secondary_reviewers
-    view :protocol_actions
-    on ProtocolActions do |page|
-      page.expand_all
-      if reviewers==[]
-        unselected_reviewers = (page.reviewers - existing_reviewers).shuffle
-        # We want to randomize the number of reviewers selected when there
-        # are several to choose from, but we don't want to select all of them
-        # if we can avoid it...
-        count = case(unselected_reviewers.size)
-                  when 0
-                    0
-                  when 1, 2
-                    1
-                  else
-                    rand(unselected_reviewers.size - 1)
-                end
-        count.times do |x|
-          page.reviewer_type(unselected_reviewers[x]).select type
-          rev[type] << unselected_reviewers[x]
-        end
-      else
-        # Note: This code is written with the assumption
-        # that the reviewer being passed is selectable and
-        # isn't already a reviewer...
-        reviewers.each do |reviewer|
-          page.reviewer_type(reviewer).select type
-          rev[type] << reviewer
-          make_review_for type, reviewer
-        end
-      end
-      page.assign_reviewers
-    end
-  end
-
-  def make_review_for(type, reviewer)
-    opts = {
-        due_date:        @schedule_date[/^\d+-\d+-\d{4}(?=,)/].gsub('-','/'),
-        reviewer:        reviewer,
-        type:            type
-    }
-    review = make ReviewObject, opts
-    @reviews << review
   end
 
 end

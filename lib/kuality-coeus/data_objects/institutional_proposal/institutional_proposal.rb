@@ -8,6 +8,7 @@ class InstitutionalProposalObject < DataFactory
               :award_id, :initiator, :proposal_log, :unrecovered_fa,
               :key_personnel, :nsf_science_code, :prime_sponsor_id, :account_id, :cfda_number,
               :version, :prior_versions
+  def_delegators :@project_personnel, :principal_investigator
 
   def initialize(browser, opts={})
     @browser = browser
@@ -16,7 +17,7 @@ class InstitutionalProposalObject < DataFactory
         activity_type:     '::random::',
         sponsor_id:        '::random::',
         project_personnel: collection('ProjectPersonnel'),
-        special_review:    collection('SpecialReview'),
+        compliance:        collection('Compliance'),
         cost_sharing:      collection('IPCostSharing'),
         unrecovered_fa:    collection('IPUnrecoveredFA'),
         description:       random_alphanums_plus,
@@ -154,7 +155,7 @@ class InstitutionalProposalObject < DataFactory
     if @sponsor_id=='::random::'
       on(InstitutionalProposal).find_sponsor_code
       on SponsorLookup do |look|
-        look.sponsor_type_code.pick! '::random::'
+        look.sponsor_type_code.pick! 'Federal'
         look.search
         look.page_links[rand(look.page_links.length)].click if look.page_links.size > 0
         look.return_random

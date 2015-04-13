@@ -15,7 +15,8 @@ end
 #    a class instance variable based on the username
 # 3) Logs that user in (if they're not already)...
 Given /^I'm logged in with (.*)$/ do |username|
-  make_user(user: username).sign_in
+  user = make_user(user: username)
+  user.sign_in
 end
 
 # Whereas, this step def
@@ -23,7 +24,8 @@ end
 # 2) Assumes that role user already exists in the system
 # 3) Logs that user in, if they're not already
 Given /^I? ?log in (?:again)? ?with the (.*) user$/ do |role|
-  $users.with_role(role).sign_in unless $users.with_role(role).session_status=='logged in'
+  user = $users.with_role(role)
+  user.sign_in
 end
 
 # This step definition
@@ -101,6 +103,11 @@ Given /^a User exists that can be a PI for Grants.gov proposals$/ do
   $users[-1].create unless $users[-1].exists?
 end
 
+Given /^a User exists with a '(.*)' appointment type$/ do |type|
+  make_user(user: UserObject::USERS.with_appointment_type(type), type: type)
+  $users[-1].create unless $users[-1].exists?
+end
+
 Given /^an AOR User exists$/ do
   # TODO: Using the username here is cheating. Fix this.
   @aor = make_user(user: 'warrens', type: 'AOR')
@@ -142,4 +149,9 @@ When /^a User exists with the roles: (.*) in the (.*) unit$/ do |roles, unit|
     make_user user: user_name
     $users[-1].create unless $users[-1].exists?
   end
+end
+
+When /^I log in with the Proposal's principal investigator$/ do
+  $users.logged_in_user.sign_out unless $users.current_user==nil
+  @proposal.key_personnel.principal_investigator.log_in
 end

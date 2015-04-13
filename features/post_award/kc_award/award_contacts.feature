@@ -5,12 +5,12 @@ Feature: Award Contacts
   so that I can...
 
   Background:
-    * a User exists with the role 'Award Modifier' in unit 'BL-BL'
+    * a User exists with the role 'Award Modifier' in unit 'CS'
 
   Scenario: Award Modifier adds a PI to an Award
-    Given the Award Modifier creates an Award with BL-BL as the Lead Unit
+    Given the Award Modifier creates an Award with CS as the Lead Unit
     When  the Award Modifier adds a PI to the Award
-    Then  The Award PI's Lead Unit is BL-BL
+    Then  The Award PI's Lead Unit is CS
 
   Scenario: Award has no Principal Investigator added
     Given the Award Modifier creates an Award
@@ -28,7 +28,7 @@ Feature: Award Contacts
     And   adds a PI to the Award
     When  the Award's PI is added again with a different role
     Then  the Award should throw an error saying they are already in the Award Personnel
-
+  @test
   Scenario: Adding a non-employee without a Unit
     Given the Award Modifier creates an Award
     And   adds a non-employee as a Principal Investigator to the Award

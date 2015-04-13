@@ -4,7 +4,7 @@ Given /I? ?add a Sponsor Contact to the Award$/ do
 end
 
 When /^an Account ID with special characters is added to the Award details$/ do
-  @award.edit account_id: random_string(5, %w{~ ! @ # $ % ^ & ž}.sample)
+  @award.edit account_id: random_string(5, %w{~ ! @ # $ % ^ & ž}.sample(2))
 end
 
 When /^the Award's title is updated to include invalid characters$/ do
@@ -18,10 +18,11 @@ end
 When /I? ?adds? the required Custom Data to the Award$/ do
   @award.add_custom_data if @award.custom_data.nil?
 end
-
+#TODO
+#Confirm that custom data is not required in KC Award.
 When /completes? the Award requirements$/ do
   steps %q{
-    * add a report to the Award
+    * add a Report to the Award
     * add Terms to the Award
     * add the required Custom Data to the Award
     * add a Payment & Invoice item to the Award
@@ -57,10 +58,17 @@ end
 And /the Award Modifier edits the finalized Award$/ do
   steps '* log in with the Award Modifier user'
   @award.edit transaction_type: '::random::', anticipated_amount: '5', obligated_amount: '5'
+
+
+
+  DEBUG.message @award.prior_versions.inspect
+
+
+
 end
 
 When /^the original Award is edited again$/ do
-  visit(Researcher).doc_search
+  on(Header).doc_search
   on DocumentSearch do |search|
     search.document_id.set @award.prior_versions['1']
     search.search

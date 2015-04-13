@@ -27,10 +27,16 @@ class SponsorTemplateObject < DataFactory
       @status=add.document_status
       add.expand_all
       fill_out add, :description, :template_description, :template_status, :payment_basis, :payment_method
-      set_sponsor_terms
-      add.submit
     end
 
+    set_sponsor_terms
+    on SponsorTemplate do |add|
+    end
+    #This currently is only used to create the error messages will need to be improved when tests require valid sponsor templates
+    set_sponsor_terms
+    on SponsorTemplate do |add|
+      add.submit
+    end
   end
 
   # =========
@@ -38,12 +44,14 @@ class SponsorTemplateObject < DataFactory
   # =========
 
   def set_sponsor_terms
-
     on(SponsorTemplate).find_sponsor_term
+    # This SponsorTermLookup shows results with checkboxes and
+    # is not the same as the lookup on the Maintence => Sponsor Terms link
     on SponsorTermLookup do |look|
       look.search
-      look.return_random
+      look.return_random_checkbox if :sponsor_term == '::random::'
+      look.return_selected
     end
   end
 
-end
+end #SponsorTemplateObject

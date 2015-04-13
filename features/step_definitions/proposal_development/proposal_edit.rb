@@ -1,4 +1,4 @@
-When /^I? ?recall the Proposal$/ do
+When /^the Proposal is recalled$/ do
   @proposal.recall
 end
 
@@ -33,9 +33,9 @@ Then /^The proposal route log's 'Pending Action Requests' should include '(.*)'$
   end
 end
 
-Then /^The S2S tab should become available$/ do
-  @proposal.view 'S2S'
-  on(S2S).s2s_header.should be_present
+Then /^The S2S opportunity search should become available$/ do
+  @proposal.view 'S2S Opportunity Search'
+  expect{on(S2S).find_opportunity_button}.to be_present
 end
 
 When /^The Proposal's 'Future Action Requests' should include 'PENDING APPROVE' for the principal investigator$/ do
@@ -55,7 +55,8 @@ When /^I? ?push the Proposal's project start date ahead (\d+) years?$/ do |year|
   @proposal.edit project_start_date: new_date
 end
 
-When /^the Proposal Creator pushes the end date (\d+) more years?$/ do |year|
+When /(the Proposal Creator |)pushes the Proposal end date (\d+) more years?$/ do |usr, year|
+  steps %|* I log in with the Proposal Creator user| if usr=='the Proposal Creator '
   new_year=@proposal.project_end_date[/\d+$/].to_i+year.to_i
   new_date="#{@proposal.project_end_date[/^\d+\/\d+/]}/#{new_year}"
   @proposal.edit project_end_date: new_date
@@ -66,7 +67,7 @@ Then /^I can recall the Proposal$/ do
   on(Proposal).recall_button.should exist
 end
 
-And /^I? ?answer the S2S questions$/ do
+And /answers? the S2S questions$/ do
   @proposal.complete_s2s_questionnaire
 end
 
@@ -87,29 +88,47 @@ Given /^I? ?set the proposal type to either 'Resubmission', 'Renewal', or 'Conti
   @proposal.edit proposal_type: type
 end
 
-When(/^the AOR user submits the Proposal to S2S$/) do
+When /^the AOR user submits the Proposal to S2S$/ do
   @aor.sign_in
-  steps '* I submit the Proposal to S2S'
+  @proposal.submit :to_s2s
 end
 
-And /^the Proposal Creator copies the Proposal, generating a new version of the Institutional Proposal$/ do
+And /^the Proposal Creator copies the Proposal to a new one, as a continuation$/ do
   steps '* I log in with the Proposal Creator user'
-  @new_proposal_version = @proposal.copy_to_new_document
+  @new_proposal_version = @proposal.copy
   @new_proposal_version.edit proposal_type: 'Continuation', original_ip_id: @institutional_proposal.proposal_number
-  @new_proposal_version.key_personnel.principal_investigator.certification
+
+end
+
+And /^certifies the PI and submits the copied Proposal$/ do
+  @new_proposal_version.principal_investigator.certification
   @new_proposal_version.submit
+end
+
+And /^the OSPApprover and principal investigator approve the New Proposal$/ do
   steps '* I log in with the OSPApprover user'
   @new_proposal_version.approve_from_action_list
-  on(Confirmation).send(:no)
-  $users.logged_in_user.sign_out
   @new_proposal_version.key_personnel.principal_investigator.log_in
-  @new_proposal_version.approve_from_action_list
-  visit(Researcher).logout
+  @new_proposal_version.approve_from_action_list nil
+end
+
+And /^the OSP Administrator resubmits the New Proposal$/ do
   steps '* I log in with the OSP Administrator user'
   @new_proposal_version.view :proposal_actions
   @new_proposal_version.resubmit
 end
 
 Then /^it is still possible to copy the Proposal$/ do
-  expect{@proposal.copy_to_new_document}.not_to raise_error
+  expect{@proposal.copy_to_new_document '000001 - University'}.not_to raise_error
+end
+
+And /^the Proposal is copied to a different lead unit$/ do
+  @copied_proposal = @proposal.copy 'BL-BL'
+end
+
+And /changes the Proposal's activity type$/ do
+  current_activity = @proposal.activity_type
+  @proposal.view 'Proposal Details'
+  activities = on(ProposalDetails).activity_type.options.map{ |opt| opt.text }[1..-1]-[current_activity]
+  @proposal.edit activity_type: activities.sample
 end

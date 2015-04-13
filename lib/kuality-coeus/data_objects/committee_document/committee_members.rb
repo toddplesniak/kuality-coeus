@@ -72,17 +72,18 @@ class CommitteeMemberObject < DataFactory
   end
 
   def sign_in
-    $users.current_user.sign_out if $users.current_user
+    $current_user.sign_out unless $current_user==nil || $current_user==self
     sign_out
     visit($cas ? CASLogin : Login) do |log_in|
       log_in.username.set @user_name
       log_in.login
     end
-    visit Researcher
+    $current_user=self
   end
 
   def sign_out
     @browser.goto "#{$base_url}#{$context}logout.do"
+    $current_user=nil
   end
 
   private
@@ -109,9 +110,12 @@ class CommitteeMemberObject < DataFactory
     end
   end
 
-  ACTIVE_ROLES = ['Chair', 'Expedited/Exempt Reviewer', 'Alternate', 'IRB Administrator',
-                  'Member - Scientist', 'Member - Non Scientist', 'Member', 'Community Member',
-                  'Prisoner Representative', 'Vice Chair', 'Additional Committee Member' ]
+  ACTIVE_ROLES = ['Chair', 'Expedited/Exempt Reviewer', 'Alternate',
+                  'IRB Administrator',
+                  'Member - Scientist', 'Member - Non Scientist',
+                  'Member', 'Community Member',
+                  'Prisoner Representative', 'Vice Chair', 'Additional Committee Member'
+                   ]
 
 end # CommitteeMemberObject
 
@@ -125,6 +129,10 @@ class CommitteeMemberCollection < CollectionsFactory
 
   def full_names
     self.collect { |member| member.name }
+  end
+
+  def voting_members
+    self.find_all { |member| member.membership_type=='Voting member' }
   end
 
 end # CommitteeMemberCollection
