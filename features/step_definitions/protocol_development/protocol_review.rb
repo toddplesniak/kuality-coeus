@@ -9,9 +9,6 @@ Then /^the assigned reviewers get a Protocol Review$/ do
       page.document_title.set @irb_protocol.protocol_number
       page.filter
     end
-    # title_string = "KC Protocol Review - #{@irb_protocol.principal_investigator.last_name}/Protocol# #{@irb_protocol.protocol_number}"
-    # on(ActionList).open_review(title_string)
-    # DEBUG.pause(123)
 
     on(ActionList).open_first_document_id
 

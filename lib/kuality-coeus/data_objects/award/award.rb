@@ -117,14 +117,17 @@ class AwardObject < DataFactory
   end
 
   def navigate
+
+    #we are in a strange place without a header because of time and money. need to get back from there
+    @browser.goto $base_url+$context unless on(Header).header_div.exists?
+
     if on(Header).krad_portal_element.exists?
       on(Header).krad_portal
     else
-      DEBUG.message "does not exists krad portal"
+      # DEBUG.message "krad portal does not exist we can continue on"
     end
 
-    #we have gotten to a strange place without a header because of time and money need to get back from there
-    @browser.goto $base_url+$context unless on(Header).header_div.exists?
+
     on(Header).central_admin
     on(CentralAdmin).search_award
     on AwardLookup do |page|
@@ -152,7 +155,6 @@ class AwardObject < DataFactory
     view :award_actions
     on AwardActions do |copy|
       copy.close_parents
-      DEBUG.pause(134)
       copy.expand_all
       copy.expand_tree
       sleep 3 # FIXME!
@@ -161,7 +163,6 @@ class AwardObject < DataFactory
       copy.send("copy_as_#{type}", @id)
       copy.child_of_target_award(@id).pick! parent
       copy.copy_award @id
-      DEBUG.pause(124)
     end
   end
 
@@ -248,9 +249,13 @@ class AwardObject < DataFactory
 
   def submit
     view :award_actions
-    DEBUG.pause(3)
-    on(AwardActions).submit
+    on AwardActions do |page|
+      DEBUG.pause(3)
+      page.submit
+    end
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    #was causing problem with logout need to wait for page to load here.
+    DEBUG.pause(4)
   end
 
   def add_custom_data opts={}

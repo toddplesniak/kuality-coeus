@@ -34,7 +34,7 @@ When /^data validation is turned on for the Award$/ do
   @award.view_tab :award_actions
   on AwardActions do |page|
     page.expand_all
-    DEBUG.pause(3)
+    page.validation_button.wait_until_present
     page.turn_on_validation
   end
 end
