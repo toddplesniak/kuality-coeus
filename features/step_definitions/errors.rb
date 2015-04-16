@@ -42,15 +42,15 @@ Then /^an error should appear that says (.*)$/ do |error|
 end
 
 Then /^an error requiring at least one unit for the co-investigator is shown$/ do
-  $current_page.errors.should include %|At least one Unit is required for #{@proposal.key_personnel.co_investigator.full_name}.|
+  expect($current_page.errors).to include %|At least one Unit is required for #{@proposal.key_personnel.co_investigator.full_name}.|
 end
 
 Then /^an error about un-certified personnel is shown$/ do
-  on(DataValidation).validation_errors_and_warnings.should include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].first_name} #{@proposal.key_personnel[0].last_name}.|
+  expect(on(DataValidation).validation_errors_and_warnings).to include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].first_name} #{@proposal.key_personnel[0].last_name}.|
 end
 
 Then /^an error should say the credit split does not equal 100%$/ do
-  on(DataValidation).validation_errors_and_warnings.should include "The Investigators #{@split_type} Credit Split does not equal 100%."
+  expect(on(DataValidation).validation_errors_and_warnings).to include "The Investigators #{@split_type} Credit Split does not equal 100%."
 end
 #This step validate errors for when data validation is turned on.
 Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
@@ -140,7 +140,7 @@ end
 # Subaward              #
 #-----------------------#
 Then /^an error should appear on the Subaward saying the person is already added to the contacts$/ do
-  on(Subaward).errors.should include "#{@subaward.contacts[0][:name]} is already added to the Subaward Contacts"
+  expect(on(Subaward).errors).to include "#{@subaward.contacts[0][:name]} is already added to the Subaward Contacts"
 end
 
 #------------------------#
@@ -197,14 +197,14 @@ end
 # Miscellaneous          #
 #------------------------#
 Then /^a confirmation screen asks if you want to edit the existing pending version$/ do
-  on(Confirmation).message.should == 'A Pending version already exists. Do you want to edit the Pending version?'
+  expect(on(Confirmation).message).to be 'A Pending version already exists. Do you want to edit the Pending version?'
 end
 
 Then /^there are no errors on the page$/ do
-  $current_page.errors.size.should==0
+  expect($current_page.errors.size).to equal(0)
 end
 
 And /^there are no data validation errors or warnings for the Proposal$/ do
-  on(DataValidation).errors_list.should_not be_present
+  expect(on(DataValidation).errors_list).not_to be_present
   expect($current_page.errors.size).to equal(0)
 end

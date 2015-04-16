@@ -40,7 +40,7 @@ class RoleObject < DataFactory
       'Proposal Creator'                  => '111',
       'Proposal Submission'               => '130',
       'Protocol Aggregator'               => '105',
-      'Protocol Approver'                 => '149',
+      'ProtocolApprover'                 => '149',
       'Protocol Creator'                  => '129',
       'Protocol Viewer'                   => '104',
       'System User'                       => '90',

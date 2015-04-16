@@ -1,6 +1,20 @@
 module Transforms
 
-  YES_NO = { set: 'Yes', clear: 'No' }
+  YES_NO = { set: 'Yes',
+             clear: 'No',
+             true => 'Yes',
+             false => 'No',
+             'Yes' => 'Yes',
+             'No' => 'No'
+  }
+
+  TRUE_FALSE = { set: true,
+                 clear: false,
+                 true => true,
+                 false => true,
+                 'Yes' => true,
+                 'No' => false
+  }
 
   ON_OFF = { set: 'on', clear: 'off' }
 
