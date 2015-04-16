@@ -4,6 +4,8 @@ class CostSharing < BasePage
 
   element(:add_cost_sharing) { |b| b.button(text: 'Add Cost Sharing').click; b.span(text: 'Add Line').wait_until_present }
 
+  p_value(:row_amount) { |row, b| b.cs_rows[row.to_i-1].text_field(name: /shareAmount/).value }
+
   p_element(:period) { |source, amount, b| b.target_item(source, amount).select(name: /projectPeriod/) }
   p_element(:percentage) { |source, amount, b| b.target_item(source, amount).text_field(name: /sharePercentage/) }
   p_element(:source_account) { |source, amount, b| b.target_item(source, amount).text_field(name: /sourceAccount/) }

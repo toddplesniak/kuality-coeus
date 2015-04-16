@@ -85,6 +85,17 @@ class BudgetsDialog < Dialogs
 
 end # BudgetsDialog
 
+class CompleteBudget < Dialogs
+
+  undefine :ok
+
+  element(:dialog_header) { |b| b.header(id: 'PropDev-CompleteBudgetConfirmationDialog_headerWrapper') }
+  element(:ready) { |b| b.checkbox(name: 'submitBudgetIndicator') }
+
+  action(:ok) { |b| b.button(data_dismissdialogid: 'PropDev-CompleteBudgetConfirmationDialog').click; b.loading }
+
+end
+
 class CopyThisBudgetVersion < Dialogs
   
   element(:dialog_header) { |b| b.header(id: 'PropDev-BudgetPage-CopyBudgetDialog_headerWrapper') }
@@ -93,16 +104,37 @@ class CopyThisBudgetVersion < Dialogs
 
   buttons 'Copy Budget', 'Cancel'
 
-end # CopyThisBudgetVersion
+end
 
 class ChangePeriod < Dialogs
   
   element(:dialog_header) { |b| b.header(id: 'PropBudget-PeriodsPage-ChangePeriodDialog_headerWrapper') }
 
-end  # ChangePeriod
+end
 
 class SyncBudgetRates < Dialogs
 
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
 
-end # SyncBudgetRates
+end
+
+class SyncDirectCostLimit < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-NonPersonnelCosts-SyncToDirectCostLimit_headerWrapper') }
+
+end
+
+class Participants < Dialogs
+
+  buttons 'Save Changes'
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-NonPersonnelCostsPage-EditParticipantSupport-Dialog_headerWrapper') }
+  element(:number_of_participants) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.currentTabBudgetPeriod.numberOfParticipants') }
+
+end
+
+class ConfirmPeriodChanges < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-ConfirmPeriodChangesDialog_headerWrapper') }
+
+end
