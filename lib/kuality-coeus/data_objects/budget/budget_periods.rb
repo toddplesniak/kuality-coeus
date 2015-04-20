@@ -6,8 +6,8 @@ class BudgetPeriodObject < DataFactory
               :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,
               :cost_sharing, :cost_limit, :direct_cost_limit, :datified,
               :budget_name, :cost_sharing_distribution_list, :unrecovered_fa_dist_list,
-              :participant_support, :assigned_personnel, :non_personnel_costs,
-              :submit_budget_to_sponsor, :period_rates,
+              :participant_support, :assigned_personnel, :non_personnel_costs, :period_rates,
+              :submit_budget_to_sponsor,
               #TODO: Add support for this:
               :number_of_participants
   attr_accessor :number
@@ -47,14 +47,6 @@ class BudgetPeriodObject < DataFactory
       edit.end_date_of(@number).fit opts[:end_date]
       dollar_fields.each do |field|
         edit.send("#{field}_of", @number).fit opts[field]
-      end
-      # edit.complete_budget
-      # edit.submit_budget_to_sponsor.fit @submit_budget_to_sponsor == 'yes'
-      # edit.ok_complete_budget
-
-      # edit.save_period @number
-      if opts.keys.include?(:start_date) || opts.keys.include?(:end_date)
-        on(ChangePeriod).yes
       end
       # TODO: This is probably not going to work any more. Fix it!
       return if edit.errors.size > 0

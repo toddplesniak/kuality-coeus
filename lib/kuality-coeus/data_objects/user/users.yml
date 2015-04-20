@@ -283,7 +283,7 @@ lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in 
           :descends_hierarchy: :clear
 wcoyne:
   :user_name:        wcoyne
-  :description:      IRB Creator
+  :description:      IRB & IACUC Protocol Creator
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
   :employee_id:      wcoyne
@@ -331,7 +331,11 @@ wcoyne:
    - :name: Protocol Aggregator
      :qualifiers:
        - :unit: '000001'
-mlinkous: # AKA: "Principal Name"
+   - :id:   '1421'
+     :name: IACUC Protocol Creator
+     :qualifiers:
+       - :unit: '000001'
+mlinkous:
   :user_name:        mlinkous
   :description:      IRB Protocol Reviewer/Approver
   :affiliation_type: Staff
@@ -858,49 +862,6 @@ mukoss:
       :id:
       :qualifiers:
         - :unit:
-ffred: # AKA: "Principal Name"
-  :user_name:        ffred
-  :description:      IACUC Protocol Creator
-  :affiliation_type: Staff
-  :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      ffred
-  :employee_status:  Active
-  :employee_type:    Professional
-  :base_salary:      234567.89
-  :primary_department_code: '000001'
-  :first_name:       Freddy
-  :last_name:        Fred
-  :primary_title:    IACUC Protocol Creator
-  :directory_title:  IACUC Protocol Creator
-  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: ffred
-  :directory_department:  Finance
-  :graduate_student_count: '0'
-  :billing_element:  bla bla bla
-  :addresses:
-   - :type:    Work
-     :line_1:  475 N scottsdale rd
-     :city:    scottsdale
-     :state:   ARIZONA
-     :country: United States
-     :zip:     85257
-     :default: :set
-  :phones:
-   - :type:    Work
-     :number:  602-228-3876
-     :default: :set
-   - :type:    Facsimile
-     :number:  555-555-5555
-     :default: :clear
-     :country: United States
-  :emails:
-   - :email:   kc-qa-notify@rsmart.com
-     :type:    Work
-     :default: :set
-  :rolez:
-   - :name: IACUC Protocol Creator
-     :qualifiers:
-       - :unit: '000001'
 bbob:  # AKA: "Principal Name"
   :user_name:        bbob
   :description:      IACUC Protocol Aggregator
@@ -1000,7 +961,7 @@ ttim:  # AKA: "Principal Name"
       :qualifiers:
         - :unit: '000001'
 jjones:  # AKA: "Principal Name"
-  :user_name:        jenjones
+  :user_name:        jjones
   :description:      IACUC Administrator
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
@@ -1014,7 +975,7 @@ jjones:  # AKA: "Principal Name"
   :primary_title:    IACUC Administrator
   :directory_title:  IACUC Administrator
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: jenjones
+  :era_commons_user_name: jjones
   :directory_department:  Finance
   :graduate_student_count: '0'
   :billing_element:  bla bla bla

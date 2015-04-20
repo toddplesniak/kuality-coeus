@@ -7,6 +7,7 @@ class Confirmation < BasePage
   value(:message) { |b| b.frm.table.tr.div(align: 'center').text }
   element(:yes_button) { |b| b.frm.button(name: 'methodToCall.processAnswer.button0', class: 'confirm') }
   element(:no_button) { |b| b.frm.button(name: 'methodToCall.processAnswer.button1') }
+
   element(:reason) { |b| b.frm.textarea(name: 'reason') }
   alias_method :recall_reason, :reason
   action(:yes) { |b| b.yes_button.click; b.loading; b.awaiting_doc }
@@ -103,13 +104,13 @@ class CopyThisBudgetVersion < Dialogs
 
   buttons 'Copy Budget', 'Cancel'
 
-end # CopyThisBudgetVersion
+end
 
 class ChangePeriod < Dialogs
   
   element(:dialog_header) { |b| b.header(id: 'PropBudget-PeriodsPage-ChangePeriodDialog_headerWrapper') }
 
-end  # ChangePeriod
+end
 
 class SyncBudgetRates < Dialogs
 
@@ -136,4 +137,4 @@ class ConfirmPeriodChanges < Dialogs
 
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ConfirmPeriodChangesDialog_headerWrapper') }
 
-end # SyncBudgetRates
+end
