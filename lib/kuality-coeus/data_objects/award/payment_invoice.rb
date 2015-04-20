@@ -29,10 +29,10 @@ class PaymentInvoiceObject < DataFactory
       page.expand_all
       page.payment_basis.pick! @payment_basis
       page.payment_basis.fire_event('onchange')
-
-      page.payment_method.wait_until_present
-
+      DEBUG.pause(5)
       page.payment_method.pick! @payment_method
+
+      DEBUG.message "this is the PIR #{@payment_and_invoice_requirements}"
       page.payment_type.pick! @payment_and_invoice_requirements[:payment_type]
       page.payment_type.fire_event('onchange')
       page.frequency.pick! @payment_and_invoice_requirements[:frequency]

@@ -238,6 +238,7 @@ class IACUCProtocolObject < DataFactory
       #First time the status changes to 'pending' and need to deactivate a second time
       page.expand_all
       page.submit
+      # unless div(class;'kul-error kul-message') Protocol action Deactivated successfully completed.'
     end
     on(NotificationEditor).send_it
   end

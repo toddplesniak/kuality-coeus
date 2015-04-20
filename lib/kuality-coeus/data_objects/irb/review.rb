@@ -133,6 +133,8 @@ class ReviewObject < DataFactory
     existing_reviewers = @primary_reviewers + @secondary_reviewers
     on AssignReviewers do |page|
       page.expand_all
+      DEBUG.pause(15)
+
       page.submit_button.wait_until_present
 
       if reviewers==[]

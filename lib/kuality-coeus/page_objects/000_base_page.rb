@@ -91,7 +91,6 @@ class BasePage < PageFactory
            'Calculate Current Period', 'Send Notification'
       action(:save) { |b| b.save_button.when_present.click; b.loading }
       action(:submit){ |b| b.frm.button(title: 'submit').when_present.click; b.loading; b.awaiting_doc }
-      action(:submit_button){ |b| b.frm.button(title: 'submit') }
       element(:approve_button) { |b| b.frm.button(name: 'methodToCall.approve') }
       action(:approve) { |b| b.approve_button.click; b.loading; b.awaiting_doc }
       # Explicitly defining the "recall" button to keep the method name at "recall" instead of "recall_current_document"...
@@ -106,7 +105,7 @@ class BasePage < PageFactory
     end
 
     def tab_buttons
-      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present(60).click; b.loading; b.loading_old }
+      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present(60).click; b.loading; b.loading_old; b.show_button.wait_while_present }
       element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
       element(:show_button) { |b| b.button(src: '/kc-dev/kr/static/images/tinybutton-show.gif') }
     end

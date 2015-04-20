@@ -58,12 +58,15 @@ class IRBProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
+    DEBUG.pause(4)
     navigate
-    on(ProtocolOverview).send(damballa(tab))
+    on(ProtocolOverview).send(damballa(tab)) #unless @browser.frm.span(class: 'tabright tabcurrent').button.alt == tab
+    # @browser.dt(class: 'licurrent').button.alt == tab
   end
 
   def view_by_view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
+    DEBUG.pause(4)
     navigate('view')
     on(ProtocolOverview).send(damballa(tab))
   end
@@ -81,31 +84,31 @@ class IRBProtocolObject < DataFactory
   end
 
   def navigate(type='edit')
+    if on(Header).krad_portal_element.exists?
+      on(Header).krad_portal
+    else
+      DEBUG.message "does not exists krad portal"
+    end
 
     #we have gotten to a strange place without a header because of time and money need to get back from there
     @browser.goto $base_url+$context unless on(Header).header_div.exists?
-
-    #Return to the right header
-    on(Header).krad_portal if on(Header).krad_portal_element.exists?
-
     unless on_protocol?
       DEBUG.message 'not on document'
       on(Header).central_admin
       on(CentralAdmin).search_human_participants
-
       on ProtocolLookup do |page|
         page.protocol_number.set @protocol_number
         page.search
-
         case type
           when 'edit'
             page.edit_first_item
           when 'view'
             page.view_first_item
         end
-      end
-    end
 
+      end
+
+    end
   end
 
   def submit_for_review opts={}
@@ -173,7 +176,7 @@ class IRBProtocolObject < DataFactory
 
     on CreateAmendment do |page|
       page.expand_all
-      page.create_amendment_div.wait_until_present
+      DEBUG.pause(46)
       page.summary.set @amendment[:summary]
       @amendment[:sections].each do |sect|
         page.amend(sect).set

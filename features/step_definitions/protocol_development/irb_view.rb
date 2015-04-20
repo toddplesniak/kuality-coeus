@@ -29,6 +29,7 @@ end
 Then /^the summary approval date on the Protocol should be last year$/ do
   on ExpeditedApproval do |page|
     page.expand_all
+    DEBUG.pause(78)
     page.approval_date_ro.should == last_year[:date_w_slashes]
   end
 end

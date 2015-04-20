@@ -26,6 +26,7 @@ end
 
 When /deactivates the IACUC Protocol$/ do
    @iacuc_protocol.request_to_deactivate
+  # DEBUG.pause(123)
 end
 
 And /places the IACUC Protocol on hold$/ do

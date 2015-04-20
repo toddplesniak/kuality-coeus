@@ -17,6 +17,7 @@ And /(Protocol Creator|IRB Administrator) edits the meeting details to make it a
   on Meeting do |page|
     page.available_to_reviewers.fit 'yes'
     page.save
+    DEBUG.pause(20)
   end
 end
 
