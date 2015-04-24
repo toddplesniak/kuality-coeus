@@ -1,5 +1,7 @@
 class PeriodsAndTotals < BasePage
 
+  expected_element :pttable
+
   document_buttons
   budget_header_elements
   new_error_messages
@@ -12,7 +14,8 @@ class PeriodsAndTotals < BasePage
 
   value(:period_count) { |b| b.period_rows.count }
 
-  element(:period_rows) { |b| b.div(class: 'dataTables_wrapper').tbody.rows }
+  element(:pttable) { |b| b.table(id: 'u1h1mzbd') }
+  element(:period_rows) { |b| b.pttable.tbody.rows }
 
   # The following elements will become text fields when editing the period, so add or edit, then use these...
   p_element(:start_date_of) { |number, b| b.text_field(name:"budget.budgetPeriods\[#{number.to_i-1}\].startDate") }
@@ -29,6 +32,9 @@ class PeriodsAndTotals < BasePage
   p_element(:unrecovered_f_and_a_of) { |number, b|  b.urfnao(number).present? ? b.urfnao(number) : b.period_rows[number.to_i-1][6].text }
   p_element(:cost_sharing_of) { |number, b|  b.cso(number).present? ? b.cso(number) : b.period_rows[number.to_i-1][7].text }
 
+  element(:submit_budget_to_sponsor) {|b| b.checkbox(name: 'submitBudgetIndicator') }
+  action(:ok_complete_budget) { |b| b.button(class: 'btn btn-primary uif-action', text: 'OK').click }
+  action(:cancel_complete_budget) { |b| b.button(class: 'btn btn-primary uif-action', text: 'Cancel').click }
   private
 
   p_element(:tspco) { |number, b| b.text_field(name:"budget.budgetPeriods\[#{number.to_i-1}\].totalCost") }

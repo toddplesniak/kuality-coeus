@@ -19,8 +19,6 @@ class Commitments < KCAwards
 
   value(:cost_share_sources) { |b| b.noko.table(id: 'cost-share-table').text_fields(title: 'Source').collect{ |field| field.value }[1..-1] }
 
-  value(:cost_share_sources) { |b| b.noko.table(id: 'cost-share-table').text_fields(title: 'Source').collect{ |field| field.value }[1..-1] }
-
   action(:recalculate) { |b| b.frm.button(name: 'methodToCall.recalculateCostShareTotal.anchor').click }
   action(:sync_to_template) { |b| b.frm.button(name: 'methodToCall.syncAwardTemplate.scopes:COST_SHARE.anchor').click }
 

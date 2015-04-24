@@ -2,9 +2,10 @@ class BudgetPeriodObject < DataFactory
 
   include StringFactory, Utilities
 
-  attr_reader :start_date, :end_date, :total_sponsor_cost,
-              :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,
-              :cost_sharing, :cost_limit, :direct_cost_limit, :datified,
+  attr_reader :start_date, :end_date,
+              :unrecovered_f_and_a,
+              :cost_sharing,
+              :cost_limit, :direct_cost_limit, :datified,
               :budget_name, :cost_sharing_distribution_list,
               :participant_support, :assigned_personnel, :non_personnel_costs, :period_rates
               #TODO: Add support for this:
@@ -87,18 +88,19 @@ class BudgetPeriodObject < DataFactory
     if @browser.header(id: 'PropBudget-ConfirmPeriodChangesDialog_headerWrapper').present?
       on(ConfirmPeriodChanges).yes
     end
-    defaults = { period_rates: @period_rates }
+    defaults = { period_rates: @period_rates,
+                 start_date: @start_date,
+                 end_date: @end_date
+    }
     @non_personnel_costs.add defaults.merge(opts)
   end
 
   def copy_non_personnel_item(np_item)
     opts = { start_date: (np_item.start_date_datified + 365).strftime("%m/%d/%Y"),
              end_date: (np_item.end_date_datified + 365).strftime("%m/%d/%Y"),
-             total_base_cost:  np_item.total_base_cost.to_f + np_item.inflation_amount,
-             period_rates:  @period_rates
+             period_rates: @period_rates
     }
     new_item = np_item.copy_mutatis_mutandis opts
-    new_item.get_rates
     @non_personnel_costs << new_item
   end
 
@@ -124,6 +126,30 @@ class BudgetPeriodObject < DataFactory
   def dollar_fields
     [:total_sponsor_cost, :direct_cost, :f_and_a_cost, :unrecovered_f_and_a,
                    :cost_sharing, :cost_limit, :direct_cost_limit]
+  end
+
+  def total_sponsor_cost
+    if @total_sponsor_cost.nil?
+      direct_cost+f_and_a_cost
+    else
+      @total_sponsor_cost
+    end
+  end
+
+  def direct_cost
+    if @direct_cost.nil?
+      non_personnel_costs.direct.round(2) #+ assigned_personnel.direct
+    else
+      @direct_cost
+    end
+  end
+
+  def f_and_a_cost
+    if @f_and_a_cost.nil?
+      non_personnel_costs.f_and_a.round(2) #+ assigned_personnel.f_and_a
+    else
+      @f_and_a_cost
+    end
   end
 
   def start_date_datified
@@ -168,7 +194,7 @@ class BudgetPeriodsCollection < CollectionsFactory
   end
 
   def total_sponsor_cost
-    self.collect{ |period| period.total_sponsor_cost.to_f }.inject(0, :+)
+    self.collect{ |period| period.total_sponsor_cost.to_f }.inject(0, :+).round(2)
   end
 
 end # BudgetPeriodsCollection

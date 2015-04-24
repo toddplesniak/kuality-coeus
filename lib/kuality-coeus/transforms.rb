@@ -30,6 +30,4 @@ module Transforms
              '12M DURATION' => 12
   }
 
-  CAN = { 'can ' => :should, 'can\'t ' => :should_not }
-
 end
