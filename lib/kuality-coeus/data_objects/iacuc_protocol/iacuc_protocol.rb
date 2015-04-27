@@ -52,6 +52,7 @@ class IACUCProtocolObject < DataFactory
 
     on IACUCProtocolOverview do |doc|
       doc.save
+      doc.send_it if doc.send_button.exists? #send notification
       @protocol_number=doc.protocol_number
       @search_key = { protocol_number: @protocol_number }
     end
@@ -60,13 +61,28 @@ class IACUCProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    open_document
-    on(IACUCProtocolOverview).send(damballa(tab))
+    # open_document
+    on IACUCProtocolOverview do |page|
+      if page.protocol_element.exists?
+        if page.protocol_number == @protocol_number
+          #on document moving on
+        else
+          view_document
+        end
+      else
+        view_document
+      end
+      page.send(damballa(tab))
+    end
   end
 
   def view_document
     #use this view when you are on the document and want to completely reload the document.
-    on(Header).doc_search
+    on Header do |page|
+      @browser.goto $base_url+$context unless page.doc_search_present?
+      page.doc_search
+    end
+    # on(Header).doc_search
     on DocumentSearch do |search|
       search.document_id.set @document_id
       search.search
@@ -92,6 +108,7 @@ class IACUCProtocolObject < DataFactory
       alternate_search_required: 'No'
     }
     @principles.merge!(opts)
+
 
     view "The Three R's"
     on TheThreeRs do |page|

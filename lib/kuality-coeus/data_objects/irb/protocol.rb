@@ -93,6 +93,7 @@ class IRBProtocolObject < DataFactory
       page.submit
       @status=page.document_status
       @document_id=page.document_id
+      page.send_it if page.send_button.exists?
     end
   end
 

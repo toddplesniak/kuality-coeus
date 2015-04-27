@@ -12,12 +12,16 @@ class SpecialReviewObject < DataFactory
     defaults = {
         # Subset of drop-down selection, excluding Human Subjects and Animal Usage,
         # because those options require special handling.
-        type:            ['Recombinant DNA','Biohazard Materials','International Programs','Space Change',
-                          'TLO Review - No conflict (A)','TLO review - Reviewed, no conflict (B1)',
-                          'TLO Review - Potential Conflict (B2)','TLO PR-Previously Reviewed','Foundation Relations'
+        type:            [ 'Human Subjects', 'Animal Usage', 'Recombinant DNA', 'Radioactive Isotopes',
+                           'Biohazard Materials', 'International Programs', 'Intellectual Property/Tech Transfer',
+                           'Foundation Relations', 'Other'
+
         ].sample,
         approval_status: '::random::',
         press: 'save'
+        # 'Recombinant DNA','Biohazard Materials','International Programs','Space Change',
+        #               'TLO Review - No conflict (A)','TLO review - Reviewed, no conflict (B1)',
+        #               'TLO Review - Potential Conflict (B2)','TLO PR-Previously Reviewed','Foundation Relations'
     }
 
     set_options(defaults.merge(opts))

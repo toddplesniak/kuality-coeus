@@ -24,6 +24,10 @@ class Header < BasePage
 
   element(:doc_search_element) { |b| b.link(title: 'Document Search') }
 
+  def doc_search_present?
+     doc_search_link.present? ||  doc_search_element.present?
+  end
+
   action(:log_out) { |b|
     if b.link(text: /User:/).present?
       b.link(text: /User:/).click
