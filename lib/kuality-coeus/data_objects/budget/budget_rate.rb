@@ -66,6 +66,8 @@ class BudgetRatesCollection < CollectionFactory
     br << ed
     x = br.flatten
     x.delete_bad_inflations! start_date
+    br.flatten!
+    br.delete_bad_inflations! start_date
   end
 
   def campus!(type)

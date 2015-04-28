@@ -1,7 +1,5 @@
 class AssignPersonnelToPeriods < BasePage
 
-  expected_element :title
-
   document_buttons
 
   p_element(:period_title) { |number, b| b.h3(id: "PropBudget-AssignPersonnelToPeriodsPage-PersonnelDetails_#{number}_header").span }

@@ -101,6 +101,7 @@ Then /^the three principles should have the edited values after saving the IACUC
   on TheThreeRs do |page|
     page.save
     page.refresh
+    on(IACUCProtocolOverview).description.wait_until_present
     @iacuc_protocol.view "The Three R's"
     principle = ['reduction', 'refinement', 'replacement']
     principle.each {|prince| expect(page.send(prince).value).to eq @iacuc_protocol.principles[prince.to_sym] }

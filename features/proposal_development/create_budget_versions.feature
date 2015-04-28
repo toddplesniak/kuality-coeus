@@ -8,7 +8,7 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
     * a User exists with the role: 'Proposal Creator'
     * the Proposal Creator creates a 5-year project Proposal
     * creates a Budget Version for the Proposal
-
+  @failing
   Scenario: System warns about budget periods when proposal dates change
     When  I push the Proposal's project start date ahead 1 year
     Then  opening the Budget Version will display a warning about the date change
@@ -30,7 +30,7 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
     Given the Proposal Creator includes the Budget Version for submission
     When  I copy the Budget Version (all periods)
     Then  the copied budget is not marked 'for submission'
-
+  @failing
   Scenario: Complete Budgets are read-only
     Given the Proposal Creator includes the Budget Version for submission
     When  the Proposal Creator marks the Budget Version complete

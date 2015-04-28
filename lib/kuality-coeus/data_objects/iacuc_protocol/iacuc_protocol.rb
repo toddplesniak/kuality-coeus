@@ -54,6 +54,8 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_notification if on(NotificationEditor).send_notification_button.exists?
 
     on IACUCProtocolOverview do |doc|
+      doc.save
+      doc.send_it if doc.send_button.exists? #send notification
       @protocol_number=doc.protocol_number
       @search_key = { protocol_number: @protocol_number }
     end
@@ -62,8 +64,19 @@ class IACUCProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    navigate
-    on(IACUCProtocolOverview).send(damballa(tab))
+    # open_document
+    on IACUCProtocolOverview do |page|
+      if page.protocol_element.exists?
+        if page.protocol_number == @protocol_number
+          #on document moving on
+        else
+          view_document
+        end
+      else
+        view_document
+      end
+      page.send(damballa(tab))
+    end
   end
 
   def view_document

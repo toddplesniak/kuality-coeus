@@ -1,7 +1,5 @@
 class NonPersonnelCosts < BasePage
 
-  expected_element :title
-
   budget_header_elements
   buttons 'Save and Continue', 'Complete Budget', 'Save'
 

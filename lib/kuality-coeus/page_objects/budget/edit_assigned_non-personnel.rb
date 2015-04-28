@@ -1,7 +1,5 @@
 class EditAssignedNonPersonnel < BasePage
 
-  expected_element :modal_div
-
   buttons 'Save Changes', 'Save And Apply To Other Periods',
           'Sync To Period Direct Cost Limit', 'Sync To Period Cost Limit'
 
@@ -14,7 +12,6 @@ class EditAssignedNonPersonnel < BasePage
   element(:end_date) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.budgetLineItem.endDate') }
   element(:budget_category) { |b| b.select(name: 'addProjectBudgetLineItemHelper.budgetLineItem.budgetCategoryCode') }
   element(:object_code_name) { |b| b.select(name: 'addProjectBudgetLineItemHelper.budgetLineItem.costElement') }
-  value(:object_code_list) { |b| b.no_frame_noko.select(name: 'addProjectBudgetLineItemHelper.budgetLineItem.costElement').options.map {|opt| opt.text }[1..-1] }
   element(:total_base_cost) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.budgetLineItem.lineItemCost') }
   
   element(:apply_inflation) { |b| b.checkbox(name: 'addProjectBudgetLineItemHelper.budgetLineItem.applyInRateFlag') }
@@ -51,7 +48,7 @@ class EditAssignedNonPersonnel < BasePage
     array
   }
 
-  p_element(:apply) { |rate_class, description, b| b.rates_table.trs.find{ |tr| tr[0].text==rate_class && tr[1].text==description }.checkbox }
+  p_element(:apply) { |rate_class, type, b| b.rates_table.trs.find{ |tr| tr[0].text==rate_class && tr[1].text==type }.checkbox }
 
   private
 

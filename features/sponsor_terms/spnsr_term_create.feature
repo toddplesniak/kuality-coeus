@@ -1,4 +1,4 @@
-@Award
+@award
 Feature: Sponsor Term Creation
 
   As an Application Administrator,
