@@ -10,15 +10,16 @@ class IACUCProceduresObject < DataFactory
   def initialize(browser, opts={})
     @browser = browser
     # the order of objects in this array correspond to the line index on the page
-    @procedure_list =  ['Analgesics', 'Anesthesia', 'Paralytics',
-                      'Survival', 'Multiple Major Survival',
-                      'Non-survival', 'Medical Device Testing',
-                      'Food/water restriction (not prior to surgery)',
-                      'Chemical Method', 'Physical Method',
-                      'Radioactive isotopes', 'Aversive Stimuli', 'Irradiation',
-                      'Nutritional studies', 'Blood sampling',
-                      'Immunization', 'Antibody Production',
-                      'Chemical restraint', 'Physical restraint']
+    #if there are fails try checking the order of the list
+    @procedure_list = ['Analgesics', 'Anesthesia', 'Paralytics',
+      'Survival', 'Multiple Major Survival',
+      'Non-survival', 'Medical Device Testing',
+      'Food/water restriction (not prior to surgery)',
+      'Chemical Method', 'Physical Method',
+      'Radioactive isotopes', 'Irradiation', 'Aversive Stimuli',
+      'Antibody Production', 'Immunization',
+      'Blood sampling', 'Nutritional studies',
+      'Physical restraint', 'Chemical restraint']
 
     defaults = {
         procedure_name: @procedure_list.sample,
@@ -33,6 +34,9 @@ class IACUCProceduresObject < DataFactory
     view 'Procedures'
     on IACUCProcedures do |page|
       page.expand_all
+
+
+
       page.category(@procedure_index).set
       page.select_species(@procedure_index).pick! @species_name_type
       page.add_species(@procedure_index)

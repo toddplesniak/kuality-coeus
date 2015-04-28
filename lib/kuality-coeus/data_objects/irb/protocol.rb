@@ -58,8 +58,8 @@ class IRBProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    navigate
-    on(ProtocolOverview).send(damballa(tab))
+    open_document
+    on(ProtocolOverview).send(damballa(tab)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
   end
 
   def view_by_view(tab)
@@ -89,7 +89,6 @@ class IRBProtocolObject < DataFactory
     on(Header).krad_portal if on(Header).krad_portal_element.exists?
 
     unless on_protocol?
-      DEBUG.message 'not on document'
       on(Header).central_admin
       on(CentralAdmin).search_human_participants
 

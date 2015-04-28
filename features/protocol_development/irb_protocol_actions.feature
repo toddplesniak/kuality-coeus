@@ -1,4 +1,4 @@
-@IRB
+@irb
 Feature: IRB Protocol Actions
 
   [smoke] - Expedited Review and Exempt Studies checklists can be filled out

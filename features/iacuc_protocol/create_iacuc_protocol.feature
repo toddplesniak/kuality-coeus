@@ -1,4 +1,4 @@
-@IACUC
+@iacuc
 Feature: Creating IACUC Protocols
 
   As a researcher I want the ability to create a protocol for animal subjects
@@ -8,7 +8,6 @@ Feature: Creating IACUC Protocols
 
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
-
 
   Scenario: Create a IACUC proposal
     When the IACUC Protocol Creator creates an IACUC Protocol

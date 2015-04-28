@@ -1,4 +1,4 @@
-@Award
+@award
 Feature: Award Cost Sharing
 
   As an Award Modifier, I want the system to help

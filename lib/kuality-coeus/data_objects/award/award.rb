@@ -3,22 +3,26 @@ class AwardObject < DataFactory
 
   include Navigation, DateFactory, StringFactory, DocumentUtilities
 
-  attr_accessor :document_status,
-                :document_id, :transaction_type, :award_status, :award_title, :activity_type, :award_type,
-                :project_start_date, :project_end_date, :sponsor_id, :lead_unit_id,
-                :subaward_org_name, :subaward_amount, :custom_data, :time_and_money,
-                :version, :prior_versions, :id, :terms, :pi_full_name, :principal_investigator, :press,
-                :project_role, :key_personnel,
-                :fa_rates, :cost_sharing, :approved_equipment, :funding_proposals, :subawards,
-                :view
-
+  attr_reader :award_status,
+              :award_title, :lead_unit_id, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
+              :nsf_science_code, :account_id, :account_type, :prime_sponsor, :cfda_number,
+              :version, :prior_versions,
+              :creation_date, :key_personnel, :cost_sharing, :fa_rates,
+              :anticipated_fna, :obligated_fna,
+              :funding_proposals, #TODO: Add Benefits rates and preaward auths...
+              :budget_versions, :sponsor_contacts, :payment_and_invoice, :terms, :reports,
+              :approved_equipment,
+              :children
+  attr_accessor :document_status, :document_id, :subawards, :transaction_type, :id, :anticipated_direct, :obligated_direct,
+                # These will probably need to be removed:
+                :anticipated_amount, :obligated_amount,
+                :custom_data, :description, :project_start_date, :project_end_date, :obligation_start_date,
+                :obligation_end_date, :time_and_money, :parent
   def_delegators :@key_personnel, :principal_investigator
-
 
   def initialize(browser, opts={})
     @browser = browser
     amount = random_dollar_value(1000000)
-
 
     defaults = {
       description:           random_alphanums_plus,
@@ -81,18 +85,11 @@ class AwardObject < DataFactory
     @prior_versions.store(@version, @document_id)
     on Award do |edit|
 
-      DEBUG.pause 300
+      # DEBUG.pause 300
 
       if edit.edit_button.present?
         edit.edit
         @prior_versions.store(@version, @document_id)
-
-
-
-        DEBUG.message @prior_versions.inspect
-
-
-
 
         @version = edit.version
         @document_id = edit.header_document_id
@@ -265,12 +262,12 @@ class AwardObject < DataFactory
   def submit
     view :award_actions
     on AwardActions do |page|
-      DEBUG.pause(3)
+      # DEBUG.pause(3)
       page.submit
     end
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
     #was causing problem with logout need to wait for page to load here.
-    DEBUG.pause(4)
+    # DEBUG.pause(4)
   end
 
   def add_custom_data opts={}
@@ -415,7 +412,6 @@ class AwardObject < DataFactory
       else
         @key_personnel[:added_personnel] = page.send(person_type)
       end
-      DEBUG.message "Award PI is #{@key_personnel[:principal_investigator]}"
       page.add_key_person
 
       page.send(@key_personnel[:press]) unless @key_personnel[:press].nil?
@@ -423,5 +419,8 @@ class AwardObject < DataFactory
     end
   end
 
+  def on_tm?
+    !(on(Award).t_m_button.exist?)
+  end
 
 end #NewAwardObject

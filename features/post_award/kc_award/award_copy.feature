@@ -1,4 +1,4 @@
-@Award
+@award
 Feature: Copying Awards
 
   Summary to be written
