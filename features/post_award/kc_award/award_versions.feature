@@ -1,4 +1,4 @@
-@award @smoke
+@award
 Feature: Award Versions
 
   Summary to be written
@@ -10,7 +10,7 @@ Feature: Award Versions
     * adds a subaward to the Award
     * completes the Award requirements
     * the Award Modifier submits the Award
-
+  @smoke
   Scenario: Editing finalized Award when a pending new version exists, select 'yes'
     Given the Time & Money Modifier submits the Award's T&M document
     And   the Award Modifier edits the finalized Award
