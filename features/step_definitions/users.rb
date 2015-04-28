@@ -118,6 +118,13 @@ When /^I? ?create an? '(.*)' User$/ do |type|
   $users << create(UserObject, type: type)
 end
 
+And /create a User with no memberships$/ do
+  # Note: The usage of the :type value in the options is simply a
+  # means to get the UserObject to create a user that is NOT the admin user.
+  # Essentially it is dummy code and could basically be anything...
+  $users << create(UserObject, type: :no_membership)
+end
+
 Given /^I? ?create a User with an? (.*) role in the (.*) unit$/ do |role, unit|
   role_num = RoleObject::ROLES[role]
   $users << create(UserObject, rolez: [{ id: role_num, name: role, qualifiers: [{:unit=>unit}] }] )

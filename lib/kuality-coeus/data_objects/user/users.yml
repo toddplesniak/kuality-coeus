@@ -1,6 +1,6 @@
 unassigneduser: # AKA: "Principal Name"
   :user_name:        unassigneduser
-  :description:      creating user with 'unassigned' role
+  :description:      creating user with no role
   :affiliation_type: Student
   :campus_code:      'UN - UNIVERSITY'
   :first_name:       PleaseDoNot
@@ -27,10 +27,6 @@ unassigneduser: # AKA: "Principal Name"
     - :type:    Facsimile
       :number:  602-597-5350
       :default: :clear
-  :rolez:
-    - :name: unassigned
-      :qualifiers:
-        - :unit: '000001'
 aft_dean: # AKA: "Principal Name"
   :user_name:        aft_dean
   :description:      no roles

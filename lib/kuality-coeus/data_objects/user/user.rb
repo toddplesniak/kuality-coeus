@@ -165,7 +165,6 @@ class UserObject < DataFactory
         phones:           [{type:   'Work',
                             number:  '602-840-7300',
                             default: :set }],
-        rolez:            [{name: 'unassigned', qualifiers: [{:unit=>'000001'}]}],
         groups:           collection('UserGroups')
     }
     defaults.merge!(opts)
