@@ -75,8 +75,14 @@ class ProposalLogObject < DataFactory
     if @sponsor_id=='::random::'
       on(ProposalLog).find_sponsor_code
       on OLDSponsorLookup do |look|
-        look.sponsor_type_code.pick! '::random::'
+
+        look.sponsor_type_code.pick! ['Federal', 'Private Profit', 'Foundation'].sample
+        # 'No values match this search.'
+        # 'State', 'Foreign Government', 'Foreign Private Profit', 'Foreign Private Non-Profit', 'Foreign Foundation',
+        # 'Foreign Institution of Higher Education', 'Local Government', 'Private Non-Profit'
+        # look.sponsor_type_code.pick! '::random::'
         look.search
+        look.results_table.wait_until_present
         look.page_links[rand(look.page_links.length)].click if look.page_links.size > 0
         look.return_random
       end
