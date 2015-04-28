@@ -196,7 +196,7 @@ end
 # Miscellaneous          #
 #------------------------#
 Then /^a confirmation screen asks if you want to edit the existing pending version$/ do
-  expect(on(Confirmation).message).to be 'A Pending version already exists. Do you want to edit the Pending version?'
+  expect(on(Confirmation).message).to eq 'A Pending version already exists. Do you want to edit the Pending version?'
 end
 
 Then /^there are no errors on the page$/ do
