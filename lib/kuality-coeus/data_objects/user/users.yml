@@ -343,8 +343,8 @@ mlinkous:
   :primary_department_code: '000001'
   :first_name:       Mark
   :last_name:        Linkous
-  :primary_title:    Protocol Approver
-  :directory_title:  Protocol Approver
+  :primary_title:    ProtocolApprover
+  :directory_title:  ProtocolApprover
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
   :era_commons_user_name: mlinkous
   :directory_department:  Finance
@@ -431,7 +431,7 @@ smalkmus:
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :clear
-   - :name: Protocol Approver
+   - :name: ProtocolApprover
      :qualifiers:
        - :unit:
 kwagner:

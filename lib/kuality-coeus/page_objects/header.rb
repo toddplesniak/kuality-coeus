@@ -16,6 +16,9 @@ class Header < BasePage
   element(:doc_search_link) { |b| b.link(text: 'Doc Search') }
 
   action(:doc_search) { |b|
+    #award document does not have header, so we need to navigate back to base url
+    @browser.goto $base_url+$context unless b.header_div.exists?
+
     if b.doc_search_element.present?
       b.doc_search_element.click
     else
