@@ -46,7 +46,6 @@ class RoleObject < DataFactory
       'Protocol Viewer'                   => '104',
       'System User'                       => '90',
       'Time And Money Modifier'           => '154',
-      'unassigned'                        => '106',
       'Viewer'                            => '107',
       'View Subaward'                     => '1410',
       'View Proposal Log'                 => '142'
