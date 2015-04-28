@@ -94,7 +94,7 @@ class IACUCProtocolObject < DataFactory
     if on(Header).krad_portal_element.exists?
       on(Header).krad_portal
     else
-      DEBUG.message "does not exists krad portal"
+      # DEBUG.message "does not exists krad portal"
     end
 
     #we have gotten to a strange place without a header because of time and money need to get back from there

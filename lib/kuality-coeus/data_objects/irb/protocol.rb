@@ -89,7 +89,6 @@ class IRBProtocolObject < DataFactory
     on(Header).krad_portal if on(Header).krad_portal_element.exists?
 
     unless on_protocol?
-      DEBUG.message 'not on document'
       on(Header).central_admin
       on(CentralAdmin).search_human_participants
 

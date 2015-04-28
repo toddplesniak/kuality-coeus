@@ -40,7 +40,6 @@ class IACUCProceduresObject < DataFactory
       page.category(@procedure_index).set
       page.select_species(@procedure_index).pick! @species_name_type
       page.add_species(@procedure_index)
-      DEBUG.message "proc name #{@procedure_name}, proc index #{@procedure_index}, species name type #{@species_name_type}"
     end
   end
 

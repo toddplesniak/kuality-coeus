@@ -85,18 +85,11 @@ class AwardObject < DataFactory
     @prior_versions.store(@version, @document_id)
     on Award do |edit|
 
-      DEBUG.pause 300
+      # DEBUG.pause 300
 
       if edit.edit_button.present?
         edit.edit
         @prior_versions.store(@version, @document_id)
-
-
-
-        DEBUG.message @prior_versions.inspect
-
-
-
 
         @version = edit.version
         @document_id = edit.header_document_id
@@ -269,12 +262,12 @@ class AwardObject < DataFactory
   def submit
     view :award_actions
     on AwardActions do |page|
-      DEBUG.pause(3)
+      # DEBUG.pause(3)
       page.submit
     end
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
     #was causing problem with logout need to wait for page to load here.
-    DEBUG.pause(4)
+    # DEBUG.pause(4)
   end
 
   def add_custom_data opts={}
@@ -419,7 +412,6 @@ class AwardObject < DataFactory
       else
         @key_personnel[:added_personnel] = page.send(person_type)
       end
-      DEBUG.message "Award PI is #{@key_personnel[:principal_investigator]}"
       page.add_key_person
 
       page.send(@key_personnel[:press]) unless @key_personnel[:press].nil?
