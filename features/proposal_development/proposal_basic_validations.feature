@@ -1,4 +1,4 @@
-@proposal @smoke
+@proposal
 Feature: Basic validations for Development Proposals
 
   As a researcher I want the ability to see an error whenever I miss
@@ -22,7 +22,7 @@ Feature: Basic validations for Development Proposals
   Scenario: Create Proposal with end date prior to start date
     When the Proposal Creator creates a Proposal with an end date prior to the start date
     Then an error should appear that says the start date must be before the end
-  @wip
+
   Scenario: Proposal Project Title with extended characters
     When the Proposal Creator creates a Proposal with a project title containing extended characters
     Then an error should appear that says the project title can't contain special characters
