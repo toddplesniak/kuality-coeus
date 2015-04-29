@@ -1,7 +1,5 @@
 class DataValidation < BasePage
 
-  expected_element :data_validation_div
-
   element(:turn_on) { |b| b.button(text: 'Turn On').when_present.click; b.button(text: 'Turn On').wait_while_present }
 
   new_error_messages

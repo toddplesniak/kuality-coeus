@@ -1,7 +1,8 @@
 class KeyPersonnel < BasePage
 
   document_buttons
-  
+  new_error_messages
+
   buttons 'Add Personnel'
 
   action(:employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.KcPerson!!).(((personId:newPersonId))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
