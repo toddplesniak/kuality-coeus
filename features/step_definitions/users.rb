@@ -34,8 +34,8 @@ end
 #    by first logging in with the admin user
 Given /^a User exists with the user name (.*)$/ do |username|
   if $users.user(username).nil?
-    user = make_user user: username
-    user.create unless user.exists?
+    $users << make(UserObject, user: username)
+    $users[-1].create unless $users[-1].exists?
   end
 end
 
@@ -46,8 +46,8 @@ end
 # logging in with the admin user to do the creation).
 Given /^a User exists with the role: '(.*)'$/ do |role|
   if $users.with_role(role).nil?
-    user = make_user role: role
-    user.create unless user.exists?
+    $users << make(UserObject, role: role)
+    $users[-1].create unless $users[-1].exists?
   end
 end
 
@@ -58,8 +58,8 @@ end
 # logging in with the admin user to do the creation).
 Given /^a User exists with the role '(.*)' in unit '(.*)'$/ do |role, unit|
   if $users.with_role_in_unit(role, unit).nil?
-    user = make_user role: role, unit: unit
-    user.create unless user.exists?
+    $users << make(UserObject, role: role, unit: unit)
+    $users[-1].create unless $users[-1].exists?
   end
 end
 
