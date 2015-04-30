@@ -5,7 +5,6 @@ class AssignedPerson < DataFactory
   attr_reader :person, :object_code, :group, :start_date,
               :end_date, :percent_effort, :percent_charged,
               :period_type, :requested_salary
-  attr_accessor :monthly_base_salary, :inflation_rate, :rate_start_date
 
   def initialize(browser, opts={})
     @browser = browser
@@ -17,11 +16,9 @@ class AssignedPerson < DataFactory
       percent_charged:     (percent*0.8).round(2).to_s,
       period_type:         '::random::',
       monthly_base_salary: 0.0,
-      # TODO: Don't hard code this:
-      inflation_rate:      3.0
     }
     set_options(defaults.merge(opts))
-    requires :person
+    requires :person, :period_rates
   end
 
   def create
@@ -41,25 +38,22 @@ class AssignedPerson < DataFactory
       fill_out page, :group, :start_date, :end_date, :period_type
       @start_date ||= page.start_date.value
       @end_date ||= page.end_date.value
-      #TODO: This really needs to be set by either scraping the UI, or a Rates Data Object somehow.
-      # For now, just going to keep things simple.
-      @rate_start_date ||= "07/01/#{end_d.year}"
       page.assign_to_period
     end
-    # FIXME:
-    # Because it's possible for there to be multiple people assigned to
-    # a single object code, it is inappropriate to select whether to apply
-    # inflation to an object code within a single assigned person.
-    # As such, this code does not really belong in this method or this class.
-    # However, until such time as we have scenarios that test multiple assigned
-    # persons in an object code, it's simpler just to have the inflation setup
-    # taken care of here...
-    on(AssignPersonnelToPeriods).details_and_rates_of @object_code
+    get_rates
     on DetailsAndRates do |page|
       fill_out page, :apply_inflation
       page.save_changes
     end
     on(AssignPersonnelToPeriods).save
+
+
+    DEBUG.inspect @rates
+
+    DEBUG.pause 2312
+
+
+
   end
 
   def requested_salary
@@ -153,10 +147,6 @@ class AssignedPerson < DataFactory
     datify @end_date
   end
 
-  def rate_start
-    datify @rate_start_date
-  end
-
   def middle_months_count
     x = (end_d.year - start.year)*12 + end_d.month - start.month - 1
     x < 0 ? 0 : x
@@ -173,6 +163,16 @@ class AssignedPerson < DataFactory
 
   def cost_sharing_percentage
     (@percent_effort.to_f-@percent_charged.to_f)/100
+  end
+
+  def get_rates
+    @rates = @period_rates.personnel.in_range(start, end_d)
+    @rates << @period_rates.inflation.in_range(start, end_d)
+    @rates.flatten!
+    @rates.delete_if { |r| r.on_campus != Transforms::YES_NO[@on_campus] }
+    @rates.delete_if { |r| r.rate_class_type=='Inflation' && !@ird.include?(r.description) }
+    @rates.delete_if { |r| r.rate_class_type=='Inflation' && start_date_datified < r.start_date }
+    @rates.delete_if { |r| r.rate_class_type == 'F & A' && @overhead==false }
   end
 
 end
