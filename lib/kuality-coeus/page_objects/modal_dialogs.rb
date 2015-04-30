@@ -114,7 +114,9 @@ class ChangePeriod < Dialogs
 end
 
 class SyncBudgetRates < Dialogs
-
+  #there are multiple hidden modal dialogues with same tags
+  action(:yes_if_visible) { |b| b.buttons(text: 'Yes').each {|b| b.click if b.visible? } }
+  element(:div_dialog) { |b| b.div(class: 'modal-dialog modal-sm') }
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
 
 end
