@@ -40,7 +40,7 @@ end
 Then /^the Budget personnel should match the Proposal personnel$/ do
   @budget_version.view 'Project Personnel'
   budget_personnel = on(BudgetPersonnel).project_personnel_info.map{ |i| i[:person] }
-  @proposal.key_personnel.each { |p| budget_personnel.should include p.full_name  }
+  @proposal.key_personnel.each { |p| expect(budget_personnel).to include p.full_name  }
 end
 
 And /^the Budget's personnel list shows the correct roles$/ do

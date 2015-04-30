@@ -15,8 +15,8 @@ end
 #    a class instance variable based on the username
 # 3) Logs that user in (if they're not already)...
 Given /^I'm logged in with (.*)$/ do |username|
-  user = make_user(user: username)
-  user.sign_in
+  $users << make(UserObject, user: username)
+  $users[-1].sign_in
 end
 
 # Whereas, this step def
@@ -24,8 +24,7 @@ end
 # 2) Assumes that role user already exists in the system
 # 3) Logs that user in, if they're not already
 Given /^I? ?log in (?:again)? ?with the (.*) user$/ do |role|
-  user = $users.with_role(role)
-  user.sign_in
+  $users.with_role(role).sign_in
 end
 
 # This step definition
@@ -85,6 +84,7 @@ And /^I log in with that User$/ do
 end
 
 Then /^(.*) is logged in$/ do |username|
+  #FIXME! This is no longer going to work!
   get(username).logged_in?.should be true
 end
 
@@ -92,25 +92,25 @@ end
 Given /^Users exist with the following roles: (.*)$/ do |roles|
   roles.split(', ').each do |r|
     if $users.with_role(r).nil?
-      user = make_user role: r
-      user.create unless user.exists?
+      $users << make(UserObject, role: r)
+      $users[-1].create unless $users[-1].exists?
     end
   end
 end
 
 Given /^a User exists that can be a PI for Grants.gov proposals$/ do
-  make_user(user: UserObject::USERS.grants_gov_pi, type: 'Grants.gov PI')
+  $users << make(UserObject, user: UserObject::USERS.grants_gov_pi, type: 'Grants.gov PI')
   $users[-1].create unless $users[-1].exists?
 end
 
 Given /^a User exists with a '(.*)' appointment type$/ do |type|
-  make_user(user: UserObject::USERS.with_appointment_type(type), type: type)
+  $users << make(UserObject, user: UserObject::USERS.with_appointment_type(type).first[:user_name], type: type)
   $users[-1].create unless $users[-1].exists?
 end
 
 Given /^an AOR User exists$/ do
   # TODO: Using the username here is cheating. Fix this.
-  @aor = make_user(user: 'warrens', type: 'AOR')
+  @aor = $users << make(UserObject, user: 'warrens', type: 'AOR')
   @aor.create unless @aor.exists?
 end
 
@@ -153,7 +153,7 @@ When /^a User exists with the roles: (.*) in the (.*) unit$/ do |roles, unit|
   raise 'There are no matching users in the users.yml file. Please add one.' if users.empty?
   user_name = users.inject(:&).shuffle[0][0]
   if $users.user(user_name).nil?
-    make_user user: user_name
+    $users << make(UserObject, user: user_name)
     $users[-1].create unless $users[-1].exists?
   end
 end
