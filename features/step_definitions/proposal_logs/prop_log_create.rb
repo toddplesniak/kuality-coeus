@@ -7,7 +7,10 @@ When /^the Create Proposal Log user creates a Proposal Log but misses a required
   required_field=~/Type/ ? value='select' : value=''
   # Transform the field name to the appropriate symbol...
   field = damballa(required_field)
-  @proposal_log = create ProposalLogObject, field=>value
+  @proposal_log = create ProposalLogObject, field=>value, save_type: :save,
+                         # Note: These are included simply to make the test
+                         # run a bit faster. They are unimportant...
+                         principal_investigator: 'lvbarger', sponsor_id: '000126'
   @required_field_error = "#{required_field} (#{required_field}) is a required field."
 end
 
@@ -79,6 +82,11 @@ Then /^the Proposal Log's status should reflect it has been (.*)$/ do |status|
 end
 
 Then /^the Create Proposal Log user submits the Proposal Log$/ do
+  on ProposalLog do |page|
+    if page.merge_list.present?
+      page.cancel_merge
+    end
+  end
   steps %{ * I log in with the Create Proposal Log user }
-  on(ProposalLog).submit
+  @proposal_log.submit
 end
