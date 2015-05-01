@@ -6,7 +6,7 @@ class AssignedPerson < DataFactory
 
   attr_reader :person, :object_code, :group, :start_date,
               :end_date, :percent_effort, :percent_charged,
-              :period_type, :requested_salary
+              :period_type, :requested_salary, :rates
 
   def initialize(browser, opts={})
     @browser = browser
@@ -17,10 +17,10 @@ class AssignedPerson < DataFactory
       percent_effort:      percent.to_s,
       percent_charged:     (percent*0.8).round(2).to_s,
       period_type:         '::random::',
-      monthly_base_salary: 0.0,
+      monthly_base_salary: 0.0
     }
     set_options(defaults.merge(opts))
-    requires :person, :period_rates
+    requires :person
   end
 
   def create
@@ -42,20 +42,7 @@ class AssignedPerson < DataFactory
       @end_date ||= page.end_date.value
       page.assign_to_period
     end
-    get_rates
-    on DetailsAndRates do |page|
-      fill_out page, :apply_inflation
-      page.save_changes
-    end
     on(AssignPersonnelToPeriods).save
-
-
-    DEBUG.inspect @rates
-
-    DEBUG.pause 2312
-
-
-
   end
 
   def requested_salary
@@ -167,24 +154,42 @@ class AssignedPerson < DataFactory
     (@percent_effort.to_f-@percent_charged.to_f)/100
   end
 
-  def get_rates
-    @rates = @period_rates.personnel.in_range(start, end_d)
-    @rates << @period_rates.inflation.in_range(start, end_d)
-    @rates.flatten!
-    @rates.delete_if { |r| r.on_campus != Transforms::YES_NO[@on_campus] }
-    @rates.delete_if { |r| r.rate_class_type=='Inflation' && !@ird.include?(r.description) }
-    @rates.delete_if { |r| r.rate_class_type=='Inflation' && start_date_datified < r.start_date }
-    @rates.delete_if { |r| r.rate_class_type == 'F & A' && @overhead==false }
-  end
-
 end
 
 class AssignedPersonnelCollection < CollectionFactory
 
+  include Foundry
+
+  attr_reader :personnel_rates
+
   contains AssignedPerson
+  undef_method :add
+
+  def add(personnel_rates, opts={})
+    @rates ||= []
+    person = AssignedPerson.new @browser, opts
+    person.create
+    if @rates.empty?
+      funkify(person, personnel_rates)
+    else
+      r = @rates.find { |r| r.object_code==person.object_code }
+      if r.nil?
+        funkify(person, personnel_rates)
+      else
+        person.rates = r
+      end
+    end
+    self << person
+  end
 
   def person(name)
     self.find { |p| p.person==name }
+  end
+
+  def funkify(person, personnel_rates)
+    rates = create PersonnelRatesObject, object_code: person.object_code, rates: personnel_rates
+    @rates << rates
+    person.rates = rates
   end
 
 end

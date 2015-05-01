@@ -62,11 +62,6 @@ aft_dean: # AKA: "Principal Name"
     - :email:   aftdean@kuali.org
       :type:    Work
       :default: :set
-  :rolez:
-    - :name:
-      :id:
-      :qualifiers:
-        - :unit:
 auto_chair:
   :user_name:        auto_chair
   :description:

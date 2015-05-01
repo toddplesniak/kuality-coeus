@@ -134,3 +134,4 @@ class BudgetRatesCollection < CollectionFactory
   end
 
 end
+

@@ -75,10 +75,10 @@ class BudgetPeriodObject < DataFactory
       page.view_period @number
       page.assign_personnel @number
     end
-    defaults = {
-        period_rates: @period_rates
-    }
-    @assigned_personnel.add defaults.merge(opts)
+    personnel_rates = @period_rates.personnel
+    personnel_rates << @period_rates.inflation
+    personnel_rates.flatten!
+    @assigned_personnel.add personnel_rates, opts
   end
 
   def assign_non_personnel_cost opts={}

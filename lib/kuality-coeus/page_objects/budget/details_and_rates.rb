@@ -1,5 +1,7 @@
 class DetailsAndRates < BasePage
 
+  expected_element :tab_list
+
   buttons 'Close', 'Apply To Later Periods'
 
   action(:general) { |b| b.tab_list.li(text: 'General').link.click }
