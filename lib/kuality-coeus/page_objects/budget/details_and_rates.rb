@@ -11,6 +11,8 @@ class DetailsAndRates < BasePage
 
   # General
   element(:apply_inflation) { |b| b.checkbox(name: 'addProjectPersonnelHelper.budgetLineItem.applyInRateFlag') }
+  element(:submit_cost_sharing) { |b| b.checkbox(name: 'addProjectPersonnelHelper.budgetLineItem.submitCostSharingFlag') }
+  element(:on_campus) { |b| b.checkbox(name: 'addProjectPersonnelHelper.budgetLineItem.onOffCampusFlag') }
 
   # Inflation Rates
   element(:inflation_rates_table) { |b| b.table(id: 'InflationRateTable') }

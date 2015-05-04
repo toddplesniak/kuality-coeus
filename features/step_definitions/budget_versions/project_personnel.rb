@@ -54,6 +54,12 @@ end
 And /a Project Person is assigned to Budget period (\d+), with no salary inflation$/ do |number|
   assignee = @budget_version.personnel.full_names.sample
   @budget_version.period(number).assign_person person: assignee
+
+
+  DEBUG.inspect @budget_version.period(number).assigned_personnel.rates
+  DEBUG.pause 1234
+
+
   #, apply_inflation: 'No'
   @project_person = @budget_version.period(number).assigned_personnel.person(assignee)
 end

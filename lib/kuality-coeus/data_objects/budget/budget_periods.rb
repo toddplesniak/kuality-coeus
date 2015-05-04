@@ -78,6 +78,7 @@ class BudgetPeriodObject < DataFactory
     end
     personnel_rates = @period_rates.personnel
     personnel_rates << @period_rates.inflation
+    personnel_rates << @period_rates.f_and_a
     personnel_rates.flatten!
     @assigned_personnel.add personnel_rates, opts
   end

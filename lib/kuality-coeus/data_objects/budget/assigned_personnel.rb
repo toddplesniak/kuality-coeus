@@ -6,7 +6,8 @@ class AssignedPerson < DataFactory
 
   attr_reader :person, :object_code, :group, :start_date,
               :end_date, :percent_effort, :percent_charged,
-              :period_type, :requested_salary, :rates
+              :period_type, :requested_salary
+  attr_accessor :rates
 
   def initialize(browser, opts={})
     @browser = browser
@@ -160,7 +161,7 @@ class AssignedPersonnelCollection < CollectionFactory
 
   include Foundry
 
-  attr_reader :personnel_rates
+  attr_reader :rates
 
   contains AssignedPerson
   undef_method :add
@@ -189,7 +190,7 @@ class AssignedPersonnelCollection < CollectionFactory
   private
 
   def funkify(person, personnel_rates)
-    rates = create PersonnelRatesObject, object_code: person.object_code, rates: personnel_rates
+    rates = create PersonnelRatesObject, object_code: person.object_code, prs: personnel_rates
     @rates << rates
     person.rates = rates
   end

@@ -79,8 +79,7 @@ class BudgetRatesCollection < CollectionFactory
     br = noob
     np = self.find_all { |r|
       r.rate_class_type == 'Fringe Benefits' ||
-          r.rate_class_type == 'Vacation' ||
-          r.description =~ /salar/i
+          r.rate_class_type == 'Vacation'
     }
     br << np
     br.flatten
