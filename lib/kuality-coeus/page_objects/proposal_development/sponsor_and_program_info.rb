@@ -1,5 +1,7 @@
 class SponsorAndProgram < BasePage
-  
+
+  expected_element :sponsor_deadline_date
+
   document_buttons
   new_error_messages
 
