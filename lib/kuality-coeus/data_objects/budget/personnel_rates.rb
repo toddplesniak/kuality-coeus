@@ -17,8 +17,25 @@ class PersonnelRatesObject < DataFactory
   def create
     on(AssignPersonnelToPeriods).details_and_rates_of @object_code
     on DetailsAndRates do |page|
+      if page.inflation_rates_table.present?
 
-      DEBUG.inspect @rates
+        DEBUG.inspect page.inflation_rates_table[0][:description]
+
+        inflation = @rates.inflation.keep_if { |r| r.description == page.inflation_rates_table[0][:description] }
+
+        DEBUG.inspect inflation
+
+        #DEBUG
+        #@rates.each { |rate| puts rate.rate_class_code }
+
+      else
+
+        DEBUG.message 'WTF???'
+
+        @rates = @rates - @rates.inflation
+      end
+
+      #DEBUG.inspect @rates
       DEBUG.pause 3333
 
       fill_out page, :apply_inflation, :submit_cost_sharing, :on_campus

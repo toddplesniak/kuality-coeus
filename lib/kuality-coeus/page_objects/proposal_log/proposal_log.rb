@@ -6,7 +6,11 @@ class ProposalLog < BasePage
   tab_buttons
   route_log
   error_messages
-  
+
+  undefine :save_button
+
+  element(:save_button) { |b| b.frm.button(title: 'save') }
+
   value(:proposal_number) { |b| b.frm.span(id: 'document.newMaintainableObject.proposalNumber.div').text }
   element(:proposal_log_type) { |b| b.frm.select(id: 'document.newMaintainableObject.proposalLogTypeCode') }
   value(:proposal_log_status) { |b| b.frm.span(id: 'document.newMaintainableObject.logStatus.div').text }
@@ -21,8 +25,11 @@ class ProposalLog < BasePage
   value(:pi_full_name) { |b| b.frm.span(id: 'document.newMaintainableObject.person.fullName.div').text.strip.gsub('  ', ' ') }
 
   #Table for temporary proposal logs to be merged
-  element(:temporary_proposal_log_table) { |b| b.frm.table(id: 'proposalLogMergeList') }
+  element(:temporary_proposal_log_table) { |b| b.merge_list.table }
   p_action(:proposal_number_row) { |number, b| b.temporary_proposal_log_table.row(text: /#{number}/) }
   p_action(:merge_proposal_log) { |number, b| b.proposal_number_row(number).button(class: 'mergeLink').click }
+
+  element(:merge_list) { |b| b.frm.div(id: 'proposalLogMergeList') }
+  action(:cancel_merge) { |b| b.merge_list.link(class: 'cancel globalbuttons').click; b.loading }
 
 end

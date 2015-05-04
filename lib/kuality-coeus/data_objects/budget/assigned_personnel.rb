@@ -186,6 +186,8 @@ class AssignedPersonnelCollection < CollectionFactory
     self.find { |p| p.person==name }
   end
 
+  private
+
   def funkify(person, personnel_rates)
     rates = create PersonnelRatesObject, object_code: person.object_code, rates: personnel_rates
     @rates << rates
