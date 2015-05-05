@@ -16,6 +16,7 @@ class PersonnelRatesObject < DataFactory
   end
 
   def create
+    # Expectation is that prior navigation is handled elsewhere
     on(AssignPersonnelToPeriods).details_and_rates_of @object_code
     on DetailsAndRates do |page|
       if page.inflation_rates_table.present?
@@ -30,6 +31,15 @@ class PersonnelRatesObject < DataFactory
       fill_out page, :apply_inflation, :submit_cost_sharing, :on_campus
       page.save_changes
     end
+  end
+
+  def edit opts={}
+    # Expectation is that prior navigation is handled elsewhere
+    on(AssignPersonnelToPeriods).details_and_rates_of @object_code
+    on DetailsAndRates do |page|
+      edit_fields opts, page, :apply_inflation, :submit_cost_sharing, :on_campus
+    end
+    set_options opts
   end
 
 end

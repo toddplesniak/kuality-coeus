@@ -7,7 +7,7 @@ class AssignedPerson < DataFactory
   attr_reader :person, :object_code, :group, :start_date,
               :end_date, :percent_effort, :percent_charged,
               :period_type, :requested_salary
-  attr_accessor :rates
+  attr_accessor :rate_details
 
   def initialize(browser, opts={})
     @browser = browser
@@ -177,7 +177,7 @@ class AssignedPersonnelCollection < CollectionFactory
       if r.nil?
         funkify(person, personnel_rates)
       else
-        person.rates = r
+        person.rate_details = r
       end
     end
     self << person
@@ -187,12 +187,16 @@ class AssignedPersonnelCollection < CollectionFactory
     self.find { |p| p.person==name }
   end
 
+  def details_and_rates(object_code)
+    @rates.find { |rate| rate.object_code==object_code }
+  end
+
   private
 
   def funkify(person, personnel_rates)
     rates = create PersonnelRatesObject, object_code: person.object_code, prs: personnel_rates
     @rates << rates
-    person.rates = rates
+    person.rate_details = rates
   end
 
 end
