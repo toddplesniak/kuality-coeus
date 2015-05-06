@@ -27,11 +27,6 @@ unassigneduser: # AKA: "Principal Name"
     - :type:    Facsimile
       :number:  602-597-5350
       :default: :clear
-  :rolez:
-    - :name:
-      :id:
-      :qualifiers:
-        - :unit:
 aft_dean: # AKA: "Principal Name"
   :user_name:        aft_dean
   :description:      no roles
@@ -67,11 +62,6 @@ aft_dean: # AKA: "Principal Name"
     - :email:   aftdean@kuali.org
       :type:    Work
       :default: :set
-  :rolez:
-    - :name:
-      :id:
-      :qualifiers:
-        - :unit:
 auto_chair:
   :user_name:        auto_chair
   :description:

@@ -1,4 +1,4 @@
-@proposal
+@proposal @budget
 Feature: Project Personnel in Proposal Budget Versions
 
   User story to be written...
@@ -24,7 +24,7 @@ Feature: Project Personnel in Proposal Budget Versions
     Then  the Project Person's requested salary for the Budget period is as expected
 
   Scenario: Adding Project Person with Salary and Inflation Rate
-    Given the Proposal Creator sets the inflation rate of the Budget's on-campus non-student salaries to 7 percent
-    And   adds an employee to the Budget personnel
-    When  an 'Other Professional Staff' person is assigned to Budget period 1
+    Given the Proposal Creator adds an employee to the Budget personnel
+    And   an 'Other Professional Staff' person is assigned to Budget period 1
+    When  the inflation rate for the person's salary is set to 7 percent
     Then  the Project Person's requested salary for the Budget period is as expected

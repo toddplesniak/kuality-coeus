@@ -61,6 +61,7 @@ class BudgetPeriodObject < DataFactory
   # TODO: All this code is problematic when there are multiple
   # Project periods. It needs some serious re-thinking for 6.0
   def add_item_to_cost_sharing_dl opts={}
+    warn 'This cost sharing method must be refactored.'
     defaults = {
         amount: random_dollar_value(10000),
         period: "#{@number}: #{@start_date} - #{@end_date}"
@@ -75,10 +76,11 @@ class BudgetPeriodObject < DataFactory
       page.view_period @number
       page.assign_personnel @number
     end
-    defaults = {
-        period_rates: @period_rates
-    }
-    @assigned_personnel.add defaults.merge(opts)
+    personnel_rates = @period_rates.personnel
+    personnel_rates << @period_rates.inflation
+    personnel_rates << @period_rates.f_and_a
+    personnel_rates.flatten!
+    @assigned_personnel.add personnel_rates, opts
   end
 
   def assign_non_personnel_cost opts={}

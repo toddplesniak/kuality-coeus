@@ -59,9 +59,9 @@ class UserYamlCollection < Array
   # The array is shuffled so that #have_role('role name')[0] will be a random selection
   # from the list of matching users.
   def have_role(role)
-
-    users = self.find_all{|user| user[:rolez].detect{|r| r[:name]==role}}.shuffle
-
+    users = have_rolez.find_all{|user|
+      user[:rolez].detect{|r| r[:name]==role}
+        }.shuffle
     raise "No users have the role #{role}. Please add one or fix your parameter." if users.empty?
     users
   end
@@ -71,7 +71,7 @@ class UserYamlCollection < Array
   # The array is shuffled so that #have_role_in_unit('role name', 'unit name')[0]
   # will be a random selection from the list of matching users.
   def have_role_in_unit(role, unit)
-    users = self.find_all{ |user|
+    users = have_rolez.find_all{ |user|
                             user[:rolez].detect{ |r|
                                                      r[:name]==role &&
                                                      r[:qualifiers].detect{ |q|
@@ -84,7 +84,7 @@ class UserYamlCollection < Array
 
   # TODO: Does this need the third parameter?  Maybe we just look for "yes" and make another method for "no"...
   def have_hierarchical_role_in_unit(role, unit, hier)
-    users = self.find_all{ |user|
+    users = have_rolez.find_all{ |user|
       user[:rolez].find{ |r| r[:name]==role && r[:qualifiers].detect{ |q| q[:unit]==unit && q[:descends_hierarchy]==hier } }
     }.shuffle
     raise "No users have a hierarchical role #{role} in the unit #{unit}. Please add one or fix your parameter(s)." if users.empty?
@@ -117,7 +117,7 @@ class UserYamlCollection < Array
     self.find_all{|user|
       !user[:appointmentz].nil? &&
       !(user[:appointmentz].find { |app| app[:type]==type }).nil?
-    }.shuffle[:user_name]
+    }.shuffle
   end
 
   # Note: This method returns the username of a matching user record. It does NOT
@@ -128,6 +128,10 @@ class UserYamlCollection < Array
                            !user[:emails].find{|email| email[:type]=='Work'}.nil? &&
                            !user[:era_commons_user_name].nil?
     }.shuffle[:user_name]
+  end
+
+  def have_rolez
+    self.find_all { |u| u[:rolez] != nil }
   end
 
 end # UserYamlCollection
