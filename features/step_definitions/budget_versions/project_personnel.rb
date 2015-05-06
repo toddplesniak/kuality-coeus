@@ -62,9 +62,7 @@ And /an? '(.*)' person is assigned to Budget period (\d+)/ do |object_code, numb
   assignee = @budget_version.personnel.full_names.sample
   @budget_version.period(number).assign_person person: assignee,
                                                object_code: object_code,
-                                               monthly_base_salary: @budget_version.person(assignee).monthly_base_salary,
-                                               percent_effort: '100.0',
-                                               percent_charged: '100.0'
+                                               monthly_base_salary: @budget_version.person(assignee).monthly_base_salary
   @project_person = @budget_version.period(number).assigned_personnel.person(assignee)
 end
 

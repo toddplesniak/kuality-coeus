@@ -179,8 +179,8 @@ class AssignedPerson < DataFactory
     start_and_end_month_same? ? 0 : @monthly_base_salary/days_in_end_month
   end
 
-  def rate_end_month_daily_salary(rate)
-    rate_sems?(rate) ? 0 : @monthly_base_salary/rdiem(rate)
+  def rate_end_month_calc_salary(rate)
+    rate_sems?(rate) ? 0 : monthly_calculated_salary/rdiem(rate)
   end
 
   def start_month_calculated_salary
@@ -196,7 +196,7 @@ class AssignedPerson < DataFactory
   end
 
   def remci(rate)
-    rate_end_month_daily_salary(rate)*rred(rate).day*(rate.applicable_rate.to_f/100)
+    rate_end_month_calc_salary(rate)*rred(rate).day*(rate.applicable_rate.to_f/100)
   end
 
   def end_mnth_calc_cost_sharing
