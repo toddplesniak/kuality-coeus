@@ -1,12 +1,11 @@
-And /sets the inflation rate of the Budget's on-campus non-student salaries to (\d+) percent/ do |percentage|
+And /the inflation rate for the person's salary is set to (\d+) percent/ do |percentage|
   @budget_version.view 'Rates'
   # FIXME: All this should not be hard-coded. Need to come up with better way to do this.
   # Probably, all this belongs encapsulated in a Data Object class for Budget Rates.
-  on Rates do |page|
-    page.inflation
-    page.applicable_rate('Salaries-Non Student', 'Yes', '2016').set percentage
-  end
-  @inflation = percentage
+  on(Rates).inflation
+  @project_person.inflation_rates.each { |rate|
+    rate.set_applicable_rate percentage
+  }
 end
 
 Then /^the Person's Rates show correct costs and cost sharing amounts$/ do

@@ -38,8 +38,18 @@ class PersonnelRatesObject < DataFactory
     on(AssignPersonnelToPeriods).details_and_rates_of @object_code
     on DetailsAndRates do |page|
       edit_fields opts, page, :apply_inflation, :submit_cost_sharing, :on_campus
+      page.save_changes
     end
     set_options opts
+  end
+
+  def applicable_inflation_rates
+    if Transforms::TRUE_FALSE[@apply_inflation]
+      @rates.campus(@on_campus).inflation
+    else
+      # Sends an empty collection...
+      BudgetRatesCollection.new @browser
+    end
   end
 
 end
