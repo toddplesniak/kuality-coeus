@@ -38,7 +38,6 @@ class ProposalLogObject < DataFactory
 
 
 
-    # DEBUG.pause 300
 
 
 

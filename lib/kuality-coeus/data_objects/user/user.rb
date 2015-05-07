@@ -117,7 +117,7 @@ class UserYamlCollection < Array
     self.find_all{|user|
       !user[:appointmentz].nil? &&
       !(user[:appointmentz].find { |app| app[:type]==type }).nil?
-    }.shuffle[:user_name]
+    }.shuffle
   end
 
   # Note: This method returns the username of a matching user record. It does NOT

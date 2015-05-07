@@ -50,7 +50,6 @@ class SendNotifications < Dialogs
   action(:employee_set) {|b| b.label(text: 'Employee').parent.radio.set }
   action(:non_employee_set) {|b| b.label(text: 'Non Employee').parent.radio.set }
 
-  #DEBUG not sure this works correctly yet
   def get_search_results
     value(:ben) do |b|
       arry = []
