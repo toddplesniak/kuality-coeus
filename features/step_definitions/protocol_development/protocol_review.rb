@@ -13,7 +13,6 @@ Then /^the assigned reviewers get a Protocol Review$/ do
     on(ActionList).open_first_document_id
 
     on(OnlineReview).expand_all
-    # DEBUG.pause(3)
     expect(on(OnlineReview).new_review_comment(rev_name)).to be_present
     reviewer.sign_out
   end

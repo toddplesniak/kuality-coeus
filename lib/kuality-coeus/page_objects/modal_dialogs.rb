@@ -50,7 +50,6 @@ class SendNotifications < Dialogs
   action(:employee_set) {|b| b.label(text: 'Employee').parent.radio.set }
   action(:non_employee_set) {|b| b.label(text: 'Non Employee').parent.radio.set }
 
-  #DEBUG not sure this works correctly yet
   def get_search_results
     value(:ben) do |b|
       arry = []
@@ -114,7 +113,9 @@ class ChangePeriod < Dialogs
 end
 
 class SyncBudgetRates < Dialogs
-
+  #there are multiple hidden modal dialogues with same tags
+  action(:yes_if_visible) { |b| b.buttons(text: 'Yes').each {|b| b.click if b.visible? } }
+  element(:div_dialog) { |b| b.div(class: 'modal-dialog modal-sm') }
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
 
 end
