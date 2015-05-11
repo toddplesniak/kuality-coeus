@@ -12,11 +12,11 @@ class Users < Array
   end
 
   def all_with_role(role_name)
-    self.find_all { |user| user.roles.detect{|r| r.name==role_name} }
+    self.find_all { |user| user.roles.name(role_name) }
   end
 
   def with_role(role_name)
-    self.find { |user| user.roles.detect{|r| r.name==role_name} }
+    self.find { |user| user.roles.name(role_name) }
   end
 
   def with_role_in_unit(role_name, unit)
@@ -47,15 +47,21 @@ class Users < Array
 
 end # Users
 
-# This is a special collection class that inherits from Hash and contains
+# This is a special collection class that inherits from Array and contains
 # the user information listed in the users.yml file.
-class UserYamlCollection < Hash
+class UserYamlCollection < Array
+
+  def user(user_name)
+    self.find { |user| user[:user_name]==user_name }
+  end
 
   # Returns an array of all users with the specified role. Takes the role name as a string.
   # The array is shuffled so that #have_role('role name')[0] will be a random selection
   # from the list of matching users.
   def have_role(role)
-    users = self.find_all{|user| user[1][:rolez].detect{|r| r[:name]==role}}.shuffle
+    users = have_rolez.find_all{|user|
+      user[:rolez].detect{|r| r[:name]==role}
+        }.shuffle
     raise "No users have the role #{role}. Please add one or fix your parameter." if users.empty?
     users
   end
@@ -65,8 +71,8 @@ class UserYamlCollection < Hash
   # The array is shuffled so that #have_role_in_unit('role name', 'unit name')[0]
   # will be a random selection from the list of matching users.
   def have_role_in_unit(role, unit)
-    users = self.find_all{ |user|
-                            user[1][:rolez].detect{ |r|
+    users = have_rolez.find_all{ |user|
+                            user[:rolez].detect{ |r|
                                                      r[:name]==role &&
                                                      r[:qualifiers].detect{ |q|
                                                                              q[:unit]==unit }
@@ -78,8 +84,8 @@ class UserYamlCollection < Hash
 
   # TODO: Does this need the third parameter?  Maybe we just look for "yes" and make another method for "no"...
   def have_hierarchical_role_in_unit(role, unit, hier)
-    users = self.find_all{ |user|
-      user[1][:rolez].find{ |r| r[:name]==role && r[:qualifiers].detect{ |q| q[:unit]==unit && q[:descends_hierarchy]==hier } }
+    users = have_rolez.find_all{ |user|
+      user[:rolez].find{ |r| r[:name]==role && r[:qualifiers].detect{ |q| q[:unit]==unit && q[:descends_hierarchy]==hier } }
     }.shuffle
     raise "No users have a hierarchical role #{role} in the unit #{unit}. Please add one or fix your parameter(s)." if users.empty?
     users
@@ -89,39 +95,43 @@ class UserYamlCollection < Hash
   # The array is shuffled so that #with_campus_code('code')[0] will be a random selection
   # from the list of matching users.
   def with_campus_code(code)
-    self.find_all{|user| user[1][:campus_code]==code }.shuffle
+    self.find_all{|user| user[:campus_code]==code }.shuffle
   end
 
   # Returns an array of all users with the specified affiliation type. Takes the type name as a string.
   # The array is shuffled so that #with_affiliation_type('type name')[0] will be a random selection
   # from the list of matching users.
   def with_affiliation_type(type)
-    self.find_all{|user| user[1][:affiliation_type]==type }.shuffle
+    self.find_all{|user| user[:affiliation_type]==type }.shuffle
   end
 
   def with_employee_type(type)
-    self.find_all{|user| user[1][:employee_type]==type }.shuffle
+    self.find_all{|user| user[:employee_type]==type }.shuffle
   end
 
   def with_primary_dept_code(code)
-    self.find_all{|user| user[1][:primary_dept_code]==code }.shuffle
+    self.find_all{|user| user[:primary_dept_code]==code }.shuffle
   end
 
   def with_appointment_type(type)
     self.find_all{|user|
-      !user[1][:appointmentz].nil? &&
-      !(user[1][:appointmentz].find { |app| app[:type]==type }).nil?
-    }.shuffle[0][0]
+      !user[:appointmentz].nil? &&
+      !(user[:appointmentz].find { |app| app[:type]==type }).nil?
+    }.shuffle
   end
 
   # Note: This method returns the username of a matching user record. It does NOT
   # return an array of all matching users.
   def grants_gov_pi
-    self.find_all { |user| !user[1][:primary_department_code].nil? &&
-                           !user[1][:phones].find{|phone| phone[:type]=='Work'}.nil? &&
-                           !user[1][:emails].find{|email| email[:type]=='Work'}.nil? &&
-                           !user[1][:era_commons_user_name].nil?
-    }.shuffle[0][0]
+    self.find_all { |user| !user[:primary_department_code].nil? &&
+                           !user[:phones].find{|phone| phone[:type]=='Work'}.nil? &&
+                           !user[:emails].find{|email| email[:type]=='Work'}.nil? &&
+                           !user[:era_commons_user_name].nil?
+    }.shuffle[:user_name]
+  end
+
+  def have_rolez
+    self.find_all { |u| u[:rolez] != nil }
   end
 
 end # UserYamlCollection
@@ -141,7 +151,7 @@ class UserObject < DataFactory
               :directory_department, :appointments,
               :type
 
-  USERS = UserYamlCollection[YAML.load_file("#{File.dirname(__FILE__)}/users.yml")]
+  USERS = UserYamlCollection[YAML.load_file("#{File.dirname(__FILE__)}/users.yml").map{ |item| item[1] }].flatten!
 
   def initialize(browser, opts={})
     @browser =      browser
@@ -165,11 +175,9 @@ class UserObject < DataFactory
         phones:           [{type:   'Work',
                             number:  '602-840-7300',
                             default: :set }],
-        rolez:            [{name: 'unassigned', qualifiers: [{:unit=>'000001'}]}],
         groups:           collection('UserGroups')
     }
     defaults.merge!(opts)
-
     if opts.empty? # then we want to make the admin user...
       options = {user_name: 'admin', first_name: 'admin', last_name: 'admin'}
     else # if we're passing options then we want to make a particular user...
@@ -177,13 +185,13 @@ class UserObject < DataFactory
                  when opts.key?(:user)
                    opts[:user]
                  when opts.key?(:unit)
-                   USERS.have_role_in_unit(opts[:role], opts[:unit])[0][0]
-                 when opts.key?(:role)
-                   USERS.have_role(opts[:role])[0][0]
+                   USERS.have_role_in_unit(opts[:role], opts[:unit]).first[:user_name]
+                   when opts.key?(:role)
+                   USERS.have_role(opts[:role]).first[:user_name]
                  else
                    :nil
                  end
-      options = USERS[@user_name].nil? ? defaults : USERS[@user_name].merge(opts)
+      options = USERS.user(@user_name).nil? ? defaults : USERS.user(@user_name).merge(opts)
     end
 
     set_options options
@@ -194,7 +202,6 @@ class UserObject < DataFactory
     @appointmentz=nil
     @rolez=nil
     @full_name = "#{@first_name} #{@last_name}"
-
   end
 
   # It's important to note that this method will work

@@ -1,4 +1,4 @@
-@IRB
+@irb
 Feature: Submitting an IRB Protocol for Review
 
   This feature summary needs to be written

@@ -38,6 +38,8 @@ When /^I ? ?creates? an Award with a missing required field$/ do
                               "#{required_field} (Title)#{text}"
                             when 'Transaction Type', 'Award Status', 'Activity Type', 'Award Type', 'Project End Date', 'Lead Unit ID'
                               "#{required_field} (#{required_field})#{text}"
+                            when 'Award Title'
+                              "Award Title (Title)#{text}"
                             end
 end
 

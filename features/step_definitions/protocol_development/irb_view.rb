@@ -18,6 +18,7 @@ Then /the (.*) (can |can't )see the primary reviewer's comment in Submission Det
   }
   member = people[person] ? @committee.members.member(people[person]) : @irb_protocol.principal_investigator
   member.sign_in
+  #view_by_view is selecting the View link from the search results
   @irb_protocol.view_by_view 'Protocol Actions'
   on ProtocolActions do |page|
     page.expand_all
@@ -29,7 +30,6 @@ end
 Then /^the summary approval date on the Protocol should be last year$/ do
   on ExpeditedApproval do |page|
     page.expand_all
-    DEBUG.pause(78)
     page.approval_date_ro.should == last_year[:date_w_slashes]
   end
 end

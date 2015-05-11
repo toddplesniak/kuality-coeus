@@ -22,4 +22,6 @@ class AssignPersonnelToPeriods < BasePage
 
   p_element(:testdiv) { |x, b| b.div(id: "PropBudget-AssignPersonnelToPeriodsPage-PersonnelDetails_#{x}_tabPanel") }
 
+  element(:title) { |b| b.span(text: 'Assign Personnel to Periods') }
+
 end

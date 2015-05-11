@@ -1,4 +1,4 @@
-@Proposal @Smoke
+@proposal
 Feature: Creating a proposal development document
 
   As a researcher I want the ability to create a proposal
@@ -6,7 +6,7 @@ Feature: Creating a proposal development document
 
   Background: Logged in with a proposal creator user
     * a User exists with the role: 'Proposal Creator'
-  @failing
+
   Scenario: Successful initiation of proposal with federal sponsor type
     When  the Proposal Creator creates a Proposal with a 'Federal' sponsor type
     Then  The S2S opportunity search should become available

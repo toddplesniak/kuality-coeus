@@ -11,7 +11,7 @@ class Confirmation < BasePage
   element(:reason) { |b| b.frm.textarea(name: 'reason') }
   alias_method :recall_reason, :reason
   action(:yes) { |b| b.yes_button.click; b.loading; b.awaiting_doc }
-  action(:no) { |b| b.frm.button(class: 'confirm', name: 'methodToCall.processAnswer.button1').click; b.loading; b.awaiting_doc }
+  action(:no) { |b| b.no_button.click; b.loading; b.awaiting_doc }
   action(:return_to_document) { |b| b.frm.button(class: 'confirm', name: 'methodToCall.processAnswer.button2').click; b.loading }
   alias_method :copy_all_periods, :yes
   alias_method :copy_one_period_only, :no
@@ -49,7 +49,8 @@ class SendNotifications < Dialogs
   element(:message) { |b| b.textarea(name: 'notificationHelper.notification.message') }
   action(:employee_set) {|b| b.label(text: 'Employee').parent.radio.set }
   action(:non_employee_set) {|b| b.label(text: 'Non Employee').parent.radio.set }
-  #DEBUG not sure this works yet
+
+  #DEBUG not sure this works correctly yet
   def get_search_results
     value(:ben) do |b|
       arry = []
@@ -120,7 +121,22 @@ end
 
 class SyncDirectCostLimit < Dialogs
 
+  undefine :yes, :yes_element
+
   element(:dialog_header) { |b| b.header(id: 'PropBudget-NonPersonnelCosts-SyncToDirectCostLimit_headerWrapper') }
+
+  element(:yes_element) { |b| b.section(id: 'PropBudget-NonPersonnelCosts-SyncToDirectCostLimit').button(text: 'Yes') }
+  action(:yes) { |b| b.yes_element.click; b.loading }
+end
+
+class SyncPeriodCostLimit < Dialogs
+
+  undefine :yes, :yes_element
+
+  element(:dialog_header) { |b| b.header(id: 'PropBudget-NonPersonnelCosts-SyncToPeriodCostLimit_headerWrapper') }
+
+  element(:yes_element) { |b| b.section(id: 'PropBudget-NonPersonnelCosts-SyncToPeriodCostLimit').button(text: 'Yes') }
+  action(:yes) { |b| b.yes_element.click; b.loading }
 
 end
 
@@ -135,6 +151,17 @@ end
 
 class ConfirmPeriodChanges < Dialogs
 
+  undefine :yes, :yes_element
+
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ConfirmPeriodChangesDialog_headerWrapper') }
+
+  element(:yes_element) { |b| b.section(id: 'PropBudget-ConfirmPeriodChangesDialog').button(text: 'Yes') }
+  action(:yes) { |b| b.yes_element.click; b.loading }
+  
+end
+
+class ConfirmAutocalculate < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'u1839u1b_headerWrapper') }
 
 end

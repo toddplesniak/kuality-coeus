@@ -1,5 +1,7 @@
 class DetailsAndRates < BasePage
 
+  expected_element :tab_list
+
   buttons 'Close', 'Apply To Later Periods'
 
   action(:general) { |b| b.tab_list.li(text: 'General').link.click }
@@ -9,6 +11,23 @@ class DetailsAndRates < BasePage
 
   # General
   element(:apply_inflation) { |b| b.checkbox(name: 'addProjectPersonnelHelper.budgetLineItem.applyInRateFlag') }
+  element(:submit_cost_sharing) { |b| b.checkbox(name: 'addProjectPersonnelHelper.budgetLineItem.submitCostSharingFlag') }
+  element(:on_campus) { |b| b.checkbox(name: 'addProjectPersonnelHelper.budgetLineItem.onOffCampusFlag') }
+
+  # Inflation Rates
+  element(:inflation_rates_table) { |b| b.table(id: 'InflationRateTable') }
+  value(:inflation_rates) { |b|
+    array = []
+    b.inflation_rates_table.tbody.trs.each { |tr|
+      array << {
+          description: tr[0].text,
+          start_date: Utilities.datify(tr[1].text),
+          institution_rate: tr[2].text,
+          applicable_rate: tr[3].text
+      }
+    }
+    array
+  }
 
   # Rates
   value(:rate_amounts) { |b|

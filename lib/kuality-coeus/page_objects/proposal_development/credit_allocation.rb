@@ -27,29 +27,20 @@ class CombinedCreditSplit < BasePage
   SPACE = 2
   FINANCIAL = 3
 
-
-  # document_buttons
-  # new_error_messages
   global_buttons
-  # old_ui
 
-  # element(:splits_table) { |b| b.table(class: 'table table-condensed credit-allocation') }
   element(:splits_table) { |b| b.frm.div(id: 'tab-ProjectPersonnel:CombinedCreditSplit-div').table }
 
   p_element(:table_row_by_name_old) { |name, b| b.splits_table.tr(text: name) }
   p_value(:find_correct_unit_name) { |number, b| b.splits_table.td(text: /^#{number}/).text }
 
   action(:set_credit_split_values) {|value='100', b| b.frm.div(id: 'tab-ProjectPersonnel:CombinedCreditSplit-div').text_fields.each {|x| x.set "#{value}" } }
-  # p_element(:unit_recognition) { |name, b| b.tr(text: name).text_field(name: "document.awardList[0].projectPersons[0].units[0].creditSplits[#{0}].credit") }
-  # p_element(:unit_responsibility) { |name, b| b.tr(text: name).text_field(name: "document.awardList[0].projectPersons[0].units[0].creditSplits[#{1}].credit") }
-  # p_element(:unit_space) { |name, b| b.tr(text: name).text_field(name: "document.awardList[0].projectPersons[0].units[0].creditSplits[#{2}].credit") }
-  # p_element(:unit_financial) { |name, b| b.tr(text: name).text_field(name: "document.awardList[0].projectPersons[0].units[0].creditSplits[#{3}].credit") }
 
   p_element(:unit_recognition) { |name, unit, b| b.search_target_rows(name).find{ |row| row.text.include? unit }.text_field(name: /creditSplits\[#{RECOGNITION}\].credit/) }
   p_element(:unit_responsibility) { |name, unit, b| b.search_target_rows(name).find{ |row| row.text.include? unit }.text_field(name: /creditSplits\[#{RESPONSIBILITY}\].credit/) }
   p_element(:unit_space) { |name, unit, b| b.search_target_rows(name).find{ |row| row.text.include? unit }.text_field(name: /creditSplits\[#{SPACE}\].credit/) }
   p_element(:unit_financial) { |name, unit, b| b.search_target_rows(name).find{ |row| row.text.include? unit }.text_field(name: /creditSplits\[#{FINANCIAL}\].credit/) }
-  # p_value(:line_number_of) { |name, b| b.td(text: name) }.id[/(?<=line)\d+/] }
+
   p_value(:line_number_of) { |name, b| b.splits_table.td(text: name).id[/(?<=line)\d+/] }
 
   p_value(:search_target_rows) { |name, b| b.splits_table.rows[b.line_number_of(name).to_i..-1]}

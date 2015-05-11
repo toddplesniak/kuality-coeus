@@ -1,6 +1,6 @@
 class Rates < BasePage
 
-  buttons 'Sync All Rates', 'Refresh All Rates'
+  buttons 'Sync All Rates', 'Refresh All Rates', 'Save'
   links 'Research F & A', 'Fringe Benefits', 'Inflation', 'Vacation', 'Lab Allocation - Salaries', 'Lab Allocation - Other', 'Other'
 
   p_element(:applicable_rate) { |desc, on_camp, f_yr, b| b.visible_table.tr(text: /^#{desc}.+#{on_camp}.+#{f_yr}/m).text_field(name: /applicableRate$/) }

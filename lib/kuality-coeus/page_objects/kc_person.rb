@@ -1,7 +1,6 @@
 class KCPerson < BasePage
 
   tab_buttons
-  # global_buttons
 
   value(:last_name) { |b| b.span(id: 'lastName.div').text.strip }
   value(:first_name) { |b| b.span(id: 'firstName.div').text.strip }

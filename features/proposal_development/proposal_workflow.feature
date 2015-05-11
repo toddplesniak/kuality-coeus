@@ -1,4 +1,4 @@
-@Proposal
+@proposal @wip
 Feature: Proposal Workflows and Routing
 
   As system user with the appropriate roles and permissions, I want the ability to
@@ -7,7 +7,7 @@ Feature: Proposal Workflows and Routing
 
   Background:
     * Users exist with the following roles: Proposal Creator, OSPApprover
-  @test
+
   Scenario: Approval Requests for a Proposal are sent
     When the Proposal Creator submits a new Proposal into routing
     Then the Proposal status should be Approval Pending

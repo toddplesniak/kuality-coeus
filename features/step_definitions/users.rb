@@ -15,8 +15,8 @@ end
 #    a class instance variable based on the username
 # 3) Logs that user in (if they're not already)...
 Given /^I'm logged in with (.*)$/ do |username|
-  user = make_user(user: username)
-  user.sign_in
+  $users << make(UserObject, user: username)
+  $users[-1].sign_in
 end
 
 # Whereas, this step def
@@ -24,8 +24,7 @@ end
 # 2) Assumes that role user already exists in the system
 # 3) Logs that user in, if they're not already
 Given /^I? ?log in (?:again)? ?with the (.*) user$/ do |role|
-  user = $users.with_role(role)
-  user.sign_in
+  $users.with_role(role).sign_in
 end
 
 # This step definition
@@ -34,8 +33,8 @@ end
 #    by first logging in with the admin user
 Given /^a User exists with the user name (.*)$/ do |username|
   if $users.user(username).nil?
-    user = make_user user: username
-    user.create unless user.exists?
+    $users << make(UserObject, user: username)
+    $users[-1].create unless $users[-1].exists?
   end
 end
 
@@ -46,8 +45,8 @@ end
 # logging in with the admin user to do the creation).
 Given /^a User exists with the role: '(.*)'$/ do |role|
   if $users.with_role(role).nil?
-    user = make_user role: role
-    user.create unless user.exists?
+    $users << make(UserObject, role: role)
+    $users[-1].create unless $users[-1].exists?
   end
 end
 
@@ -58,8 +57,8 @@ end
 # logging in with the admin user to do the creation).
 Given /^a User exists with the role '(.*)' in unit '(.*)'$/ do |role, unit|
   if $users.with_role_in_unit(role, unit).nil?
-    user = make_user role: role, unit: unit
-    user.create unless user.exists?
+    $users << make(UserObject, role: role, unit: unit)
+    $users[-1].create unless $users[-1].exists?
   end
 end
 
@@ -85,38 +84,45 @@ And /^I log in with that User$/ do
 end
 
 Then /^(.*) is logged in$/ do |username|
+  #FIXME! This is no longer going to work!
   get(username).logged_in?.should be true
 end
 
 # TODO: This will need to be changed to add "in the same unit" as a qualifier
 Given /^Users exist with the following roles: (.*)$/ do |roles|
-  DEBUG.message "roles are #{roles}"
   roles.split(', ').each do |r|
     if $users.with_role(r).nil?
-      user = make_user role: r
-      user.create unless user.exists?
+      $users << make(UserObject, role: r)
+      $users[-1].create unless $users[-1].exists?
     end
   end
 end
 
 Given /^a User exists that can be a PI for Grants.gov proposals$/ do
-  make_user(user: UserObject::USERS.grants_gov_pi, type: 'Grants.gov PI')
+  $users << make(UserObject, user: UserObject::USERS.grants_gov_pi, type: 'Grants.gov PI')
   $users[-1].create unless $users[-1].exists?
 end
 
 Given /^a User exists with a '(.*)' appointment type$/ do |type|
-  make_user(user: UserObject::USERS.with_appointment_type(type), type: type)
+  $users << make(UserObject, user: UserObject::USERS.with_appointment_type(type).first[:user_name], type: type)
   $users[-1].create unless $users[-1].exists?
 end
 
 Given /^an AOR User exists$/ do
   # TODO: Using the username here is cheating. Fix this.
-  @aor = make_user(user: 'warrens', type: 'AOR')
+  @aor = $users << make(UserObject, user: 'warrens', type: 'AOR')
   @aor.create unless @aor.exists?
 end
 
 When /^I? ?create an? '(.*)' User$/ do |type|
   $users << create(UserObject, type: type)
+end
+
+And /create a User with no memberships$/ do
+  # Note: The usage of the :type value in the options is simply a
+  # means to get the UserObject to create a user that is NOT the admin user.
+  # Essentially it is dummy code and could basically be anything...
+  $users << create(UserObject, type: :no_membership)
 end
 
 Given /^I? ?create a User with an? (.*) role in the (.*) unit$/ do |role, unit|
@@ -147,7 +153,7 @@ When /^a User exists with the roles: (.*) in the (.*) unit$/ do |roles, unit|
   raise 'There are no matching users in the users.yml file. Please add one.' if users.empty?
   user_name = users.inject(:&).shuffle[0][0]
   if $users.user(user_name).nil?
-    make_user user: user_name
+    $users << make(UserObject, user: user_name)
     $users[-1].create unless $users[-1].exists?
   end
 end

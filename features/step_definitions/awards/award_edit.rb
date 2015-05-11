@@ -16,7 +16,7 @@ When /^the Award's title is made more than (\d+) characters long$/ do |arg|
 end
 
 When /I? ?adds? the required Custom Data to the Award$/ do
-  @award.add_custom_data #if @award.custom_data.nil?
+  @award.add_custom_data
 end
 #TODO
 #Confirm that custom data is not required in KC Award.
@@ -34,7 +34,7 @@ When /^data validation is turned on for the Award$/ do
   @award.view_tab :award_actions
   on AwardActions do |page|
     page.expand_all
-    DEBUG.pause(3)
+    page.validation_button.wait_until_present
     page.turn_on_validation
   end
 end

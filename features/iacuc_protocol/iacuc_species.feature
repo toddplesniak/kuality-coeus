@@ -1,4 +1,4 @@
-@IACUC
+@iacuc
 Feature: Add, edit, delete species on IACUC protocol
 
   As a researcher I want the ability to add, edit and remove species on an IACUC Protocol

@@ -34,16 +34,6 @@ class ProposalLogObject < DataFactory
       fill_out create, :proposal_type, :title, :lead_unit
     end
     set_sponsor_code
-
-
-
-
-    # DEBUG.pause 300
-
-
-
-
-
     on(ProposalLog).send(@save_type)
   end
 
@@ -66,17 +56,26 @@ class ProposalLogObject < DataFactory
     elsif @principal_investigator=~/\d+/
       on(ProposalLog).principal_investigator_non_employee.set @principal_investigator
     else
-      on(ProposalLog).principal_investigator_employee.set @principal_investigator
+      on ProposalLog do |page|
+        page.principal_investigator_employee.set @principal_investigator
+        page.principal_investigator_employee.fire_event 'onblur'
+      end
     end
-    @principle_investigator=on(ProposalLog).pi_full_name
+    @pi_full_name=on(ProposalLog).pi_full_name
   end
 
   def set_sponsor_code
     if @sponsor_id=='::random::'
       on(ProposalLog).find_sponsor_code
       on OLDSponsorLookup do |look|
-        look.sponsor_type_code.pick! '::random::'
+
+        look.sponsor_type_code.pick! ['Federal', 'Private Profit', 'Foundation'].sample
+        # 'No values match this search.'
+        # 'State', 'Foreign Government', 'Foreign Private Profit', 'Foreign Private Non-Profit', 'Foreign Foundation',
+        # 'Foreign Institution of Higher Education', 'Local Government', 'Private Non-Profit'
+        # look.sponsor_type_code.pick! '::random::'
         look.search
+        look.results_table.wait_until_present
         look.page_links[rand(look.page_links.length)].click if look.page_links.size > 0
         look.return_random
       end

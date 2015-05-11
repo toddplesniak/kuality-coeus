@@ -7,7 +7,7 @@ When /adds (\d+) reports to the Award$/ do |x|
 end
 
 When /I? ?adds? Terms to the Award$/ do
-  @award.add_terms #if @award.terms.nil?
+  @award.add_terms
 end
 
 Given /I? ?add a Payment & Invoice item to the Award$/ do

@@ -1,4 +1,4 @@
-@Proposal_Log
+@proposal_log
 Feature: Creating Proposal Logs
 
   As a researcher I want the ability to create a Proposal Log document
@@ -7,7 +7,7 @@ Feature: Creating Proposal Logs
 
   Background:
     * a User exists with the role: 'Create Proposal Log'
-
+  @smoke
   Scenario: Attempt to create a new Proposal Log Document with a missing required field
     Given the Create Proposal Log user creates a Proposal Log but misses a required field
     When  the Create Proposal Log user submits the Proposal Log

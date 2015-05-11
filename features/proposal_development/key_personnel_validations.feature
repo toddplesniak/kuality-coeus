@@ -1,4 +1,4 @@
-@Proposal
+@proposal
 Feature: Proposal Key Personnel Validations
 
   As a researcher I want to know if there are problems

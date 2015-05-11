@@ -35,7 +35,7 @@ end
 
 Then /^The S2S opportunity search should become available$/ do
   @proposal.view 'S2S Opportunity Search'
-  expect{on(S2S).find_opportunity_button}.to be_present
+  expect(on(S2S).find_opportunity_button).to be_present
 end
 
 When /^The Proposal's 'Future Action Requests' should include 'PENDING APPROVE' for the principal investigator$/ do

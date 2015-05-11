@@ -1,5 +1,7 @@
 class AddPersonnelToPeriod < BasePage
 
+  expected_element :dialog
+
   element(:dialog) { |b| b.loading; b.div(data_parent: 'PropBudget-AssignPersonnelToPeriodsPage-AddPersonnel') }
   
   element(:person) { |b| b.dialog.select(name: /personSequenceNumber/) }

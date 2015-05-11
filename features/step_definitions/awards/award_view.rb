@@ -21,10 +21,8 @@ Then /^the new Award should not have any subawards or T&M document$/ do
     # If there are no Subawards, the table should only have 3 rows...
     test.approved_subaward_table.rows.size.should==3
     test.time_and_money
-    # DEBUG.pause(123)
     # If there is no T&M, then an error should be thrown...
     test.errors.should include 'Project End Date (Project End Date) is a required field.'
-    # test.errors.should include 'Project Start Date is required when creating a Time And Money Document.'
   end
 end
 
@@ -34,8 +32,6 @@ Then /^the new Award's transaction type is 'New'$/ do
     page.expand_all
     page.transaction_type.selected?('New').should be_true
   end
-  # on(Award).transaction_type.selected?('New').should be_true
-  #DEBUG expect(on(Award).transaction_type.selected_options[0].text).to include('New')
 end
 
 Then /^the child Award's project end date should be the same as the parent, and read-only$/ do

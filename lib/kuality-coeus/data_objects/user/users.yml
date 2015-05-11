@@ -1,6 +1,6 @@
 unassigneduser: # AKA: "Principal Name"
   :user_name:        unassigneduser
-  :description:      creating user with 'unassigned' role
+  :description:      creating user with no role
   :affiliation_type: Student
   :campus_code:      'UN - UNIVERSITY'
   :first_name:       PleaseDoNot
@@ -27,10 +27,6 @@ unassigneduser: # AKA: "Principal Name"
     - :type:    Facsimile
       :number:  602-597-5350
       :default: :clear
-  :rolez:
-    - :name: unassigned
-      :qualifiers:
-        - :unit: '000001'
 aft_dean: # AKA: "Principal Name"
   :user_name:        aft_dean
   :description:      no roles
@@ -66,11 +62,6 @@ aft_dean: # AKA: "Principal Name"
     - :email:   aftdean@kuali.org
       :type:    Work
       :default: :set
-  :rolez:
-    - :name:
-      :id:
-      :qualifiers:
-        - :unit:
 auto_chair:
   :user_name:        auto_chair
   :description:
@@ -283,7 +274,7 @@ lannister: #Note: Lannister is ONLY an OSP Admin. This means, he will not be in 
           :descends_hierarchy: :clear
 wcoyne:
   :user_name:        wcoyne
-  :description:      IRB & IACUC Protocol Creator
+  :description:      IRB Protocol Creator
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
   :employee_id:      wcoyne
@@ -331,10 +322,6 @@ wcoyne:
    - :name: Protocol Aggregator
      :qualifiers:
        - :unit: '000001'
-   - :id:   '1421'
-     :name: IACUC Protocol Creator
-     :qualifiers:
-       - :unit: '000001'
 mlinkous:
   :user_name:        mlinkous
   :description:      IRB Protocol Reviewer/Approver
@@ -347,8 +334,8 @@ mlinkous:
   :primary_department_code: '000001'
   :first_name:       Mark
   :last_name:        Linkous
-  :primary_title:    Protocol Approver
-  :directory_title:  Protocol Approver
+  :primary_title:    ProtocolApprover
+  :directory_title:  ProtocolApprover
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
   :era_commons_user_name: mlinkous
   :directory_department:  Finance
@@ -435,7 +422,7 @@ smalkmus:
      :qualifiers:
        - :unit: '000001'
          :descends_hierarchy: :clear
-   - :name: Protocol Approver
+   - :name: ProtocolApprover
      :qualifiers:
        - :unit:
 kwagner:
@@ -960,12 +947,12 @@ ttim:  # AKA: "Principal Name"
     - :name: Modify IACUC Protocols
       :qualifiers:
         - :unit: '000001'
-jjones:  # AKA: "Principal Name"
-  :user_name:        jjones
+jenjones:  # AKA: "Principal Name"
+  :user_name:        jenjones
   :description:      IACUC Administrator
   :affiliation_type: Staff
   :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      jjones
+  :employee_id:      jenjones
   :employee_status:  Active
   :employee_type:    Professional
   :base_salary:      674547.32
@@ -975,7 +962,7 @@ jjones:  # AKA: "Principal Name"
   :primary_title:    IACUC Administrator
   :directory_title:  IACUC Administrator
   :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: jjones
+  :era_commons_user_name: jenjones
   :directory_department:  Finance
   :graduate_student_count: '0'
   :billing_element:  bla bla bla
@@ -1007,6 +994,56 @@ jjones:  # AKA: "Principal Name"
       :default: :set
   :rolez:
     - :name: IACUC Administrator
+      :qualifiers:
+      - :unit: '000001'
+        :descends_hierarchy: :set
+rrobin:  # AKA: "Principal Name"
+  :user_name:        rrobin
+  :description:      IACUC Protocol Creator
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      bross
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      674327.32
+  :primary_department_code: '000001'
+  :first_name:       Red
+  :last_name:        Robin
+  :primary_title:    IACUC Protocol Creator
+  :directory_title:  IACUC Protocol Creator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name:
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+    - :type:    Work
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :clear
+  :phones:
+    - :type:    Work
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  602-597-5350
+      :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :name: IACUC Protocol Creator
       :qualifiers:
       - :unit: '000001'
         :descends_hierarchy: :set

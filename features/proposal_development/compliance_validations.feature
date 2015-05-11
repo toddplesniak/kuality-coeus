@@ -1,4 +1,4 @@
-@Proposal
+@proposal
 Feature: Compliance Validation
 
   As a researcher I want to know if there are problems

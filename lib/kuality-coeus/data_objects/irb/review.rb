@@ -31,12 +31,8 @@ class ReviewObject < DataFactory
     # NOTE: Navigation is accomplished in the parent Protocol object!
     on SubmitForReview do |page|
       page.expand_all
-      DEBUG.message 'debugging problem finding elements'
-      fill_out page, :type_qualifier
-      fill_out page, :committee
-      fill_out page, :submission_type
-      fill_out page, :submission_review_type
-
+      fill_out page, :submission_type, :submission_review_type, :type_qualifier,
+               :committee
       # If the test doesn't specify a particular schedule date then
       # we want to pick the first selectable item
       # so as to make it most likely that there
@@ -133,8 +129,6 @@ class ReviewObject < DataFactory
     existing_reviewers = @primary_reviewers + @secondary_reviewers
     on AssignReviewers do |page|
       page.expand_all
-      DEBUG.pause(15)
-
       page.submit_button.wait_until_present
 
       if reviewers==[]

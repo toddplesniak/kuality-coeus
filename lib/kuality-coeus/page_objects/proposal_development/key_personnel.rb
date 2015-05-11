@@ -1,15 +1,23 @@
 class KeyPersonnel < BasePage
 
   document_buttons
-  
-  buttons 'Add Personnel'
-
   new_error_messages
 
+  buttons 'Add Personnel'
+
+  action(:employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.KcPerson!!).(((personId:newPersonId))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
+  action(:non_employee_search) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.kra.bo.NonOrganizationalRolodex!!).(((rolodexId:newRolodexId))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchor').click }
+  element(:proposal_role) { |b| b.frm.select(id: 'newProposalPerson.proposalPersonRoleId') }
+  element(:key_person_role) { |b| b.frm.text_field(id: 'newProposalPerson.projectRole') }
+  action(:add_person) { |b| b.frm.button(name: 'methodToCall.insertProposalPerson').click }
+  action(:clear) { |b| b.frm.button(name: 'methodToCall.clearProposalPerson').click }
+
+  value(:person_name) { |b| b.frm.table(class: 'grid')[0][1].text }
+
+  # Use to check if there are errors present or not...
+  element(:add_person_errors_div) { |b| b.frm.div(class: 'annotate-container').div(class: 'left-errmsg-tab').div }
+
   p_element(:section_of) { |name, b| b.section(data_full_name: name) }
-
-  # Details
-
   p_value(:user_name_of) { |name, b| b.section_of(name).div(data_label: 'User Name').text }
   p_element(:era_commons_name_of) { |name, b| b.section_of(name).text_field(name: /eraCommonsUserName/) }
   p_value(:role_of) { |name, b| b.section_of(name).div(data_label: 'Proposal Person Role Id').text }

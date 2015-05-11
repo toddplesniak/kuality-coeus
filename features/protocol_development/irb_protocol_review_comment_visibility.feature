@@ -1,4 +1,4 @@
-@IRB
+@irb
 Feature: IRB Protocol Review Comment Visibility
 
   As an IRB Admin, I want to ensure Protocol review comments
