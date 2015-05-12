@@ -4,7 +4,7 @@ Feature: Employee Salary Rate Costs and Cost Share
 
   Background:
     * a User exists with the role: 'Proposal Creator'
-
+  @test
   Scenario: Add Employee with a requested Salary
     Given the Proposal Creator creates a 1-month 'Research' activity type Proposal
     And   creates a Budget Version for the Proposal
@@ -26,7 +26,7 @@ Feature: Employee Salary Rate Costs and Cost Share
     Given the Proposal Creator creates a Proposal with a 'Research' activity type
     And   creates a Budget Version for the Proposal
     And   adds an employee to the Budget personnel
-    And   an 'Research Assistant / Associate' person is assigned to Budget period 1
+    And   a 'Research Assistant / Associate' person is assigned to Budget period 1
     And   notes the Budget Period's summary totals
     When  inflation is un-applied for the 'Research Assistant / Associate' personnel
     Then  the Period's Direct Cost is lower than before

@@ -217,6 +217,10 @@ class NonPersonnelCost < DataFactory
     npc
   end
 
+  def update_from_parent(period_number)
+    @period_number=period_number
+  end
+
   private
 
   def calc_cost(cost_type)

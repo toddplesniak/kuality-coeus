@@ -20,7 +20,7 @@ class AssignedPerson < DataFactory
       period_type:         '::random::'
     }
     set_options(defaults.merge(opts))
-    requires :person, :monthly_base_salary
+    requires :person, :monthly_base_salary, :period_number
   end
 
   def create
@@ -46,11 +46,19 @@ class AssignedPerson < DataFactory
   end
 
   def requested_salary
-    ((middle_months_count*monthly_calculated_salary) +
-        start_month_calculated_salary +
-        end_month_calculated_salary +
-        salary_inflation
-    ).round(2)
+    amounts = [0.0]
+    item_months(start, end_d).each { |month|
+      if month[:full]
+        amounts << monthly_calculated_salary
+      else
+        amounts << daily_salary(month[:start_date])*month[:days]*perc_chrgd
+      end
+      amounts << salary_inflation(month)
+    }
+
+    DEBUG.inspect amounts
+
+    amounts.inject(0, :+).round(2)
   end
 
   def cost_sharing
@@ -60,98 +68,80 @@ class AssignedPerson < DataFactory
     ).round(2)
   end
 
-  def rate_cost(rate)
-    #(requested_salary*(rate.to_f/100)).round(2)
+  def rate_cost(description)
+    amounts = []
+    @rate_details.rates.description(description).each { |rate|
+      # What is the item's start date?
+      start
+      # What is the line item's end date?
+      end_d
+      # Is this date range longer than a month?
+      # Yes...
+
+      # No
+
+
+      # What is the applicable rate's start date?
+      rate.start_date
+      # What is the rate end date?
+      rate.end_date
+
+      # Is the end of the current month before the line item end date?
+
+      #
+    }
+    amounts.inject(0, :+)
   end
 
   def rate_cost_sharing(rate)
-    #(cost_sharing*(rate.to_f/100)).round(2)
+    (cost_sharing*(rate.to_f/100)).round(2)
   end
 
-  def salary_inflation
-    if inflation_rates.empty?
-      0.0
+  def salary_inflation(month)
+    rate_to_apply = inflation_rates.find { |rate|
+      rate.start_date <= month[:start_date] && rate.end_date >= month[:end_date]
+    }
+    return 0 if rate_to_apply.nil? || rate_to_apply.start_date < start && @period_number==1
+    #TODO: Rate end earlier than month end...'
+    #daily_salary(rate_to_apply.end_date)*rate_to_apply.end_date.day*perc_chrgd*rate_to_apply.applicable_rate.to_f/100
+    if month[:full]
+      monthly_calculated_salary*rate_to_apply.applicable_rate.to_f/100
     else
-      amounts = []
-      inflation_rates.each { |rate|
-        if rate.start_date < start
-          amounts << 0
-        else
 
+      DEBUG.message 'partial month...'
 
-          #DEBUG.message 'Rate range start date:'
-          #DEBUG.inspect rrsd(rate)
-          #DEBUG.message 'Rate range end date:'
-          #DEBUG.inspect rred(rate)
-          DEBUG.inspect start_month_inflation(rate)
-          DEBUG.inspect inflated_months_count(rate)
-          DEBUG.inspect monthly_calculated_salary
-          DEBUG.inspect remci(rate)
-          DEBUG.inspect end_month_calculated_salary
-          DEBUG.inspect start_month_calculated_salary
-
-
-          amounts << start_month_inflation(rate) +
-              (monthly_calculated_salary*inflated_months_count(rate)*rate.applicable_rate.to_f/100) +
-              remci(rate)
-        end
-      }
-      amounts.inject(0, :+)
+      daily_salary(month[:start_date])*month[:days]*perc_chrgd*rate_to_apply.applicable_rate.to_f/100
     end
+  end
+
+  def start_month_days(date)
+    days_prior = date.day-1
+    days_in_month(date.year, date.month) - days_prior
   end
 
   def inflation_rates
     @rate_details.applicable_inflation_rates.in_range(start, end_d)
   end
 
-  private
+  #private
 
-  # Rate range start date...
-  def rrsd(rate)
-    rate.start_date > start ? rate.start_date : start
-  end
-  # Rate range end date...
-  def rred(rate)
-    rate.end_date > end_d ? end_d : rate.end_date
-  end
-
-  def start_month_days
-    days_prior = start.day-1
-    days_in_start_month - days_prior
-  end
-
-  # range start month days
-  def rsmd(rate)
-    days_prior = rrsd(rate).day-1
-    rdism(rate) - days_prior
-  end
-
-  def days_in_start_month
-    days_in_month(start.year, start.month)
-  end
-
-  def rdism(rate)
-    days_in_month(rrsd(rate).year, rrsd(rate).month)
-  end
-
-  def start_month_full?
-    start.day == 1
-  end
-
-  def days_in_end_month
-    days_in_month(end_d.year, end_d.month)
-  end
-
-  def rdiem(rate)
-    days_in_month(rred(rate).year, rred(rate).month)
-  end
-
-  def start_and_end_month_same?
-    end_d.year == start.year && end_d.month == start.month
-  end
-
-  def rate_sems?(rate)
-    rred(rate).year == rrsd(rate).year && rred(rate).month == rrsd(rate).month
+  def item_months(st, ed)
+    dates = (st..ed).each_with_object([]) { |d, o|
+      o << [Date.civil(d.year, d.month, 1), Date.civil(d.year, d.month, -1)] }.uniq
+    months = dates.each_with_object([]) { |d, o|
+      o << {start_date: d[0], end_date: d[1], full: true }
+    }
+    unless months.first[:start_date]==st
+      months.first[:start_date]=st
+      months.first[:full]=false
+      months.first[:days]=start_month_days(st)
+    end
+    unless months.last[:end_date]==ed
+      months.last[:end_date]=ed
+      months.last[:full]=false
+      months.last[:days]=ed.day
+    end
+    months
   end
 
   def monthly_calculated_salary
@@ -162,41 +152,8 @@ class AssignedPerson < DataFactory
     @monthly_base_salary*cost_sharing_percentage
   end
 
-  def start_month_daily_salary
-    @monthly_base_salary/days_in_start_month
-  end
-
-  # Rate start month inflation...
-  def start_month_inflation(rate)
-    if rdism(rate)==rsmd(rate)
-      0.0
-    else
-      (@monthly_base_salary/rdism(rate))*(rate.applicable_rate.to_f/100)*rsmd(rate)
-    end
-  end
-
-  def end_month_daily_salary
-    start_and_end_month_same? ? 0 : @monthly_base_salary/days_in_end_month
-  end
-
-  def rate_end_month_calc_salary(rate)
-    rate_sems?(rate) ? 0 : monthly_calculated_salary/rdiem(rate)
-  end
-
-  def start_month_calculated_salary
-    start_month_daily_salary*start_month_days*perc_chrgd
-  end
-
-  def start_month_calc_cost_share
-    start_month_daily_salary*start_month_days*cost_sharing_percentage
-  end
-
-  def end_month_calculated_salary
-    end_month_daily_salary*end_d.day*perc_chrgd
-  end
-
-  def remci(rate)
-    rate_end_month_calc_salary(rate)*rred(rate).day*(rate.applicable_rate.to_f/100)
+  def daily_salary(date)
+    @monthly_base_salary/days_in_month(date.year, date.month)
   end
 
   def end_mnth_calc_cost_sharing
@@ -211,22 +168,16 @@ class AssignedPerson < DataFactory
     datify @end_date
   end
 
-  def middle_months_count
-    x = (end_d.year - start.year)*12 + end_d.month - start.month - 1
-    x < 0 ? 0 : x
-  end
-
-  def inflated_months_count(rate)
-    x = (rred(rate).year - rrsd(rate).year)*12 + rred(rate).month - rrsd(rate).month
-    x < 0 ? 0 : x
-  end
-
   def perc_chrgd
     @percent_charged.to_f/100
   end
 
   def cost_sharing_percentage
     (@percent_effort.to_f-@percent_charged.to_f)/100
+  end
+
+  def update_from_parent(period_number)
+    @period_number=period_number
   end
 
 end

@@ -6,10 +6,10 @@ class BudgetPeriodObject < DataFactory
               :cost_sharing,
               :cost_limit, :direct_cost_limit, :datified,
               :budget_name, :cost_sharing_distribution_list,
-              :participant_support, :assigned_personnel, :non_personnel_costs, :period_rates
+              :participant_support, :assigned_personnel, :non_personnel_costs, :period_rates,
+              :number
               #TODO: Add support for this:
               :number_of_participants
-  attr_accessor :number
 
   def initialize(browser, opts={})
     @browser = browser
@@ -80,7 +80,10 @@ class BudgetPeriodObject < DataFactory
     personnel_rates << @period_rates.inflation
     personnel_rates << @period_rates.f_and_a
     personnel_rates.flatten!
-    @assigned_personnel.add personnel_rates, opts
+    defaults = {
+        period_number: @number
+    }
+    @assigned_personnel.add personnel_rates, defaults.merge(opts)
   end
 
   def assign_non_personnel_cost opts={}
@@ -173,6 +176,12 @@ class BudgetPeriodObject < DataFactory
     @period_rates = budget_rates.in_range(start_date_datified, end_date_datified)
   end
 
+
+  def update_number number
+    @number=number
+    notify_collections number
+  end
+
   # =======
   private
   # =======
@@ -199,7 +208,8 @@ class BudgetPeriodsCollection < CollectionsFactory
   # based on their start date values.
   def number!
     self.sort_by! { |period| period.start_date_datified }
-    self.each_with_index { |period, index| period.number=index+1 }
+    self.each_with_index { |period, index|
+      period.update_number index+1 }
   end
 
   def total_sponsor_cost

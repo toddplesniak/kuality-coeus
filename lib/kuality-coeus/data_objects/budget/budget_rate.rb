@@ -24,6 +24,10 @@ class BudgetRateObject < DataFactory
     (@start_date >> 12)-1
   end
 
+  def update_from_parent x
+    # Nothing needed here
+  end
+
 end
 
 class BudgetRatesCollection < CollectionFactory
@@ -132,6 +136,10 @@ class BudgetRatesCollection < CollectionFactory
       r.rate_class_type == 'Inflation' &&
           (r.end_date) < start_date
     }
+  end
+
+  def description(description)
+    collectify self.find_all { |r| r.description==description }
   end
 
   private

@@ -1,5 +1,6 @@
 When /adds? an employee to the Budget personnel$/ do
-  @budget_version.add_project_personnel
+                                       # DEBUG
+  @budget_version.add_project_personnel base_salary: '120000'
 end
 
 When /^I? ?add a non-employee to the Budget personnel$/ do
@@ -80,5 +81,10 @@ end
 
 And /^the Project Person's requested salary for the Budget period is as expected$/ do
   @budget_version.view :assign_personnel
+
+  DEBUG.inspect @project_person.requested_salary
+
+  DEBUG.pause 49
+
   expect(on(AssignPersonnelToPeriods).requested_salary_of(@project_person.person).groom).to be_within(0.02).of(@project_person.requested_salary)
 end

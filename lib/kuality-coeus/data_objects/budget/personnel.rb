@@ -84,6 +84,10 @@ class BudgetPersonnelObject < DataFactory
     @base_salary.to_f/Transforms::MONTHS[@appointment_type]
   end
 
+  def update_from_parent(period_number)
+    @period_number=period_number
+  end
+
 end # BudgetPersonnelObject
 
 class BudgetPersonnelCollection < CollectionsFactory

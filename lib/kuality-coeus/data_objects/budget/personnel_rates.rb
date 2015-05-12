@@ -1,7 +1,7 @@
 class PersonnelRatesObject < DataFactory
 
   attr_reader :apply_inflation, :submit_cost_sharing, :on_campus,
-              :object_code, :inflation_rates
+              :object_code, :rates
 
   def initialize(browser, opts={})
     @browser = browser
