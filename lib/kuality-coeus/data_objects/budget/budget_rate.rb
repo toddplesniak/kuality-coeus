@@ -91,15 +91,15 @@ class BudgetRatesCollection < CollectionFactory
     self.delete_if { |rate| rate.on_campus != camp[type] }
   end
 
-  def campus(type)
-    collectify self.find_all { |rate| rate.on_campus==Transforms::YES_NO[type] }
-  end
-
   def personnel
-    collectify self.find_all { |r|
+    br = noob
+    np = self.find_all { |r|
       r.rate_class_type == 'Fringe Benefits' ||
-          r.rate_class_type == 'Vacation'
+          r.rate_class_type == 'Vacation' ||
+          r.description =~ /salar/i
     }
+    br << np
+    br.flatten
   end
 
   def non_personnel
