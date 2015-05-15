@@ -65,14 +65,11 @@ Given /^(the (.*) |)creates a '(.*)' Proposal with (.*) as the sponsor$/ do |tex
   @proposal = create ProposalDevelopmentObject, sponsor_id: sponsor_code, proposal_type: type
 end
 
-Given /^(the (.*) |)creates a 1-month '(.*)' activity type Proposal$/ do |text, role_name, type|
+Given /^(the (.*) |)creates a 9.5-month '(.*)' activity type Proposal$/ do |text, role_name, type|
   steps %{ * I log in with the #{role_name} user } unless text == ''
-                                                                   # DEBUG
-  @proposal = create ProposalDevelopmentObject, activity_type: type#,
-
-                     # DEBUG
-                     #project_start_date: "01/01/#{next_year[:year]}",
-                     #project_end_date: "01/31/#{next_year[:year]}"
+  @proposal = create ProposalDevelopmentObject, activity_type: type,
+                     project_start_date: "01/05/#{next_year[:year]}",
+                     project_end_date: "09/20/#{next_year[:year]}"
 end
 
 Given /^(the (.*) |)creates a Proposal with a type of '(.*)'$/ do |text, role_name, type|

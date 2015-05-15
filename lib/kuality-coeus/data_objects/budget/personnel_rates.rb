@@ -52,4 +52,12 @@ class PersonnelRatesObject < DataFactory
     end
   end
 
+  def applicable_direct_rates
+    @rates.campus(@on_campus).direct
+  end
+
+  def applicable_f_and_a_rates
+
+  end
+
 end

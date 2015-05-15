@@ -105,6 +105,7 @@ class BudgetRatesCollection < CollectionFactory
           r.rate_class_type == 'Vacation'
     }
   end
+  alias_method :direct, :personnel
 
   def non_personnel
     collectify self.find_all { |r|

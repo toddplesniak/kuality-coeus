@@ -13,17 +13,10 @@ Then /^the Person's Rates show correct costs and cost sharing amounts$/ do
   @project_person.monthly_base_salary = @budget_version.personnel.person(@project_person.person).monthly_base_salary
   on(AssignPersonnelToPeriods).details_and_rates_of @project_person.object_code
   on DetailsAndRates do |page|
-
-    DEBUG.inspect page.rate_amounts
-    DEBUG.inspect @project_person.rate_cost(page.rate_amounts[0][:type])
-    DEBUG.pause 9857
-
-    page.rate_amounts.each do |rate_line|
-
-      expect(rate_line[:rate_cost].groom).to be_within(0.02).of @project_person.rate_cost(ar)
-      expect(rate_line[:rate_cost_sharing].groom).to be_within(0.02).of @project_person.rate_cost_sharing(ar)
+    @project_person.direct_costs.each do |dc|
+      expect(page.rate_amounts.find{ |r| r[:type]==dc[:description]}[:rate_cost]).to be_within(0.02).of dc[:cost]
+      expect(page.rate_amounts.find{ |r| r[:type]==dc[:description]}[:rate_cost_sharing]).to be_within(0.02).of dc[:cost_share]
     end
-
   end
 end
 

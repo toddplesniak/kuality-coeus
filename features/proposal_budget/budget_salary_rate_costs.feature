@@ -3,10 +3,11 @@ Feature: Employee Salary Rate Costs and Cost Share
   Description TBW
 
   Background:
-    * a User exists with the role: 'Proposal Creator'
+
   @test
   Scenario: Add Employee with a requested Salary
-    Given the Proposal Creator creates a 1-month 'Research' activity type Proposal
+    * a User exists with the role: 'Proposal Creator'
+    Given the Proposal Creator creates a 9.5-month 'Research' activity type Proposal
     And   creates a Budget Version for the Proposal
     And   adds an employee to the Budget personnel
     When  the Proposal Creator assigns a 'Research Assistant / Associate' Person to Period 1, where the charged percentage is lower than the effort
