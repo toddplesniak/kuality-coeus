@@ -34,6 +34,15 @@ class ProposalLogObject < DataFactory
       fill_out create, :proposal_type, :title, :lead_unit
     end
     set_sponsor_code
+
+
+
+
+
+
+
+
+
     on(ProposalLog).send(@save_type)
   end
 
@@ -61,7 +70,7 @@ class ProposalLogObject < DataFactory
         page.principal_investigator_employee.fire_event 'onblur'
       end
     end
-    @pi_full_name=on(ProposalLog).pi_full_name
+    @principle_investigator=on(ProposalLog).pi_full_name
   end
 
   def set_sponsor_code
