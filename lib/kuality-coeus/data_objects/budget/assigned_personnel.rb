@@ -67,6 +67,15 @@ class AssignedPerson < DataFactory
     items
   end
 
+  def indirect_costs
+    items = @rate_details.applicable_f_and_a_rates.map { |rate| {description: rate.description} }.uniq
+    items.each do |item|
+      item[:cost] = indirect_calc(item[:description])
+      item[:cost_share] = fa_cost_sharing_calc(item[:description])
+    end
+    items
+  end
+
   def total_cost_sharing
     amounts = []
     item_months.each { |m|
@@ -116,12 +125,24 @@ class AssignedPerson < DataFactory
     amounts.inject(0, :+)
   end
 
-  private
+  def indirect_calc(description)
+    amounts = []
+    rates = @rate_details.applicable_f_and_a_rates.description(description)
+    item_months.each { |m|
+      current_rate = rates.find { |r| r.start_date <= m[:start_date] && r.end_date >= m[:end_date] }
+      current_rate = rates.find { |r| r.start_date <= m[:start_date] } if current_rate.nil?
+      if m[:full]
+        amounts << (monthly_calc_cost_share+monthly_calculated_salary)*current_rate.applicable_rate.to_f/100
+      else
+        amounts <<  (+daily_salary(m[:start_date]))*cost_sharing_percentage*m[:days]
+      end
+      amounts << (+cost_sharing_inflation(m))*current_rate.applicable_rate.to_f/100
+    }
+    amounts.inject(0, :+)
+  end
 
   def salary_inflation(month)
-    rate_to_apply = inflation_rates.find { |rate|
-      rate.start_date <= month[:start_date] && rate.end_date >= month[:end_date]
-    }
+    rate_to_apply = @rate_details.applicable_inflation_rates.in_range(month[:start_date], month[:end_date])
     return 0 if rate_to_apply.nil? || rate_to_apply.start_date < start && @period_number==1
     #TODO Some day: Calculate value if the rate ends earlier than month end...
     #daily_salary(rate_to_apply.end_date)*rate_to_apply.end_date.day*perc_chrgd*rate_to_apply.applicable_rate.to_f/100
@@ -148,6 +169,12 @@ class AssignedPerson < DataFactory
 
   def inflation_rates
     @rate_details.applicable_inflation_rates.in_range(start, end_d)
+  end
+
+  def current_inflation_rate(date_start, date_end)
+    inflation_rates.find { |rate|
+      rate.start_date <= date_start && rate.end_date >= date_end
+    }
   end
 
   def item_months

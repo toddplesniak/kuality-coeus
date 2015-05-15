@@ -84,8 +84,6 @@ class BudgetRatesCollection < CollectionFactory
     br << keep
     ed = self.find_all { |rate| rate.start_date <= end_date } - st
     br << ed
-    x = br.flatten
-    x.delete_bad_inflations! start_date
     br.flatten!
     br.delete_bad_inflations! start_date
   end

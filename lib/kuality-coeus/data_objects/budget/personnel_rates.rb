@@ -57,7 +57,7 @@ class PersonnelRatesObject < DataFactory
   end
 
   def applicable_f_and_a_rates
-
+    @rates.campus(@on_campus).f_and_a
   end
 
 end
