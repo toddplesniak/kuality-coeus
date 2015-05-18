@@ -205,12 +205,12 @@ class AssignedPerson < DataFactory
     @monthly_base_salary*perc_chrgd
   end
 
-  def monthly_calc_cost_share
-    @monthly_base_salary*cost_sharing_percentage
+  def end_month_daily_salary
+    start_and_end_month_same? ? 0 : monthly_base_salary/days_in_end_month
   end
 
-  def daily_salary(date)
-    @monthly_base_salary/days_in_month(date.year, date.month)
+  def start_month_calculated_salary
+    start_month_daily_salary*start_month_days*perc_chrgd
   end
 
   def average_daily_cost

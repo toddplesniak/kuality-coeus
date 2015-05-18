@@ -3,6 +3,7 @@ class Header < BasePage
   element(:header_div) { |b| b.div(class: 'collapse navbar-collapse navbar-ex1-collapse uif-listGroup') }
   # Header links
   action(:researcher) { |b|
+    b.navigate_to_header #incase header is not visible like on some protocol and award documents
     5.times {
       b.researcher_link.click
       sleep 1 unless b.researcher_link.parent.div.visible?
@@ -16,8 +17,7 @@ class Header < BasePage
   element(:doc_search_link) { |b| b.link(text: 'Doc Search') }
 
   action(:doc_search) { |b|
-    #award document does not have header, so we need to navigate back to base url
-    @browser.goto $base_url+$context unless b.header_div.exists?
+    b.navigate_to_header #incase header is not visible like on some protocol and award documents
 
     if b.doc_search_element.present?
       b.doc_search_element.click
@@ -67,4 +67,7 @@ class Header < BasePage
 
   action(:krad_portal) { |b| b.krad_portal_element.click }
   element(:krad_portal_element) { |b| b.link(title: 'KRAD Portal') }
+
+  action(:navigate_to_header) { |b| b.goto $base_url+$context unless b.header_div.exists? }
+  action(:maintenance) { |b| b.link(text: 'Maintenance').click }
 end

@@ -87,7 +87,6 @@ And /the IRB Admin closes the Protocol$/ do
   end
 end
 
-#DEBUG can we remove this unused step def?
 And /the principal investigator approves the Protocol$/ do
   @irb_protocol.principal_investigator.log_in
 

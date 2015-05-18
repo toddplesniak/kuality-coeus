@@ -59,7 +59,8 @@ And /^the Period's Direct Cost is lower than before$/ do
 end
 
 And /^the Budget is synced to the new rates$/ do
-  on(SyncBudgetRates).yes
+     # page.buttons(text: 'Yes').each {|b| b.visible? ? b.click : b.text }
+  on(SyncBudgetRates).yes_if_visible
 end
 
 And /^the Budget's rates are updated$/ do

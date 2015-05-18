@@ -57,7 +57,7 @@ class RoleObject < DataFactory
     defaults = {
         description:      random_alphanums_plus,
         type:             'Unit',
-        name:             random_alphanums_plus,
+        name:             random_alphanums,
         namespace:        'KC-UNT - Kuali Coeus - Department',
         assignees:        collection('RoleAssignees'),
         permissions:      [],

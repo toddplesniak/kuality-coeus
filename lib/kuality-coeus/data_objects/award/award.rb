@@ -78,14 +78,12 @@ class AwardObject < DataFactory
 
   def edit opts={}
 
-    DEBUG.message @document_id
 
 
     view :award
     @prior_versions.store(@version, @document_id)
     on Award do |edit|
 
-      # DEBUG.pause 300
 
       if edit.edit_button.present?
         edit.edit
@@ -262,12 +260,9 @@ class AwardObject < DataFactory
   def submit
     view :award_actions
     on AwardActions do |page|
-      # DEBUG.pause(3)
       page.submit
     end
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
-    #was causing problem with logout need to wait for page to load here.
-    # DEBUG.pause(4)
   end
 
   def add_custom_data opts={}
