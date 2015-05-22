@@ -32,25 +32,14 @@ end
 
 When /inflation is un\-applied for the '(.*)' personnel$/ do |object_code|
   @budget_version.view :assign_personnel
-  # TODO: This must be put in the data object!!
-  on(AssignPersonnelToPeriods).details_and_rates_of object_code
-  on DetailsAndRates do |page|
-    page.apply_inflation.clear
-    page.save_changes
-  end
+  @budget_version.period(1).assigned_personnel.details_and_rates(object_code).edit apply_inflation: 'No'
 end
 
 And /^the Period's Direct Cost is as expected$/ do
   @budget_version.view 'Periods And Totals'
   on PeriodsAndTotals do |page|
+    # TODO: Don't hard code the 1...
     expect(page.direct_cost_of(1).groom).to be_within(0.02).of @budget_version.period(1).direct_cost
-  end
-end
-
-And /^the Period's Direct Cost is lower than before$/ do
-  @budget_version.view 'Periods And Totals'
-  on PeriodsAndTotals do |page|
-    expect(page.direct_cost_of(1).to_f).to be < @budget_version.period(1).direct_cost.to_f
   end
 end
 

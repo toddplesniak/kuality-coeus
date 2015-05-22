@@ -262,6 +262,11 @@ class NonPersonnelCostsCollection < CollectionFactory
         inject(0, :+)
   end
 
+  def cost_sharing
+    self.collect{ |npc| npc.cost_sharing.to_f }.inject(0, :+) +
+        self.collect{ |npc| npc.f_and_a_cost_sharing }.inject(0, :+)
+  end
+
   # NOTE: This method is written assuming that there's only one item
   # with this category type in the collection. If there's more than one then
   # this will return the first one...

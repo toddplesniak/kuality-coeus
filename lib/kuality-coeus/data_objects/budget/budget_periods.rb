@@ -156,6 +156,14 @@ class BudgetPeriodObject < DataFactory
     end
   end
 
+  def cost_sharing
+    if @cost_sharing.nil?
+      non_personnel_costs.cost_sharing + assigned_personnel.direct_costs[:cost_sharing]
+    else
+      @cost_sharing
+    end
+  end
+
   def unrecovered_f_and_a
     if @unrecovered_f_and_a.nil?
       non_personnel_costs.unrecovered_f_and_a #+ assigned_personnel.unrecovered_f_and_a

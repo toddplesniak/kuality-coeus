@@ -20,11 +20,11 @@ Feature: Employee Salary Rate Costs and Cost Share
     And   a 'Research Assistant / Associate' person is assigned to Budget period 1
     When  the 'Salaries - Classified: SalClass' rate for the 'Research Assistant / Associate' personnel is unapplied
     Then  the Period's Direct Cost is as expected
-  @wip
+
   Scenario: Unapplying the inflation rate for an employee
     Given the Proposal Creator creates a Proposal with a 'Research' activity type
     And   creates a Budget Version for the Proposal
     And   adds an employee to the Budget personnel
     And   a 'Research Assistant / Associate' person is assigned to Budget period 1
     When  inflation is un-applied for the 'Research Assistant / Associate' personnel
-    Then  the Period's Direct Cost is lower than before
+    Then  the Period's Direct Cost is as expected

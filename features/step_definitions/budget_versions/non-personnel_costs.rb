@@ -26,15 +26,8 @@ end
 
 Then /^the Budget's institutional commitments shows the expected cost sharing value for Period (\d+)$/ do |period|
   @budget_version.view 'Cost Sharing'
-
-
-  DEBUG.pause 3000
-
-
-  cost_share = @budget_version.period(1).non_personnel_costs[0].cost_sharing.to_f + @budget_version.period(1).non_personnel_costs[0].rate_cost_sharing.round(2)
-
   on CostSharing do |page|
-    expect(page.row_amount(period).to_f).to be_within(0.03).of cost_share
+    expect(page.row_amount(period).groom).to be_within(0.03).of @budget_version.period(1).non_personnel_costs.cost_sharing
   end
 end
 

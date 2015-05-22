@@ -175,7 +175,7 @@ Then /^the direct cost is equal to the direct cost limit in all periods$/ do
   @budget_version.view 'Periods And Totals'
   @budget_version.budget_periods.each do |period|
     on PeriodsAndTotals do |page|
-      expect(page.direct_cost_of(period.number).to_f).to eq period.direct_cost_limit.to_f
+      expect(page.direct_cost_of(period.number).groom).to eq period.direct_cost_limit.groom
     end
   end
 end
@@ -203,6 +203,6 @@ end
 And /^the Budget's unrecovered F&A amounts are as expected for all periods$/ do
   @budget_version.view :periods_and_totals
   @budget_version.budget_periods.each { |period|
-    expect(on(PeriodsAndTotals).unrecovered_f_and_a_of(period.number).to_f).to be_within(0.05).of period.unrecovered_f_and_a
+    expect(on(PeriodsAndTotals).unrecovered_f_and_a_of(period.number).groom).to be_within(0.05).of period.unrecovered_f_and_a
   }
 end
