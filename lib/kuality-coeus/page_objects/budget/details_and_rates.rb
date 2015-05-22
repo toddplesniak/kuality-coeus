@@ -43,7 +43,7 @@ class DetailsAndRates < BasePage
     array
   }
 
-  p_element(:apply) { |rate_class, type, b| b.rates_table.trs.find{ |tr| tr[0].text==rate_class && tr[1].text==type }.checkbox }
+  p_element(:apply) { |type, b| b.rates_table.trs.find{ |tr| tr[1].text==type }.checkbox }
 
   private
 

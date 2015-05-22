@@ -142,7 +142,7 @@ class BudgetPeriodObject < DataFactory
 
   def direct_cost
     if @direct_cost.nil?
-      non_personnel_costs.direct #+ assigned_personnel.direct
+      non_personnel_costs.direct + assigned_personnel.direct_costs[:cost]
     else
       @direct_cost
     end

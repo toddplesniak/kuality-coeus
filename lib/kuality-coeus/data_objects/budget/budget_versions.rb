@@ -178,22 +178,34 @@ class BudgetVersionsObject < DataFactory
   end
 
   def complete
+    raise 'This method is currently failing because of how the OK button responds to the click'
+    # FIXME: For whatever reason, the clicking of the OK button short-circuits the system
+    # being able to mark the budget complete.
     view 'Periods And Totals'
-    on(PeriodsAndTotals).complete_budget
-    on CompleteBudget do |page|
-      page.ready.set
-      page.ok
+
+    while on(PeriodsAndTotals).complete_budget_element.present?
+      on(PeriodsAndTotals).complete_budget
+      on CompleteBudget do |page|
+        page.ready.set
+        page.ok
+      end
+      on(PeriodsAndTotals).loading
+      DEBUG.pause 30
+
+      visit Logout
+      visit Login do |log_in|
+        log_in.username.set $current_user.user_name
+        log_in.login
+      end
+      on(Header).doc_search_link.wait_until_present
+      view 'Periods And Totals'
+
+      DEBUG.message x
+      x += 1
+
     end
 
-
-
-
-
-    raise 'There is currently a refresh issue, here. The Budget may not actually be "complete", yet.'
-
-
-
-
+    DEBUG.message
 
   end
 

@@ -8,6 +8,7 @@ class AssignedPerson < DataFactory
               :end_date, :percent_effort, :percent_charged,
               :period_type, :requested_salary
   attr_accessor :rate_details, :monthly_base_salary
+  def_delegators :@rate_details, :rates
 
   def initialize(browser, opts={})
     @browser = browser
@@ -46,135 +47,149 @@ class AssignedPerson < DataFactory
   end
 
   def requested_salary
-    amounts = [0.0]
-    item_months.each { |month|
-      if month[:full]
-        amounts << monthly_calculated_salary
-      else
-        amounts << daily_salary(month[:start_date])*month[:days]*perc_chrgd
+    summary_calc(:salary)
+  end
+
+  def cost_sharing
+    summary_calc(:cost_sharing)
+  end
+
+  def indirect_costs
+    costs = { cost: 0, cost_sharing: 0 }
+    item_months.each { |m|
+      cur = current_indirect_rate(m)
+      if cur.nil?
+        costs[:cost] += 0
+        costs[:cost_sharing] += 0
       end
-      amounts << salary_inflation(month)
+      direct = [0]
+      cost_share = [0]
+      direct_costs.each { |dc|
+        rates = @rate_details.applicable_direct_rates.description(dc[:description])
+        rate = current_rate(rates, m)
+        if rate.nil?
+          # skip
+        else
+          direct << rate_cost(m, rate)
+          cost_share << rate_cost_sharing(m, rate)
+        end
+      }
+      costs[:cost] += direct.inject(:+)*cur.applicable_rate.to_f/100
+      costs[:cost_sharing] += cost_share.inject(:+)*cur.applicable_rate.to_f/100
+      if m[:full]
+        costs[:cost] += (monthly_calculated_salary+salary_inflation(m))*cur.applicable_rate.to_f/100
+        costs[:cost_sharing] += (monthly_calc_cost_share+cost_sharing_inflation(m))*cur.applicable_rate.to_f/100
+      else
+        costs[:cost] += (daily_salary(m[:start_date])*m[:days]*perc_chrgd+salary_inflation(m))*cur.applicable_rate.to_f/100
+        costs[:cost_sharing] += (daily_salary(m[:start_date])*m[:days]*cost_sharing_percentage+cost_sharing_inflation(m))*cur.applicable_rate.to_f/100
+      end
     }
-    amounts.inject(0, :+)
+    costs
   end
 
   def direct_costs
     items = @rate_details.applicable_direct_rates.map { |rate| {description: rate.description} }.uniq
     items.each do |item|
-      item[:cost] = direct_calc(item[:description])
-      item[:cost_share] = cost_sharing_calc(item[:description])
+      item[:cost] = rate_calc(:rate_cost, item[:description])
+      item[:cost_share] = rate_calc(:rate_cost_sharing, item[:description])
     end
     items
   end
 
-  def indirect_costs
-    items = @rate_details.applicable_f_and_a_rates.map { |rate| {description: rate.description} }.uniq
-    items.each do |item|
-      item[:cost] = indirect_calc(item[:description])
-      item[:cost_share] = fa_cost_sharing_calc(item[:description])
-    end
-    items
+  def update_from_parent(period_number)
+    @period_number=period_number
   end
 
-  def total_cost_sharing
+  # =======
+  private
+  # =======
+
+  def summary_calc(type)
+    types = {
+        salary: [monthly_calculated_salary, perc_chrgd, :salary_inflation],
+        cost_sharing: [monthly_calc_cost_share, cost_sharing_percentage, :cost_sharing_inflation]
+    }
     amounts = []
     item_months.each { |m|
       if m[:full]
-        amounts << monthly_calc_cost_share
+        x = types[type][0]
       else
-        amounts <<  daily_salary(m[:start_date])*cost_sharing_percentage*m[:days]
+        x = daily_salary(m[:start_date])*types[type][1]*m[:days]
       end
-      amounts << cost_sharing_inflation(m)
+      amounts << x + send(types[type][2], m)
     }
     amounts.inject(0, :+)
   end
 
-  def cost_sharing_calc(description)
+  def rate_calc(type, description)
     amounts = []
     rates = @rate_details.applicable_direct_rates.description(description)
     item_months.each { |m|
-      current_rate = rates.find { |r| r.start_date <= m[:start_date] && r.end_date >= m[:end_date] }
-      current_rate = rates.find { |r| r.start_date <= m[:start_date] } if current_rate.nil?
-      if current_rate.nil?
+      if current_rate(rates, m).nil?
         amounts << 0
         next
       end
-      if m[:full]
-        amounts << monthly_calc_cost_share*current_rate.applicable_rate.to_f/100
-      else
-        amounts <<  daily_salary(m[:start_date])*cost_sharing_percentage*m[:days]*current_rate.applicable_rate.to_f/100
-      end
-      amounts << cost_sharing_inflation(m)*current_rate.applicable_rate.to_f/100
+      amounts << send(type, m, current_rate(rates, m))
     }
     amounts.inject(0, :+)
   end
 
-  def direct_calc(description)
-    amounts = []
-    rates = @rate_details.applicable_direct_rates.description(description)
-    item_months.each { |m|
-      current_rate = rates.find { |r| r.start_date <= m[:start_date] && r.end_date >= m[:end_date] }
-      current_rate = rates.find { |r| r.start_date <= m[:start_date] } if current_rate.nil?
-      if current_rate.nil?
-        amounts << 0
-        next
-      else
-        amounts << (current_rate.applicable_rate.to_f/100)*average_daily_cost*m[:days]
-      end
-    }
-    amounts.inject(0, :+)
-  end
-
-  def indirect_calc(description)
-    amounts = []
-    rates = @rate_details.applicable_f_and_a_rates.description(description)
-    item_months.each { |m|
-      current_rate = rates.find { |r| r.start_date <= m[:start_date] && r.end_date >= m[:end_date] }
-      current_rate = rates.find { |r| r.start_date <= m[:start_date] } if current_rate.nil?
-      if m[:full]
-        amounts << (monthly_calc_cost_share+monthly_calculated_salary)*current_rate.applicable_rate.to_f/100
-      else
-        amounts <<  (+daily_salary(m[:start_date]))*cost_sharing_percentage*m[:days]
-      end
-      amounts << (+cost_sharing_inflation(m))*current_rate.applicable_rate.to_f/100
-    }
-    amounts.inject(0, :+)
-  end
-
-  def salary_inflation(month)
-    rate_to_apply = @rate_details.applicable_inflation_rates.in_range(month[:start_date], month[:end_date])
-    return 0 if rate_to_apply.nil? || rate_to_apply.start_date < start && @period_number==1
-    #TODO Some day: Calculate value if the rate ends earlier than month end...
-    #daily_salary(rate_to_apply.end_date)*rate_to_apply.end_date.day*perc_chrgd*rate_to_apply.applicable_rate.to_f/100
-    if month[:full]
-      monthly_calculated_salary*rate_to_apply.applicable_rate.to_f/100
+  def rate_cost_sharing(range, rate)
+    if range[:full]
+      x = monthly_calc_cost_share*rate.applicable_rate.to_f/100
     else
-      daily_salary(month[:start_date])*month[:days]*perc_chrgd*rate_to_apply.applicable_rate.to_f/100
+      x = daily_salary(range[:start_date])*cost_sharing_percentage*range[:days]*rate.applicable_rate.to_f/100
     end
+    x + cost_sharing_inflation(range)*rate.applicable_rate.to_f/100
   end
 
-  def cost_sharing_inflation(month)
-    rate_to_apply = inflation_rates.find { |rate|
-      rate.start_date <= month[:start_date] && rate.end_date >= month[:end_date]
+  def rate_cost(range, rate)
+    ((daily_salary(range[:start_date])*range[:days]*perc_chrgd)+salary_inflation(range))*(rate.applicable_rate.to_f/100)
+  end
+
+  def salary_inflation(range)
+    calculate_inflation(:salary, range)
+  end
+
+  def cost_sharing_inflation(range)
+    calculate_inflation(:cost_share, range)
+  end
+
+  def calculate_inflation(type, range)
+    types = {
+        salary: [monthly_calculated_salary, perc_chrgd],
+        cost_share: [monthly_calc_cost_share, cost_sharing_percentage]
     }
-    return 0 if rate_to_apply.nil? || rate_to_apply.start_date < start && @period_number==1
-    #TODO Some day: Calculate value if the rate ends earlier than month end...
-    #daily_salary(rate_to_apply.end_date)*rate_to_apply.end_date.day*perc_chrgd*rate_to_apply.applicable_rate.to_f/100
-    if month[:full]
-      monthly_calc_cost_share*rate_to_apply.applicable_rate.to_f/100
+    rate_to_apply = current_inflation_rate(range[:start_date], range[:end_date])
+    return 0 if rate_to_apply.nil?
+    #TODO: Calculate value if the rate ends earlier than month end...
+    if range[:full]
+      types[type][0]*rate_to_apply.applicable_rate.to_f/100
     else
-      daily_salary(month[:start_date])*month[:days]*cost_sharing_percentage*rate_to_apply.applicable_rate.to_f/100
+      daily_salary(range[:start_date])*range[:days]*types[type][1]*rate_to_apply.applicable_rate.to_f/100
     end
-  end
-
-  def inflation_rates
-    @rate_details.applicable_inflation_rates.in_range(start, end_d)
   end
 
   def current_inflation_rate(date_start, date_end)
-    inflation_rates.find { |rate|
+    r = @rate_details.applicable_inflation_rates.in_range(start, end_d).find { |rate|
       rate.start_date <= date_start && rate.end_date >= date_end
     }
+    unless r.nil?
+      r = nil if r.start_date < start && @period_number==1
+    end
+    r
+  end
+
+  def current_indirect_rate(range)
+    rate = @rate_details.applicable_f_and_a_rates.find { |r| r.start_date <= range[:start_date] && r.end_date >= range[:end_date] }
+    rate = @rate_details.applicable_f_and_a_rates.find_all { |r| r.start_date <= m[:start_date] }.sort { |r| r.start_date }[-1] if rate.nil?
+    rate
+  end
+
+  def current_rate(rates, range)
+    current_rate = rates.find { |r| r.start_date <= range[:start_date] && r.end_date >= range[:end_date] }
+    current_rate = rates.find_all { |r| r.start_date <= range[:start_date] }.sort { |r| r.start_date }[-1] if current_rate.nil?
+    current_rate
   end
 
   def item_months
@@ -205,16 +220,12 @@ class AssignedPerson < DataFactory
     @monthly_base_salary*perc_chrgd
   end
 
-  def end_month_daily_salary
-    start_and_end_month_same? ? 0 : monthly_base_salary/days_in_end_month
+  def monthly_calc_cost_share
+    @monthly_base_salary*cost_sharing_percentage
   end
 
-  def start_month_calculated_salary
-    start_month_daily_salary*start_month_days*perc_chrgd
-  end
-
-  def average_daily_cost
-    requested_salary/total_days
+  def daily_salary(date)
+    @monthly_base_salary/days_in_month(date.year, date.month)
   end
 
   def start
@@ -235,10 +246,6 @@ class AssignedPerson < DataFactory
 
   def cost_sharing_percentage
     (@percent_effort.to_f-@percent_charged.to_f)/100
-  end
-
-  def update_from_parent(period_number)
-    @period_number=period_number
   end
 
 end
@@ -275,6 +282,14 @@ class AssignedPersonnelCollection < CollectionFactory
 
   def details_and_rates(object_code)
     @rates.find { |rate| rate.object_code==object_code }
+  end
+
+  # Note: This currently sums up ALL direct costs. It does not keep distinctions
+  # if there are multiple direct rates, like salary plus vacation, etc.
+  def direct_costs
+    { cost: self.map{ |p| p.direct_costs.map{ |c| c[:cost]}.inject(0, :+) + p.requested_salary }.inject(0, :+),
+      cost_share: self.map { |p| p.direct_costs.map{ |c| c[:cost_share]}.inject(0, :+) }.inject(0, :+)
+    }
   end
 
   private

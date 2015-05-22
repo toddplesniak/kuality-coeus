@@ -9,7 +9,6 @@ class BudgetRateObject < DataFactory
     set_options(opts)
   end
 
-
   def set_applicable_rate ar
     # TODO: Need to write a little more navigation code here.
     # Currently the parent objects and stepdefs must do the work.
@@ -25,6 +24,7 @@ class BudgetRateObject < DataFactory
   end
 
   def update_from_parent x
+    x
     # Nothing needed here
   end
 

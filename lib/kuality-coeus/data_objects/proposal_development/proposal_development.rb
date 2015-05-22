@@ -364,9 +364,6 @@ class ProposalDevelopmentObject < DataFactory
         there = false
       end
       unless there
-
-        # TODO: Need this to be more robust. What if you're in the 5.2 UI? This can't
-        # navigate from there...
         visit Landing
         on(Header).doc_search
         on DocumentSearch do |lookup|
