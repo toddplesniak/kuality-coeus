@@ -171,8 +171,10 @@ class BudgetVersionsObject < DataFactory
     on(ConfirmAutocalculate).yes
     @budget_periods[1..-1].each_with_index do |period, i|
       @budget_periods[i].non_personnel_costs.each do |npc|
-        period.copy_non_personnel_item(npc)
-        warn 'Must add the copying of personnel items to the autocalculate periods method!'
+        period.copy_non_personnel_item npc
+      end
+      @budget_periods[0].assigned_personnel.each do |person|
+
       end
     end
   end

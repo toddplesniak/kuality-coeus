@@ -161,7 +161,22 @@ And /^the Budget Version is opened$/ do
 end
 
 And /^auto-calculates the budget periods$/ do
+
   @budget_version.autocalculate_periods
+
+
+
+
+  DEBUG.inspect @budget_version.period(1).assigned_personnel[0].requested_salary
+  DEBUG.inspect @budget_version.period(1).assigned_personnel[0].cost_sharing
+
+  DEBUG.inspect @budget_version.period(2).assigned_personnel[0].requested_salary
+  DEBUG.inspect @budget_version.period(2).assigned_personnel[0].cost_sharing
+  DEBUG.pause 3322
+
+
+
+
 end
 
 And /adds a (direct|total) cost limit to all of the Budget's periods$/ do |type|

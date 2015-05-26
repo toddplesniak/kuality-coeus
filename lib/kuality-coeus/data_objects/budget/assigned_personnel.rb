@@ -6,7 +6,7 @@ class AssignedPerson < DataFactory
 
   attr_reader :person, :object_code, :group, :start_date,
               :end_date, :percent_effort, :percent_charged,
-              :period_type, :requested_salary
+              :period_type
   attr_accessor :rate_details, :monthly_base_salary
   def_delegators :@rate_details, :rates
 
@@ -53,6 +53,7 @@ class AssignedPerson < DataFactory
   def cost_sharing
     summary_calc(:cost_sharing)
   end
+  alias_method :calculated_fringe, :cost_sharing
 
   def indirect_costs
     costs = { cost: 0, cost_sharing: 0 }
@@ -98,6 +99,24 @@ class AssignedPerson < DataFactory
 
   def update_from_parent(period_number)
     @period_number=period_number
+  end
+
+  def start
+    datify @start_date
+  end
+
+  def end_d
+    datify @end_date
+  end
+
+  def current_inflation_rate(date_start, date_end)
+    r = @rate_details.applicable_inflation_rates.in_range(start, end_d).find { |rate|
+      rate.start_date <= date_start && rate.end_date >= date_end
+    }
+    unless r.nil?
+      r = nil if r.start_date < start && @period_number==1
+    end
+    r
   end
 
   # =======
@@ -170,16 +189,6 @@ class AssignedPerson < DataFactory
     end
   end
 
-  def current_inflation_rate(date_start, date_end)
-    r = @rate_details.applicable_inflation_rates.in_range(start, end_d).find { |rate|
-      rate.start_date <= date_start && rate.end_date >= date_end
-    }
-    unless r.nil?
-      r = nil if r.start_date < start && @period_number==1
-    end
-    r
-  end
-
   def current_indirect_rate(range)
     rate = @rate_details.applicable_f_and_a_rates.find { |r| r.start_date <= range[:start_date] && r.end_date >= range[:end_date] }
     rate = @rate_details.applicable_f_and_a_rates.find_all { |r| r.start_date <= m[:start_date] }.sort { |r| r.start_date }[-1] if rate.nil?
@@ -228,14 +237,6 @@ class AssignedPerson < DataFactory
     @monthly_base_salary/days_in_month(date.year, date.month)
   end
 
-  def start
-    datify @start_date
-  end
-
-  def end_d
-    datify @end_date
-  end
-
   def total_days
     (end_d-start).to_i+1
   end
@@ -273,6 +274,42 @@ class AssignedPersonnelCollection < CollectionFactory
         person.rate_details = r
       end
     end
+    self << person
+  end
+
+  def copy_assigned_person(period_number, personnel_rates, asp)
+    @rates ||= []
+
+    person = AssignedPerson.new @browser, person: asp.person,
+                                object_code: asp.object_code,
+                                start_date: (asp.start + 365).strftime("%m/%d/%Y"),
+                                end_date: (asp.end_d + 365).strftime("%m/%d/%Y"),
+                                period_number: period_number,
+                                percent_effort: asp.percent_effort,
+                                percent_charged: asp.percent_charged,
+                                period_type: asp.period_type
+
+    if @rates.empty?
+      funkify(person, personnel_rates)
+    else
+      r = @rates.find { |r| r.object_code==person.object_code }
+      if r.nil?
+        funkify(person, personnel_rates)
+      else
+        person.rate_details = r
+      end
+    end
+    inflation_rate = person.current_inflation_rate(person.start, person.start)
+    if inflation_rate.nil?
+      applicable_rate = 0.0
+    else
+      applicable_rate = inflation_rate.to_f/100
+    end
+
+    person.monthly_base_salary = @monthly_base_salary + applicable_rate*@monthly_base_salary
+
+    DEBUG.inspect person
+
     self << person
   end
 

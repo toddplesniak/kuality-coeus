@@ -76,10 +76,6 @@ class BudgetPeriodObject < DataFactory
       page.view_period @number
       page.assign_personnel @number
     end
-    personnel_rates = @period_rates.personnel
-    personnel_rates << @period_rates.inflation
-    personnel_rates << @period_rates.f_and_a
-    personnel_rates.flatten!
     defaults = {
         period_number: @number
     }
@@ -184,10 +180,16 @@ class BudgetPeriodObject < DataFactory
     @period_rates = budget_rates.in_range(start_date_datified, end_date_datified)
   end
 
-
   def update_number number
     @number=number
     notify_collections number
+  end
+
+  def personnel_rates
+    prs = @period_rates.personnel
+    prs << @period_rates.inflation
+    prs << @period_rates.f_and_a
+    prs.flatten
   end
 
   # =======

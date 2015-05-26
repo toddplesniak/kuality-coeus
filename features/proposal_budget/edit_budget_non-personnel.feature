@@ -27,9 +27,11 @@ Feature: Editing a Budget's Non-Personnel Costs
     When  the F & A rates for the non-personnel item are unapplied for all periods
     Then  the Budget's F&A costs are zero for all periods
     And   the Budget's unrecovered F&A amounts are as expected for all periods
-
+  @test
   Scenario: Deleting line items from later periods
     Given the Proposal Creator adds some Non-Personnel Costs to the first period
+    And   adds an employee to the Budget personnel
+    And   a Project Person is assigned to Budget period 1
     And   auto-calculates the budget periods
     And   edits the total cost and cost sharing amounts for the Non-Personnel Cost in period 2
     When  the Non-Personnel Cost item in periods 3 through 5 are deleted
