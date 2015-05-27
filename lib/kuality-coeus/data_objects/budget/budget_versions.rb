@@ -183,7 +183,8 @@ class BudgetVersionsObject < DataFactory
     view 'Periods And Totals'
     on(NewDocumentHeader).budget_settings
     on BudgetSettings do |page|
-      page.status.pick! 'Complete'
+      @status = 'Complete'
+      page.status.pick! @status
       page.apply_changes
     end
   end
