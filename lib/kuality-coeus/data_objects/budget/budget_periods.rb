@@ -10,6 +10,7 @@ class BudgetPeriodObject < DataFactory
               :number
               #TODO: Add support for this:
               :number_of_participants
+  def_delegators :@assigned_personnel, :copy_assigned_person
 
   def initialize(browser, opts={})
     @browser = browser
@@ -96,8 +97,8 @@ class BudgetPeriodObject < DataFactory
   end
 
   def copy_non_personnel_item(np_item)
-    opts = { start_date: (np_item.start_date_datified + 365).strftime("%m/%d/%Y"),
-             end_date: (np_item.end_date_datified + 365).strftime("%m/%d/%Y"),
+    opts = { start_date: (np_item.start_date_datified >> 12).strftime("%m/%d/%Y"),
+             end_date: (np_item.end_date_datified >> 12).strftime("%m/%d/%Y"),
              period_rates: @period_rates
     }
     new_item = np_item.copy_mutatis_mutandis opts
@@ -146,7 +147,7 @@ class BudgetPeriodObject < DataFactory
 
   def f_and_a_cost
     if @f_and_a_cost.nil?
-      non_personnel_costs.f_and_a #+ assigned_personnel.f_and_a
+      non_personnel_costs.f_and_a + assigned_personnel.f_and_a[:cost]
     else
       @f_and_a_cost
     end

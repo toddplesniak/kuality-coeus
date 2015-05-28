@@ -53,7 +53,10 @@ class AssignedPerson < DataFactory
   def cost_sharing
     summary_calc(:cost_sharing)
   end
-  alias_method :calculated_fringe, :cost_sharing
+
+  def calculated_fringe
+    #TODO: WHAT IS THIS?
+  end
 
   def indirect_costs
     costs = { cost: 0, cost_sharing: 0 }
@@ -114,7 +117,7 @@ class AssignedPerson < DataFactory
       rate.start_date <= date_start && rate.end_date >= date_end
     }
     unless r.nil?
-      r = nil if r.start_date < start && @period_number==1
+      r = nil if r.start_date < start
     end
     r
   end
@@ -191,7 +194,7 @@ class AssignedPerson < DataFactory
 
   def current_indirect_rate(range)
     rate = @rate_details.applicable_f_and_a_rates.find { |r| r.start_date <= range[:start_date] && r.end_date >= range[:end_date] }
-    rate = @rate_details.applicable_f_and_a_rates.find_all { |r| r.start_date <= m[:start_date] }.sort { |r| r.start_date }[-1] if rate.nil?
+    rate = @rate_details.applicable_f_and_a_rates.find_all { |r| r.start_date <= range[:start_date] }.sort { |r| r.start_date }[-1] if rate.nil?
     rate
   end
 
@@ -279,40 +282,37 @@ class AssignedPersonnelCollection < CollectionFactory
 
   def copy_assigned_person(period_number, personnel_rates, asp)
     @rates ||= []
-
     person = AssignedPerson.new @browser, person: asp.person,
                                 object_code: asp.object_code,
-                                start_date: (asp.start + 365).strftime("%m/%d/%Y"),
-                                end_date: (asp.end_d + 365).strftime("%m/%d/%Y"),
+                                start_date: (asp.start >> 12).strftime("%m/%d/%Y"),
+                                end_date: (asp.end_d >> 12).strftime("%m/%d/%Y"),
                                 period_number: period_number,
                                 percent_effort: asp.percent_effort,
                                 percent_charged: asp.percent_charged,
-                                period_type: asp.period_type
-
+                                period_type: asp.period_type,
+                                # Temp value, required by data object during initialization...
+                                monthly_base_salary: 0
     if @rates.empty?
-      funkify(person, personnel_rates)
+      ridikulos(person, asp.rate_details, personnel_rates)
     else
       r = @rates.find { |r| r.object_code==person.object_code }
       if r.nil?
-        funkify(person, personnel_rates)
+        ridikulos(person, asp.rate_details, personnel_rates)
       else
         person.rate_details = r
       end
     end
-    inflation_rate = person.current_inflation_rate(person.start, person.start)
+    inflation_rate = person.rate_details.applicable_inflation_rates.find { |rate|
+      rate.start_date <= person.start && rate.end_date >= person.start
+    }
     if inflation_rate.nil?
       applicable_rate = 0.0
     else
-      applicable_rate = inflation_rate.to_f/100
+      applicable_rate = inflation_rate.applicable_rate.to_f/100
     end
-
-    person.monthly_base_salary = @monthly_base_salary + applicable_rate*@monthly_base_salary
-
-    DEBUG.inspect person
-
+    person.monthly_base_salary = asp.monthly_base_salary + applicable_rate*asp.monthly_base_salary
     self << person
   end
-
   def person(name)
     self.find { |p| p.person==name }
   end
@@ -321,20 +321,54 @@ class AssignedPersonnelCollection < CollectionFactory
     @rates.find { |rate| rate.object_code==object_code }
   end
 
+  # Returns an Array containing the names of the assigned personnel
+  def persons
+    self.map{ |p| p.person }
+  end
+
   # Note: This currently sums up ALL direct costs. It does not keep distinctions
   # if there are multiple direct rates, like salary plus vacation, etc.
   def direct_costs
-    { cost: self.map{ |p| p.direct_costs.map{ |c| c[:cost]}.inject(0, :+) + p.requested_salary }.inject(0, :+),
-      cost_share: self.map { |p| p.direct_costs.map{ |c| c[:cost_share]}.inject(0, :+) }.inject(0, :+)
+    { cost: self.map{ |p| p.direct_costs.map{ |c| c[:cost] }.inject(0, :+) + p.requested_salary }.inject(0, :+),
+      cost_share: self.map { |p| p.direct_costs.map{ |c| c[:cost_share] }.inject(0, :+) }.inject(0, :+)
     }
   end
 
+  def f_and_a
+    { cost: self.map { |p| p.indirect_costs[:cost] }.inject(0, :+),
+      cost_share: self.map { |p| p.indirect_costs[:cost_sharing] }.inject(0, :+)
+    }
+  end
+
+  # ==========
   private
+  # ==========
 
   def funkify(person, personnel_rates)
     rates = create PersonnelRatesObject, object_code: person.object_code, prs: personnel_rates
     @rates << rates
     person.rate_details = rates
+  end
+
+  def ridikulos(person, dnr, personnel_rates)
+    pro = make PersonnelRatesObject, apply_inflation: dnr.apply_inflation,
+        submit_cost_sharing: dnr.submit_cost_sharing,
+        on_campus: dnr.on_campus,
+        object_code: dnr.object_code,
+        prs: personnel_rates,
+        applied_rates: dnr.applied_rates,
+        unapplied_rates: dnr.unapplied_rates
+    pro.applied_rates.each do |ar_description|
+      pro.rates << personnel_rates.find_all { |r| r.description == ar_description }
+    end
+    pro.unapplied_rates.each do |ur_description|
+      pro.rates << personnel_rates.find_all { |r| r.description == ur_description }
+    end
+    unless dnr.applicable_inflation_rates.empty?
+      pro.rates << personnel_rates.find_all { |r| r.description == dnr.applicable_inflation_rates[0].description }
+    end
+    pro.rates.flatten!
+    person.rate_details = pro
   end
 
 end

@@ -78,8 +78,6 @@ class PersonnelRatesObject < DataFactory
   end
   alias_method :applicable_indirect_rates, :applicable_f_and_a_rates
 
-  private
-
   def collect_applied_rates
     rates = []
     rates << applicable_direct_rates

@@ -161,22 +161,7 @@ And /^the Budget Version is opened$/ do
 end
 
 And /^auto-calculates the budget periods$/ do
-
   @budget_version.autocalculate_periods
-
-
-
-
-  DEBUG.inspect @budget_version.period(1).assigned_personnel[0].requested_salary
-  DEBUG.inspect @budget_version.period(1).assigned_personnel[0].cost_sharing
-
-  DEBUG.inspect @budget_version.period(2).assigned_personnel[0].requested_salary
-  DEBUG.inspect @budget_version.period(2).assigned_personnel[0].cost_sharing
-  DEBUG.pause 3322
-
-
-
-
 end
 
 And /adds a (direct|total) cost limit to all of the Budget's periods$/ do |type|
@@ -200,8 +185,8 @@ Then /^the Budget's Periods & Totals should be as expected$/ do
   @budget_version.budget_periods.each { |period|
     on PeriodsAndTotals do |page|
       # TODO: Add more checks of values here...
-      expect(page.direct_cost_of(period.number).to_f).to be_within(0.05).of period.direct_cost
-      expect(page.f_and_a_cost_of(period.number).to_f).to be_within(0.05).of period.f_and_a_cost
+      expect(page.direct_cost_of(period.number).groom).to be_within(0.05).of period.direct_cost
+      expect(page.f_and_a_cost_of(period.number).groom).to be_within(0.05).of period.f_and_a_cost
     end
   }
 end

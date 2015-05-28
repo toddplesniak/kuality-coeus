@@ -173,8 +173,8 @@ class BudgetVersionsObject < DataFactory
       @budget_periods[i].non_personnel_costs.each do |npc|
         period.copy_non_personnel_item npc
       end
-      @budget_periods[0].assigned_personnel.each do |person|
-
+      @budget_periods[0].assigned_personnel.persons.each do |name|
+        period.copy_assigned_person(period.number, period.personnel_rates, @budget_periods[i].assigned_personnel.person(name))
       end
     end
   end
