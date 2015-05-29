@@ -23,25 +23,34 @@ class BudgetPersonnelObject < DataFactory
     on(BudgetPersonnel).add_personnel
     on AddProjectPersonnel do |page|
       page.search_for.fit @type
-      if @full_name.nil?
-        page.last_name.set("*#{%w{b c g h k l p r w}.sample}*")
-        page.search
-        # We need to exclude the set of test users from the list
-        # of names we'll randomly select from...
-        names = page.returned_full_names - $users.full_names
-        name = 'William Lloyd Garrison'
-        while name.scan(' ').size != 1
-          name = names.sample
+      if @type=='To Be Named'
+        page.to_be_named_table.wait_until_present
+        if @full_name.nil?
+          @full_name=page.person_categories.sample
         end
-        @full_name = name
-        page.select_person name
-        page.add_selected_personnel
+        page.quantity(@full_name).set '1'
+        page.add_tbn_personnel_to_budget
       else
-        page.last_name.set @full_name[/\w+$/]
-        page.first_name.set @full_name[/^\w+/]
-        page.search
-        page.check_person @full_name
-        page.add_selected_personnel
+        if @full_name.nil?
+          page.last_name.set("*#{%w{b c g h k l p r w}.sample}*")
+          page.search
+          # We need to exclude the set of test users from the list
+          # of names we'll randomly select from...
+          names = page.returned_full_names - $users.full_names
+          name = 'William Lloyd Garrison'
+          while name.scan(' ').size != 1
+            name = names.sample
+          end
+          @full_name = name
+          page.select_person name
+          page.add_selected_personnel
+        else
+          page.last_name.set @full_name[/\w+$/]
+          page.first_name.set @full_name[/^\w+/]
+          page.search
+          page.check_person @full_name
+          page.add_selected_personnel
+        end
       end
     end
     on(BudgetPersonnel).details_of @full_name

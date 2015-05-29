@@ -34,5 +34,5 @@ Feature: Editing a Budget's Non-Personnel Costs
     And   a Project Person is assigned to Budget period 1
     And   auto-calculates the budget periods
     And   edits the total cost and cost sharing amounts for the Non-Personnel Cost in period 2
-    When  the Non-Personnel Cost item in periods 3 through 5 are deleted
+    When  the Non-Personnel Cost item in periods 3 through 5 is deleted
     Then  the Budget's Periods & Totals should be as expected

@@ -94,7 +94,7 @@ And /^edits the total cost and cost sharing amounts for the Non\-Personnel Cost 
   @budget_version.period(period_number).non_personnel_costs.last.edit total_base_cost: tbc, cost_sharing: random_dollar_value(15000)
 end
 
-And /^the Non-Personnel Cost item in periods (\d+) through (\d+) are deleted$/ do |n, x|
+And /^the Non-Personnel Cost item in periods (\d+) through (\d+) is deleted$/ do |n, x|
   @budget_version.budget_periods[n.to_i-1, x.to_i-1].each do |period|
     ocn = period.non_personnel_costs.last.object_code_name
     on(NonPersonnelCosts).view_period period.number

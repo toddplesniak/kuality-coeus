@@ -6,7 +6,7 @@ When /^I? ?add a non-employee to the Budget personnel$/ do
   @budget_version.add_project_personnel type: 'Non Employee'
 end
 
-When /^I? ?add a to-be-named person to the Budget personnel$/ do
+When /^I? ?adds? a to-be-named person to the Budget personnel$/ do
   @budget_version.add_project_personnel type: 'To Be Named'
 end
 
