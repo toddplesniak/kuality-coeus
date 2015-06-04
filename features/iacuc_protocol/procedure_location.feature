@@ -8,7 +8,7 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
 
-  @KCTEST-915 @KCTEST-918
+  @KCTEST-915 @KCTEST-918 @wip
   Scenario: Implementing institutions can create a location type with a name to use for IACUC Protocols
     Given the Application Administrator creates a new Location type maintenance document
     Then  there are no errors on the page

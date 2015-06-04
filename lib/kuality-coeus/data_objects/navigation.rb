@@ -3,24 +3,10 @@ module Navigation
 
   include Utilities
 
-  # Determine if right document type...
-  # look at the header element...
+  # NOTE: This module is being phased out.
   #
-  # Determine if target document...
-  # look at document id
-  #
-  # Navigate...
-  # do not use doc id for navigation
-  # update document id after navigation
-  #
-  # To accomplish the above, the Data Object class
-  # must have the following instance variables defined...
-  # - @doc_header containing the text of the relevant page title
-  # - @document_id containing the "document number" from the header table
-  # - @lookup_class containing the lookup page class for the document
-  # - @search_key containing a hash with the key being the name of the
-  #               search parameter to use, and the value what gets searched
-  #
+  # DO NOT USE! Refactor any code that is using this.
+
   def open_document
     navigate unless on_document?
   end

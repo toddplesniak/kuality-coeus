@@ -1,7 +1,7 @@
 class PersonnelRatesObject < DataFactory
 
   attr_reader :apply_inflation, :submit_cost_sharing, :on_campus,
-              :object_code, :inflation_rates
+              :object_code, :rates, :applied_rates, :unapplied_rates
 
   def initialize(browser, opts={})
     @browser = browser
@@ -9,7 +9,8 @@ class PersonnelRatesObject < DataFactory
       apply_inflation: 'Yes',
       submit_cost_sharing: 'Yes',
       on_campus: 'Yes',
-      rates: collection('BudgetRates')
+      rates: collection('BudgetRates'),
+      unapplied_rates: []
     }
     set_options defaults.merge(opts)
     requires :object_code, :prs
@@ -31,6 +32,7 @@ class PersonnelRatesObject < DataFactory
       fill_out page, :apply_inflation, :submit_cost_sharing, :on_campus
       page.save_changes
     end
+    collect_applied_rates
   end
 
   def edit opts={}
@@ -43,6 +45,17 @@ class PersonnelRatesObject < DataFactory
     set_options opts
   end
 
+  def unapply_rate(description)
+    on(AssignPersonnelToPeriods).details_and_rates_of @object_code
+    on DetailsAndRates do |page|
+      page.rates
+      page.apply(description).clear
+      page.save_changes
+    end
+    @applied_rates.delete(description)
+    @unapplied_rates << description
+  end
+
   def applicable_inflation_rates
     if Transforms::TRUE_FALSE[@apply_inflation]
       @rates.campus(@on_campus).inflation
@@ -50,6 +63,26 @@ class PersonnelRatesObject < DataFactory
       # Sends an empty collection...
       BudgetRatesCollection.new @browser
     end
+  end
+
+  def applicable_direct_rates
+    br = BudgetRatesCollection.new @browser
+    br << @rates.campus(@on_campus).direct.reject { |r| @unapplied_rates.include? r.description }
+    br.flatten
+  end
+
+  def applicable_f_and_a_rates
+    br = BudgetRatesCollection.new @browser
+    br << @rates.campus(@on_campus).f_and_a.reject { |r| @unapplied_rates.include? r.description }
+    br.flatten
+  end
+  alias_method :applicable_indirect_rates, :applicable_f_and_a_rates
+
+  def collect_applied_rates
+    rates = []
+    rates << applicable_direct_rates
+    rates << applicable_f_and_a_rates
+    @applied_rates = rates.flatten.map { |r| r.description }.uniq
   end
 
 end

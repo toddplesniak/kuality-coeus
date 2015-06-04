@@ -13,16 +13,6 @@ When /^I add a subaward budget to the Budget Version$/ do
   @budget_version.add_subaward_budget
 end
 
-Then /^opening the Budget Version will display a warning about the date change$/ do
-  @budget_version.view 'Periods And Totals'
-  on(PeriodsAndTotals).warnings.should include 'The Project Start and/or End Dates have changed from the previous version of this budget. Please update the Project Start and/or End Dates.'
-end
-
-When /^correcting the Budget Version date will remove the warning$/ do
-  @budget_version.default_periods
-  expect(on(Parameters).warnings.size).to be 0
-end
-
 Given /^(the (.*) user |)creates a final and complete Budget Version for the Proposal$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text ==''
   @proposal.add_budget_version status: 'Complete', final: :set
@@ -47,13 +37,13 @@ Then /^the copied budget's values are all as expected$/ do
     on PeriodsAndTotals do |page|
       expect(page.start_date_of(n).value).to eq period.start_date
       expect(page.end_date_of(n).value).to eq period.end_date
-      expect(page.total_sponsor_cost_of(n).value.to_f.round(2)).to eq (period.direct_cost.to_f+period.f_and_a_cost.to_f).round(2)
-      expect(page.direct_cost_of(n).value).to eq period.direct_cost
-      expect(page.f_and_a_cost_of(n).value).to eq period.f_and_a_cost
-      expect(page.unrecovered_f_and_a_of(n).value).to eq period.unrecovered_f_and_a
-      expect(page.cost_sharing_of(n).value).to eq period.cost_sharing
-      expect(page.cost_limit_of(n).value).to eq period.cost_limit
-      expect(page.direct_cost_limit_of(n).value).to eq period.direct_cost_limit
+      expect(page.total_sponsor_cost_of(n).value.groom).to eq (period.direct_cost.to_f+period.f_and_a_cost.to_f).round(2)
+      expect(page.direct_cost_of(n).value.groom).to eq period.direct_cost.groom
+      expect(page.f_and_a_cost_of(n).value.groom).to eq period.f_and_a_cost.groom
+      expect(page.unrecovered_f_and_a_of(n).value.groom).to eq period.unrecovered_f_and_a.groom
+      expect(page.cost_sharing_of(n).value.groom).to eq period.cost_sharing.groom
+      expect(page.cost_limit_of(n).value.groom).to eq period.cost_limit.groom
+      expect(page.direct_cost_limit_of(n).value.groom).to eq period.direct_cost_limit.groom
     end
   end
 end
@@ -165,10 +155,6 @@ Then /^the copied budget is not marked 'for submission'$/ do
   expect(on(BudgetsDialog).submission_message(@copied_budget_version.name)).not_to be_visible
 end
 
-And /^notes the Budget Period's summary totals$/ do
-  @budget_version.period(1).get_dollar_field_values
-end
-
 And /^the Budget Version is opened$/ do
   @proposal.view 'Budget'
   on(Budgets).open @budget_version.name
@@ -189,7 +175,7 @@ Then /^the direct cost is equal to the direct cost limit in all periods$/ do
   @budget_version.view 'Periods And Totals'
   @budget_version.budget_periods.each do |period|
     on PeriodsAndTotals do |page|
-      expect(page.direct_cost_of(period.number).to_f).to eq period.direct_cost_limit.to_f
+      expect(page.direct_cost_of(period.number).groom).to eq period.direct_cost_limit.groom
     end
   end
 end
@@ -199,8 +185,8 @@ Then /^the Budget's Periods & Totals should be as expected$/ do
   @budget_version.budget_periods.each { |period|
     on PeriodsAndTotals do |page|
       # TODO: Add more checks of values here...
-      expect(page.direct_cost_of(period.number).to_f).to be_within(0.05).of period.direct_cost
-      expect(page.f_and_a_cost_of(period.number).to_f).to be_within(0.05).of period.f_and_a_cost
+      expect(page.direct_cost_of(period.number).groom).to be_within(0.05).of period.direct_cost
+      expect(page.f_and_a_cost_of(period.number).groom).to be_within(0.05).of period.f_and_a_cost
     end
   }
 end
@@ -217,6 +203,32 @@ end
 And /^the Budget's unrecovered F&A amounts are as expected for all periods$/ do
   @budget_version.view :periods_and_totals
   @budget_version.budget_periods.each { |period|
-    expect(on(PeriodsAndTotals).unrecovered_f_and_a_of(period.number).to_f).to be_within(0.05).of period.unrecovered_f_and_a
+    expect(on(PeriodsAndTotals).unrecovered_f_and_a_of(period.number).groom).to be_within(0.05).of period.unrecovered_f_and_a
   }
+end
+
+
+And /^syncs the modular budget$/ do
+  @budget_version.view 'Modular'
+  on(ModularBudget).sync
+  on(SyncModularBudget).ok
+
+  DEBUG.inspect @budget_version.budget_periods[0].non_personnel_costs[0].modular_f_and_a
+  DEBUG.inspect @budget_version.budget_periods[0].non_personnel_costs[0].modular_f_a_base
+  #DEBUG.inspect @budget_version.budget_periods[0].assigned_personnel.f_and_a[:cost]
+
+  x = @budget_version.budget_periods[0].non_personnel_costs.direct
+
+  DEBUG.inspect x
+
+  y = (x/25000).ceil*25000
+
+  DEBUG.inspect y
+
+  #DEBUG.inspect @budget_version.budget_periods[0].assigned_personnel.direct_costs[:cost]
+
+  DEBUG.pause 3939
+
+
+
 end

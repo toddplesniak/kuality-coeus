@@ -40,6 +40,10 @@ class UnrecoveredFAObject < DataFactory
     update_options(opts)
   end
 
+  def update_from_parent(period_number)
+    @period_number=period_number
+  end
+
 end
 
 class UnrecoveredFACollection < CollectionsFactory

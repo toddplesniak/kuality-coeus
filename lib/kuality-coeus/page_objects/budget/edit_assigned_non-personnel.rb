@@ -5,7 +5,7 @@ class EditAssignedNonPersonnel < BasePage
 
   action(:details_tab) { |b| b.tab_list.li(text: 'Details').link.click }
   action(:cost_sharing_tab) { |b| b.tab_list.li(text: 'Cost Sharing').link.click }
-  action(:rates_tab) { |b| b.tab_list.li(text: 'Rates').link.click; b.rates_table.wait_until_present(15) }
+  action(:rates_tab) { |b| b.tab_list.li(text: 'Rates').link.click; b.h3(text: 'Rates').wait_until_present(15) }
 
   # Details
   element(:start_date) { |b| b.text_field(name: 'addProjectBudgetLineItemHelper.budgetLineItem.startDate') }

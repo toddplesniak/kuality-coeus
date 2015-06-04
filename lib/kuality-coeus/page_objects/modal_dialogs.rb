@@ -117,7 +117,9 @@ class ChangePeriod < Dialogs
 end
 
 class SyncBudgetRates < Dialogs
-
+  #there are multiple hidden modal dialogues with same tags
+  action(:yes_if_visible) { |b| b.buttons(text: 'Yes').each {|b| b.click if b.visible? } }
+  element(:div_dialog) { |b| b.div(class: 'modal-dialog modal-sm') }
   element(:dialog_header) { |b| b.header(id: 'PropBudget-ActivityTypeChanged-Dialog_headerWrapper') }
 
 end
@@ -130,6 +132,12 @@ class SyncDirectCostLimit < Dialogs
 
   element(:yes_element) { |b| b.section(id: 'PropBudget-NonPersonnelCosts-SyncToDirectCostLimit').button(text: 'Yes') }
   action(:yes) { |b| b.yes_element.click; b.loading }
+end
+
+class SyncModularBudget < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'ProposalModularSync_1_headerWrapper') }
+
 end
 
 class SyncPeriodCostLimit < Dialogs

@@ -25,10 +25,9 @@ And /adds a non\-personnel cost to the first Budget period with these settings:$
 end
 
 Then /^the Budget's institutional commitments shows the expected cost sharing value for Period (\d+)$/ do |period|
-  cost_share = @budget_version.period(1).non_personnel_costs[0].cost_sharing.to_f + @budget_version.period(1).non_personnel_costs[0].rate_cost_sharing.round(2)
   @budget_version.view 'Cost Sharing'
   on CostSharing do |page|
-    expect(page.row_amount(period).to_f).to be_within(0.03).of cost_share
+    expect(page.row_amount(period).groom).to be_within(0.03).of @budget_version.period(1).non_personnel_costs.cost_sharing
   end
 end
 
@@ -95,7 +94,7 @@ And /^edits the total cost and cost sharing amounts for the Non\-Personnel Cost 
   @budget_version.period(period_number).non_personnel_costs.last.edit total_base_cost: tbc, cost_sharing: random_dollar_value(15000)
 end
 
-And /^the Non-Personnel Cost item in periods (\d+) through (\d+) are deleted$/ do |n, x|
+And /^the Non-Personnel Cost item in periods (\d+) through (\d+) is deleted$/ do |n, x|
   @budget_version.budget_periods[n.to_i-1, x.to_i-1].each do |period|
     ocn = period.non_personnel_costs.last.object_code_name
     on(NonPersonnelCosts).view_period period.number

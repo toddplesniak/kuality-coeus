@@ -1,7 +1,10 @@
 class NonPersonnelCosts < BasePage
 
   budget_header_elements
-  buttons 'Save and Continue', 'Complete Budget', 'Save'
+  buttons 'Save and Continue', 'Complete Budget'
+
+  # DEBUG - See if this works, then fix it...
+  action(:save) { |b| b.button(id: 'u1agxtwx').click; b.loading }
 
   p_element(:period_title) { |number, b| b.h3(id: "PropBudget-NonPersonnelCosts-LineItemDetails_#{number}_header").span }
 

@@ -1,6 +1,6 @@
 class AddProjectPersonnel < Dialogs
 
-  buttons 'Search', 'Cancel', 'Add Selected Personnel'
+  buttons 'Search', 'Cancel', 'Add Selected Personnel', 'Add TBN Personnel to Budget'
 
   element(:dialog_header) { |b| b.h4(id: 'PropBudget-ProjectPersonnelPage-Wizard_header') }
 
@@ -16,5 +16,12 @@ class AddProjectPersonnel < Dialogs
   value(:returned_full_names) { |b| names=[]; b.results_table.rows.each{ |row| names << row[1].text }; names[1..-1] }
 
   p_action(:select_person) { |person, b| b.results_table.row(text: /#{person}/).checkbox.set }
+
+  # To Be Named items...
+
+  value(:person_categories) { |b| b.to_be_named_table.tbody.trs.map { |tr| tr[0].text } }
+  p_element(:quantity) { |category, b| b.to_be_named_table.tr(text: /#{category}/).text_field }
+
+  element(:to_be_named_table) { |b| b.table(id: 'u1t17vx1_layout') }
 
 end

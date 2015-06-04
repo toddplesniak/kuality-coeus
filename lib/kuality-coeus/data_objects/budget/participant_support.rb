@@ -28,6 +28,10 @@ class ParticipantSupportObject < DataFactory
     end
   end
 
+  def update_from_parent(period_number)
+    @period_number=period_number
+  end
+
 end
 
 class ParticipantSupportCollection < CollectionFactory

@@ -171,30 +171,22 @@ class BudgetVersionsObject < DataFactory
     on(ConfirmAutocalculate).yes
     @budget_periods[1..-1].each_with_index do |period, i|
       @budget_periods[i].non_personnel_costs.each do |npc|
-        period.copy_non_personnel_item(npc)
-        warn 'Must add the copying of personnel items to the autocalculate periods method!'
+        period.copy_non_personnel_item npc
+      end
+      @budget_periods[0].assigned_personnel.persons.each do |name|
+        period.copy_assigned_person(period.number, period.personnel_rates, @budget_periods[i].assigned_personnel.person(name))
       end
     end
   end
 
   def complete
     view 'Periods And Totals'
-    on(PeriodsAndTotals).complete_budget
-    on CompleteBudget do |page|
-      page.ready.set
-      page.ok
+    on(NewDocumentHeader).budget_settings
+    on BudgetSettings do |page|
+      @status = 'Complete'
+      page.status.pick! @status
+      page.apply_changes
     end
-
-
-
-
-
-    raise 'There is currently a refresh issue, here. The Budget may not actually be "complete", yet.'
-
-
-
-
-
   end
 
   def update_from_parent(navigate_method)

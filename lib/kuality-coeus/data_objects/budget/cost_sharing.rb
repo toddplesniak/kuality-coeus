@@ -48,6 +48,10 @@ class CostSharingObject < DataFactory
     number.to_s.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1#{delimiter}").reverse
   end
 
+  def update_from_parent(period_number)
+    @period_number=period_number
+  end
+
 end
 
 class CostSharingCollection < CollectionsFactory

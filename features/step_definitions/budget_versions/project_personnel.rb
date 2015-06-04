@@ -6,7 +6,7 @@ When /^I? ?add a non-employee to the Budget personnel$/ do
   @budget_version.add_project_personnel type: 'Non Employee'
 end
 
-When /^I? ?add a to-be-named person to the Budget personnel$/ do
+When /^I? ?adds? a to-be-named person to the Budget personnel$/ do
   @budget_version.add_project_personnel type: 'To Be Named'
 end
 
@@ -49,6 +49,12 @@ And /^the Budget's personnel list shows the correct roles$/ do
   @proposal.key_personnel.each do |person|
     on(BudgetPersonnel).proposal_role_of(person.full_name).should==abbreviations[person.role]
   end
+end
+
+And /a Project Person is assigned to Budget period (\d+)$/ do |number|
+  assignee = @budget_version.personnel.full_names.sample
+  @budget_version.period(number).assign_person person: assignee, monthly_base_salary: @budget_version.person(assignee).monthly_base_salary
+  @project_person = @budget_version.period(number).assigned_personnel.person(assignee)
 end
 
 And /a Project Person is assigned to Budget period (\d+), with no salary inflation$/ do |number|

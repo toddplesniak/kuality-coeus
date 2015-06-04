@@ -72,9 +72,9 @@ class NonPersonnelCost < DataFactory
       page.details_tab
       # Grab the inflation rate descriptions for reference (they're used in #get_rates)...
       @ird = page.inflation_rates.map { |r| r[:description] }.uniq
-      @overhead = page.rates_table.exist?
+      page.rates_tab
+      @overhead = page.rates_table.present?
       if @overhead && !opts[:apply_indirect_rates].nil?
-        page.rates_tab
         page.apply(@rates.f_and_a[0].rate_class_code, @rates.f_and_a[0].description).fit opts[:apply_indirect_rates]
       end
       update_options opts
@@ -131,44 +131,25 @@ class NonPersonnelCost < DataFactory
       page.save_and_apply_to_other_periods
     end
   end
-  
-  def daily_total_base_cost
-    @total_base_cost.to_f/total_days
-  end
-
-  def daily_cost_share
-    @cost_sharing.to_f/total_days
-  end
-
-  def start_date_datified
-    Utilities.datify @start_date
-  end
-
-  def end_date_datified
-    Utilities.datify @end_date
-  end
-
-  def total_days
-    (end_date_datified-start_date_datified).to_i+1
-  end
-
-  def rate_days(rate)
-    # We know the rate applies, at least partially, because it hasn't been eliminated, so no need to
-    # check date range again...
-    # Determine which start date is later...
-    strt = rate.start_date > start_date_datified ? rate.start_date : start_date_datified
-    # Determine which end date is earlier...
-    end_d = rate.end_date > end_date_datified ? end_date_datified : rate.end_date
-    # Now count the days between them...
-    (end_d - strt).to_i+1
-  end
 
   def f_and_a
-    calc_cost(daily_total_base_cost)
+    cost_calculations[:fa].inject(0, :+)
+  end
+
+  def modular_f_and_a
+    cost_calculations[:fa]
   end
 
   def f_and_a_cost_sharing
-    calc_cost(daily_cost_share)
+    cost_calculations[:fa_cost_sharing].inject(0, :+)
+  end
+
+  def modular_f_a_cost_sharing
+    cost_calculations[:fa_cost_sharing]
+  end
+
+  def modular_f_a_base
+    cost_calculations[:f_and_a_base]
   end
 
   def inflation_amount
@@ -177,23 +158,6 @@ class NonPersonnelCost < DataFactory
      else
        0.0
      end
-  end
-
-  def inflation_rate
-    @rates.inflation.empty? ? 0.0 : @rates.inflation[0].applicable_rate/100
-  end
-
-  def calc_tbc
-    @total_base_cost = @total_base_cost.to_f
-    @total_base_cost+=inflation_amount
-  end
-
-  def get_rates
-    @rates = @period_rates.non_personnel.in_range(start_date_datified, end_date_datified)
-    @rates.delete_if { |r| r.on_campus != Transforms::YES_NO[@on_campus] }
-    @rates.delete_if { |r| r.rate_class_type=='Inflation' && !@ird.include?(r.description) }
-    @rates.delete_if { |r| r.rate_class_type=='Inflation' && start_date_datified < r.start_date }
-    @rates.delete_if { |r| r.rate_class_type == 'F & A' && @overhead==false }
   end
 
   def copy_mutatis_mutandis opts={}
@@ -217,19 +181,77 @@ class NonPersonnelCost < DataFactory
     npc
   end
 
-  private
+  def update_from_parent(period_number)
+    @period_number=period_number
+  end
 
-  def calc_cost(cost_type)
-    amounts = []
+  def start_date_datified
+    Utilities.datify @start_date
+  end
+
+  def end_date_datified
+    Utilities.datify @end_date
+  end
+
+  def calc_tbc
+    @total_base_cost = @total_base_cost.to_f
+    @total_base_cost+=inflation_amount
+  end
+
+  def get_rates
+    @rates = @period_rates.non_personnel.in_range(start_date_datified, end_date_datified)
+    @rates.delete_if { |r| r.on_campus != Transforms::YES_NO[@on_campus] }
+    @rates.delete_if { |r| r.rate_class_type=='Inflation' && !@ird.include?(r.description) }
+    @rates.delete_if { |r| r.rate_class_type=='Inflation' && start_date_datified < r.start_date }
+    @rates.delete_if { |r| r.rate_class_type == 'F & A' && @overhead==false }
+  end
+
+  # =========
+  private
+  # =========
+
+  def inflation_rate
+    @rates.inflation.empty? ? 0.0 : @rates.inflation[0].applicable_rate/100
+  end
+
+  def daily_total_base_cost
+    @total_base_cost.to_f/total_days
+  end
+
+  def daily_cost_share
+    @cost_sharing.to_f/total_days
+  end
+
+  def total_days
+    (end_date_datified-start_date_datified).to_i+1
+  end
+
+  def rate_days(rate)
+    # We know the rate applies, at least partially, because it hasn't been eliminated, so no need to
+    # check date range again...
+    # Determine which start date is later...
+    strt = rate.start_date > start_date_datified ? rate.start_date : start_date_datified
+    # Determine which end date is earlier...
+    end_d = rate.end_date > end_date_datified ? end_date_datified : rate.end_date
+    # Now count the days between them...
+    (end_d - strt).to_i+1
+  end
+
+  def cost_calculations
+    items = {fa: [], fa_cost_sharing: [], f_and_a_base: [] }
     fna = @rates.f_and_a
     if fna.count==1
-      amounts << @total_base_cost*(fna[0].applicable_rate/100)
+      items[:f_and_a_base] << rate_days(fna[0])*daily_total_base_cost
+      items[:fa] << @total_base_cost*(fna[0].applicable_rate/100)
+      items[:fa_cost_sharing] << @cost_sharing*(fna[0].applicable_rate/100)
     else
       fna.each { |rate|
-        amounts << rate_days(rate)*cost_type*(rate.applicable_rate/100)
+        items[:f_and_a_base] << rate_days(rate)*daily_total_base_cost
+        items[:fa] << rate_days(rate)*daily_total_base_cost*(rate.applicable_rate/100)
+        items[:fa_cost_sharing] << rate_days(rate)*daily_cost_share*(rate.applicable_rate/100)
       } unless fna.empty?
     end
-    amounts.inject(0, :+)
+    items
   end
 
 end
@@ -256,6 +278,11 @@ class NonPersonnelCostsCollection < CollectionFactory
         collect{ |npc|
           npc.f_and_a }.
         inject(0, :+)
+  end
+
+  def cost_sharing
+    self.collect{ |npc| npc.cost_sharing.to_f }.inject(0, :+) +
+        self.collect{ |npc| npc.f_and_a_cost_sharing }.inject(0, :+)
   end
 
   # NOTE: This method is written assuming that there's only one item

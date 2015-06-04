@@ -22,19 +22,18 @@ class AwardObject < DataFactory
 
   def initialize(browser, opts={})
     @browser = browser
-    amount = random_dollar_value(1000000)
 
     defaults = {
       description:           random_alphanums_plus,
       transaction_type:      '::random::',
       award_status:          %w{Active Hold Pending}.sample, # Needs to be this way because we don't want it to pick a status of, e.g., 'Closed'
-      award_title:           random_high_ascii(100), #random_alphanums_plus,
+      award_title:           random_high_ascii(100),
       activity_type:         '::random::',
       award_type:            '::random::',
       project_start_date:    right_now[:date_w_slashes],
       project_end_date:      in_a_year[:date_w_slashes],
       sponsor_id:            '::random::',
-      lead_unit_id:             '::random::',
+      lead_unit_id:          '::random::',
       version:               '1',
       prior_versions:        {}, # Contains the version number and document ids of prior versions
       fa_rates:              collection('AwardFARates'),
@@ -60,12 +59,10 @@ class AwardObject < DataFactory
                :award_title, :project_start_date, :project_end_date,
                :obligation_start_date, :obligation_end_date, :obligated_direct,
                :anticipated_direct
-
     end
     set_lead_unit
     set_sponsor_id
     on Award do |create|
-
       create.send(@press) unless @press.nil?
       #error messages are not displayed on first save...
       create.send(@press) unless @press.nil?
@@ -77,16 +74,9 @@ class AwardObject < DataFactory
   end #create
 
   def edit opts={}
-
-    DEBUG.message @document_id
-
-
     view :award
     @prior_versions.store(@version, @document_id)
     on Award do |edit|
-
-      # DEBUG.pause 300
-
       if edit.edit_button.present?
         edit.edit
         @prior_versions.store(@version, @document_id)
@@ -138,8 +128,6 @@ class AwardObject < DataFactory
     else
       # DEBUG.message "krad portal does not exist we can continue on"
     end
-
-
     on(Header).central_admin
     on(CentralAdmin).search_award
     on AwardLookup do |page|
@@ -161,8 +149,6 @@ class AwardObject < DataFactory
     on(Award).headerinfo_table.wait_until_present
   end
 
-
-
   def copy(type='new', parent=nil, descendents=:clear)
     view :award_actions
     on AwardActions do |copy|
@@ -177,7 +163,6 @@ class AwardObject < DataFactory
       copy.copy_award @id
     end
   end
-
 
   def on_award?
     if on(Award).headerinfo_table.exist?
@@ -262,12 +247,9 @@ class AwardObject < DataFactory
   def submit
     view :award_actions
     on AwardActions do |page|
-      # DEBUG.pause(3)
       page.submit
     end
-    on(Confirmation).yes if on(Confirmation).yes_button.present?
-    #was causing problem with logout need to wait for page to load here.
-    # DEBUG.pause(4)
+    on(Confirmation).yes if on(Confirmation).yes_button.exists?
   end
 
   def add_custom_data opts={}

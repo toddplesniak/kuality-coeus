@@ -58,18 +58,16 @@ class IACUCProtocolObject < DataFactory
       doc.send_it if doc.send_button.present? #send notification
       @protocol_number=doc.protocol_number
       @search_key = { protocol_number: @protocol_number }
-      DEBUG.message "protocol number #{@protocol_number}"
     end
 
   end
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    # open_document
     on IACUCProtocolOverview do |page|
       if page.protocol_element.exists?
         if page.protocol_number == @protocol_number
-          #on document moving on
+          # 'on document, moving on'
         else
           view_document
         end
@@ -93,8 +91,6 @@ class IACUCProtocolObject < DataFactory
   def navigate
     if on(Header).krad_portal_element.exists?
       on(Header).krad_portal
-    else
-      # DEBUG.message "does not exists krad portal"
     end
 
     #we have gotten to a strange place without a header because of time and money need to get back from there
@@ -297,7 +293,6 @@ class IACUCProtocolObject < DataFactory
 
     on CreateAmendment do |page|
       page.expand_all
-     DEBUG.pause(111)
       page.summary.set @amendment[:summary]
       @amendment[:sections].each do |sect|
         page.amend(sect).set
@@ -305,6 +300,8 @@ class IACUCProtocolObject < DataFactory
       page.create
     end
     confirmation('yes')
+    on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
+    on(CreateAmendment).save
 
     #Amendment has a different header with 9 fields instead of the normal 6 fields
     gather_document_info

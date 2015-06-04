@@ -9,7 +9,6 @@ class BudgetRateObject < DataFactory
     set_options(opts)
   end
 
-
   def set_applicable_rate ar
     # TODO: Need to write a little more navigation code here.
     # Currently the parent objects and stepdefs must do the work.
@@ -22,6 +21,11 @@ class BudgetRateObject < DataFactory
 
   def end_date
     (@start_date >> 12)-1
+  end
+
+  def update_from_parent x
+    x
+    # Nothing needed here
   end
 
 end
@@ -80,8 +84,6 @@ class BudgetRatesCollection < CollectionFactory
     br << keep
     ed = self.find_all { |rate| rate.start_date <= end_date } - st
     br << ed
-    x = br.flatten
-    x.delete_bad_inflations! start_date
     br.flatten!
     br.delete_bad_inflations! start_date
   end
@@ -101,6 +103,7 @@ class BudgetRatesCollection < CollectionFactory
           r.rate_class_type == 'Vacation'
     }
   end
+  alias_method :direct, :personnel
 
   def non_personnel
     collectify self.find_all { |r|
@@ -132,6 +135,10 @@ class BudgetRatesCollection < CollectionFactory
       r.rate_class_type == 'Inflation' &&
           (r.end_date) < start_date
     }
+  end
+
+  def description(description)
+    collectify self.find_all { |r| r.description==description }
   end
 
   private

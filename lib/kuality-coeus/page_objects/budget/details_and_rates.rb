@@ -22,8 +22,8 @@ class DetailsAndRates < BasePage
       array << {
           description: tr[0].text,
           start_date: Utilities.datify(tr[1].text),
-          institution_rate: tr[2].text,
-          applicable_rate: tr[3].text
+          institution_rate: tr[2].text.groom,
+          applicable_rate: tr[3].text.groom
       }
     }
     array
@@ -36,14 +36,14 @@ class DetailsAndRates < BasePage
       array << {
                  class: tr[0].text,
                   type: tr[1].text,
-             rate_cost: tr[2].text,
-     rate_cost_sharing: tr[3].text
+             rate_cost: tr[2].text.groom,
+     rate_cost_sharing: tr[3].text.groom
            }
     end
     array
   }
 
-  p_element(:apply) { |rate_class, type, b| b.rates_table.trs.find{ |tr| tr[0].text==rate_class && tr[1].text==type }.checkbox }
+  p_element(:apply) { |type, b| b.rates_table.trs.find{ |tr| tr[1].text==type }.checkbox }
 
   private
 
