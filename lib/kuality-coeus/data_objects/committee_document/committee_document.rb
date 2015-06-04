@@ -25,7 +25,7 @@ class CommitteeDocumentObject < DataFactory
       schedule:               collection('CommitteeSchedule'),
       save_type:              :save,
       committee_type:         'irb',
-      area_of_research:         []
+      area_of_research:       []
     }
     @lookup_class=CommitteeLookup
     set_options(defaults.merge(opts))

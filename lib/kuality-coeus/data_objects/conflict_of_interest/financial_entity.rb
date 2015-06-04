@@ -20,7 +20,7 @@ class FinancialEntityObject < DataFactory
       postal_code:        '85028',
       principal_activity: random_multiline
     }
-    # TODO: Needs a @lookup_class and @search_key defined
+
     set_options(defaults.merge(opts))
   end
 

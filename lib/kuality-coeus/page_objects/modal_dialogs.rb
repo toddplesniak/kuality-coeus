@@ -130,6 +130,12 @@ class SyncDirectCostLimit < Dialogs
   action(:yes) { |b| b.yes_element.click; b.loading }
 end
 
+class SyncModularBudget < Dialogs
+
+  element(:dialog_header) { |b| b.header(id: 'ProposalModularSync_1_headerWrapper') }
+
+end
+
 class SyncPeriodCostLimit < Dialogs
 
   undefine :yes, :yes_element

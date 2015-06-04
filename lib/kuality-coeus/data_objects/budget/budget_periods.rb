@@ -155,7 +155,7 @@ class BudgetPeriodObject < DataFactory
 
   def cost_sharing
     if @cost_sharing.nil?
-      non_personnel_costs.cost_sharing + assigned_personnel.direct_costs[:cost_sharing]
+      non_personnel_costs.cost_sharing + assigned_personnel.direct_costs[:cost_share]
     else
       @cost_sharing
     end
@@ -163,6 +163,7 @@ class BudgetPeriodObject < DataFactory
 
   def unrecovered_f_and_a
     if @unrecovered_f_and_a.nil?
+      warn 'This method is not fully written. unrecovered f&a will be wrong.'
       non_personnel_costs.unrecovered_f_and_a #+ assigned_personnel.unrecovered_f_and_a
     else
       @unrecovered_f_and_a
