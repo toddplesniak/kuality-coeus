@@ -9,7 +9,7 @@ class BudgetPeriodObject < DataFactory
               :participant_support, :assigned_personnel, :non_personnel_costs, :period_rates
               #TODO: Add support for this:
               :number_of_participants
-  attr_accessor :number
+  attr_accessor :number, :unrecovered_fa_dist_list
 
   def initialize(browser, opts={})
     @browser = browser

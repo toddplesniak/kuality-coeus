@@ -175,7 +175,8 @@ class UserObject < DataFactory
         phones:           [{type:   'Work',
                             number:  '602-840-7300',
                             default: :set }],
-        groups:           collection('UserGroups')
+        groups:           collection('UserGroups'),
+        # principal_name:   random_alphanums
     }
     defaults.merge!(opts)
     if opts.empty? # then we want to make the admin user...
@@ -269,6 +270,10 @@ class UserObject < DataFactory
           add.add_email
         end
       end
+
+      # DEBUG.message "principal name #{@principal_name}"
+      # add.principal_name.fit @principal_name unless @principal_name.nil?
+
       # A breaking of the design pattern, but there's no other
       # way to obtain this number:
       @principal_id = add.principal_id

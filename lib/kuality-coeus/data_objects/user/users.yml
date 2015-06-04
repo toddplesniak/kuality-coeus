@@ -605,54 +605,6 @@ mtwain: # AKA: "Principal Name"
    - :name: Award Budget Aggregator
      :qualifiers:
        - :unit: '000001'
-jamesr: # AKA: "Principal Name"
-  :user_name:        jamesr
-  :description:      Time and Money Modifier
-  :affiliation_type: Staff
-  :campus_code:      'UN - UNIVERSITY'
-  :employee_id:      jamesr
-  :employee_status:  Active
-  :employee_type:    Professional
-  :base_salary:      8765.43
-  :primary_department_code: '000001'
-  :first_name:       Richard
-  :last_name:        James
-  :primary_title:    Time and Money Modifier
-  :directory_title:  Time and Money Modifier
-  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
-  :era_commons_user_name: jamesr
-  :directory_department:  Accounting
-  :graduate_student_count: '0'
-  :billing_element:  goo goo gah joob
-  :addresses:
-   - :type:    Work
-     :line_1:  475 N scottsdale rd
-     :city:    scottsdale
-     :state:   ARIZONA
-     :country: United States
-     :zip:     85257
-     :default: :set
-  :phones:
-   - :type:    Work
-     :number:  602-228-3476
-     :default: :set
-   - :type:    Facsimile
-     :number:  543-525-4321
-     :default: :clear
-     :country: United States
-  :emails:
-   - :email:   kc-qa-notify@rsmart.com
-     :type:    Work
-     :default: :set
-  :rolez:
-   - :name: Time And Money Modifier
-     :qualifiers:
-       - :unit: '000001'
-         :descends_hierarchy: :set
-   - :name: Award Viewer
-     :qualifiers:
-       - :unit: '000001'
-         :descends_hierarchy: :set
 dbyrne:  # AKA: "Principal Name"
   :user_name:        dbyrne
   :description:      OSP Admin And IP Proposal Initiator
@@ -947,6 +899,7 @@ ttim:  # AKA: "Principal Name"
     - :name: Modify IACUC Protocols
       :qualifiers:
         - :unit: '000001'
+          :descends_hierarchy: :set
 jenjones:  # AKA: "Principal Name"
   :user_name:        jenjones
   :description:      IACUC Administrator
@@ -1047,6 +1000,56 @@ rrobin:  # AKA: "Principal Name"
       :qualifiers:
       - :unit: '000001'
         :descends_hierarchy: :set
+bjay:  # AKA: "Principal Name"
+  :user_name:        bjay
+  :description:      Modify all IACUC Protocols
+  :affiliation_type: Staff
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      bjay
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      674327.32
+  :primary_department_code: '000001'
+  :first_name:       Blue
+  :last_name:        Jay
+  :primary_title:    IACUC Protocol Creator
+  :directory_title:  IACUC Protocol Creator
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name:
+  :directory_department:  Finance
+  :graduate_student_count: '0'
+  :billing_element:  bla bla bla
+  :addresses:
+    - :type:    Home
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :set
+    - :type:    Work
+      :line_1:  475 n scottsdale rd
+      :city:    scottsdale
+      :state:   ARIZONA
+      :country: United States
+      :zip:     85257
+      :default: :clear
+  :phones:
+    - :type:    Work
+      :number:  602-228-3876
+      :default: :set
+    - :type:    Facsimile
+      :number:  602-597-5350
+      :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :name: Modify all IACUC Protocols
+      :qualifiers:
+      - :unit: '000001'
+        :descends_hierarchy: :set
 fchair:
   :user_name:        fchair
   :description:      Department Chair
@@ -1134,3 +1137,92 @@ mresearcher:
     - :name: Proposal Creator
       :qualifiers:
       - :unit: BIO
+ospapproverb:
+  :user_name:        ospapproverb
+  :description:      Principal Investigator
+  :affiliation_type: Faculty
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      9786999
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      80000
+  :primary_department_code: '000001'
+  :first_name:       Osp
+  :last_name:        Approverb
+  :primary_title:
+  :directory_title:
+  :citizenship_type:
+  :era_commons_user_name:
+  :directory_department:
+  :graduate_student_count:
+  :billing_element:
+  :addresses:
+    - :type:    Work
+      :line_1:  456 Elm Street
+      :city:    Madison
+      :state:   WISCONSIN
+      :country: United States
+      :zip:     53532
+      :default: :set
+  :phones:
+      - :type:    Work
+        :number:  480-455-6565
+        :default: :set
+      - :type:    Facsimile
+        :number:  480-444-5670
+        :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :name: OSPApprover
+      :qualifiers:
+      - :unit: '000001'
+tmoney:
+  :user_name:        tmoney
+  :description:      Time And Money Modifier
+  :affiliation_type: Faculty
+  :campus_code:      'UN - UNIVERSITY'
+  :employee_id:      9780522
+  :employee_status:  Active
+  :employee_type:    Professional
+  :base_salary:      80022
+  :primary_department_code: '000001'
+  :first_name:       Timmy
+  :last_name:        Money
+  :primary_title:    Time And Money Modifier
+  :directory_title: Time And Money Modifier
+  :citizenship_type: US CITIZEN OR NONCITIZEN NATIONAL
+  :era_commons_user_name:
+  :directory_department:
+  :graduate_student_count:
+  :billing_element:
+  :addresses:
+    - :type:    Work
+      :line_1:  456 Elm Street
+      :city:    Madison
+      :state:   WISCONSIN
+      :country: United States
+      :zip:     53532
+      :default: :set
+  :phones:
+      - :type:    Work
+        :number:  480-455-6565
+        :default: :set
+      - :type:    Facsimile
+        :number:  480-444-5670
+        :default: :clear
+  :emails:
+    - :email:   kc-qa-notify@rsmart.com
+      :type:    Work
+      :default: :set
+  :rolez:
+    - :name: Time And Money Modifier
+      :qualifiers:
+      - :unit: '000001'
+        :descends_hierarchy: :set
+    - :name: Award Viewer
+      :qualifiers:
+      - :unit: '000001'
+        :descends_hierarchy: :set

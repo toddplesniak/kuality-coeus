@@ -8,13 +8,13 @@ Feature: IACUC Protocol adding special reviews and verify correct error messages
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
 
-  @KCTEST-1134
+  @KCTEST-1134 @wip
   Scenario: Add special review to the IACUC Protocol
     When the IACUC Protocol Creator creates an IACUC Protocol
     And  adds a Special Review to the IACUC Protocol
     Then the first Special Review should be displayed on the IACUC Protocol
 
-  @KCTEST-1134
+  @KCTEST-1134 @wip
   Scenario: Edit special review on the IACUC Protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol
     And   the IACUC Protocol Creator adds a Special Review to the IACUC Protocol

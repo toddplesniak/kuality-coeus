@@ -33,15 +33,19 @@ class CostSharingObject < DataFactory
   def edit(opts)
     view
     on CostSharing do |page|
-      page.period(@source_account, @amount).pick! opts[:period]
-      page.percentage(@source_account, @amount).fit opts[:percentage]
-      page.amount(@source_account, @amount).fit opts[:amount]
+      page.period(@source_account, comma_numbers(@amount)).pick! opts[:period]
+      page.percentage(@source_account, comma_numbers(@amount)).fit opts[:percentage]
+      page.amount(@source_account, comma_numbers(@amount)).fit opts[:amount]
       # NOTE: This needs to be last so that the @source_account still matches for the
       # other three fields...
-      page.source_account(@source_account, @amount).fit opts[:source_account]
+      page.source_account(@source_account, comma_numbers(@amount)).fit opts[:source_account]
       page.save
     end
     update_options(opts)
+  end
+
+  def comma_numbers(number, delimiter = ',')
+    number.to_s.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1#{delimiter}").reverse
   end
 
 end

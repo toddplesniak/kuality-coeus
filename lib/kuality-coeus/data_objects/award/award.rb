@@ -28,7 +28,7 @@ class AwardObject < DataFactory
       description:           random_alphanums_plus,
       transaction_type:      '::random::',
       award_status:          %w{Active Hold Pending}.sample, # Needs to be this way because we don't want it to pick a status of, e.g., 'Closed'
-      award_title:           random_alphanums_plus,
+      award_title:           random_high_ascii(100), #random_alphanums_plus,
       activity_type:         '::random::',
       award_type:            '::random::',
       project_start_date:    right_now[:date_w_slashes],
@@ -131,9 +131,9 @@ class AwardObject < DataFactory
   def navigate
 
     #we are in a strange place without a header because of time and money. need to get back from there
-    @browser.goto $base_url+$context unless on(Header).header_div.exists?
+    @browser.goto $base_url+$context unless on(Header).header_div.present?
 
-    if on(Header).krad_portal_element.exists?
+    if on(Header).krad_portal_element.present?
       on(Header).krad_portal
     else
       # DEBUG.message "krad portal does not exist we can continue on"
@@ -265,7 +265,7 @@ class AwardObject < DataFactory
       # DEBUG.pause(3)
       page.submit
     end
-    on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    on(Confirmation).yes if on(Confirmation).yes_button.present?
     #was causing problem with logout need to wait for page to load here.
     # DEBUG.pause(4)
   end

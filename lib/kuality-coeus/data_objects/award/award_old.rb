@@ -494,7 +494,7 @@ class OLDAwardObject < DataFactory
   end
 
   def on_award?
-    if on(Award).headerinfo_table.exist?
+    if on(Award).headerinfo_table.present?
       on(Award).header_award_id==@id
     else
       false

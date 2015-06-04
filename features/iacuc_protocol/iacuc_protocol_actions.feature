@@ -6,12 +6,13 @@ Feature: Protocol actions for IACUC
   [KC-TA-5417] IACUC Admin can deactiveate and remove holds placed on IACUC Protocols
 
   Background: Establish a Protocol Creator
-    * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
+    * Users exist with the following roles: IACUC Protocol Creator, Modify IACUC Protocols, IACUC Administrator
 
   @KCIAC-256 @wip
   Scenario: Suspend a IACUC Protocol with an amendment
     Given the IACUC Administrator approves a submitted IACUC Protocol
-    And   the IACUC Protocol Creator submits an Amendment for review on the IACUC Protocol
+#    And   the IACUC Protocol Creator submits an Amendment for review on the IACUC Protocol
+    And   the IACUC Administrator submits an Amendment for review on the IACUC Protocol
     When  the IACUC Administrator approves the amendment for the IACUC Protocol
     And   suspends the IACUC Protocol
     Then  the IACUC Protocol submission status should be Suspended
@@ -29,12 +30,11 @@ Feature: Protocol actions for IACUC
     And  expires the IACUC Protocol
     Then the IACUC Protocol status should be Expired
 
-  @KCIAC-256 @wip
+  @KCIAC-256
   Scenario: Withdraw a submitted IACUC Protocol
     Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
     When  the IACUC Administrator withdrawals the IACUC Protocol
     Then  the IACUC Protocol submission status should be Withdrawn
-     #object disabled =  protocol button
 
   @KCTEST-881
   Scenario: Verify the expiration date is set after the IACUC Protocol is approved
@@ -42,14 +42,14 @@ Feature: Protocol actions for IACUC
     When  the IACUC Administrator approves the IACUC Protocol
     Then  the expiration date is set for the Protocol
 
-  @KC-TA-5417 @wip
+  @KC-TA-5417
   Scenario: IACUC Admin deactivates an IACUC Protocol
     Given the IACUC Administrator approves a submitted IACUC Protocol
     When  the IACUC Administrator deactivates the IACUC Protocol
+    And   the IACUC Administrator deactivates the IACUC Protocol
     Then  the IACUC Protocol status should be Deactivated
-     #admin approved not deactivated
 
-  @KC-TA-5417
+  @KC-TA-5417 @wip
   Scenario: IACUC Admin lifts a hold on an IACUC Protocol that was placed on hold
     Given the IACUC Administrator approves a submitted IACUC Protocol
     And   places the IACUC Protocol on hold

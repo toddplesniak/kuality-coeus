@@ -241,7 +241,8 @@ Then /^no results should be returned$/ do
 end
 
 When /^the unassigned user visits the Award$/  do
-  steps '* I log in with the unassigned user'
+  #hard coded username because this user has no roles
+  steps "* I'm logged in with unassigneduser"
   @award.view_award
 end
 
