@@ -1,10 +1,10 @@
-@award @wip
+@award
 Feature: Accessing Awards (Permissions, Rights, Access)
 
   Summary to be written
 
   Scenario: Investigator attempts to access an award without Award Viewer permissions
-    Given Users exist with the following roles: unassigned, Award Modifier
+    Given Users exist with the following roles: Award Modifier
     And   the Award Modifier creates an Award
     And   adds the unassigned user as a Principal Investigator for the Award
     When  the unassigned user visits the Award

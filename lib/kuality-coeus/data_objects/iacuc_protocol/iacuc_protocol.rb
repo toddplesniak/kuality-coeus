@@ -47,15 +47,15 @@ class IACUCProtocolObject < DataFactory
       doc.protocol_project_type.pick!(@protocol_project_type)
     end
 
-    set_pi
     set_lead_unit
+    set_pi
 
     on(IACUCProtocolOverview).save
-    on(NotificationEditor).send_notification if on(NotificationEditor).send_notification_button.exists?
+    on(NotificationEditor).send_notification if on(NotificationEditor).send_notification_button.present?
 
     on IACUCProtocolOverview do |doc|
-      # doc.save
-      # doc.send_it if doc.send_button.exists? #send notification
+      doc.save
+      doc.send_it if doc.send_button.present? #send notification
       @protocol_number=doc.protocol_number
       @search_key = { protocol_number: @protocol_number }
     end
@@ -88,11 +88,9 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
-
   def navigate
     if on(Header).krad_portal_element.exists?
       on(Header).krad_portal
-    else
     end
 
     #we have gotten to a strange place without a header because of time and money need to get back from there
@@ -111,7 +109,7 @@ class IACUCProtocolObject < DataFactory
 
   def on_protocol?
     false
-    # if on(ProtocolOverview).headerinfo_table.exist?
+    # if on(ProtocolOverview).headerinfo_table.present?
     #   on(ProtocolOverview).protocol_number==@protocol_number
     # else
     #   false
@@ -120,6 +118,7 @@ class IACUCProtocolObject < DataFactory
 
 
   def view_by_protocol_number(protocol_number=@protocol_number)
+    on(Header).doc_search
     on(Header).researcher
     on(ResearcherMenu).iacuc_search_protocols
     on ProtocolLookup do |search|
@@ -289,6 +288,7 @@ class IACUCProtocolObject < DataFactory
                     'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
     }
     @amendment.merge!(opts)
+    view_by_protocol_number
     view 'IACUC Protocol Actions'
 
     on CreateAmendment do |page|
@@ -309,6 +309,7 @@ class IACUCProtocolObject < DataFactory
     @amendment[:document_id] = @doc[:document_id]
 
     @document_id = on(IACUCProtocolActions).document_id
+    on(IACUCProtocolOverview).send_it if on(IACUCProtocolOverview).send_button.present? #send notification
   end
 
   def suspend

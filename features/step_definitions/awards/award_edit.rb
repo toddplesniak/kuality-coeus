@@ -7,10 +7,6 @@ When /^an Account ID with special characters is added to the Award details$/ do
   @award.edit account_id: random_string(5, %w{~ ! @ # $ % ^ & ž}.sample(2))
 end
 
-When /^the Award's title is updated to include invalid characters$/ do
-  @award.edit award_title: random_high_ascii(100)
-end
-
 When /^the Award's title is made more than (\d+) characters long$/ do |arg|
   @award.edit award_title: random_string(arg.to_i+1)
 end
@@ -18,8 +14,7 @@ end
 When /I? ?adds? the required Custom Data to the Award$/ do
   @award.add_custom_data
 end
-#TODO
-#Confirm that custom data is not required in KC Award.
+#TODO: Confirm that custom data is not required in KC Award.
 When /completes? the Award requirements$/ do
    # steps '* add a report to the Award'
    steps '* add Terms to the Award'

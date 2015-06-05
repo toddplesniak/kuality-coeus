@@ -41,7 +41,7 @@ end # Recall
 
 class SendNotifications < Dialogs
 
-  buttons 'Send Notifications', 'Search for Recipients'
+  buttons 'Send Notifications', 'Search for Recipients', 'Add Recipients'
 
   element(:dialog_header) { |b| b.header(id: 'Kc-SendNotification-Wizard_headerWrapper') }
 
@@ -50,20 +50,24 @@ class SendNotifications < Dialogs
   action(:employee_set) {|b| b.label(text: 'Employee').parent.radio.set }
   action(:non_employee_set) {|b| b.label(text: 'Non Employee').parent.radio.set }
 
-  def get_search_results
-    value(:ben) do |b|
+  value(:get_search_results) do |b|
       arry = []
-      b.div_results_table_body.checkboxes(name: /^addRecipientHelper.results/).each do |div|
-        if div.enabled?
-        arry << div.collect{ |div| div.name }
+      arry_disabled =[]
+      b.notification_results_table.checkboxes.each do |box|
+        if box.enabled?
+          arry << box.name
+        else
+          arry_disabled << box.name
         end
+        # remove duplicate objects disabled with trying to select
+        arry = arry - arry_disabled
       end
       arry
     end
-  end
 
-  element(:div_results_table_body) { |b| b.div(class: 'row multi-columns-row uif-cssGridGroup uif-boxLayoutVerticalItem clearfix').tbody }
-  action(:select_random_checkbox) { |name, b| b.div_results_table_body.checkbox(name: name).set }
+  #there are two modals on this page first one is invisible when notification table is displayed
+  element(:notification_results_table) { |b| b.div(class: 'modal-dialog modal-lg', index: 1) }
+  action(:select_random_checkbox) { |name, b| b.checkbox(name: name).set }
 
   # Unfortunately this is necessary because it's the only way
   # to know the IP Number when it gets created

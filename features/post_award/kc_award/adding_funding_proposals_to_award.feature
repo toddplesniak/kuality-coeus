@@ -6,9 +6,10 @@ Feature: Adding Multiple Funding Proposals to an Award
   to save time and help prevent errors.
 
   Background:
-    * a User exists with the role 'Award Modifier' in unit '000001'
-    * 2 Approved Institutional Proposals with cost share, unrecovered F&A, and compliance exist
-    * the enable.award.FnA.validation parameter is set to 0
+  * a User exists with the role 'Award Modifier' in unit '000001'
+  * 2 Approved Institutional Proposals with cost share, unrecovered F&A, and compliance exist
+  * the enable.award.FnA.validation parameter is set to 0
+  #finalize budget problem in step 2 of background
 
   Scenario: Latest Funding Proposal linked to new Award overwrites some data
     Given the Award Modifier starts an Award with the first Funding Proposal
