@@ -51,7 +51,7 @@ class NonPersonnelCost < DataFactory
       # This line bypasses Watir in favor of using nokogiri to parse the HTML and get
       # the list of options.
       if @object_code_name=='::random::'
-        @object_code_name=page.object_code_list.shuffle.sample
+        @object_code_name=page.object_code_list.sample
       end
       fill_out page, :object_code_name, :total_base_cost
       page.add_non_personnel_item

@@ -12,7 +12,7 @@ Feature: Add, edit, delete species on IACUC protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol
     When the IACUC Protocol Creator adds a Species with non-integers for the species count
     Then an error should appear warning that the field contents are not valid
-
+  @test
   Scenario: Edit a Species on the IACUC Protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol
     When the IACUC Protocol Creator adds a Species with all fields completed
