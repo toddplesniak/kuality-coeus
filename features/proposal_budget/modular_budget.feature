@@ -1,8 +1,7 @@
-@wip
 Feature: Modular Budgets
 
   As a Researcher I want to be able to submit budgets that will be accepted by the NIH
-
+  @wip
   Scenario: Syncing budget details to a modular budget
     * a User exists with the role: 'Proposal Creator'
     * the Proposal Creator creates a Proposal with 000340 as the sponsor

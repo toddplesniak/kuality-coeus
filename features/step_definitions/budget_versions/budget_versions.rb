@@ -227,8 +227,5 @@ And /^syncs the modular budget$/ do
 
   #DEBUG.inspect @budget_version.budget_periods[0].assigned_personnel.direct_costs[:cost]
 
-  DEBUG.pause 3939
-
-
 
 end

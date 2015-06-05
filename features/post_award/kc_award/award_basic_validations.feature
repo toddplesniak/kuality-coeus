@@ -5,15 +5,16 @@ Feature: Basic Award Validations
   so that I can correct them.
 
   Background:
-    Given Users exist with the following roles: Proposal Creator, Award Modifier
-    And   a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
+    * Users exist with the following roles: Proposal Creator, Award Modifier
+    * a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
 
   Scenario: Add a Payment & Invoice Req before adding a PI
     Given the Award Modifier creates an Award
     When  I start adding a Payment & Invoice item to the Award
     Then  a warning appears saying tracking details won't be added until there's a PI
-
+  @test
   Scenario: Attempt to create a KC Award document with a missing required field
+    * a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
     Given I log in with the Award Modifier user
     When  I create an Award with a missing required field
     Then  an error should appear saying the field is required
@@ -60,7 +61,7 @@ Feature: Basic Award Validations
     Given the Award Modifier creates an Award
     When  the Award Modifier adds an F&A rate to the Award but misses a required field
     Then  an error should appear saying the field is required
-
+  @wip
   Scenario: Terms are not entered in the Award
     Given the Award Modifier creates an Award
     When  data validation is turned on for the Award
