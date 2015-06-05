@@ -8,6 +8,7 @@ Feature: Adding a Funding Proposal to an Award
   Background:
     * a User exists with the role 'Award Modifier' in unit '000001'
     * 1 Approved Institutional Proposal exists
+    #need proposal work flow to fix this
 
   Scenario: Award Fields Remain Editable
     When  the Award Modifier starts an Award with the Funding Proposal

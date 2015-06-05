@@ -68,7 +68,7 @@ end
 # are multiple matching users, it will select one
 # of them randomly, and create them if they don't exist in the system (again by first
 # logging in with the admin user to do the creation).
-Given /^a User exists with the role '(.*)' in unit '(.*)' \(descends hierarchy\)$/ do |role, unit|
+Given /^a User exists with the role '(.*)' in unit '(.*)' that descends hierarchy$/ do |role, unit|
   user_name = UserObject::USERS.have_hierarchical_role_in_unit(role, unit, :set)[0][0]
   # Be careful with this, as test cases with multiple users with the same role will cause
   # instance variable collision...

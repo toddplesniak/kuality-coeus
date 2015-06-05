@@ -6,12 +6,13 @@ Feature: Protocol actions for IACUC
   [KC-TA-5417] IACUC Admin can deactiveate and remove holds placed on IACUC Protocols
 
   Background: Establish a Protocol Creator
-    * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
+    * Users exist with the following roles: IACUC Protocol Creator, Modify IACUC Protocols, IACUC Administrator
+
   #RESKC-505
   @system_failure
   Scenario: Suspend an IACUC Protocol with an amendment
     Given the IACUC Administrator approves a submitted IACUC Protocol
-    And   the IACUC Protocol Creator submits an Amendment for review on the IACUC Protocol
+    And   the IACUC Administrator submits an Amendment for review on the IACUC Protocol
     When  the IACUC Administrator approves the amendment for the IACUC Protocol
     And   suspends the IACUC Protocol
     Then  the IACUC Protocol submission status should be Suspended

@@ -19,7 +19,7 @@ Feature: Creating IACUC Protocols
     When the IACUC Protocol Creator creates an IACUC Protocol but misses a required field
     Then an error should appear saying the field is required
 
-  @KCTEST-912
+  @KCTEST-912 @wip
    Scenario: Personnel with qualifications can be added to a procedure and display on summary
     When the IACUC Protocol Creator creates an IACUC Protocol
     And  adds 1 personnel member to the IACUC Protocol

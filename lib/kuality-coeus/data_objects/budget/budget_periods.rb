@@ -10,6 +10,7 @@ class BudgetPeriodObject < DataFactory
               :number
               #TODO: Add support for this:
               :number_of_participants
+  attr_accessor :number, :unrecovered_fa_dist_list
   def_delegators :@assigned_personnel, :copy_assigned_person
 
   def initialize(browser, opts={})

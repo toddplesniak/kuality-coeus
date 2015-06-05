@@ -34,7 +34,7 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
     And   reloads the IACUC Protocol to the procedures summary tab
     Then  the edited location information should be displayed in the Procedure summary
 
-  @KCTEST-918
+  @KCTEST-918 @wip
   Scenario: Delete a location from a procedure on the IACUC Protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol with one Species
     And   adds a Procedure to the IACUC Protocol

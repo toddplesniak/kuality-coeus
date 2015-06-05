@@ -221,39 +221,19 @@ class ProposalDevelopmentObject < DataFactory
         to_sponsor:   :submit_to_sponsor,
         to_s2s: :submit_to_s2s
     }
-    view 'Summary/Submit'
 
     case(type)
       when :to_sponsor
-        on(Header).doc_search
-        on DocumentSearch do |lookup|
-          lookup.document_id.fit @document_id
-          lookup.search
-          lookup.open_result @document_id
-        end
         view 'Summary/Submit'
-        unless on(ProposalSummary).submit_to_sponsor_element.exists?
-          on(ProposalSummary).submit_for_review
-          view 'Summary/Submit'
-        end
-        unless on(ProposalSummary).submit_to_sponsor_element.exists?
-          on(ProposalSummary).submit_for_review
-          view 'Summary/Submit'
-        end
-        unless on(ProposalSummary).submit_to_sponsor_element.exists?
-          on(ProposalSummary).submit_for_review
-          view 'Summary/Submit'
-        end
-        unless on(ProposalSummary).submit_to_sponsor_element.exists?
-          on(ProposalSummary).submit_for_review
-          view 'Summary/Submit'
-        end
         on(ProposalSummary).submit_to_sponsor
         on SendNotifications do |page|
           page.employee_set
           page.search_for_recipients
 
+          #get results
+          # select results in correct table
           select_random_result
+          page.add_recipients
           @institutional_proposal_number=page.institutional_proposal_number
           page.send_notifications
         end
@@ -272,8 +252,7 @@ class ProposalDevelopmentObject < DataFactory
 
   def select_random_result
     on SendNotifications do |page|
-      results_array = page.get_search_results.to_a
-      DEBUG.message "results #{results_array.class} and arry is ..#{results_array}"
+      results_array = page.get_search_results
       page.select_random_checkbox(results_array.sample)
     end
   end

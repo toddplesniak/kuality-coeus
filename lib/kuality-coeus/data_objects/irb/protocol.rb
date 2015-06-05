@@ -83,10 +83,10 @@ class IRBProtocolObject < DataFactory
   def navigate(type='edit')
 
     #we have gotten to a strange place without a header because of time and money need to get back from there
-    @browser.goto $base_url+$context unless on(Header).header_div.exists?
+    @browser.goto $base_url+$context unless on(Header).header_div.present?
 
     #Return to the right header
-    on(Header).krad_portal if on(Header).krad_portal_element.exists?
+    on(Header).krad_portal if on(Header).krad_portal_element.present?
 
     unless on_protocol?
       on(Header).central_admin
