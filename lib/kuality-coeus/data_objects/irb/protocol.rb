@@ -259,8 +259,6 @@ class IRBProtocolObject < DataFactory
   # be able to specify a particular person as the PI. Right now
   # it selects a PI at random.
   def set_pi
-    DEBUG.pause(123)
-    breaky
     on(ProtocolOverview).pi_employee_search
     on KcPersonLookup do |look|
       look.search
