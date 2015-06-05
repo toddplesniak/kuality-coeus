@@ -30,7 +30,6 @@ Feature: Protocol actions for IACUC
     Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
     When  the IACUC Administrator withdrawals the IACUC Protocol
     Then  the IACUC Protocol submission status should be Withdrawn
-     #object disabled =  protocol button
 
   Scenario: Verify the expiration date is set after the IACUC Protocol is approved
     Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
