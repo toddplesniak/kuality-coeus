@@ -151,7 +151,12 @@ When /^a User exists with the roles: (.*) in the (.*) unit$/ do |roles, unit|
     users << UserObject::USERS.have_role_in_unit(role, unit)
   end
   raise 'There are no matching users in the users.yml file. Please add one.' if users.empty?
-  user_name = users.inject(:&).shuffle[0][0]
+
+  DEBUG.inspect users.flatten!.map { |u| u.user_name }
+
+  exit
+
+  user_name = users.shuffle[0][:user_name]
   if $users.user(user_name).nil?
     $users << make(UserObject, user: user_name)
     $users[-1].create unless $users[-1].exists?
