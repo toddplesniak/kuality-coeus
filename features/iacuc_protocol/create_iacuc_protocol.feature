@@ -14,13 +14,11 @@ Feature: Creating IACUC Protocols
     Then there are no errors on the page
     And  the IACUC Protocol status should be Pending/In Progress
 
-  @KCTEST-34
   Scenario: IACUC Protocol overview is missing a required field
     When the IACUC Protocol Creator creates an IACUC Protocol but misses a required field
     Then an error should appear saying the field is required
 
-  @KCTEST-912
-   Scenario: Personnel with qualifications can be added to a procedure and display on summary
+  Scenario: Personnel with qualifications can be added to a procedure and display on summary
     When the IACUC Protocol Creator creates an IACUC Protocol
     And  adds 1 personnel member to the IACUC Protocol
     Then the personnel member added to the IACUC Protocol is present
@@ -29,7 +27,6 @@ Feature: Creating IACUC Protocols
     And  adds a person to the procedure for the species with qualifications
     Then the procedures summary will display qualifications for the personnel
 
-  @KCTEST-928 @KCTEST-929 @KCTEST-930 @unit-testy
   Scenario: The Three Principles fields can be edited
     Given the IACUC Protocol Creator creates an IACUC Protocol with the three principles, reduction, refinement, replacement
     And   edits the Principles of reduction
