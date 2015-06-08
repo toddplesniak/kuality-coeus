@@ -147,16 +147,16 @@ end
 
 When /^a User exists with the roles: (.*) in the (.*) unit$/ do |roles, unit|
   users = []
+  # Find users that have at least one of each of the roles...
   roles.split(', ').each do |role|
-    users << UserObject::USERS.have_role_in_unit(role, unit)
+                                                            # We just need the user names...
+    users << UserObject::USERS.have_role_in_unit(role, unit).map { |u| u[:user_name] }
   end
+  # Now we narrow that list down to only those users that have ALL the specified roles...
+  matches = users.inject(:&)
   raise 'There are no matching users in the users.yml file. Please add one.' if users.empty?
-
-  DEBUG.inspect users.flatten!.map { |u| u.user_name }
-
-  exit
-
-  user_name = users.shuffle[0][:user_name]
+  # randomly select from the list of matches...
+  user_name = matches.shuffle[0]
   if $users.user(user_name).nil?
     $users << make(UserObject, user: user_name)
     $users[-1].create unless $users[-1].exists?
