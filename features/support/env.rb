@@ -40,7 +40,10 @@ After do |scenario|
   if scenario.failed?
     @browser.screenshot.save 'screenshot.png'
     embed 'screenshot.png', 'image/png'
+    # DEBUG
     DEBUG.message " Failed on #{@browser.url}"
+    # DEBUG
+    #Cucumber.wants_to_quit = true
   end
   @browser.cookies.clear
 end
