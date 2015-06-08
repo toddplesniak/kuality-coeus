@@ -5,24 +5,24 @@ end
 
 Then /^the Award's Lead Unit is changed to (.*)$/ do |unit|
   @award.view 'Award'
-  on(Award).lead_unit_ro.should=~/^#{unit}/
+  expect(on(Award).lead_unit_ro).to =~ /^#{unit}/
 end
 
 Then /^the Award's title is trimmed to the first 200 characters$/ do
-  on(Award).award_title.value.should==@award.award_title[0..199]
+  expect(on(Award).award_title.value).to eq @award.award_title[0..199]
 end
 
 Then /^a warning appears saying tracking details won't be added until there's a PI$/ do
-  on(PaymentReportsTerms).errors.should include 'Report tracking details won\'t be added until a principal investigator is set.'
+  expect(on(PaymentReportsTerms).errors).to include 'Report tracking details won\'t be added until a principal investigator is set.'
 end
 
 Then /^the new Award should not have any subawards or T&M document$/ do
   on Award do |test|
     # If there are no Subawards, the table should only have 3 rows...
-    test.approved_subaward_table.rows.size.should==3
+    expect (test.approved_subaward_table.rows.size).to eq 3
     test.time_and_money
     # If there is no T&M, then an error should be thrown...
-    test.errors.should include 'Project End Date (Project End Date) is a required field.'
+    expect(test.errors).to include 'Project End Date (Project End Date) is a required field.'
   end
 end
 
@@ -30,18 +30,18 @@ Then /^the new Award's transaction type is 'New'$/ do
   @award.view :award
   on Award do |page|
     page.expand_all
-    page.transaction_type.selected?('New').should be_true
+    expect(page.transaction_type.selected?('New')).to be true
   end
 end
 
 Then /^the child Award's project end date should be the same as the parent, and read-only$/ do
-  on(Award).project_end_date_ro.should==@award.project_end_date
+  expect(on(Award).project_end_date_ro).to eq @award.project_end_date
 end
 
 Then /^the anticipated and obligated amounts are read-only and (.*)$/ do |amount|
   on Award do |page|
-    page.anticipated_direct_ro.should==amount
-    page.obligated_direct_ro.should==amount
+    expect(page.anticipated_direct_ro).to eq amount
+    expect(page.obligated_direct_ro).to eq amount
   end
 end
 
@@ -59,25 +59,25 @@ And /^the Award's PI should match the PI of the (.*) Funding Proposal$/ do |numb
   @award.view :contacts
   on AwardContacts do |page|
     page.expand_all
-    page.key_personnel.should include person
-    page.project_role(person).selected_options[0].text.should=='Principal Investigator'
+    expect(page.key_personnel).to include person
+    expect(page.project_role(person).selected_options[0].text).to eq 'Principal Investigator'
   end
 end
 
 And /^the first Funding Proposal's PI is not listed in the Award's Contacts$/ do
-  on(AwardContacts).key_personnel.should_not include @ips[0].project_personnel.principal_investigator.full_name
+  expect(on(AwardContacts).key_personnel).not_to include @ips[0].project_personnel.principal_investigator.full_name
 end
 
 And /^the second Funding Proposal's PI should be a (.*) on the Award$/ do |role|
   person = @ips[1].project_personnel.principal_investigator.full_name
   on AwardContacts do |page|
-    page.key_personnel.should include person
-    page.project_role(person).selected_options[0].text.should==role
+    expect(page.key_personnel).to include person
+    expect(page.project_role(person).selected_options[0].text).to eq role
   end
 end
 
 And /^the second Funding Proposal's PI should not be listed on the Award$/ do
-  on(AwardContacts).key_personnel.should_not include @ips[1].project_personnel.principal_investigator.full_name
+  expect(on(AwardContacts).key_personnel).not_to include @ips[1].project_personnel.principal_investigator.full_name
 end
 
 And /^the Award's cost share data are from the (.*) Funding Proposal$/ do |cardinal|
@@ -89,11 +89,11 @@ And /^the Award's cost share data are from the (.*) Funding Proposal$/ do |cardi
   on Commitments do |page|
     page.expand_all
     cs_list.each { |cs|
-      page.cost_sharing_commitment_amount(cs.source_account, cs.amount).value.groom.should==cs.amount.to_f
-      page.cost_sharing_source(cs.source_account, cs.amount).value.should==cs.source_account
+      expect(page.cost_sharing_commitment_amount(cs.source_account, cs.amount).value.groom).to eq cs.amount.to_f
+      expect(page.cost_sharing_source(cs.source_account, cs.amount).value).to eq cs.source_account
     }
     not_cs.each { |not_cost_share|
-      page.cost_share_sources.should_not include not_cost_share.source_account
+      expect(page.cost_share_sources).not_to include not_cost_share.source_account
     }
   end
 end
@@ -106,8 +106,8 @@ And /^the Award's cost share data are from both Proposals$/ do
   on Commitments do |page|
     page.expand_all
     cs_list.each { |cs|
-      page.cost_sharing_commitment_amount(cs.source_account, cs.amount).value.groom.should==cs.amount.to_f
-      page.cost_sharing_source(cs.source_account, cs.amount).value.should==cs.source_account
+      expect(page.cost_sharing_commitment_amount(cs.source_account, cs.amount).value.groom).to eq cs.amount.to_f
+      expect(page.cost_sharing_source(cs.source_account, cs.amount).value).to eq cs.source_account
     }
   end
 end
@@ -116,8 +116,8 @@ And /^the Award's special review items are from both Proposals$/ do
   @award.view :special_review
   on AwardsSpecialReview do |page|
     @ips.collect{ |ip| ip.special_review }.flatten.each_with_index do |s_r, index|
-      page.type_code(index).selected_options[0].text.should==s_r.type
-      page.approval_status(index).selected_options[0].text.should==s_r.approval_status
+      expect(page.type_code(index).selected_options[0].text).to eq s_r.type
+      expect(page.approval_status(index).selected_options[0].text).to eq s_r.approval_status
     end
   end
 end
@@ -126,11 +126,11 @@ And /^the Award's special review items are from the first Proposal$/ do
   @award.view :special_review
   on AwardsSpecialReview do |page|
     @ips[0].special_review.each_with_index do |s_r, index|
-      page.type_code(index).selected_options[0].text.should==s_r.type
-      page.approval_status(index).selected_options[0].text.should==s_r.approval_status
+      expect(page.type_code(index).selected_options[0].text).to eq s_r.type
+      expect(page.approval_status(index).selected_options[0].text).to eq s_r.approval_status
     end
     @ips[1].special_review.each do |s_r|
-      page.types.should_not include s_r.type
+      expect(page.types).not_to include s_r.type
     end
   end
 end
@@ -138,13 +138,13 @@ end
 Then /^all Award fields remain editable$/ do
   on Award do |page|
     page.expand_all
-    page.transaction_type.should be_present
-    page.award_status.should be_present
-    page.activity_type.should be_present
-    page.award_type.should be_present
-    page.award_title.should be_present
-    page.sponsor_id.should be_present
-    page.project_end_date.should be_present
+    expect(page.transaction_type).to be_present
+    expect(page.award_status).to be_present
+    expect(page.activity_type).to be_present
+    expect(page.award_type).to be_present
+    expect(page.award_title).to be_present
+    expect(page.sponsor_id).to be_present
+    expect(page.project_end_date).to be_present
   end
 end
 
@@ -159,14 +159,14 @@ And /^the Award\'s F&A data are from both Proposals$/ do
     page.expand_all
     ufna.each do |unrecfna|
       i = unrecfna.index
-      page.fna_rate(i).value.should==unrecfna.applicable_rate
-      page.fna_type(i).selected_options[0].text.should==unrecfna.rate_type
-      page.fna_fiscal_year(i).value.should==unrecfna.fiscal_year
-      page.fna_campus(i).selected_options[0].text.should==Transforms::ON_OFF[unrecfna.on_campus_contract]
-      page.fna_source(i).value.should==unrecfna.source_account
-      page.fna_amount(i).value.groom.to_s.should==unrecfna.amount
+      expect(page.fna_rate(i).value).to eq unrecfna.applicable_rate
+      expect(page.fna_type(i).selected_options[0].text).to eq unrecfna.rate_type
+      expect(page.fna_fiscal_year(i).value).to eq unrecfna.fiscal_year
+      expect(page.fna_campus(i).selected_options[0].text).to eq Transforms::ON_OFF[unrecfna.on_campus_contract]
+      expect(page.fna_source(i).value).to eq unrecfna.source_account
+      expect(page.fna_amount(i).value.groom.to_s).to eq unrecfna.amount
     end
-    page.unrecovered_fna_total.groom.should==ufna.total
+    expect(page.unrecovered_fna_total.groom).to eq ufna.total
   end
 end
 
@@ -176,17 +176,17 @@ And /^the Award's F&A data are from the first Proposal$/ do
     page.expand_all
     @ips[0].unrecovered_fa.each do |unrecfna|
       i = unrecfna.index
-      page.fna_rate(i).value.should==unrecfna.applicable_rate
-      page.fna_type(i).selected_options[0].text.should==unrecfna.rate_type
-      page.fna_fiscal_year(i).value.should==unrecfna.fiscal_year
-      page.fna_campus(i).selected_options[0].text.should==Transforms::ON_OFF[unrecfna.on_campus_contract]
-      page.fna_source(i).value.should==unrecfna.source_account
-      page.fna_amount(i).value.groom.to_s.should==unrecfna.amount
+      expect(page.fna_rate(i).value).to eq unrecfna.applicable_rate
+      expect(page.fna_type(i).selected_options[0].text).to eq unrecfna.rate_type
+      expect(page.fna_fiscal_year(i).value).to eq unrecfna.fiscal_year
+      expect(page.fna_campus(i).selected_options[0].text).to eq Transforms::ON_OFF[unrecfna.on_campus_contract]
+      expect(page.fna_source(i).value).to eq unrecfna.source_account
+      expect(page.fna_amount(i).value).groom.to_s.to eq unrecfna.amount
     end
     @ips[1].unrecovered_fa.each do |fna|
-      page.fna_sources.should_not include fna.source_account
+      expect(page.fna_sources).not_to include fna.source_account
     end
-    page.unrecovered_fna_total.groom.should==@ips[0].unrecovered_fa.total
+    expect(page.unrecovered_fna_total.groom).to eq @ips[0].unrecovered_fa.total
   end
 end
 
@@ -196,7 +196,7 @@ And /^the Award Modifier can see that the Funding Proposal has been removed from
   on Award do |page|
     page.expand_all
     #TODO: Improve what's being validated, here...
-    page.current_funding_proposals_table.rows.size.should==4
+    expect(page.current_funding_proposals_table.rows.size).to eq 4
   end
 end
 
@@ -204,7 +204,7 @@ And(/^the Award's version number is '(\d+)'$/) do |version|
   @award.view :award
   on Award do |page|
     page.expand_all
-    page.version.should==version
+    expect(page.version).to eq version
   end
 end
 
@@ -218,8 +218,8 @@ end
 And /^returning to the Award goes to the new, pending version$/ do
   on(TimeAndMoney).return_to_award
   on Award do |page|
-    page.header_status.should == 'SAVED'
-    page.header_document_id.should == @award.document_id
+    expect(page.header_status).to eq 'SAVED'
+    expect(page.header_document_id).to eq @award.document_id
   end
 end
 
@@ -241,7 +241,6 @@ Then /^no results should be returned$/ do
 end
 
 When /^the unassigned user visits the Award$/  do
-  #hard coded username because this user has no roles
   steps "* I'm logged in with unassigneduser"
   @award.view_award
 end
