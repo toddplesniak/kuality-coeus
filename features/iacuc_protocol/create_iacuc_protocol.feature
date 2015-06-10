@@ -13,7 +13,7 @@ Feature: Creating IACUC Protocols
     When the IACUC Protocol Creator creates an IACUC Protocol
     Then there are no errors on the page
     And  the IACUC Protocol status should be Pending/In Progress
-  @test
+
   Scenario: IACUC Protocol overview is missing a required field
     When the IACUC Protocol Creator creates an IACUC Protocol but misses a required field
     Then an error should appear saying the field is required

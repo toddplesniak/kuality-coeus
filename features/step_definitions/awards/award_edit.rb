@@ -71,15 +71,15 @@ end
 And /^selecting 'yes' takes you to the pending version$/ do
   on(Confirmation).yes
   on Award do |page|
-    page.header_document_id.should==@award.document_id
+    expect(page.header_document_id).to eq @award.document_id
   end
 end
 
 Then /^selecting 'no' on the confirmation screen creates a new version of the Award$/ do
   on(Confirmation).no
   on Award do |page|
-    page.header_document_id.should_not == @award.document_id
-    page.header_document_id.should_not == @award.prior_versions[1]
+    expect(page.header_document_id).not_to eq @award.document_id
+    expect(page.header_document_id).not_to eq @award.prior_versions[1]
   end
 end
 
@@ -89,5 +89,5 @@ When /^the Award Modifier cancels the Award$/ do
 end
 
 And /^adds the unassigned user as a Principal Investigator for the Award$/ do
-       @award.add_key_person first_name: 'PleaseDoNot', last_name: 'AddOrEditRoles'
+  @award.add_key_person first_name: 'PleaseDoNot', last_name: 'AddOrEditRoles'
 end

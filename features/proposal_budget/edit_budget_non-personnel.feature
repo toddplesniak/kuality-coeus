@@ -7,7 +7,6 @@ Feature: Editing a Budget's Non-Personnel Costs
     * Users exist with the following roles: Proposal Creator
     * the Proposal Creator creates a 5-year, 'Research' Proposal
     * creates a Budget Version for the Proposal
-
   @wip
   Scenario: Syncing non-personnel line items in all periods with direct cost limits
     Given the Proposal Creator adds a direct cost limit to all of the Budget's periods

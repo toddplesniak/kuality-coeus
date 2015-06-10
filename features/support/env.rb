@@ -42,8 +42,6 @@ After do |scenario|
     embed 'screenshot.png', 'image/png'
     # DEBUG
     DEBUG.message " Failed on #{@browser.url}"
-    # DEBUG
-    #Cucumber.wants_to_quit = true
   end
   @browser.cookies.clear
 end

@@ -18,6 +18,14 @@ class NonPersonnelCosts < BasePage
 
   p_action(:trash) { |description, b| b.items_rows.find{ |item| item[0].text==description }.button(id: /PropBudget-NonPersonnelCosts-LineItemDetails_\d+_del_line\d+/).click; b.loading }
 
+  p_value(:exist?) { |description, b|
+    begin
+      !b.items_rows.find{ |item| item[0].text==description }.nil?
+    rescue Watir::Exception::UnknownObjectException
+      false
+    end
+  }
+
   private
 
   element(:items_rows) { |b| b.active_tab.tbody.trs.find_all{ |tr| tr.id==''} }

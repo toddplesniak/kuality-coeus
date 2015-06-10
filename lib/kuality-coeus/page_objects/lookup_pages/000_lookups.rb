@@ -62,12 +62,11 @@ class Lookups < BasePage
     end
 
     def url_info(title, class_name)
-      riceify = class_name[/^rice/] && $base_url[/kuali/] ? $context : $context
       url = %|#{$base_url+$context
                     }portal.do?channelTitle=#{
                   title
                     }&channelUrl=#{
-                  $base_url[/.*(?=\/$)/]+':'+$port+'/'+riceify
+                  $base_url[/.*(?=\/$)/]+':'+$port+'/'+$context
                     }kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.#{
                   class_name
                     }&docFormKey=88888888&includeCustomActionUrls=true&returnLocation=#{

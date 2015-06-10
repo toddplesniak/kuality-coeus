@@ -100,7 +100,12 @@ And /^the Non-Personnel Cost item in periods (\d+) through (\d+) is deleted$/ do
     on(NonPersonnelCosts).view_period period.number
     # FIXME: This will fail in the rare case there are multiple NPCs with the same object code,
     # because this delete will grab the FIRST one added, instead of the last one...
-    period.non_personnel_costs.delete(ocn)
+    x = 0
+    while on(NonPersonnelCosts).exist?(ocn)
+      period.non_personnel_costs.delete(ocn)
+      x+=1
+      raise 'Delete function on page not working' if x==5
+    end
   end
 end
 
