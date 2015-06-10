@@ -50,6 +50,10 @@ module DEBUG
       objects.each { |o| inspect o }
     end
 
+    def show_time
+      puts Time.now
+    end
+
     def snap(b, png='debug_capture')
       b.screenshot.save "#{png}.png"
     end

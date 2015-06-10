@@ -171,8 +171,10 @@ class BudgetVersionsObject < DataFactory
     on(ConfirmAutocalculate).yes
     @budget_periods[1..-1].each_with_index do |period, i|
       @budget_periods[i].non_personnel_costs.each do |npc|
-        period.copy_non_personnel_item(npc)
-        warn 'Must add the copying of personnel items to the autocalculate periods method!'
+        period.copy_non_personnel_item npc
+      end
+      @budget_periods[0].assigned_personnel.persons.each do |name|
+        period.copy_assigned_person(period.number, period.personnel_rates, @budget_periods[i].assigned_personnel.person(name))
       end
     end
   end
@@ -181,7 +183,8 @@ class BudgetVersionsObject < DataFactory
     view 'Periods And Totals'
     on(NewDocumentHeader).budget_settings
     on BudgetSettings do |page|
-      page.status.pick! 'Complete'
+      @status = 'Complete'
+      page.status.pick! @status
       page.apply_changes
     end
   end

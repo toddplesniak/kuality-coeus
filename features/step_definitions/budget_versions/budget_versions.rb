@@ -185,8 +185,8 @@ Then /^the Budget's Periods & Totals should be as expected$/ do
   @budget_version.budget_periods.each { |period|
     on PeriodsAndTotals do |page|
       # TODO: Add more checks of values here...
-      expect(page.direct_cost_of(period.number).to_f).to be_within(0.05).of period.direct_cost
-      expect(page.f_and_a_cost_of(period.number).to_f).to be_within(0.05).of period.f_and_a_cost
+      expect(page.direct_cost_of(period.number).groom).to be_within(0.05).of period.direct_cost
+      expect(page.f_and_a_cost_of(period.number).groom).to be_within(0.05).of period.f_and_a_cost
     end
   }
 end
@@ -205,4 +205,27 @@ And /^the Budget's unrecovered F&A amounts are as expected for all periods$/ do
   @budget_version.budget_periods.each { |period|
     expect(on(PeriodsAndTotals).unrecovered_f_and_a_of(period.number).groom).to be_within(0.05).of period.unrecovered_f_and_a
   }
+end
+
+
+And /^syncs the modular budget$/ do
+  @budget_version.view 'Modular'
+  on(ModularBudget).sync
+  on(SyncModularBudget).ok
+
+  DEBUG.inspect @budget_version.budget_periods[0].non_personnel_costs[0].modular_f_and_a
+  DEBUG.inspect @budget_version.budget_periods[0].non_personnel_costs[0].modular_f_a_base
+  #DEBUG.inspect @budget_version.budget_periods[0].assigned_personnel.f_and_a[:cost]
+
+  x = @budget_version.budget_periods[0].non_personnel_costs.direct
+
+  DEBUG.inspect x
+
+  y = (x/25000).ceil*25000
+
+  DEBUG.inspect y
+
+  #DEBUG.inspect @budget_version.budget_periods[0].assigned_personnel.direct_costs[:cost]
+
+
 end

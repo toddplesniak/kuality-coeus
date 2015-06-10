@@ -1,7 +1,10 @@
 class NonPersonnelCosts < BasePage
 
   budget_header_elements
-  buttons 'Save and Continue', 'Complete Budget', 'Save'
+  buttons 'Save and Continue', 'Complete Budget'
+
+  # DEBUG - See if this works, then fix it...
+  action(:save) { |b| b.button(id: 'u1agxtwx').click; b.loading }
 
   p_element(:period_title) { |number, b| b.h3(id: "PropBudget-NonPersonnelCosts-LineItemDetails_#{number}_header").span }
 
@@ -14,6 +17,14 @@ class NonPersonnelCosts < BasePage
   action(:edit_participant_count) { |b| b.td(text: /Participant Support/).link(text: 'edit').click; b.loading }
 
   p_action(:trash) { |description, b| b.items_rows.find{ |item| item[0].text==description }.button(id: /PropBudget-NonPersonnelCosts-LineItemDetails_\d+_del_line\d+/).click; b.loading }
+
+  p_value(:exist?) { |description, b|
+    begin
+      !b.items_rows.find{ |item| item[0].text==description }.nil?
+    rescue Watir::Exception::UnknownObjectException
+      false
+    end
+  }
 
   private
 

@@ -16,30 +16,31 @@ end
 Given /^(\d+) Approved Institutional Proposals? with cost share, unrecovered F&A, and compliance exists?$/ do |count|
   @ips = []
   count.to_i.times {
-    steps %q{
-      * Users exist with the following roles: OSPApprover, Proposal Creator
-      * a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
-      * the Proposal Creator creates a Proposal
-      * the Proposal Creator user creates a Budget Version with cost sharing for the Proposal
-      * adds unrecovered F&A to the first period of the Budget Version
-      * finalizes the Budget Version
-      * marks the Budget Version complete
-      * adds a special review item to the Proposal
-      * adds a principal investigator to the Proposal
-      * sets valid credit splits for the Proposal
-      * completes the required custom fields on the Proposal
-      * the Proposal Creator submits the Proposal into routing
-      * the OSPApprover approves the Proposal without future approval requests
-      * the principal investigator approves the Proposal
-      * the OSP Administrator submits the Proposal to its sponsor
-    }
+    #Split steps to make debugging easier
+    steps %q{ * Users exist with the following roles: OSPApprover, Proposal Creator }
+    steps %q{ * a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit }
+    steps %q{ * the Proposal Creator creates a Proposal }
+    steps %q{ * the Proposal Creator user creates a Budget Version with cost sharing for the Proposal }
+    steps %q{ * adds unrecovered F&A to the first period of the Budget Version }
+    steps %q{ * finalizes the Budget Version }
+    steps %q{ * marks the Budget Version complete }
+    steps %q{ * adds a special review item to the Proposal }
+    steps %q{ * adds a principal investigator to the Proposal }
+    steps %q{ * sets valid credit splits for the Proposal }
+    steps %q{ * completes the required custom fields on the Proposal }
+    steps %q{ * the Proposal Creator submits the Proposal into routing }
+    steps %q{ * the OSPApprover approves the Proposal without future approval requests }
+    steps %q{ * the principal investigator approves the Proposal }
+    steps %q{ * the OSP Administrator submits the Proposal to its sponsor }
+
     @ips << @institutional_proposal
   }
 end
 
 Given /^the (.*) starts an Award with the( first)? Funding Proposal$/ do |role, x|
   steps "Given I log in with the #{role} user"
-  visit(CentralAdmin).create_award
+  on(Header).central_admin
+  on(CentralAdmin).create_award
   on Award do |page|
     page.expand_all
     page.institutional_proposal_number.set @ips[0].proposal_number

@@ -29,15 +29,15 @@ Then(/^the Proposal Log type should be (.*)$/) do |status|
   # Note: This step def will not work if the previous step
   # def is not written to ensure the data object's @proposal_log_type
   # value gets updated properly.
-  @proposal_log.proposal_log_type.should == status
+  expect(@proposal_log.proposal_log_type).to eq status
 end
 
 Then /^the status of the Proposal Log should be (.*)$/ do |status|
-  @proposal_log.status.should == status
+  expect(@proposal_log.status).to eq status
 end
 
 When /^the Proposal Log status should be (.*)$/ do |prop_log_status|
-  @proposal_log.log_status.should == prop_log_status
+  expect(@proposal_log.log_status).to eq prop_log_status
 end
 
 When /^the Create Proposal Log user submits a new permanent Proposal Log with the same PI into routing$/ do
@@ -51,17 +51,21 @@ When /^the Create Proposal Log creates a permanent Proposal Log$/ do
   @proposal_log = create ProposalLogObject, save_type: :save
 end
 
-When /^I? ?submit a new temporary Proposal Log with a particular PI$/ do
+When /^the Create Proposal Log user submits a new temporary Proposal Log with a particular PI$/ do
+  steps %{ * I log in with the Create Proposal Log user }
   visit PersonLookup do |page|
     page.search
-    @pi = page.returned_principal_names[rand(page.returned_principal_names.size)]
+
+    # TODO: This is really really slow. The HTML on the page needs improving.
+    @pi = page.returned_principal_names.shuffle[0]
+
   end
   @temp_proposal_log = create ProposalLogObject,
                          log_type: 'Temporary',
                          principal_investigator: @pi
 end
 
-Then /^I merge my new proposal log with my previous temporary proposal log$/ do
+Then /^merges the new proposal log with the previous temporary proposal log$/ do
   raise "This step needs to be done!!!"
 end
 
@@ -77,7 +81,7 @@ Then /^the Proposal Log's status should reflect it has been (.*)$/ do |status|
   on ProposalLogLookup do |page|
     page.proposal_number.set @temp_proposal_log.number
     page.search
-    page.prop_log_status(@temp_proposal_log.number)==status
+    expect(page.prop_log_status(@temp_proposal_log.number)).to eq status
   end
 end
 

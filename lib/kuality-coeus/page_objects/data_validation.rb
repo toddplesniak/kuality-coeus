@@ -4,7 +4,7 @@ class DataValidation < BasePage
 
   new_error_messages
 
-  element(:data_validation_div) { |b| b.frm.div(id: 'tab-DataValidation-div') }
+  element(:data_validation_div) { |b| b.div(id: 'u14cozfk') }
   element(:errors_list) { |b| b.data_validation_div.table }
   element(:close_button) { |b| b.data_validation_div.button(text: 'Close') }
 

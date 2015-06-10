@@ -7,14 +7,13 @@ Feature: Editing a Budget's Non-Personnel Costs
     * Users exist with the following roles: Proposal Creator
     * the Proposal Creator creates a 5-year, 'Research' Proposal
     * creates a Budget Version for the Proposal
-
-  @smoke
+  @wip
   Scenario: Syncing non-personnel line items in all periods with direct cost limits
     Given the Proposal Creator adds a direct cost limit to all of the Budget's periods
     And   adds a non-personnel cost to each Budget Period that exceeds the direct cost limit
     When  the non-personnel cost is synced with the direct cost limit for each period
     Then  the direct cost is equal to the direct cost limit in all periods
-
+  @wip
   Scenario: Syncing non-personnel line items in all periods with total cost limits
     Given the Proposal Creator adds a total cost limit to all of the Budget's periods
     And   adds a non-personnel cost to each Budget Period that exceeds the cost limit
@@ -30,7 +29,9 @@ Feature: Editing a Budget's Non-Personnel Costs
 
   Scenario: Deleting line items from later periods
     Given the Proposal Creator adds some Non-Personnel Costs to the first period
+    And   adds an employee to the Budget personnel
+    And   a Project Person is assigned to Budget period 1
     And   auto-calculates the budget periods
     And   edits the total cost and cost sharing amounts for the Non-Personnel Cost in period 2
-    When  the Non-Personnel Cost item in periods 3 through 5 are deleted
+    When  the Non-Personnel Cost item in periods 3 through 5 is deleted
     Then  the Budget's Periods & Totals should be as expected

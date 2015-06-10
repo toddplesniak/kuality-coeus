@@ -8,7 +8,6 @@ Feature: Add, edit, delete species on IACUC protocol
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator
 
-  @KCTEST-904
   Scenario: Verify species count on the IACUC Protocol displays an error when value contains letters
     Given the IACUC Protocol Creator creates an IACUC Protocol
     When the IACUC Protocol Creator adds a Species with non-integers for the species count
@@ -26,4 +25,3 @@ Feature: Add, edit, delete species on IACUC protocol
     And  adds a second Species to the IACUC Protocol
     When the IACUC Protocol Creator deletes the first Species
     Then the second Species added should be the only Species on the IACUC Protocol
-

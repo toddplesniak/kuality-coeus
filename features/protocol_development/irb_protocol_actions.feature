@@ -18,7 +18,7 @@ Feature: IRB Protocol Actions
     | Expedited | Expedited Review |
     | Exempt    | Exempt Studies   |
 
-  @KRAFDBCK-9927 @broken
+  @KRAFDBCK-9927 @wip
   Scenario: Return to PI with amendment updates
     Given the IRB Admin creates a Committee
     And   schedules at least one event for the Committee

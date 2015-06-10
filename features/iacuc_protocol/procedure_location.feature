@@ -7,8 +7,7 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
 
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
-
-  @KCTEST-915 @KCTEST-918 @wip
+  @wip
   Scenario: Implementing institutions can create a location type with a name to use for IACUC Protocols
     Given the Application Administrator creates a new Location type maintenance document
     Then  there are no errors on the page
@@ -16,7 +15,6 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
     When  the IACUC Protocol Creator assigns the created location to a Procedure on the IACUC Protocol
     Then  the summary will display the location of the procedure
 
-  @KCTEST-915
   Scenario: Implementing institutions can edit a existing location name to use for IACUC Protocols
     Given the Application Administrator creates a new Location type maintenance document
     Then  there are no errors on the page
@@ -25,7 +23,6 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
     And   the IACUC Protocol Creator creates an IACUC Protcol with the edited location name for a Procedure
     Then  the summary will display the location of the procedure
 
-  @KCTEST-918
   Scenario: Edit the location of a procedure on the IACUC Protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol with one Species
     And   adds a Procedure to the IACUC Protocol
@@ -33,8 +30,7 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
     When  edits the location type, name, room, description on the IACUC Protocol
     And   reloads the IACUC Protocol to the procedures summary tab
     Then  the edited location information should be displayed in the Procedure summary
-
-  @KCTEST-918
+  @wip
   Scenario: Delete a location from a procedure on the IACUC Protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol with one Species
     And   adds a Procedure to the IACUC Protocol

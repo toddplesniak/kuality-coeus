@@ -4,13 +4,13 @@ Feature: Award Versions
   Summary to be written
 
   Background:
-    * a User exists with the role 'Time And Money Modifier' in unit '000001' (descends hierarchy)
+    * a User exists with the role 'Time And Money Modifier' in unit '000001'
     * a User exists with the role 'Award Modifier' in unit 'CS'
     * the Award Modifier creates an Award
     * adds a subaward to the Award
     * completes the Award requirements
     * the Award Modifier submits the Award
-  @smoke @wip
+  @smoke @system_failure
   Scenario: Editing finalized Award when a pending new version exists, select 'yes'
     Given the Time & Money Modifier submits the Award's T&M document
     And   the Award Modifier edits the finalized Award

@@ -30,7 +30,7 @@ Feature: Basic validations for Development Proposals
   Scenario: Proposal's sponsor deadline time is invalid
     When the Proposal Creator creates a Proposal with an invalid sponsor deadline time
     Then an error should appear that says the deadline time is not valid
-  @wip
+
   Scenario Outline: Proposals with invalid Award or IP IDs
     When the Proposal Creator creates a non-'New' Proposal with <Type>
     Then an error should appear that says <Error>

@@ -94,13 +94,18 @@ And /^edits the total cost and cost sharing amounts for the Non\-Personnel Cost 
   @budget_version.period(period_number).non_personnel_costs.last.edit total_base_cost: tbc, cost_sharing: random_dollar_value(15000)
 end
 
-And /^the Non-Personnel Cost item in periods (\d+) through (\d+) are deleted$/ do |n, x|
+And /^the Non-Personnel Cost item in periods (\d+) through (\d+) is deleted$/ do |n, x|
   @budget_version.budget_periods[n.to_i-1, x.to_i-1].each do |period|
     ocn = period.non_personnel_costs.last.object_code_name
     on(NonPersonnelCosts).view_period period.number
     # FIXME: This will fail in the rare case there are multiple NPCs with the same object code,
     # because this delete will grab the FIRST one added, instead of the last one...
-    period.non_personnel_costs.delete(ocn)
+    x = 0
+    while on(NonPersonnelCosts).exist?(ocn)
+      period.non_personnel_costs.delete(ocn)
+      x+=1
+      raise 'Delete function on page not working' if x==5
+    end
   end
 end
 

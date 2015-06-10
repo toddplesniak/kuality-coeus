@@ -163,12 +163,10 @@ When /^I? ?save and close the Proposal document$/ do
 end
 
 And /^the (.*) submits a new Proposal into routing$/ do |role_name|
-  steps %{
-    * the #{role_name} creates a Proposal
-    * adds a principal investigator to the Proposal
-    * sets valid credit splits for the Proposal
-    * submits the Proposal into routing
-}
+  steps %{ * the #{role_name} creates a Proposal }
+  steps %q{ * adds a principal investigator to the Proposal }
+  steps %q{ * sets valid credit splits for the Proposal }
+  steps %q{ * submits the Proposal into routing }
 end
 
 And /^(the (.*) |)completes the remaining required actions for an S2S submission$/ do |text, role_name|

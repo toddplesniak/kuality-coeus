@@ -68,7 +68,7 @@ end
 # are multiple matching users, it will select one
 # of them randomly, and create them if they don't exist in the system (again by first
 # logging in with the admin user to do the creation).
-Given /^a User exists with the role '(.*)' in unit '(.*)' \(descends hierarchy\)$/ do |role, unit|
+Given /^a User exists with the role '(.*)' in unit '(.*)' that descends hierarchy$/ do |role, unit|
   user_name = UserObject::USERS.have_hierarchical_role_in_unit(role, unit, :set)[0][0]
   # Be careful with this, as test cases with multiple users with the same role will cause
   # instance variable collision...
@@ -147,11 +147,16 @@ end
 
 When /^a User exists with the roles: (.*) in the (.*) unit$/ do |roles, unit|
   users = []
+  # Find users that have at least one of each of the roles...
   roles.split(', ').each do |role|
-    users << UserObject::USERS.have_role_in_unit(role, unit)
+                                                            # We just need the user names...
+    users << UserObject::USERS.have_role_in_unit(role, unit).map { |u| u[:user_name] }
   end
+  # Now we narrow that list down to only those users that have ALL the specified roles...
+  matches = users.inject(:&)
   raise 'There are no matching users in the users.yml file. Please add one.' if users.empty?
-  user_name = users.inject(:&).shuffle[0][0]
+  # randomly select from the list of matches...
+  user_name = matches.shuffle[0]
   if $users.user(user_name).nil?
     $users << make(UserObject, user: user_name)
     $users[-1].create unless $users[-1].exists?

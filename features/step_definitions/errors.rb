@@ -5,7 +5,7 @@
 Then /^an error should appear that says (.*)$/ do |error|
   errors = {'to select a valid unit' => 'Please select a valid Unit.',
             'a key person role is required' => 'Key Person\'s role will be: Required',
-            'the credit split is not a valid percentage' => 'Must be a non-negative fixed point number, with no more than 5 total digits and 2 digits to the right of the decimal point.',
+            'the credit split is not a valid percentage' => 'Must be a non-negative number, with no more than 5 total digits and 2 digits to the right of the decimal point.',
             'the Award has no PI' => 'There is no Principal Investigator selected. Please enter a Principal Investigator',
             'only one PI is allowed in the Contacts' => 'Only one Principal Investigator is allowed',
             'the IP can not be added because it\'s not fully approved' => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',

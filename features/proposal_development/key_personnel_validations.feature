@@ -10,15 +10,14 @@ Feature: Proposal Key Personnel Validations
     * the Proposal Creator creates a Proposal
 
   Scenario Outline: I should see an error when I add Credit Split percentages above 100 or less than 0
-    When I add a Principal Investigator with a <Type> credit split of <Value>
+    When I add a Principal Investigator with a <Split> credit split of <Percentage>
     Then an error should appear that says the credit split is not a valid percentage
 
     Examples:
-    | Type           | Value  |
-    | Responsibility | 100.01 |
-    | Responsibility | -0.01  |
-    | Financial      | 1000   |
-  @test
+    | Split           | Percentage |
+    | Responsibility  | -0.01      |
+    | Financial       | 1000       |
+
   Scenario: Data Validation of Credit Split not totalling 100%
     Given I add a Principal Investigator with a Financial credit split of 99.99
     When  data validation is activated

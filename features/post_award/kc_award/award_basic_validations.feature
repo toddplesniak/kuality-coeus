@@ -6,7 +6,6 @@ Feature: Basic Award Validations
 
   Background:
     Given Users exist with the following roles: Proposal Creator, Award Modifier
-    And   a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
 
   Scenario: Add a Payment & Invoice Req before adding a PI
     Given the Award Modifier creates an Award
@@ -14,6 +13,7 @@ Feature: Basic Award Validations
     Then  a warning appears saying tracking details won't be added until there's a PI
 
   Scenario: Attempt to create a KC Award document with a missing required field
+    * a User exists with the roles: OSP Administrator, Proposal Submission in the 000001 unit
     Given I log in with the Award Modifier user
     When  I create an Award with a missing required field
     Then  an error should appear saying the field is required
@@ -22,11 +22,6 @@ Feature: Basic Award Validations
     Given the Award Modifier creates an Award
     When  an Account ID with special characters is added to the Award details
     Then  an error should appear that says the Account ID may only contain letters or numbers
-
-  Scenario: Enter a title containing invalid characters
-    Given the Award Modifier creates an Award
-    When  the Award's title is updated to include invalid characters
-    Then  an error should appear that says the Award's title contains invalid characters
 
   Scenario: Enter a title containing more than 200 characters
     Given the Award Modifier creates an Award
@@ -39,7 +34,7 @@ Feature: Basic Award Validations
   @proposal @wip
   Scenario: Attempt to link an IP that has not been approved
     Given the Proposal Creator submits a new Proposal into routing
-    And   the OSP Administrator submits the Proposal to its sponsor
+    And   the Award Modifier submits the Proposal to its sponsor
     When  the Award Modifier adds the Institutional Proposal to the Award
     Then  an error should appear that says the IP can not be added because it's not fully approved
 
@@ -55,17 +50,17 @@ Feature: Basic Award Validations
     And   adds a $0.00 Subaward to the Award
     When  data validation is turned on for the Award
     Then  an error is shown that says the subaward's amount can't be zero
-  @KRACOEUS-8776
+
   Scenario: Missing required field in F&A Rate entry
     Given the Award Modifier creates an Award
     When  the Award Modifier adds an F&A rate to the Award but misses a required field
     Then  an error should appear saying the field is required
-
+  @wip
   Scenario: Terms are not entered in the Award
     Given the Award Modifier creates an Award
     When  data validation is turned on for the Award
     Then  errors about the missing Award terms are shown for data validation
-  @KRACOEUS-8776
+
   Scenario: Contact's Credit Splits not valid
     Given the Award Modifier creates an Award
     And   adds a PI to the Award

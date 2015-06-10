@@ -134,7 +134,7 @@ class AwardKeyPersonObject < DataFactory
   def delete_unit(unit_number)
     # TODO: Add conditional navigation
     on AwardContacts do |delete_unit|
-      delete_unit.delete_unit(@full_name, unit_number)   if delete_unit.delete_unit_element(@full_name, unit_number).exists?
+      delete_unit.delete_unit(@full_name, unit_number)   if delete_unit.delete_unit_element(@full_name, unit_number).present?
       delete_unit.save
     end
     @units.delete(unit_number)

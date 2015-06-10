@@ -10,6 +10,8 @@ class BudgetPeriodObject < DataFactory
               :number
               #TODO: Add support for this:
               :number_of_participants
+  attr_accessor :number, :unrecovered_fa_dist_list
+  def_delegators :@assigned_personnel, :copy_assigned_person
 
   def initialize(browser, opts={})
     @browser = browser
@@ -76,10 +78,6 @@ class BudgetPeriodObject < DataFactory
       page.view_period @number
       page.assign_personnel @number
     end
-    personnel_rates = @period_rates.personnel
-    personnel_rates << @period_rates.inflation
-    personnel_rates << @period_rates.f_and_a
-    personnel_rates.flatten!
     defaults = {
         period_number: @number
     }
@@ -100,8 +98,8 @@ class BudgetPeriodObject < DataFactory
   end
 
   def copy_non_personnel_item(np_item)
-    opts = { start_date: (np_item.start_date_datified + 365).strftime("%m/%d/%Y"),
-             end_date: (np_item.end_date_datified + 365).strftime("%m/%d/%Y"),
+    opts = { start_date: (np_item.start_date_datified >> 12).strftime("%m/%d/%Y"),
+             end_date: (np_item.end_date_datified >> 12).strftime("%m/%d/%Y"),
              period_rates: @period_rates
     }
     new_item = np_item.copy_mutatis_mutandis opts
@@ -150,7 +148,7 @@ class BudgetPeriodObject < DataFactory
 
   def f_and_a_cost
     if @f_and_a_cost.nil?
-      non_personnel_costs.f_and_a #+ assigned_personnel.f_and_a
+      non_personnel_costs.f_and_a + assigned_personnel.f_and_a[:cost]
     else
       @f_and_a_cost
     end
@@ -158,7 +156,7 @@ class BudgetPeriodObject < DataFactory
 
   def cost_sharing
     if @cost_sharing.nil?
-      non_personnel_costs.cost_sharing + assigned_personnel.direct_costs[:cost_sharing]
+      non_personnel_costs.cost_sharing + assigned_personnel.direct_costs[:cost_share]
     else
       @cost_sharing
     end
@@ -166,6 +164,7 @@ class BudgetPeriodObject < DataFactory
 
   def unrecovered_f_and_a
     if @unrecovered_f_and_a.nil?
+      warn 'This method is not fully written. unrecovered f&a will be wrong.'
       non_personnel_costs.unrecovered_f_and_a #+ assigned_personnel.unrecovered_f_and_a
     else
       @unrecovered_f_and_a
@@ -184,10 +183,16 @@ class BudgetPeriodObject < DataFactory
     @period_rates = budget_rates.in_range(start_date_datified, end_date_datified)
   end
 
-
   def update_number number
     @number=number
     notify_collections number
+  end
+
+  def personnel_rates
+    prs = @period_rates.personnel
+    prs << @period_rates.inflation
+    prs << @period_rates.f_and_a
+    prs.flatten
   end
 
   # =======
