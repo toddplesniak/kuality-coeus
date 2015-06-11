@@ -10,6 +10,18 @@ When /I? ?adds? Terms to the Award$/ do
   @award.add_terms
 end
 
+When /I? ?adds? nonrandom Terms to the Award$/ do
+  @award.add_terms     equipment_approval:  1,
+                       invention:           3,
+                       prior_approval:      4,
+                       property:            6,
+                       publication:         14,
+                       referenced_document: 15,
+                       rights_in_data:      29,
+                       subaward_approval:   19,
+                       travel_restrictions: 5
+end
+
 Given /I? ?add a Payment & Invoice item to the Award$/ do
   @award.add_payment_and_invoice
 end
@@ -28,6 +40,23 @@ When /^I start adding a Payment & Invoice item to the Award$/ do
     page.add_payment_type
   end
 end
+
+Given /I? ?add a nonrandom Payment & Invoice item to the Award$/ do
+  @award.view :payment_reports__terms
+  on PaymentReportsTerms do |page|
+    page.expand_all
+    page.payment_basis.pick 'Fixed price'
+    page.refresh_selection_lists
+    page.payment_method.pick 'Special Handling'
+    page.payment_type.pick 'KFS Invoicing'
+    page.frequency.pick 'Annual'
+    page.frequency_base.pick 'As Required'
+    page.osp_file_copy.pick 'Report'
+    page.add_payment_type
+    page.invoice_instructions.set 'This is a SMOKE TEST'
+  end
+end
+
 
 And /adds an item of approved equipment to the Award$/ do
   @award.add_approved_equipment
