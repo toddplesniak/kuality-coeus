@@ -4,7 +4,7 @@ Given /I? ?add a Sponsor Contact to the Award$/ do
 end
 
 When /^an Account ID with special characters is added to the Award details$/ do
-  @award.edit account_id: random_string(5, %w{~ ! @ # $ % ^ & ž}.sample(2))
+  @award.edit account_id: "#{random_string(5, %w{~ ! @ # $ % ^ & ž}.sample(2))}ç"
 end
 
 When /^the Award's title is made more than (\d+) characters long$/ do |arg|

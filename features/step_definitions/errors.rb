@@ -64,6 +64,15 @@ Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
   expect(on(AwardDataValidation).validation_errors_and_warnings).to include errors[error]
 end
 
+Then /the Proposal's data validation shows an error that says (.*)/ do |error|
+  errors = { 'there are duplicate organizations' => 'There is a duplicate organization name.',
+             'there is no principal investigator' => 'There is no Principal Investigator selected. Please enter a Principal Investigator.',
+             'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.',
+             'the sponsor deadline has passed' => 'Sponsor deadline date is in the past, relative to the current date.'
+  }
+  expect(on(DataValidation).validation_errors_and_warnings).to include errors[error]
+end
+
 Then /^errors about the missing Award terms are shown for data validation$/ do
   errors = ['Equipment Approval', 'Invention','Prior Approval','Property','Publication',
   'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions']
