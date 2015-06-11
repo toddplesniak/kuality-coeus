@@ -6,18 +6,18 @@ Feature: Proposal Actions Validations
 
   Background: Logged in with a proposal creator user
     * a User exists with the role: 'Proposal Creator'
-
+  @wip
   Scenario: A PI has not been added to the proposal
     Given the Proposal Creator creates a Proposal
     And   the Proposal has no principal investigator
     When  data validation is activated
     Then  an error is shown that says there is no principal investigator
-
+  @wip
   Scenario: Sponsor deadline date is missing
     Given the Proposal Creator creates a Proposal without a sponsor deadline date
     When  data validation is activated
     Then  a warning is shown that says sponsor deadline date not entered
-
+  @wip
   Scenario: Sponsor deadline date has passed
     Given the Proposal Creator creates a Proposal with a sponsor deadline in the past
     When  data validation is activated

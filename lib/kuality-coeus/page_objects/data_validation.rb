@@ -13,3 +13,9 @@ class DataValidation < BasePage
   value(:validation_errors_and_warnings) { |b| errs=[]; b.expand_all_error_sections; b.data_validation_div.tds.collect {|txt| errs << txt.text }; errs }
 
 end
+
+class AwardDataValidation < BasePage
+
+  validation_elements
+
+end

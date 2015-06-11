@@ -17,7 +17,7 @@ Feature: Basic Award Validations
     Given I log in with the Award Modifier user
     When  I create an Award with a missing required field
     Then  an error should appear saying the field is required
-
+  @wip
   Scenario: Enter an account ID that contains non-alphanumeric characters
     Given the Award Modifier creates an Award
     When  an Account ID with special characters is added to the Award details

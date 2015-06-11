@@ -61,8 +61,7 @@ Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
              'there are duplicate cost share lines' => 'A duplicate row has been entered.',
              'the subaward\'s amount can\'t be zero' => 'Approved Subaward amount must be greater than zero.'
   }
-
-  expect(on(DataValidation).validation_errors_and_warnings).to include errors[error]
+  expect(on(AwardDataValidation).validation_errors_and_warnings).to include errors[error]
 end
 
 Then /^errors about the missing Award terms are shown for data validation$/ do
@@ -70,7 +69,7 @@ Then /^errors about the missing Award terms are shown for data validation$/ do
   'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions']
   errors.collect! {|term| "There must be at least one #{term} Terms defined." }
   errors.each do |err|
-    expect(on(DataValidation).validation_errors_and_warnings).to include err
+    expect(on(AwardDataValidation).validation_errors_and_warnings).to include err
   end
 end
 
