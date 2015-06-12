@@ -28,6 +28,10 @@ Before do
   @browser = kuality.browser
   # clear browser cache for when multiple scenarios are run and pages fail to load correctly
   @browser.cookies.clear
+
+  # DEBUG - Testing to see if this gets rid of the "A Server Error Occurred" issue...
+  @browser.execute_script("window.alert = function() {}")
+
   # Clean out any users that might exist
   $users.clear
   $current_user=nil

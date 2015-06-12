@@ -14,7 +14,7 @@ class CommitteeScheduleObject < DataFactory
         start_time:         "#{'%02d'%(rand(12)+1)}:#{'%02d'%rand(60)}",
         meridian:           %w{AM PM}.sample,
         place:              random_alphanums(20), # Needs to be a restricted char set until https://jira.kuali.org/browse/KRAFDBCK-10947 is fixed
-        recurrence:         random_recurrence,
+        recurrence:         random_recurrence
     }
     set_options(defaults.merge(opts))
     requires :document_id

@@ -5,7 +5,7 @@ end
 Then /the system warns that the number of protocols exceeds the allowed maximum/ do
   on Confirmation do |page|
     page.yes_button.wait_until_present
-    page.message.should=='The number of Protocols has reached or exceeded the maximum. Do you still want to submit the Protocol?'
+    expect(page.message).to eq 'The number of Protocols has reached or exceeded the maximum. Do you still want to submit the Protocol?'
   end
 end
 
@@ -30,10 +30,10 @@ end
 Then /^the summary approval date on the Protocol should be last year$/ do
   on ExpeditedApproval do |page|
     page.expand_all
-    page.approval_date_ro.should == last_year[:date_w_slashes]
+    expect(page.approval_date_ro).to eq last_year[:date_w_slashes]
   end
 end
 
 And /^the expedited date on the Protocol should be yesterday$/ do
-  on(ExpeditedApproval).expiration_date_ro.should == yesterday[:date_w_slashes]
+  expect(on(ExpeditedApproval).expiration_date_ro).to eq yesterday[:date_w_slashes]
 end

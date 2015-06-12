@@ -9,18 +9,18 @@ Feature: Creating IRB Protocols
   Scenario: Attempt to save a proposal with an invalid lead unit
     Given the Protocol Creator user creates a Protocol with an invalid lead unit code
     Then  an error is shown that indicates the lead unit code is invalid
-  @wip
+
   Scenario: IRB Protocol missing required field
     When  the Protocol Creator creates an IRB Protocol but misses a required field
     Then  an error should appear saying the field is required
-  @smoke
+
   Scenario: Committee Adv Submission Days and IRB Protocol Review
     Given a User exists with the role: 'IRB Administrator'
     And   the IRB Admin submits a Committee with events scheduled before and after its adv submission days setting
     And   the Protocol Creator creates an IRB Protocol in the Committee's home unit
-    When the Protocol is being submitted to that Committee for review
+    When  the Protocol is being submitted to that Committee for review
     Then  the earliest available schedule date is based on the Committee's Adv Submission Days value
-  @wip
+
   Scenario: Exceeding Maximum Protocols
     Given a User exists with the role: 'IRB Administrator'
     And   the IRB Admin submits a Committee that allows a maximum of 1 protocol

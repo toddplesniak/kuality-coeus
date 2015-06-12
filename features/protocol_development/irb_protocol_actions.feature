@@ -7,7 +7,7 @@ Feature: IRB Protocol Actions
 
   Background:
     * Users exist with the following roles: IRB Administrator, Protocol Creator
-
+  @wip
   Scenario Outline: Submission Review Type Checklist
     Given the Protocol Creator user creates an IRB Protocol
     When the Protocol is given an '<Type>' Submission Review Type
@@ -18,7 +18,7 @@ Feature: IRB Protocol Actions
     | Expedited | Expedited Review |
     | Exempt    | Exempt Studies   |
 
-  @KRAFDBCK-9927 @wip
+  @KRAFDBCK-9927 @wip @test
   Scenario: Return to PI with amendment updates
     Given the IRB Admin creates a Committee
     And   schedules at least one event for the Committee
