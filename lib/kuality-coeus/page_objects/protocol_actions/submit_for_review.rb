@@ -8,6 +8,7 @@ class SubmitForReview < KCProtocol
   element(:submission_review_type) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.protocolReviewTypeCode') }
   element(:type_qualifier) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.submissionQualifierTypeCode') }
   element(:committee) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.committeeId') }
+  value(:committee_list) { |b| b.noko.select(name: 'actionHelper.protocolSubmitAction.committeeId').options.map {|opt| opt.text }[1..-1] }
   element(:schedule_date) { |b| b.frm.select(name: 'actionHelper.protocolSubmitAction.scheduleId') }
 
   element(:expedited_review_checklist) { |b| b.frm.tr(id: 'expeditedReviewCheckList') }

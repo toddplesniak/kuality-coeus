@@ -35,6 +35,9 @@ class PaymentInvoiceObject < DataFactory
       page.payment_method.pick! @payment_method
       page.payment_type.pick! @payment_and_invoice_requirements[:payment_type]
       page.payment_type.fire_event('onchange')
+
+      page.frequency.wait_until_present
+
       page.frequency.pick! @payment_and_invoice_requirements[:frequency]
       page.frequency.fire_event('onchange')
       if @payment_and_invoice_requirements[:frequency]=='None' && @payment_and_invoice_requirements[:frequency_base]=='::random::'

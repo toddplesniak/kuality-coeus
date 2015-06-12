@@ -13,12 +13,12 @@ Feature: Creating IRB Protocols
   Scenario: IRB Protocol missing required field
     When  the Protocol Creator creates an IRB Protocol but misses a required field
     Then  an error should appear saying the field is required
-  @smoke
+
   Scenario: Committee Adv Submission Days and IRB Protocol Review
     Given a User exists with the role: 'IRB Administrator'
     And   the IRB Admin submits a Committee with events scheduled before and after its adv submission days setting
     And   the Protocol Creator creates an IRB Protocol in the Committee's home unit
-    When the Protocol is being submitted to that Committee for review
+    When  the Protocol is being submitted to that Committee for review
     Then  the earliest available schedule date is based on the Committee's Adv Submission Days value
 
   Scenario: Exceeding Maximum Protocols

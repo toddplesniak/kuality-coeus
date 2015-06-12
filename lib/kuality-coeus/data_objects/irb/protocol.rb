@@ -1,5 +1,5 @@
 class IRBProtocolObject < DataFactory
-
+                         # FIXME!
   include StringFactory, Navigation, DateFactory
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
@@ -30,6 +30,7 @@ class IRBProtocolObject < DataFactory
         lead_unit:           '::random::',
         personnel:           collection('ProtocolPersonnel')
     }
+    # FIXME
     @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
   end
@@ -52,6 +53,7 @@ class IRBProtocolObject < DataFactory
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
+      # FIXME!!
       @search_key = { protocol_number: @protocol_number }
     end
   end
@@ -72,6 +74,7 @@ class IRBProtocolObject < DataFactory
     view(tab)
   end
 
+  # FIXME!!
   def on_protocol?
     # if on(ProtocolOverview).headerinfo_table.exists?
     #   on(ProtocolOverview).protocol_number==@protocol_number
@@ -80,6 +83,7 @@ class IRBProtocolObject < DataFactory
     # end
   end
 
+  # FIXME!
   def navigate(type='edit')
 
     #we have gotten to a strange place without a header because of time and money need to get back from there
@@ -120,7 +124,8 @@ class IRBProtocolObject < DataFactory
         @document_id=page.document_id
       end
     else
-      puts 'Now on the Confirmation page and happy to be here without pressing any button'
+      puts 'Now on the Confirmation page and happy to be here without pressing any button.'
+      puts 'We should right now be testing Exceeding Max Protocols.'
     end
   end
 

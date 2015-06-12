@@ -1,5 +1,5 @@
 class CommitteeDocumentObject < DataFactory
-
+                                      # FIXME!
   include StringFactory, DateFactory, Navigation
 
   attr_reader :description, :committee_id, :document_id, :status, :name,
@@ -27,6 +27,7 @@ class CommitteeDocumentObject < DataFactory
       committee_type:         'irb',
       area_of_research:       []
     }
+    # FIXME!
     @lookup_class=CommitteeLookup
     set_options(defaults.merge(opts))
   end
@@ -54,6 +55,7 @@ class CommitteeDocumentObject < DataFactory
   end
 
   def submit
+    # FIXME!
     open_document
     on Committee do |page|
       page.submit

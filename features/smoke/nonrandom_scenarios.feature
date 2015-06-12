@@ -1,4 +1,4 @@
-@smoke
+@smoke @wip
 Feature: Nonrandom Scenarios
 
   To speed up execution time of smoke tests,

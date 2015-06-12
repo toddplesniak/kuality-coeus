@@ -5,6 +5,9 @@ class Committee < CommitteeDocument
   document_header_elements
   description_field
 
+  undefine :submit
+  action(:submit) { |b| b.frm.button(title: 'submit').when_present.click; b.loading_old; b.awaiting_doc }
+
   element(:committee_id_field) { |b| b.frm.text_field(id: 'document.committeeList[0].committeeId') }
   element(:committee_name_field) { |b| b.frm.text_field(id: 'document.committeeList[0].committeeName') }
   element(:home_unit) { |b| b.frm.text_field(id: 'document.committeeList[0].homeUnitNumber') }

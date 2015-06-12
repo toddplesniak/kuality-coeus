@@ -31,6 +31,9 @@ class ReviewObject < DataFactory
     # NOTE: Navigation is accomplished in the parent Protocol object!
     on SubmitForReview do |page|
       page.expand_all
+      if @committee=='::random::'
+        @committee=page.committee_list.sample
+      end
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
                :committee
       # If the test doesn't specify a particular schedule date then
