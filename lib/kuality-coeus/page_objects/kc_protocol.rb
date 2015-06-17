@@ -27,7 +27,7 @@ class KCProtocol < BasePage
       element(:fda_number) { |b| b.frm.text_field(name: 'document.protocolList[0].fdaApplicationNumber') }
 
       # Other Identifiers
-      action(:identifier_type) { |b| b.frm.select_list(name: 'newProtocolReferenceBean.protocolReferenceTypeCode') }
+      action(:identifier_type) { |b| b.frm.select(name: 'newProtocolReferenceBean.protocolReferenceTypeCode') }
       element(:identifier) { |b| b.frm.text_field(name: 'newProtocolReferenceBean.referenceKey') }
       element(:identifier_application_date) { |b| b.frm.text_field(name: 'newProtocolReferenceBean.applicationDate') }
       element(:identifier_approval_date) { |b| b.frm.text_field(name: 'newProtocolReferenceBean.approvalDate') }
@@ -37,7 +37,7 @@ class KCProtocol < BasePage
       # Organizations
       element(:organization_id) { |b| b.frm.text_field(name: 'protocolHelper.newProtocolLocation.organizationId') }
       action(:organization_lookup) { |b| b.frm.text_field(id: 'protocolHelper.newProtocolLocation.organizationId').parent.button(alt: 'Search ').click; b.loading }
-      action(:organization_type) { |b| b.frm.select_list(name: 'protocolHelper.newProtocolLocation.protocolOrganizationTypeCode') }
+      action(:organization_type) { |b| b.frm.select(name: 'protocolHelper.newProtocolLocation.protocolOrganizationTypeCode') }
       action(:add_organization) { |b| b.frm.button(name: 'methodToCall.addProtocolLocation.anchorOrganizations').click; b.loading }
 
       p_value(:contact_address) { |org_id, b| b.frm.div(align: 'left', text: /^#{org_id}/).parent.parent.td(index: 2).text }
@@ -55,7 +55,7 @@ class KCProtocol < BasePage
       #TODO: Create table options so that we can deal with the 'clear contact' and 'delete org' options.
 
       # Funding Sources
-      element(:funding_type) { |b| b.frm.select_list(name: 'protocolHelper.newFundingSource.fundingSourceTypeCode') }
+      element(:funding_type) { |b| b.frm.select(name: 'protocolHelper.newFundingSource.fundingSourceTypeCode') }
       element(:funding_number) { |b| b.frm.text_field(name: 'protocolHelper.newFundingSource.fundingSourceNumber') }
       action(:funding_number_lookup) { |b| b.frm.button(name: 'methodToCall.performFundingSourceLookup.(!!!!).((())).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).anchor28') }
       action(:add_funding_source) { |b| b.frm.button(name: 'methodToCall.addProtocolFundingSource.anchorFundingSources').click }

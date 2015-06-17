@@ -11,8 +11,8 @@ class KcPersonLookup < Lookups
 
   element(:kcperson_id) { |b| b.frm.text_field(name:'personId') }
 
-  p_value(:user_name_of) { |name, b| b.results_table.rows.find{ |row| row[FULL_NAME].text==name }[USER_NAME].text }
-  p_value(:person_id_of) { |name, b| b.results_table.rows.find{ |row| row[FULL_NAME].text==name }[ID].text }
+  p_value(:user_name_of) { |name, b| b.noko.table(id: 'row').rows.find{ |row| row[FULL_NAME].text==name }[USER_NAME].text }
+  p_value(:person_id_of) { |name, b| b.noko.table(id: 'row').rows.find{ |row| row[FULL_NAME].text==name }[ID].text }
 
   # Please note the 'space' in the .delete_if clause is NOT a space. It's some
   # unknown whitespace character. Don't screw with it or else this method will

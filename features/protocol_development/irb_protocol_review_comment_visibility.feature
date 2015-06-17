@@ -16,7 +16,11 @@ Feature: IRB Protocol Review Comment Visibility
   @test
   Scenario: Approved Primary Reviewer Comments are Private and Final
     * Users exist with the following roles: IRB Administrator, Protocol Creator
-    * the IRB Admin submits a Committee with at least one event and four or more paid, voting members
+    #* the IRB Admin submits a Committee with at least one event and four or more paid, voting members
+    * the IRB Admin creates a Committee
+    * schedules at least one event for the Committee
+    * adds four or more paid, voting members to the Committee
+    * submits the Committee
     * the Protocol Creator creates an IRB Protocol in the Committee's home unit
     * assigns a committee member the the Protocol's personnel
     * submits the Protocol to the Committee for review

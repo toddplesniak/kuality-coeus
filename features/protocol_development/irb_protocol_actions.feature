@@ -7,7 +7,7 @@ Feature: IRB Protocol Actions
 
   Background:
     * Users exist with the following roles: IRB Administrator, Protocol Creator
-  @wip
+  @wip @test
   Scenario Outline: Submission Review Type Checklist
     Given the Protocol Creator user creates an IRB Protocol
     When the Protocol is given an '<Type>' Submission Review Type

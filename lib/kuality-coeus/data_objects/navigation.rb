@@ -8,7 +8,7 @@ module Navigation
   # DO NOT USE! Refactor any code that is using this.
 
   def open_document
-    warn 'Starting to phase out Navigation module...'
+    warn "Starting to phase out Navigation module. Fix your #{self.class} data object code soon."
     navigate unless on_document?
   end
 
