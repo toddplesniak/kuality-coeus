@@ -80,6 +80,8 @@ class IACUCProceduresObject < DataFactory
     view 'Procedures'
     view_procedure_details 'Location'
     on IACUCProceduresLocation do |page|
+      #noko to speed up select list
+      @location[:type] = page.location_type_list.sample if @location[:type]=='::random::'
       page.location_type.pick! @location[:type]
       page.location_room.fit @location[:room]
       page.location_description.fit @location[:description]

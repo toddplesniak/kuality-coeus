@@ -36,7 +36,7 @@ Feature: Protocol actions for IACUC
     Given the IACUC Protocol Creator submits an IACUC Protocol for admin review
     When  the IACUC Administrator approves the IACUC Protocol
     Then  the expiration date is set for the Protocol
-  @wip
+
   Scenario: IACUC Admin deactivates an IACUC Protocol
     Given the IACUC Administrator approves a submitted IACUC Protocol
     When  the IACUC Administrator deactivates the IACUC Protocol

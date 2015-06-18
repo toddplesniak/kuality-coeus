@@ -11,13 +11,13 @@ Given /^(the (.*) |)submits an IACUC Protocol for admin review$/ do |text, role_
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
 end
 
-And /^the IACUC Administrator approves a submitted IACUC Protocol$/ do
+And /^the (.*) approves a submitted IACUC Protocol$/ do |role_name|
   steps '* I log in with the IACUC Protocol Creator user'
   @iacuc_protocol = create IACUCProtocolObject
   @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
 
-  steps '* log in with the IACUC Administrator user'
+  steps %{ * log in with the #{role_name} user }
   @iacuc_protocol.admin_approve
 end
 
