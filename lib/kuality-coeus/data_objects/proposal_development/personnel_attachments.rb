@@ -1,6 +1,6 @@
 class PersonnelAttachmentObject < DataFactory
 
-  include StringFactory, Navigation
+  include StringFactory, Utilities
 
   attr_reader :person, :type, :file_name, :description, :document_id, :doc_type
 
@@ -12,7 +12,7 @@ class PersonnelAttachmentObject < DataFactory
         description: random_alphanums_plus(30)
     }
     set_options defaults.merge(opts)
-    requires :document_id, :file_name
+    requires :document_id, :file_name, :navigate
   end
 
   def create
@@ -28,12 +28,13 @@ class PersonnelAttachmentObject < DataFactory
   end
 
   def view
-    open_document
+    @navigate.call
     on(Proposal).abstracts_and_attachments unless on_page?(on(AbstractsAndAttachments).proposal_attachment_type)
   end
 
-  def update_from_parent(id)
+  def update_from_parent(id, navigation_lambda)
     @document_id=id
+    @navigate=navigation_lambda
   end
 
 end

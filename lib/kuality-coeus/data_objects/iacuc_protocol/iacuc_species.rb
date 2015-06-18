@@ -1,6 +1,6 @@
 class SpeciesObject < DataFactory
 
-  include StringFactory #, Navigation, DateFactory, Protocol
+  include StringFactory
 
   attr_reader :group, :species, :pain_category, :count_type, :count,
               :strain, :usda_covered, :procedure_summary, :index

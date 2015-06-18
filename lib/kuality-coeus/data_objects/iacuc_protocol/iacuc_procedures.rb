@@ -1,6 +1,6 @@
 class IACUCProceduresObject < DataFactory
 
-  include StringFactory, Navigation, DateFactory, Protocol
+  include StringFactory, DateFactory, Protocol
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :protocol_project_type, :lay_statement_1, :alternate_search_required, :location,

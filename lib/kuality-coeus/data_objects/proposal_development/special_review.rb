@@ -1,6 +1,6 @@
 class SpecialReviewObject < DataFactory
 
-  include StringFactory, Navigation
+  include StringFactory, Utilities
 
   attr_reader :type, :approval_status, :document_id, :protocol_number,
               :application_date, :approval_date, :expiration_date,
@@ -20,6 +20,7 @@ class SpecialReviewObject < DataFactory
     }
 
     set_options(defaults.merge(opts))
+    requires :navigate
   end
 
   def create
@@ -65,7 +66,7 @@ class SpecialReviewObject < DataFactory
   end
 
   def view
-    # Navigation assumes already on the document
+    @navigate.call
     on(Proposal).special_review unless on_page?(on(SpecialReview).add_type)
   end
 
@@ -74,8 +75,8 @@ class SpecialReviewObject < DataFactory
     on(SpecialReview).delete(index[line_index])
   end
 
-  def update_from_parent(id)
-    @document_id=id
+  def update_from_parent(navigation_lambda)
+    @navigate=navigation_lambda
   end
 
 end # SpecialReviewObject

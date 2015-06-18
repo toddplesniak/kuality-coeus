@@ -19,7 +19,7 @@ Feature: IACUC Protocol adding special reviews and verify correct error messages
     When  the IACUC Protocol Creator edits the first Special Review on the IACUC Protocol
     Then  the first Special Review should not be displayed on the IACUC Protocol
     And   the edited Special Review should display on the IACUC Protocol
-
+  @test
   Scenario: Verify Special Review error messages display for type, approval status, and invalid dates
     Given the IACUC Protocol Creator creates an IACUC Protocol
     When  adds a Special Review with incorrect data

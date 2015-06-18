@@ -1,6 +1,6 @@
 class OrganizationObject < DataFactory
 
-  include StringFactory, Navigation, DateFactory, Protocol
+  include StringFactory, Protocol
 
   attr_reader  :organization_id, :organization_type, :clear_contact, :add_contact_info,
                :old_organization_address, :organization_address, :organization_name

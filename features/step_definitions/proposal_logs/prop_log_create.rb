@@ -56,8 +56,9 @@ When /^the Create Proposal Log user submits a new temporary Proposal Log with a 
   visit PersonLookup do |page|
     page.search
 
-    # TODO: This is really really slow. The HTML on the page needs improving.
-    @pi = page.returned_principal_names.shuffle[0]
+    # TODO: This is really really slow. The HTML on the page needs improving. There is currently
+    # no reliable way to improve how we parse the HTML.
+    @pi = page.returned_principal_names.sample
 
   end
   @temp_proposal_log = create ProposalLogObject,
