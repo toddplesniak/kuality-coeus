@@ -16,7 +16,7 @@ end
 
 And /(the (.*) |)assigns? reviewers to the Protocol/ do |text, change_user|
   steps %{ * log in with the #{change_user} user } unless text == ''
-  @irb_protocol.view 'Protocol Actions'
+  @irb_protocol.view_by_edit 'Protocol Actions'
   @irb_protocol.assign_primary_reviewers
   @irb_protocol.assign_secondary_reviewers
 end
@@ -132,7 +132,7 @@ And /assigns? the Protocol to reviewers$/ do
 end
 
 When /submits? the Protocol to the Committee for expedited review, with an approval date of last year$/ do
-  steps %|
+  steps %q|
           * notifies the Committee about the Protocol
           * assigns reviewers to the Protocol
           * assigns the Protocol to reviewers

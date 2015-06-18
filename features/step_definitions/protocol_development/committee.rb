@@ -14,7 +14,7 @@ And /the IRB Admin submits a Committee with events scheduled before and after it
 end
 
 Then /the earliest available schedule date is based on the Committee's Adv Submission Days value/ do
-  on(SubmitForReview).schedule_date.options[1].text[/^\d+-\d+-\d+/].should==(Time.now+(86400*(@committee.adv_submission_days.to_i))).strftime('%m-%d-%Y')
+  expect(on(SubmitForReview).schedule_date.options[1].text[/^\d+-\d+-\d+/]).to eq (Time.now+(86400*(@committee.adv_submission_days.to_i))).strftime('%m-%d-%Y')
 end
 
 And /the IRB Admin submits a Committee that allows a maximum of 1 protocol/ do
@@ -25,7 +25,8 @@ And /the IRB Admin submits a Committee that allows a maximum of 1 protocol/ do
 end
 
 And /adds four or more paid, voting members to the Committee/ do
-  (rand(4)+4).times{@committee.add_member membership_type: 'Voting member', paid_member: :set}
+  (rand(4)+4).times{@committee.add_member membership_type: 'Voting member', paid_member: :set
+  }
 end
 
 And /schedules at least one event for the Committee/ do

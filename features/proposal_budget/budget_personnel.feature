@@ -7,7 +7,8 @@ Feature: Project Personnel in Proposal Budget Versions
     * a User exists with the role: 'Proposal Creator'
     * the Proposal Creator creates a Proposal with a 'Research' activity type
     * creates a Budget Version for the Proposal
-
+         #RESKC-533
+  @smoke @system_failure
   Scenario: Proposal and Budget Personnel
     Given various personnel are added to the Proposal
     When  the Proposal Creator syncs the Budget's personnel with the Proposal

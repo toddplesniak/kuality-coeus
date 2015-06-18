@@ -15,5 +15,6 @@ Feature: Creating a proposal development document
     Given the Proposal Creator creates a Proposal
     And   adds a principal investigator to the Proposal
     And   sets valid credit splits for the Proposal
+    And   creates a Budget Version for the Proposal
     When  data validation is activated
     Then  there are no data validation errors or warnings for the Proposal

@@ -48,20 +48,20 @@ class IACUCProtocolObject < DataFactory
       @protocol_project_type = doc.protocol_project_type_options.sample if @protocol_project_type == '::random::'
       fill_out doc, :protocol_project_type
     end
-
-    set_lead_unit
-    set_pi
-
+    unless @lead_unit==' '
+      set_lead_unit
+      set_pi
+    end
     on(IACUCProtocolOverview).save
     on(NotificationEditor).send_notification if on(NotificationEditor).send_notification_button.present?
-
     on IACUCProtocolOverview do |doc|
-      doc.save
-      doc.send_it if doc.send_button.present? #send notification
+      if doc.errors.empty?
+        doc.save
+        doc.send_it if doc.send_button.present? #send notification
+      end
       @protocol_number=doc.protocol_number
       @search_key = { protocol_number: @protocol_number }
     end
-
   end
 
   def view(tab)
@@ -195,6 +195,7 @@ class IACUCProtocolObject < DataFactory
   # -----
   # Protocol Actions
   # -----
+
   def submit_for_review opts={}
     review ||= {
         submission_type: '::random::',

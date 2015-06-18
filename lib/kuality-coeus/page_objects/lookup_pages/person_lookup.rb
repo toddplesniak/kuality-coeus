@@ -13,6 +13,7 @@ class PersonLookup < Lookups
 
   alias_method :select_person, :check_item
 
+  # TODO: These need to be sped up somehow. Preferably by getting better element tags in the HTML...
   # Please note the 'space' in the .delete_if clause is NOT a space. It's some
   # unknown whitespace character. Don't screw with it or else this method will
   # stop working properly.

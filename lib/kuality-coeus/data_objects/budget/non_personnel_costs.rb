@@ -63,6 +63,7 @@ class NonPersonnelCost < DataFactory
     # Method assumes we're already in the right place
     on(NonPersonnelCosts).details_of @object_code_name
     on EditAssignedNonPersonnel do |page|
+      page.details_tab unless page.start_date.present?
       edit_fields opts, page, :apply_inflation, :submit_cost_sharing,
                   :start_date, :end_date, :on_campus, :total_base_cost
       page.cost_sharing_tab
@@ -89,7 +90,7 @@ class NonPersonnelCost < DataFactory
 
   def delete
     # Method assumes we're already in the right place
-    on(NonPersonnelCosts) do |page|
+    on NonPersonnelCosts do |page|
       page.trash @object_code_name
       page.save
     end

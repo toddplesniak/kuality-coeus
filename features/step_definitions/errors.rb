@@ -5,7 +5,7 @@
 Then /^an error should appear that says (.*)$/ do |error|
   errors = {'to select a valid unit' => 'Please select a valid Unit.',
             'a key person role is required' => 'Key Person\'s role will be: Required',
-            'the credit split is not a valid percentage' => 'Must be a non-negative fixed point number, with no more than 5 total digits and 2 digits to the right of the decimal point.',
+            'the credit split is not a valid percentage' => 'Must be a non-negative number, with no more than 5 total digits and 2 digits to the right of the decimal point.',
             'the Award has no PI' => 'There is no Principal Investigator selected. Please enter a Principal Investigator',
             'only one PI is allowed in the Contacts' => 'Only one Principal Investigator is allowed',
             'the IP can not be added because it\'s not fully approved' => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
@@ -61,7 +61,15 @@ Then /^an? (error|warning) is shown that says (.*)$/ do |x, error|
              'there are duplicate cost share lines' => 'A duplicate row has been entered.',
              'the subaward\'s amount can\'t be zero' => 'Approved Subaward amount must be greater than zero.'
   }
+  expect(on(AwardDataValidation).validation_errors_and_warnings).to include errors[error]
+end
 
+Then /the Proposal's data validation shows an error that says (.*)/ do |error|
+  errors = { 'there are duplicate organizations' => 'There is a duplicate organization name.',
+             'there is no principal investigator' => 'There is no Principal Investigator selected. Please enter a Principal Investigator.',
+             'sponsor deadline date not entered' => 'Sponsor deadline date has not been entered.',
+             'the sponsor deadline has passed' => 'Sponsor deadline date is in the past, relative to the current date.'
+  }
   expect(on(DataValidation).validation_errors_and_warnings).to include errors[error]
 end
 
@@ -70,7 +78,7 @@ Then /^errors about the missing Award terms are shown for data validation$/ do
   'Referenced Document','Rights In Data','Subaward Approval','Travel Restrictions']
   errors.collect! {|term| "There must be at least one #{term} Terms defined." }
   errors.each do |err|
-    expect(on(DataValidation).validation_errors_and_warnings).to include err
+    expect(on(AwardDataValidation).validation_errors_and_warnings).to include err
   end
 end
 

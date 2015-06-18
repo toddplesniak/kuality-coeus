@@ -16,7 +16,7 @@ Feature: Award Cost Sharing
   Scenario: Add a Cost Share but miss a required field
     When a cost share item is added to the Award without a required field
     Then an error should appear saying the field is required
-
+  @wip
   Scenario: Add duplicate cost share lines
     Given duplicate cost share items are added to the Award
     When  data validation is turned on for the Award

@@ -1,6 +1,6 @@
 class IRBProtocolObject < DataFactory
 
-  include StringFactory, Navigation, DateFactory
+  include StringFactory, DateFactory
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :other_identifier_type, :other_identifier_name, :organization_id, :organization_type,
@@ -30,8 +30,8 @@ class IRBProtocolObject < DataFactory
         lead_unit:           '::random::',
         personnel:           collection('ProtocolPersonnel')
     }
-    @lookup_class = ProtocolLookup
     set_options(defaults.merge(opts))
+    @navigate = navigate
   end
 
   def create
@@ -52,59 +52,25 @@ class IRBProtocolObject < DataFactory
     on ProtocolOverview do |doc|
       doc.save
       @protocol_number=doc.protocol_number
+      # FIXME!!
       @search_key = { protocol_number: @protocol_number }
     end
   end
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    open_document
     on(ProtocolOverview).send(damballa(tab)) unless @browser.frm.dt(class: 'licurrent').button.alt == tab
   end
 
   def view_by_view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    navigate('view')
-    on(ProtocolOverview).send(damballa(tab))
-  end
-
-  def view_by_edit(tab)
+    @navigate.call('view')
     view(tab)
   end
 
-  def on_protocol?
-    # if on(ProtocolOverview).headerinfo_table.exists?
-    #   on(ProtocolOverview).protocol_number==@protocol_number
-    # else
-      false
-    # end
-  end
-
-  def navigate(type='edit')
-
-    #we have gotten to a strange place without a header because of time and money need to get back from there
-    @browser.goto $base_url+$context unless on(Header).header_div.present?
-
-    #Return to the right header
-    on(Header).krad_portal if on(Header).krad_portal_element.present?
-
-    unless on_protocol?
-      on(Header).central_admin
-      on(CentralAdmin).search_human_participants
-
-      on ProtocolLookup do |page|
-        page.protocol_number.set @protocol_number
-        page.search
-
-        case type
-          when 'edit'
-            page.edit_first_item
-          when 'view'
-            page.view_first_item
-        end
-      end
-    end
-
+  def view_by_edit(tab)
+    @navigate.call('edit')
+    view(tab)
   end
 
   def submit_for_review opts={}
@@ -120,7 +86,8 @@ class IRBProtocolObject < DataFactory
         @document_id=page.document_id
       end
     else
-      puts 'Now on the Confirmation page and happy to be here without pressing any button'
+      puts 'Now on the Confirmation page and happy to be here without pressing any button.'
+      puts 'We should right now be testing Exceeding Max Protocols.'
     end
   end
 
@@ -279,6 +246,25 @@ class IRBProtocolObject < DataFactory
                 full_name: name, role: 'Principal Investigator', user_name: user_name
       @personnel << pi
     end
+  end
+
+  def navigate
+    lambda{ |type|
+      begin
+        there = on(ProtocolOverview).protocol_number==@protocol_number
+      rescue
+        there = false
+      end
+      unless there
+        on(Header).central_admin
+        on(CentralAdmin).search_human_participants
+        on ProtocolLookup do |page|
+          page.protocol_number.set @protocol_number
+          page.search
+          page.send("#{type}_first_item")
+        end
+      end
+    }
   end
 
 end

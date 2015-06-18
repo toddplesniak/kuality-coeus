@@ -21,8 +21,6 @@ class ProposalDevelopmentObject < DataFactory
       activity_type:         '::random::',
       project_title:         random_multiline(11, 1, :string),
       sponsor_id:            '::random::',
-      # Commented out for CX... Maybe remove permanently from defaults?
-      #sponsor_type_code:     '::random::',
       nsf_science_code:      '::random::',
       project_start_date:    next_week[:date_w_slashes],
       project_end_date:      next_year[:date_w_slashes],

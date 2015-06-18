@@ -1,6 +1,6 @@
 class CommitteeDocumentObject < DataFactory
 
-  include StringFactory, DateFactory, Navigation
+  include StringFactory, DateFactory
 
   attr_reader :description, :committee_id, :document_id, :status, :name,
               :home_unit, :min_members_for_quorum, :maximum_protocols,
@@ -27,8 +27,8 @@ class CommitteeDocumentObject < DataFactory
       committee_type:         'irb',
       area_of_research:       []
     }
-    @lookup_class=CommitteeLookup
     set_options(defaults.merge(opts))
+    @navigate = navigate
   end
     
   def create
@@ -40,7 +40,6 @@ class CommitteeDocumentObject < DataFactory
       @doc_header=comm.doc_title
       @initiator=comm.initiator
       @status=comm.status
-      @search_key = { committee_id: @committee_id }
       comm.committee_id_field.set @committee_id
       comm.committee_name_field.set @name
       fill_out comm, :description, :home_unit, :min_members_for_quorum,
@@ -54,7 +53,8 @@ class CommitteeDocumentObject < DataFactory
   end
 
   def submit
-    open_document
+    # FIXME!
+    @navigate.call
     on Committee do |page|
       page.submit
     end
@@ -64,17 +64,13 @@ class CommitteeDocumentObject < DataFactory
   # This method will create a new committee document if
   # the committee is in a final status. Not good!
   def view(tab)
-    open_document
-    on Committee do |page|
-      page.description.set @description
-      page.send(damballa(tab).to_sym)
-    end
+    @navigate.call
+    on(Committee).send(damballa(tab).to_sym)
   end
 
   def add_member opts={}
     defaults = {document_id: @document_id}
-    open_document
-    on(Committee).members
+    view 'Members'
     @members.add defaults.merge(opts)
   end
 
@@ -83,15 +79,12 @@ class CommitteeDocumentObject < DataFactory
                 date: hours_from_now((@adv_submission_days.to_i+1)*24)[:date_w_slashes],
                 min_days: @adv_submission_days.to_i+2
     }
-    open_document
-    on(Committee).schedule
+    view 'Schedule'
     @schedule.add defaults.merge(opts)
   end
 
   def add_area_of_research
-    open_document
-    on(Committee).area_of_research
-
+    view :area_of_research
     on ResearchAreasLookup do |page|
         page.search
 
@@ -101,6 +94,49 @@ class CommitteeDocumentObject < DataFactory
         @area_of_research << research_description
       end
   end
+
+  # ===========
+  private
+  # ===========
+
+  def navigate
+    lambda {
+      begin
+        there = on(DocumentHeader).document_id==@document_id && @browser.frm.div(id: 'headerarea').h1.text.strip==@doc_header
+      rescue Watir::Exception::UnknownObjectException, Selenium::WebDriver::Error::StaleElementReferenceError, WatirNokogiri::Exception::UnknownObjectException, Watir::Wait::TimeoutError
+        there = false
+      end
+      unless there
+        on(BasePage).close_extra_windows
+        visit CommitteeLookup do |page|
+          fill_out page, :committee_id
+          page.search
+          # This rescue is a sad necessity, due to
+          # Coeus's poor implementation of the Lookup pages
+          # in conjunction with user Roles.
+          begin
+            page.results_table.wait_until_present(5)
+          rescue Watir::Wait::TimeoutError
+            if on(Header).doc_search_element.present?
+
+              on(Header).doc_search
+            else #you are on old ui and navigate to doc search this way
+              visit(Researcher).doc_search
+            end
+            on DocumentSearch do |search|
+              search.document_id.set @document_id
+              search.search
+              search.open_doc @document_id
+            end
+          end
+          page.medusa
+        end
+        # Must update the document id, now:
+        @document_id=on(DocumentHeader).document_id
+      end
+    }
+  end
+
 end
     
       

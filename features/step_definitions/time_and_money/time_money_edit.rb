@@ -26,12 +26,12 @@ end
 
 Then /the T&M document is still the finalized version/ do
   @award.time_and_money.check_status
-  @award.time_and_money.status.should=='FINAL'
-  @award.time_and_money.versions.should be_empty
+  expect(@award.time_and_money.status).to eq 'FINAL'
+  expect(@award.time_and_money.versions).to be_empty
 end
 
 Then /^the Time And Money document should not be the cancelled version$/ do
   @award.time_and_money.check_status
-  @award.time_and_money.status.should == 'SAVED'
-  @award.time_and_money.versions.should_not be_empty
+  expect(@award.time_and_money.status).to eq 'SAVED'
+  expect(@award.time_and_money.versions).not_to be_empty
 end
