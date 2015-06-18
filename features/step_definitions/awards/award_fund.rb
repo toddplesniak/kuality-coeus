@@ -7,7 +7,7 @@ Given /^(\d+) Approved Institutional Proposals? exists?$/ do |count|
       steps %q{* the Proposal Creator submits a new Proposal into routing }
       steps %q{* the OSPApprover approves the Proposal without future approval requests }
       steps %q{* the principal investigator approves the Proposal }
-      steps %q{* the Proposal Submission submits the Proposal to its sponsor }
+      # steps %q{* the Proposal Submission submits the Proposal to its sponsor }
 
     @ips << @institutional_proposal
   }

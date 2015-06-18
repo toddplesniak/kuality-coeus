@@ -27,6 +27,7 @@ end
 
 class IACUCProceduresLocation < IACUCProcedures
   element(:location_type) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationTypeCode') }
+  value(:location_type_list) { |b| b.noko.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationTypeCode').options.map {|opt| opt.text }[1..-1]  }
   element(:location_name) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationId') }
 
   # This returns an array of the location names. Purpose is for when 2 or more unique location names are needed
