@@ -116,28 +116,18 @@ Then /^the three principles should have the edited values after saving the IACUC
   end
 end
 
-Then /(first |second |)Special Review should (not |)be displayed on the IACUC Protocol$/ do |count, to_be_or_not_to_be|
-  index = {'' => [0,''], 'first ' => [0,''], 'second ' => [1,'2'] }
+Then /(first |second |)Special Review should (not |)be updated on the IACUC Protocol$/ do |count, to_be_or_not_to_be|
+  index = {'' => 0, 'first ' => 0, 'second ' => 1 }
   on SpecialReview do |page|
     page.reload
-    on(Confirmation).yes if on(Confirmation).yes_button.present?
+    confirmation
     if to_be_or_not_to_be == 'not '
-      expect(page.type_added(index[count][0]).selected_options.first.text).to_not eq get("@special_review#{index[count][1]}").type
-      expect(page.approval_status_added(index[count][0]).selected_options.first.text).to_not eq get("@special_review#{index[count][1]}").approval_status
+      expect(page.type_added(index[count]).selected_options.first.text).to_not eq @iacuc_protocol.special_review[index[count]].type
+      expect(page.approval_status_added(index[count]).selected_options.first.text).to_not eq @iacuc_protocol.special_review[index[count]].approval_status
     else
-      expect(page.type_added(index[count][0]).selected_options.first.text).to eq get("@special_review#{index[count][1]}").type
-      expect(page.approval_status_added(index[count][0]).selected_options.first.text).to eq get("@special_review#{index[count][1]}").approval_status
+      expect(page.type_added(index[count]).selected_options.first.text).to eq @iacuc_protocol.special_review[index[count]].type
+      expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @iacuc_protocol.special_review[index[count]].approval_status
     end
-  end
-end
-
-And /^the (first |)edited Special Review should display on the IACUC Protocol$/ do |count|
-  index = {'' => 0, 'first ' => 0}
-  on SpecialReview do |page|
-    page.reload
-    on(Confirmation).yes if on(Confirmation).yes_button.present?
-    expect(page.type_added(index[count]).selected_options.first.text).to eq @special_review_edit.type
-    expect(page.approval_status_added(index[count]).selected_options.first.text).to eq @special_review_edit.approval_status
   end
 end
 

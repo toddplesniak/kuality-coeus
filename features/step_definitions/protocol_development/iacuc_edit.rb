@@ -111,9 +111,8 @@ When /edits the Principles of (.*)/ do |principle|
   end
 end
 
-When /adds a Special Review with incorrect data$/ do
-  @special_review = create  SpecialReviewObject,
-                            type:             nil,
+When /adding a Special Review with incorrect data$/ do
+  @iacuc_protocol.add_special_review type:             nil,
                             approval_status:  nil,
                             application_date: rand(130000..999999),
                             approval_date:    rand(130000..999999),
@@ -121,18 +120,16 @@ When /adds a Special Review with incorrect data$/ do
                             press:            nil
 end
 
-When /adds a Special Review for human subjects, status approved, and an exemption$/ do
-  @special_review = create  SpecialReviewObject,
-                            type:             'Human Subjects',
+When /adding a Special Review for human subjects, status approved, and an exemption$/ do
+  @iacuc_protocol.add_special_review type:    'Human Subjects',
                             approval_status:  'Approved',
                             exemption_number: '::random::',
                             protocol_number:  nil,
                             press:            nil
 end
 
-When /adds a Special Review to generate error messages for incorrect date structures$/ do
-  @special_review = create  SpecialReviewObject,
-                            application_date: tomorrow[:date_w_slashes],
+When /adding a Special Review to generate error messages for incorrect date structures$/ do
+  @iacuc_protocol.add_special_review application_date: tomorrow[:date_w_slashes],
                             approval_date:    right_now[:date_w_slashes],
                             expiration_date:  yesterday[:date_w_slashes],
                             exemption_number: '::random::',
@@ -141,17 +138,13 @@ end
 
 When /^(the (.*) |)adds a Special Review to the IACUC Protocol$/ do |text, role_name|
   steps %{* I log in with the #{role_name} user } unless text ==''
-  @special_review = create SpecialReviewObject
+  @iacuc_protocol.add_special_review
 end
 
 When /^(the (.*) |)edits the (first |second | )Special Review on the IACUC Protocol$/ do |text, role_name, line_item|
   steps %{* I log in with the #{role_name} user } unless text ==''
   index = {'first ' => 0, 'second ' => 1}
-  @special_review_edit = make SpecialReviewObject
-
-  @special_review_edit.edit index:           "#{index[line_item]}",
-                            edit_type: true, edit_approval_status: true,
-                            press:           'save'
+  @iacuc_protocol.special_review[index[line_item]].edit type: '::random::', approval_status: '::random::'
 end
 
 And /edits the location name on the maintenance document$/ do

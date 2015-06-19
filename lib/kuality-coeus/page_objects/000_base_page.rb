@@ -172,9 +172,9 @@ class BasePage < PageFactory
     end
 
     def special_review
-      value(:type_options) { |b| b.add_type.options }
       element(:add_type) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.specialReviewTypeCode') }
-      value(:approval_status_options) {|b| b.add_approval_status.options }
+      value(:type_list) { |b| b.noko.select(id: 'specialReviewHelper.newSpecialReview.specialReviewTypeCode').options.map {|opt| opt.text }[1..-1] }
+      value(:approval_status_list) {|b| b.noko.select(id: 'specialReviewHelper.newSpecialReview.approvalTypeCode').options.map {|opt| opt.text }[1..-1] }
       element(:add_approval_status) { |b| b.frm.select(id: 'specialReviewHelper.newSpecialReview.approvalTypeCode') }
       element(:add_protocol_number) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.protocolNumber') }
       element(:add_application_date) { |b| b.frm.text_field(id: 'specialReviewHelper.newSpecialReview.applicationDate') }

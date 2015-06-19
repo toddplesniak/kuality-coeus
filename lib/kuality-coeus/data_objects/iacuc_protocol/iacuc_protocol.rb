@@ -1,13 +1,13 @@
 class IACUCProtocolObject < DataFactory
 
-  include StringFactory, DateFactory, Protocol
+  include StringFactory, DateFactory, Protocol, Utilities
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :protocol_project_type, :lay_statement_1,
                #theThreeRs
                :alternate_search_required, :reduction, :refinement, :replacement,
                #others
-               :procedures, :location, :document_id,
+               :procedures, :location, :document_id, :special_review,
                :species, :organization, :old_organization_address, :species_modify, :withdrawal_reason,
                :principles, :doc, :amendment
 
@@ -22,7 +22,8 @@ class IACUCProtocolObject < DataFactory
         protocol_project_type: '::random::',
         lay_statement_1:     random_alphanums_plus,
         alternate_search_required: 'No',
-        personnel:           collection('IACUCPersonnel')
+        personnel:           collection('IACUCPersonnel'),
+        special_review:      collection('SpecialReview')
     }
 
     set_options(defaults.merge(opts))
@@ -44,13 +45,8 @@ class IACUCProtocolObject < DataFactory
       doc.expand_all
 
       fill_out doc, :description, :protocol_type, :title, :lay_statement_1
-<<<<<<< HEAD
-      doc.protocol_project_type.pick!(@protocol_project_type)
-=======
-
       @protocol_project_type = doc.protocol_project_type_options.sample if @protocol_project_type == '::random::'
       fill_out doc, :protocol_project_type
->>>>>>> development
     end
     unless @lead_unit==' '
       set_lead_unit
@@ -113,6 +109,14 @@ class IACUCProtocolObject < DataFactory
     raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
     @organization = make OrganizationObject, opts
     @organization.create
+  end
+
+  def add_special_review opts={}
+    defaults = {
+        navigate: @navigate,
+        index: @special_review.size
+    }
+    @special_review.add defaults.merge(opts)
   end
 
   def add_protocol_exception opts={}
@@ -233,7 +237,6 @@ class IACUCProtocolObject < DataFactory
                     'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
     }
     @amendment.merge!(opts)
-    view_by_protocol_number
     view 'IACUC Protocol Actions'
 
     on CreateAmendment do |page|
