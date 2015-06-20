@@ -65,7 +65,7 @@ class S2SQuestionnaireObject < DataFactory
     }
 
     set_options(defaults.merge(opts))
-    requires :document_id, :doc_header
+    requires :navigate
   end
 
   def create
@@ -112,7 +112,7 @@ class S2SQuestionnaireObject < DataFactory
   end
 
   def view
-    open_document
+    #FIXME!!!
     on(Proposal).questions unless on_page?(on(Questions).questions_header)
   end
 

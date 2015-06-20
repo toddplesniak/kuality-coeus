@@ -8,8 +8,8 @@ class IACUCProtocolObject < DataFactory
                :alternate_search_required, :reduction, :refinement, :replacement,
                #others
                :procedures, :location, :document_id, :special_review,
-               :species, :organization, :old_organization_address, :species_modify, :withdrawal_reason,
-               :principles, :doc, :amendment
+               :species_groups, :organizations, :withdrawal_reason,
+               :principles, :doc, :amendment, :personnel
 
   def initialize(browser, opts={})
     @browser = browser
@@ -23,7 +23,10 @@ class IACUCProtocolObject < DataFactory
         lay_statement_1:     random_alphanums_plus,
         alternate_search_required: 'No',
         personnel:           collection('IACUCPersonnel'),
-        special_review:      collection('SpecialReview')
+        special_review:      collection('SpecialReview'),
+        species_groups:      collection('SpeciesGroups'),
+        organizations:       collection('Organization'),
+        procedures:          collection('Procedures')
     }
 
     set_options(defaults.merge(opts))
@@ -104,11 +107,17 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
+  def add_personnel opts={}
+    defaults = {
+
+    }
+    @personnel.add defaults.merge(opts)
+  end
+
   def add_organization opts={}
     view 'Protocol'
-    raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
-    @organization = make OrganizationObject, opts
-    @organization.create
+    # TODO: Add code to index multiple organizations...
+    @organizations.add opts
   end
 
   def add_special_review opts={}
@@ -119,6 +128,21 @@ class IACUCProtocolObject < DataFactory
     @special_review.add defaults.merge(opts)
   end
 
+  def add_species_groups opts={}
+    defaults = {
+        navigate: @navigate,
+        index: @species_groups.size
+    }
+    @species_groups.add defaults.merge(opts)
+  end
+  alias_method :add_species_group, :add_species_groups
+
+  def add_procedure opts={}
+    defaults = {}
+    @procedures.add defaults.merge(opts)
+  end
+
+  # FIXME - Needs its own data object and collection classes.
   def add_protocol_exception opts={}
     @protocol_exception ||= {
         exception: '::random::',

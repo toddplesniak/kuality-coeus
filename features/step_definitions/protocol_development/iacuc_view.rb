@@ -8,12 +8,12 @@ Then /^the summary will display the location of the procedure$/ do
   on(IACUCProcedures).select_procedure_tab 'summary'
   on IACUCProceduresSummary do |page|
     page.expand_all
-    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include @procedures.location[field].to_s}
+    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include @iacuc_protocol.procedures[0].location[field].to_s}
   end
 end
 
 Then /^the edited location information should be displayed in the Procedure summary$/ do
-  [:room, :name, :description].each { |field| expect(on(IACUCProceduresSummary).summary_locations).to include @procedures_edit.location[field].to_s}
+  [:room, :name, :description].each { |field| expect(on(IACUCProceduresSummary).summary_locations).to include @iacuc_protocol.procedures[0].location[field].to_s}
 end
 
 Then /^the (first |second )location is not listed in the Procedure summary$/ do |count|
@@ -21,7 +21,7 @@ Then /^the (first |second )location is not listed in the Procedure summary$/ do 
   on(IACUCProcedures).select_procedure_tab 'summary'
   on IACUCProceduresSummary do |page|
     page.expand_all
-    [:room, :name, :description].each { |field| expect(page.summary_locations).to_not include get("@procedures#{procedure[count]}").location[field].to_s}
+    [:room, :name, :description].each { |field| expect(page.summary_locations).to_not include @iacuc_protocol.procedures[0].location[field].to_s}
   end
 end
 
@@ -30,7 +30,7 @@ And /^the (first |second )location is listed on the IACUC Protocol$/ do |count|
   on(IACUCProcedures).select_procedure_tab 'summary'
   on IACUCProceduresSummary do |page|
     page.expand_all
-    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include get("@procedures#{procedure[count]}").location[field].to_s}
+    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include @iacuc_protocol.procedures[0].location[field].to_s}
   end
 end
 
@@ -40,25 +40,25 @@ Then /^the expiration date is set for the Protocol$/ do
 end
 
 Then /^the (.*)Organization that was added should display on the IACUC Protocol$/ do |count|
+  index = { '' => 1, 'first ' => 1, 'second ' => 2 }
   on IACUCProtocolOverview do |page|
-    index = { '' => 1, 'first ' => 1, 'second ' => 2 }
-    expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organization.organization_id
+    expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organizations[index[count]-1].organization_id
   end
 end
 
 And /^the added Organization information should display on the inquiry page$/ do
-  on(IACUCProtocolOverview).direct_inquiry(@iacuc_protocol.organization.organization_id)
+  on(IACUCProtocolOverview).direct_inquiry(@iacuc_protocol.organizations[0].organization_id)
   on OrganizationInquiry do |page|
-    expect(page.organization_id).to eq @iacuc_protocol.organization.organization_id
-    expect(page.address).to eq @iacuc_protocol.organization.organization_address
-    expect(page.organization_name).to eq @iacuc_protocol.organization.organization_name
+    expect(page.organization_id).to eq @iacuc_protocol.organizations[0].organization_id
+    expect(page.address).to eq @iacuc_protocol.organizations[0].organization_address
+    expect(page.organization_name).to eq @iacuc_protocol.organizations[0].organization_name
   end
 end
 
 Then /^on the IACUC Protocol the contact information for the added Organization is reverted$/ do
   on IACUCProtocolOverview do |page|
     page.expand_all
-    expect(page.contact_address(@iacuc_protocol.organization.organization_id)).to eq @iacuc_protocol.organization.old_organization_address
+    expect(page.contact_address(@iacuc_protocol.organizations[0].organization_id)).to eq @iacuc_protocol.organizations[0].old_organization_address
   end
 end
 

@@ -45,7 +45,7 @@ end
 And /^(the (.*) |)creates an? IACUC Protocol with one Species$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
-  @species = create SpeciesObject
+  @iacuc_protocol.add_species_groups
 end
 
 When /adds a Species with all fields completed$/ do
@@ -95,7 +95,7 @@ And /^(the (.*) |)creates an IACUC Protcol with the edited location name for a P
   @iacuc_protocol = create IACUCProtocolObject
   @iacuc_protocol.theThreeRs(alternate_search_required: 'No')
 
-  @species = create SpeciesObject
-  @procedures = create IACUCProceduresObject
-  @procedures.set_location location_name: @location_name.location_name,  species: @species.species
+  @iacuc_protocol.add_species_groups
+  @iacuc_protocol.add_procedure
+  @iacuc_protocol.procedures[0].set_location location_name: @location_name.location_name,  species: @iacuc_protocol.species_groups[0].species
 end

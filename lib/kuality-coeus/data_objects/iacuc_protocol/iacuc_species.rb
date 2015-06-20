@@ -1,4 +1,4 @@
-class SpeciesObject < DataFactory
+class SpeciesGroupsObject < DataFactory
 
   include StringFactory
 
@@ -14,10 +14,10 @@ class SpeciesObject < DataFactory
         pain_category: '::random::',
         count_type: '::random::',
         count: rand(1..21),
-        press: 'save',
-        index: 0
+        press: 'save'
     }
     set_options(defaults.merge(opts))
+    requires :index, :navigate
   end
 
   def create
@@ -65,7 +65,18 @@ class SpeciesObject < DataFactory
   end
 
   def view(tab)
+    @navigate.call
     on(IACUCProtocolOverview).send(damballa(tab))
   end
 
-end #SpeciesObject
+  def update_from_parent(navigation_lambda)
+    @navigate=navigation_lambda
+  end
+
+end #SpeciesGroupsObject
+
+class SpeciesGroupsCollection < CollectionsFactory
+
+  contains SpeciesGroupsObject
+
+end

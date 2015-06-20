@@ -12,7 +12,7 @@ class PersonnelAttachmentObject < DataFactory
         description: random_alphanums_plus(30)
     }
     set_options defaults.merge(opts)
-    requires :document_id, :file_name, :navigate
+    requires :file_name, :navigate
   end
 
   def create
@@ -32,8 +32,7 @@ class PersonnelAttachmentObject < DataFactory
     on(Proposal).abstracts_and_attachments unless on_page?(on(AbstractsAndAttachments).proposal_attachment_type)
   end
 
-  def update_from_parent(id, navigation_lambda)
-    @document_id=id
+  def update_from_parent(navigation_lambda)
     @navigate=navigation_lambda
   end
 

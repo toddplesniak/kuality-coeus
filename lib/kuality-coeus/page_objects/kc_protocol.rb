@@ -44,7 +44,6 @@ class KCProtocol < BasePage
       p_action(:clear_contact) { |org_id, b| b. frm.div(align: 'left', text: /^#{org_id}/).parent.parent.button(title: 'Clear organization address').click; b.loading }
       p_action(:add_contact) {|org_id, b| b.frm.div(align: 'left', text: /^#{org_id}/).parent.parent.td(index: 2).div.button(title: 'Search ').click; b.loading }
 
-
       #Returns the organization id and the name as they are wrapped in the same div.
       p_value(:added_organization_id_with_name) { |index, b| b.frm.div(id: 'tab-Organizations-div').tbody(index: 2).tr(index: "#{index}".to_f.round).td(index: 0).text.gsub(/\n/, ' ') }
       p_element(:direct_inquiry_button) { |org_id,b| b.frm.div(align: 'left', text: /^#{org_id}/).button(alt: 'Direct Inquiry') }

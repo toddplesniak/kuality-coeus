@@ -15,7 +15,7 @@ Feature: Add, edit, delete procedures locations on IACUC protocol
     When  edits the location name on the maintenance document
     And   the IACUC Protocol Creator creates an IACUC Protcol with the edited location name for a Procedure
     Then  the summary will display the location of the procedure
-
+  @test
   Scenario: Edit the location of a procedure on the IACUC Protocol
     Given the IACUC Protocol Creator creates an IACUC Protocol with one Species
     And   adds a Procedure to the IACUC Protocol

@@ -1,27 +1,22 @@
 And /adds a Species group to the IACUC Protocol$/ do
-  @species = create SpeciesObject
+  @iacuc_protocol.add_species_group
 end
 
 And /assigns a (second |)location to the Procedure with a type of '(.*)' on the IACUC Protocol$/ do |count, type|
-  proced = { '' => '', 'second ' => 2 }
-  # if the procedure object has not been created we will make it here.
-  set("@procedures#{proced[count]}", (make IACUCProceduresObject)) if get("@procedures#{proced[count]}").nil?
-  get("@procedures#{proced[count]}").set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @species.species)
+  @iacuc_protocol.procedures[0].set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @iacuc_protocol.species_groups[0].species)
 end
 
 When /edits the location type, name, room, description on the IACUC Protocol$/ do
-  @procedures_edit = make IACUCProceduresObject
-  @procedures_edit.edit_location(index: '0', name: '::random::', room: rand(100..999), description: random_alphanums_plus)
+  @iacuc_protocol.procedures[0].edit_location(index: '0', name: '::random::', room: rand(100..999), description: random_alphanums_plus)
 end
 
 And /adds a Procedure to the IACUC Protocol$/ do
-  @procedures = create IACUCProceduresObject
+  @iacuc_protocol.add_procedure
 end
 
 And /deletes the (first |second )location from the Procedure$/ do |count|
-  procedure = {'first ' => ['', 0], 'second ' => ['2', 1]}
-  item = procedure[count]
-  get("@procedures#{item[0]}").delete_location(item[1])
+  location = {'first ' => 0, 'second ' => 1}
+  @iacuc_protocol.procedures[0].delete_location(location[count])
 end
 
 When /deactivates the IACUC Protocol$/ do
@@ -56,15 +51,16 @@ end
 
 And /changes the contact information on the added Organization$/ do
   #clear contact based off of the org id
-  @iacuc_protocol.organization.clear_contact(@iacuc_protocol.organization.organization_id)
+  @iacuc_protocol.organizations[0].clear_contact
   #select a new address from the search
-  @iacuc_protocol.organization.add_contact_info(@iacuc_protocol.organization.organization_id)
+  @iacuc_protocol.organizations[0].add_contact_info
 end
 
 When /reopens the IACUC Protocol without saving the changes$/ do
   on(IACUCProtocolOverview).close
-  on(Confirmation).no if on(Confirmation).no_button.exists?
-  @iacuc_protocol.view_document
+  confirmation('No')
+  visit(SystemAdmin).person
+  @iacuc_protocol.view 'Protocol'
 end
 
 When /^(the (.*) |)adds? a Species with non\-integers for the species count$/ do |text, role_name|
@@ -97,11 +93,7 @@ end
 
 When /adds? (\d+|a) personnel members? to the IACUC Protocol$/ do |num|
   count = {1 => '', 2 => '2'}
-  num =='a' ? members = 1 : members = num.to_i
-  while members > 0
-    set("@personnel#{count[members]}", (create IACUCPersonnel))
-    members -= 1
-  end
+  count[num].times { @iacuc_protocol.add_personnel }
 end
 
 When /edits the Principles of (.*)/ do |principle|
