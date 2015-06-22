@@ -44,13 +44,9 @@ class IACUCProtocolObject < DataFactory
       doc.expand_all
 
       fill_out doc, :description, :protocol_type, :title, :lay_statement_1
-<<<<<<< HEAD
-      doc.protocol_project_type.pick!(@protocol_project_type)
-=======
-
       @protocol_project_type = doc.protocol_project_type_options.sample if @protocol_project_type == '::random::'
       fill_out doc, :protocol_project_type
->>>>>>> development
+
     end
     unless @lead_unit==' '
       set_lead_unit
