@@ -3,11 +3,11 @@ And /adds a Species group to the IACUC Protocol$/ do
 end
 
 And /assigns a (second |)location to the Procedure with a type of '(.*)' on the IACUC Protocol$/ do |count, type|
-  @iacuc_protocol.procedures[0].set_location(type: type, room: rand(100..999), description: random_alphanums_plus, species: @iacuc_protocol.species_groups[0].species)
+  @iacuc_protocol.procedures.add_location type: type
 end
 
 When /edits the location type, name, room, description on the IACUC Protocol$/ do
-  @iacuc_protocol.procedures[0].edit_location(index: '0', name: '::random::', room: rand(100..999), description: random_alphanums_plus)
+  @iacuc_protocol.procedures.locations[0].edit name: '::random::', room: rand(100..999).to_s, description: random_alphanums_plus
 end
 
 And /adds a Procedure to the IACUC Protocol$/ do
@@ -16,7 +16,7 @@ end
 
 And /deletes the (first |second )location from the Procedure$/ do |count|
   location = {'first ' => 0, 'second ' => 1}
-  @iacuc_protocol.procedures[0].delete_location(location[count])
+  @iacuc_protocol.procedures.locations[location[count]].delete
 end
 
 When /deactivates the IACUC Protocol$/ do

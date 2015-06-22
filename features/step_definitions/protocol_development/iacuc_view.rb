@@ -8,29 +8,32 @@ Then /^the summary will display the location of the procedure$/ do
   on(IACUCProcedures).select_procedure_tab 'summary'
   on IACUCProceduresSummary do |page|
     page.expand_all
-    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include @iacuc_protocol.procedures[0].location[field].to_s}
+    [:type, :room, :name, :description].each { |field| expect(page.locations).to include @iacuc_protocol.procedures.locations[0].send(field) }
   end
 end
 
 Then /^the edited location information should be displayed in the Procedure summary$/ do
-  [:room, :name, :description].each { |field| expect(on(IACUCProceduresSummary).summary_locations).to include @iacuc_protocol.procedures[0].location[field].to_s}
+  on(IACUCProcedures).select_procedure_tab 'summary'
+  [:room, :name, :description].each { |field|
+    expect(on(IACUCProceduresSummary).locations).to include @iacuc_protocol.procedures.locations[0].send(field)
+  }
 end
 
 Then /^the (first |second )location is not listed in the Procedure summary$/ do |count|
-  procedure = {'first ' => '', 'second ' => '2'}
+  location = {'first ' => 0, 'second ' => 1}
   on(IACUCProcedures).select_procedure_tab 'summary'
   on IACUCProceduresSummary do |page|
     page.expand_all
-    [:room, :name, :description].each { |field| expect(page.summary_locations).to_not include @iacuc_protocol.procedures[0].location[field].to_s}
+    [:room, :name, :description].each { |field| expect(page.locations).to_not include @iacuc_protocol.procedures.locations[location[count]].send(field) }
   end
 end
 
 And /^the (first |second )location is listed on the IACUC Protocol$/ do |count|
-  procedure = {'first ' => '', 'second ' => '2'}
+  procedure = {'first ' => 0, 'second ' => 1}
   on(IACUCProcedures).select_procedure_tab 'summary'
   on IACUCProceduresSummary do |page|
     page.expand_all
-    [:type, :room, :name, :description].each { |field| expect(page.summary_locations).to include @iacuc_protocol.procedures[0].location[field].to_s}
+    [:type, :room, :name, :description].each { |field| expect(page.locations).to include @iacuc_protocol.procedures.locations[procedure[count]].send(field) }
   end
 end
 
@@ -40,9 +43,9 @@ Then /^the expiration date is set for the Protocol$/ do
 end
 
 Then /^the (.*)Organization that was added should display on the IACUC Protocol$/ do |count|
-  index = { '' => 1, 'first ' => 1, 'second ' => 2 }
+  index = { '' => 0, 'first ' => 0, 'second ' => 1 }
   on IACUCProtocolOverview do |page|
-    expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organizations[index[count]-1].organization_id
+    expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organizations[index[count]].organization_id
   end
 end
 

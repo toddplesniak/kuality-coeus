@@ -25,8 +25,7 @@ class IACUCProtocolObject < DataFactory
         personnel:           collection('IACUCPersonnel'),
         special_review:      collection('SpecialReview'),
         species_groups:      collection('SpeciesGroups'),
-        organizations:       collection('Organization'),
-        procedures:          collection('Procedures')
+        organizations:       collection('Organization')
     }
 
     set_options(defaults.merge(opts))
@@ -138,8 +137,11 @@ class IACUCProtocolObject < DataFactory
   alias_method :add_species_group, :add_species_groups
 
   def add_procedure opts={}
-    defaults = {}
-    @procedures.add defaults.merge(opts)
+    defaults = {
+        navigate: @navigate
+    }
+    @procedures = make IACUCProceduresObject, defaults.merge(opts)
+    @procedures.create
   end
 
   # FIXME - Needs its own data object and collection classes.

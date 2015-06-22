@@ -62,7 +62,7 @@ When /^the Application Administrator creates a new Location type maintenance doc
 end
 
 And /adds a location name to the location type maintenance document$/ do
-  @location_name = create IACUCLocationNameMaintenanceObject
+  @location_name = create IACUCLocationNameMaintenanceObject, location_type_code: @location_type.location_type
 end
 
 When /^(the (.*) |)assigns the created location to a Procedure on the IACUC Protocol$/ do |text, role_name|
@@ -97,5 +97,5 @@ And /^(the (.*) |)creates an IACUC Protcol with the edited location name for a P
 
   @iacuc_protocol.add_species_groups
   @iacuc_protocol.add_procedure
-  @iacuc_protocol.procedures[0].set_location location_name: @location_name.location_name,  species: @iacuc_protocol.species_groups[0].species
+  @iacuc_protocol.procedures.add_location type: @location_type.location_type, name: @location_name.location_name,  species: @iacuc_protocol.species_groups[0].species
 end

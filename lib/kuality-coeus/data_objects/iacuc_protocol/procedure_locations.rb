@@ -1,6 +1,8 @@
 class ProcedureLocationObject < DataFactory
 
-  attr_reader :description, :type, :index, :name, :room
+  include StringFactory
+
+  attr_reader :description, :type, :index, :name, :room, :index
 
   def initialize(browser, opts={})
     @browser = browser
@@ -9,53 +11,55 @@ class ProcedureLocationObject < DataFactory
         type: 'Performance Site',
         name: '::random::',
         #Room Number required for setting the procedure to location
-        room: rand(101..999)
+        room: rand(101..999).to_s,
+        procedures_at_location: ['All']
     }
     set_options(defaults.merge(opts))
-    requires :navigate
+    requires :navigate, :index
   end
 
   def create
     # Navigation performed by parent Procedures object
     on IACUCProceduresLocation do |page|
       #noko to speed up select list
-      @type = page.location_type_list.sample if @type=='::random::'
-      page.location_type.pick! @type
-      page.location_room.fit @room
-      page.location_description.fit @description
-
+      @type = page.type_list.sample if @type=='::random::'
+      fill_out page, :room, :description, :type
       # Cannot have location with same type and name so we need to handle
       # this case when location name is ::random:: for the additional name(s)
       if page.info_line('1').present? && @name == '::random::'
-        loc_names = []
         # Creating an array of location names from the select list
-        page.location_name_array(loc_names)
+        loc_names = page.name_array
         # Deleting the existing location name at index zero
-        loc_names.delete(page.location_name_added(0).selected_options.first.text)
-        page.location_name.pick! loc_names.sample
-        @name = page.location_name.selected_options.first.text
+        loc_names.delete(page.name_added(0).selected_options.first.text)
+        page.name.pick! loc_names.sample
+        @name = page.name.selected_options.first.text
       else
-        # No previous locations, so we add the first one
-        page.location_name.pick! @name
-      end
 
+
+        DEBUG.pause 8490
+
+
+        # No previous locations, so we add the first one
+        page.name.pick! @name
+
+
+      end
       page.add_location
-      # After adding the location, need to select the procedures for this location
-      # otherwise this location will not be saved
-      # Need to use the info line number with room value to find the correct edit procedures button
-      @info_line_number = page.info_line_number(@room)
-      page.location_edit_procedures(@info_line_number)
+      page.edit_procedures(@index)
     end
     # Select the specific species checkbox if provided otherwise select the ALL option.
     on IACUCProceduresPersonnelDialogue do |page|
-      if page.all_group.parent.text.strip == @location[:species]
-        page.all_group.set
+      if @procedures_at_location[0]=='All'
+        if page.all_group.present?
+          page.all_group.set
+        else
+          page.all_procedures.set
+        end
       else
-        page.all_procedures
+        @procedures_at_location.each{ |p| page.procedure(p).set }
       end
       page.save
     end
-
     on(IACUCProceduresLocation).save
   end
 
@@ -64,19 +68,34 @@ class ProcedureLocationObject < DataFactory
     on(IACUCProcedures) do |page|
       page.procedures
       page.expand_all
-      page.select_procedure_tab 'Location'
+      page.select_procedure_tab 'location'
     end
   end
 
   def edit opts={}
-    # TODO: Navigation stuff
     view
     on IACUCProceduresLocation do |page|
-      page.type_added(@index).fit opts[:type]
-      page.name_added(@index).fit opts[:name]
-      page.room_added(@index).fit opts[:room]
-      page.description_added(@index).fit opts[:description]
-      page.edit_procedures(@index)
+      page.edit_type(@index).pick! opts[:type]
+      page.edit_name(@index).pick! opts[:name]
+      page.edit_room(@index).fit opts[:room]
+      page.edit_description(@index).fit opts[:description]
+
+      unless opts[:procedures_at_location].nil?
+        page.edit_procedures(@index)
+        # First we clear out all selections, to have a blank slate...
+        if page.all_group.present?
+          page.all_group.set
+          page.all_group.clear
+        else
+          page.all_procedures.set
+          page.all_procedures.clear
+        end
+        # Now we can check the items that need to be checked...
+        opts[:procedures_at_location].each do |pal|
+          page.procedure(pal).set
+        end
+      end
+
       page.save
       update_options(opts)
     end
@@ -87,9 +106,9 @@ class ProcedureLocationObject < DataFactory
     on IACUCProcedures do |page|
       page.expand_all
     end
-    view_procedure_details 'Location'
+    view_procedure_details 'location'
     on IACUCProceduresLocation do |page|
-      page.location_delete(@index)
+      page.delete(@index)
       confirmation
       page.save
     end
@@ -100,5 +119,8 @@ end  # ProcedureLocationObject
 class ProcedureLocationsCollection < CollectionsFactory
 
   contains ProcedureLocationObject
+
+  # TODO: Add an indexing function here so that locations will
+  # remain properly identifiable after one or more get deleted...
 
 end
