@@ -54,6 +54,7 @@ class Header < BasePage
 
   #Central Admin not working on kc6 using UNIT for temp fix.
   action(:central_admin) { |b|
+    b.navigate_to_header
     5.times {
       b.unit_link.click
       sleep 1 unless b.unit_link.parent.div.visible?

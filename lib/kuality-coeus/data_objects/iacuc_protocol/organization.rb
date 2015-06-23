@@ -1,6 +1,6 @@
 class OrganizationObject < DataFactory
 
-  include StringFactory, Navigation, DateFactory, Protocol
+  include StringFactory, Protocol
 
   attr_reader  :organization_id, :organization_type, :clear_contact, :add_contact_info,
                :old_organization_address, :organization_address, :organization_name
@@ -52,23 +52,29 @@ class OrganizationObject < DataFactory
     end
   end
 
-  def clear_contact(org_id)
+  def clear_contact
     on IACUCProtocolOverview do |page|
-      @old_organization_address = page.contact_address(org_id)
-      page.clear_contact(org_id)
+      @old_organization_address = page.contact_address(@organization_id)
+      page.clear_contact(@organization_id)
     end
   end
 
-  def add_contact_info(org_id)
-    on(IACUCProtocolOverview).add_contact(org_id)
+  def add_contact_info
+    on(IACUCProtocolOverview).add_contact(@organization_id)
     on AddressBookLookup do |search|
       search.search
       search.return_random
     end
 
     on IACUCProtocolOverview do |page|
-      @organization_address = page.contact_address(org_id)
+      @organization_address = page.contact_address(@organization_id)
     end
   end
+
+end # OrganizationObject
+
+class OrganizationCollection < CollectionsFactory
+
+  contains OrganizationObject
 
 end

@@ -1,7 +1,7 @@
 # coding: UTF-8
 class PaymentInvoiceObject < DataFactory
 
-  include Navigation, DateFactory, StringFactory
+  include DateFactory, StringFactory
 
   attr_reader :payment_basis, :payment_method, #:document_funding_id,
               :payment_and_invoice_requirements, :award_payment_schedule,

@@ -1,15 +1,15 @@
 class IACUCProtocolObject < DataFactory
 
-  include StringFactory, Navigation, DateFactory, Protocol
+  include StringFactory, DateFactory, Protocol, Utilities
 
   attr_reader  :description, :organization_document_number, :protocol_type, :title, :lead_unit,
                :protocol_project_type, :lay_statement_1,
                #theThreeRs
                :alternate_search_required, :reduction, :refinement, :replacement,
                #others
-               :procedures, :location, :document_id,
-               :species, :organization, :old_organization_address, :species_modify, :withdrawal_reason,
-               :principles, :doc, :amendment
+               :procedures, :location, :document_id, :special_review,
+               :species_groups, :organizations, :withdrawal_reason,
+               :principles, :doc, :amendment, :personnel
 
   def initialize(browser, opts={})
     @browser = browser
@@ -22,11 +22,14 @@ class IACUCProtocolObject < DataFactory
         protocol_project_type: '::random::',
         lay_statement_1:     random_alphanums_plus,
         alternate_search_required: 'No',
-        personnel:           collection('ProtocolPersonnel')
+        personnel:           collection('IACUCPersonnel'),
+        special_review:      collection('SpecialReview'),
+        species_groups:      collection('SpeciesGroups'),
+        organizations:       collection('Organization')
     }
 
-    @lookup_class = IACUCProtocolLookup
     set_options(defaults.merge(opts))
+    @navigate = navigate
   end
 
   def create
@@ -46,7 +49,6 @@ class IACUCProtocolObject < DataFactory
       fill_out doc, :description, :protocol_type, :title, :lay_statement_1
       @protocol_project_type = doc.protocol_project_type_options.sample if @protocol_project_type == '::random::'
       fill_out doc, :protocol_project_type
-
     end
     unless @lead_unit==' '
       set_lead_unit
@@ -66,71 +68,8 @@ class IACUCProtocolObject < DataFactory
 
   def view(tab)
     raise 'Please pass a string for the Protocol\'s view method.' unless tab.kind_of? String
-    on IACUCProtocolOverview do |page|
-      if page.protocol_element.exists?
-        if page.protocol_number == @protocol_number
-          # 'on document, moving on'
-        else
-          view_document
-        end
-      else
-        view_document
-      end
-      page.send(damballa(tab))
-    end
-  end
-
-  def view_document
-    #use this view when you are on the document and want to completely reload the document.
-    on(Header).doc_search
-    on DocumentSearch do |search|
-      search.document_id.set @document_id
-      search.search
-      search.open_item @document_id
-    end
-  end
-
-  def navigate
-    if on(Header).krad_portal_element.exists?
-      on(Header).krad_portal
-    end
-
-    #we have gotten to a strange place without a header because of time and money need to get back from there
-    @browser.goto $base_url+$context unless on(Header).header_div.exists?
-    unless on_protocol?
-
-      on(Header).doc_search
-      on DocumentSearch do |search|
-        search.document_id.set @document_id
-        search.search
-        search.open_item @document_id
-      end
-
-    end
-  end
-
-  def on_protocol?
-    false
-    # if on(ProtocolOverview).headerinfo_table.present?
-    #   on(ProtocolOverview).protocol_number==@protocol_number
-    # else
-    #   false
-    # end
-  end
-
-
-  def view_by_protocol_number(protocol_number=@protocol_number)
-    on(Header).doc_search
-    on(Header).researcher
-    on(ResearcherMenu).iacuc_search_protocols
-    on ProtocolLookup do |search|
-      search.protocol_number.set protocol_number
-      search.search
-      search.active('yes')
-      #Parameter needed for Amendment which creates a unique protocol number with 4 extra digits at the end
-      #example base protocol number 1410000010 then amendment becomes 1410000010A001
-      search.edit_item("#{protocol_number}")
-    end
+    @navigate.call
+    on(IACUCProtocolOverview).send(damballa(tab))
   end
 
   def theThreeRs opts={}
@@ -167,13 +106,45 @@ class IACUCProtocolObject < DataFactory
     end
   end
 
-  def add_organization opts={}
-    view 'Protocol'
-    raise 'There\'s already an Organization added to the Protocol. Please fix your scenario!' unless @organization.nil?
-    @organization = make OrganizationObject, opts
-    @organization.create
+  def add_personnel opts={}
+    defaults = {
+
+    }
+    @personnel.add defaults.merge(opts)
   end
 
+  def add_organization opts={}
+    view 'Protocol'
+    # TODO: Add code to index multiple organizations...
+    @organizations.add opts
+  end
+
+  def add_special_review opts={}
+    defaults = {
+        navigate: @navigate,
+        index: @special_review.size
+    }
+    @special_review.add defaults.merge(opts)
+  end
+
+  def add_species_groups opts={}
+    defaults = {
+        navigate: @navigate,
+        index: @species_groups.size
+    }
+    @species_groups.add defaults.merge(opts)
+  end
+  alias_method :add_species_group, :add_species_groups
+
+  def add_procedure opts={}
+    defaults = {
+        navigate: @navigate
+    }
+    @procedures = make IACUCProceduresObject, defaults.merge(opts)
+    @procedures.create
+  end
+
+  # FIXME - Needs its own data object and collection classes.
   def add_protocol_exception opts={}
     @protocol_exception ||= {
         exception: '::random::',
@@ -292,7 +263,6 @@ class IACUCProtocolObject < DataFactory
                     'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
     }
     @amendment.merge!(opts)
-    view_by_protocol_number
     view 'IACUC Protocol Actions'
 
     on CreateAmendment do |page|
@@ -370,6 +340,32 @@ class IACUCProtocolObject < DataFactory
     @doc = Hash[[keys, values].transpose]
     #removing empty key value pairs
     @doc.delete_if {|k,v| v.nil? or k==:"" }
+  end
+
+  # ============
+  private
+  # ============
+
+  def navigate
+    lambda {
+      begin
+        there = on(DocumentHeader).document_id==@document_id && @browser.frm.div(id: 'headerarea').h1.text.strip==@doc_header
+      rescue Watir::Exception::UnknownObjectException, Selenium::WebDriver::Error::StaleElementReferenceError, WatirNokogiri::Exception::UnknownObjectException, Watir::Wait::TimeoutError
+        there = false
+      end
+      unless there
+        on(BasePage).close_extra_windows
+        on(Header).researcher
+        on(ResearcherMenu).iacuc_search_protocols
+        on ProtocolLookup do |search|
+          fill_out search, :protocol_number
+          search.search
+          #TODO: Parameter needed for Amendment which creates a unique protocol number with 4 extra digits at the end
+          #example base protocol number 1410000010 then amendment becomes 1410000010A001
+          search.edit_item(@protocol_number)
+        end
+      end
+    }
   end
 
 end #IACUCProtocolObject
