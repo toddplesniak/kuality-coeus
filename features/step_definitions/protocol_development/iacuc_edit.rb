@@ -3,7 +3,14 @@ And /adds a Species group to the IACUC Protocol$/ do
 end
 
 And /assigns a (second |)location to the Procedure with a type of '(.*)' on the IACUC Protocol$/ do |count, type|
-  @iacuc_protocol.procedures.add_location type: type
+  @iacuc_protocol.procedures.view
+  on(IACUCProcedures).select_procedure_tab 'location'
+  unused_location_names = []
+  on IACUCProceduresLocation do |page|
+    page.type.select type
+    unused_location_names = page.name_array - @iacuc_protocol.procedures.locations.names
+  end
+  @iacuc_protocol.procedures.add_location type: type, name: unused_location_names.sample
 end
 
 When /edits the location type, name, room, description on the IACUC Protocol$/ do

@@ -38,7 +38,7 @@ class IACUCProceduresObject < DataFactory
 
   def assign_personnel(person_name, procedure_name)
     view
-    on(IACUCProcedures).select_procedure_tab 'Personnel'
+    on(IACUCProcedures).select_procedure_tab 'personnel'
     on(IACUCProceduresPersonnel).edit_procedures(person_name)
 
     on IACUCProceduresPersonnelDialogue do |page|

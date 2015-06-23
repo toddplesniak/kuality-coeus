@@ -1,6 +1,6 @@
 class ProcedureLocationObject < DataFactory
 
-  include StringFactory
+  include StringFactory, Utilities
 
   attr_reader :description, :type, :index, :name, :room, :index
 
@@ -23,27 +23,10 @@ class ProcedureLocationObject < DataFactory
     on IACUCProceduresLocation do |page|
       #noko to speed up select list
       @type = page.type_list.sample if @type=='::random::'
-      fill_out page, :room, :description, :type
-      # Cannot have location with same type and name so we need to handle
-      # this case when location name is ::random:: for the additional name(s)
-      if page.info_line('1').present? && @name == '::random::'
-        # Creating an array of location names from the select list
-        loc_names = page.name_array
-        # Deleting the existing location name at index zero
-        loc_names.delete(page.name_added(0).selected_options.first.text)
-        page.name.pick! loc_names.sample
-        @name = page.name.selected_options.first.text
-      else
-
-
-        DEBUG.pause 8490
-
-
-        # No previous locations, so we add the first one
-        page.name.pick! @name
-
-
-      end
+      # Need this separated out because it determines what's in the
+      # Name field...
+      page.type.select @type
+      fill_out page, :room, :description, :name
       page.add_location
       page.edit_procedures(@index)
     end
@@ -105,8 +88,8 @@ class ProcedureLocationObject < DataFactory
     view
     on IACUCProcedures do |page|
       page.expand_all
+      page.select_procedure_tab 'location'
     end
-    view_procedure_details 'location'
     on IACUCProceduresLocation do |page|
       page.delete(@index)
       confirmation
@@ -119,6 +102,10 @@ end  # ProcedureLocationObject
 class ProcedureLocationsCollection < CollectionsFactory
 
   contains ProcedureLocationObject
+
+  def names
+    self.map { |l| l.name }
+  end
 
   # TODO: Add an indexing function here so that locations will
   # remain properly identifiable after one or more get deleted...
