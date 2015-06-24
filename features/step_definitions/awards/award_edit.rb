@@ -34,7 +34,7 @@ When /completes? the nonrandom Award requirements$/ do
 end
 
 When /^data validation is turned on for the Award$/ do
-  @award.view_tab :award_actions
+  @award.view :award_actions
   on AwardActions do |page|
     page.expand_all
     page.validation_button.wait_until_present
