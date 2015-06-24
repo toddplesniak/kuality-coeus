@@ -28,4 +28,7 @@ class AwardActions < KCAwards
 
   element(:award_hierarchy_link) { |b| b.frm.link(class: 'awardHierarchy') }
 
+  undefine :notification
+  value(:notification) { |b| b.noko.div(class: 'msg-excol').div(class: 'kul-error').text }
+
 end

@@ -28,12 +28,13 @@ class IACUCProcedures < KCProtocol
 end
 
 class IACUCProceduresPersonnel < IACUCProcedures
-  # p_value(:find_personnel_line_number) { |person_name, b| b.frm.div(text: "#{person_name}").parent.text }
+  undefine :personnel
+  value(:personnel) { |b| b.noko.table(id: 'procedure-personnel-table').ths(class: 'infoline').map { |th| onespace(th.parent.div(align: 'left').text) } }
   p_action(:edit_procedures) { |person_name, b| b.frm.td(text: b.frm.div(text: "#{person_name}").parent.text).parent.link(id: 'editProcedureLink').click }
 end
 
+#assign/edit procedures modal
 class IACUCProceduresPersonnelDialogue < IACUCProceduresPersonnel
-  #assign/edit procedures modal
   undefine :save
 
   element(:all_procedures) { |b| b.frm.div(class: 'fancybox-wrap fancybox-desktop fancybox-type-inline fancybox-opened').checkbox(class: 'checkBoxSelectAll') }

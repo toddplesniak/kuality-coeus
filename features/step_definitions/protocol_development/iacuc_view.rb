@@ -45,6 +45,13 @@ end
 Then /^the (.*)Organization that was added should display on the IACUC Protocol$/ do |count|
   index = { '' => 0, 'first ' => 0, 'second ' => 1 }
   on IACUCProtocolOverview do |page|
+
+
+
+    DEBUG.pause 5757
+
+
+
     expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organizations[index[count]].organization_id
   end
 end
@@ -88,15 +95,11 @@ Then /^the (.*) Species added should be the only Species on the IACUC Protocol$/
   end
 end
 
-Then /^(\d+ |the )?personnel members? added to the IACUC Protocol (is|are) present$/ do |count, isare|
-  count == 'the ' ? counts = 1 : counts = count.to_i
+Then /^the personnel members? added to the IACUC Protocol (is|are) present$/ do |x|
   on ProtocolPersonnel do |page|
-    while counts > 1
-      expect(page.added_personnel_name((get("@personnel#{counts.to_s}")).full_name, get("@personnel#{counts.to_s}").protocol_role)).to exist
-      counts -= 1
+    @iacuc_protocol.personnel.each do |person|
+      expect(page.added_people).to include person.full_name
     end
-    # Handle for '1' or 'the'
-      expect(page.added_personnel_name(@personnel.full_name, @personnel.protocol_role)).to exist if counts <= 1
   end
 end
 
@@ -149,7 +152,7 @@ end
 Then /^the procedures summary will display qualifications for the personnel$/ do
   on(IACUCProcedures).select_procedure_tab 'summary'
   on IACUCProceduresSummary do |page|
-    page.view_qualification(@personnel.full_name)
-    expect(page.qualification_dialog).to include @procedures.qualifications
+    page.view_qualification(@iacuc_protocol.procedures.personnel[0].full_name)
+    expect(page.qualification_dialog).to include @iacuc_protocol.procedures.personnel[0].qualifications
   end
 end

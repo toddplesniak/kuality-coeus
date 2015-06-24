@@ -49,6 +49,9 @@ end
 
 When /adds? an organization to the IACUC Protocol$/ do
   @iacuc_protocol.add_organization
+
+  DEBUG.inspect @iacuc_protocol.organizations
+
 end
 
 When /^(the (.*) |)adds? an organization to the IACUC Protocol without the required fields$/ do |text, role_name|
@@ -99,7 +102,7 @@ When /^the IACUC Protocol Creator deletes the (.*) Species$/ do |line_item|
 end
 
 When /adds? (\d+|a) personnel members? to the IACUC Protocol$/ do |num|
-  count = {1 => '', 2 => '2'}
+  count = {'a'=> 1, '1' =>1, '2' => 2}
   count[num].times { @iacuc_protocol.add_personnel }
 end
 
@@ -166,7 +169,7 @@ When /(the (.*) |)(suspends?|terminates?|expires?) the IACUC Protocol$/ do |text
   @iacuc_protocol.action(action.chomp('s'))
 end
 
-And /^adds a person to the procedure for the species with qualifications$/ do
-  @procedures.assign_personnel(@personnel.full_name, @procedures.procedure_name)
-
+And /^a qualification and procedure are added to the procedure person$/ do
+  @iacuc_protocol.procedures.personnel[0].add_procedure @iacuc_protocol.procedures.categories[0].name
+  @iacuc_protocol.procedures.personnel[0].update_qualifications random_alphanums
 end

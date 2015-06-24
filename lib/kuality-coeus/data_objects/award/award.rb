@@ -40,6 +40,7 @@ class AwardObject < DataFactory
       cost_sharing:          collection('AwardCostSharing'),
       approved_equipment:    collection('ApprovedEquipment'),
       key_personnel:         collection('AwardKeyPersonnel'),
+      reports:               collection('AwardReports'),
       funding_proposals:     [], # Contents MUST look like: {ip_number: '00001', merge_type: 'No Change'}, ...
       subawards:             [], # Contents MUST look like: {org_name: 'Org Name', amount: '999.99'}, ...
       sponsor_contacts:      [], # Contents MUST look like: {non_employee_id: '333', project_role: 'Close-out Contact'}, ...
@@ -68,7 +69,6 @@ class AwardObject < DataFactory
       create.send(@press) unless @press.nil?
       @document_id = create.header_document_id
       @id = create.award_id.strip
-      @search_key = { award_id: @id }
       @document_status = create.header_status
     end
   end #create
@@ -147,31 +147,37 @@ class AwardObject < DataFactory
     end
   end
 
-    def add_payment_and_invoice opts={}
-      raise "You already created a Payment & Invoice in your scenario.\nYou want to interact with that item directly, now." unless @payment_and_invoice.nil?
-      view :payment_reports__terms
-      @payment_and_invoices = make PaymentInvoiceObject, opts
-      @payment_and_invoices.create
+  def add_payment_and_invoice opts={}
+    raise "You already created a Payment & Invoice in your scenario.\nYou want to interact with that item directly, now." unless @payment_and_invoice.nil?
+    view :payment_reports__terms
+    @payment_and_invoices = make PaymentInvoiceObject, opts
+    @payment_and_invoices.create
+  end
+
+  def add_sponsor_contact opts={}
+    s_c = opts.empty? ? {non_employee_id: rand(4000..4103).to_s, project_role: '::random::'} : opts
+    view :contacts
+    on AwardContacts do |page|
+      page.expand_all
+      page.search_sponsor_contact
+    end
+    on NonOrgAddressBookLookup do |lookup|
+      lookup.search
+      lookup.return_random
     end
 
-    def add_sponsor_contact opts={}
-      s_c = opts.empty? ? {non_employee_id: rand(4000..4103).to_s, project_role: '::random::'} : opts
-      view :contacts
-      on AwardContacts do |page|
-        page.expand_all
-        page.search_sponsor_contact
-      end
-      on NonOrgAddressBookLookup do |lookup|
-        lookup.search
-        lookup.return_random
-      end
-
-      on AwardContacts do |page|
-        page.sponsor_project_role.pick! s_c[:project_role]
-        page.add_sponsor_contact
-        page.save
-      end
+    on AwardContacts do |page|
+      page.sponsor_project_role.pick! s_c[:project_role]
+      page.add_sponsor_contact
+      page.save
     end
+  end
+
+  def add_report opts={}
+    view :payment_reports__terms
+    @reports.add opts
+  end
+
   def add_terms opts={}
     raise "You already created terms in your scenario.\nYou want to interact with that object directly, now." unless @terms.nil?
     view :payment_reports__terms
@@ -191,19 +197,16 @@ class AwardObject < DataFactory
 
   def submit
     view :award_actions
-    on AwardActions do |page|
-      page.submit
-    end
+    on(AwardActions).submit
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    raise 'Award submission failed.' unless on(AwardActions).notification=='Document was successfully submitted.'
   end
 
   def add_custom_data opts={}
     view :custom_data
     defaults = {
         document_id: @document_id,
-        doc_header: @doc_header,
-        lookup_class: @lookup_class,
-        search_key: @search_key
+        doc_header: @doc_header
     }
     if @custom_data.nil?
       @custom_data = make AwardCustomDataObject, defaults.merge(opts)
@@ -353,34 +356,38 @@ class AwardObject < DataFactory
 
   def navigate
     lambda {
-      #we are in a strange place without a header because of time and money. need to get back from there
-      @browser.goto $base_url+$context unless on(Header).header_div.present?
-
-      if on(Header).krad_portal_element.present?
-        on(Header).krad_portal
-      else
-        # DEBUG.message "krad portal does not exist we can continue on"
+      begin
+        there = on(Award).header_document_id==@document_id
+      rescue
+        there = false
       end
-      on(Header).central_admin
-      on(CentralAdmin).search_award
-      on AwardLookup do |page|
-        page.award_id.set @id
-        page.search
-        # TODO: Remove this when document search issues are resolved
-        begin
-          page.medusa
-        rescue Watir::Exception::UnknownObjectException
-          on(Header).doc_search
-          on DocumentSearch do |search|
-            search.document_id.set @document_id
-            search.search
+      unless there
+        # If we are in a strange place without a header because of time and money, need to get back from there...
+        @browser.goto $base_url+$context unless on(Header).header_div.present?
 
-            search.open_item @document_id
+        if on(Header).krad_portal_element.present?
+          on(Header).krad_portal
+        end
+        on(Header).central_admin
+        on(CentralAdmin).search_award
+        on AwardLookup do |page|
+          page.award_id.set @id
+          page.search
+          # TODO: Remove this when document search issues are resolved
+          begin
+            page.medusa
+          rescue Watir::Exception::UnknownObjectException
+            on(Header).doc_search
+            on DocumentSearch do |search|
+              search.document_id.set @document_id
+              search.search
+
+              search.open_item @document_id
+            end
           end
         end
+        on(Award).headerinfo_table.wait_until_present
       end
-      # on(Award).horzontal_links.wait_until_present
-      on(Award).headerinfo_table.wait_until_present
     }
   end
 

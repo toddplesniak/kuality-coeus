@@ -25,6 +25,7 @@ class IACUCProtocolObject < DataFactory
         personnel:           collection('IACUCPersonnel'),
         special_review:      collection('SpecialReview'),
         species_groups:      collection('SpeciesGroups'),
+        # TODO: Need code for when an organization is already added to protocol by default
         organizations:       collection('Organization')
     }
 

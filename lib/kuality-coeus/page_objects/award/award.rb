@@ -53,6 +53,7 @@ class Award < KCAwards
   element(:error_summary) { |b| b.frm.div(class: 'error') }
 
   value(:exception_errors)  { |b| arry=[]; b.divs(align: 'left').each {|d| arry << d.text}; arry }
+
   private
 
   p_action(:target_funding_row) { |match, b| b.current_funding_proposals_table.row(text: /#{Regexp.escape(match)}/) }

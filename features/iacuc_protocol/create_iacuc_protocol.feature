@@ -17,15 +17,14 @@ Feature: Creating IACUC Protocols
   Scenario: IACUC Protocol overview is missing a required field
     When the IACUC Protocol Creator creates an IACUC Protocol but misses a required field
     Then an error should appear saying the field is required
-  @test
+
   Scenario: Personnel with qualifications can be added to a procedure and display on summary
-    When the IACUC Protocol Creator creates an IACUC Protocol
-    And  adds 1 personnel member to the IACUC Protocol
-    Then the personnel member added to the IACUC Protocol is present
-    When adds a Species group to the IACUC Protocol
-    And  adds a Procedure to the IACUC Protocol
-    And  adds a person to the procedure for the species with qualifications
-    Then the procedures summary will display qualifications for the personnel
+    Given the IACUC Protocol Creator creates an IACUC Protocol
+    And   adds 1 personnel member to the IACUC Protocol
+    And   adds a Species group to the IACUC Protocol
+    And   adds a Procedure to the IACUC Protocol
+    When  a qualification and procedure are added to the procedure person
+    Then  the procedures summary will display qualifications for the personnel
 
   Scenario: The Three Principles fields can be edited
     Given the IACUC Protocol Creator creates an IACUC Protocol with the three principles, reduction, refinement, replacement

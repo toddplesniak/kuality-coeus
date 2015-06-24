@@ -6,7 +6,7 @@ Feature: Adding Organizations to IACUC Protocols
 
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
-
+  @test
   Scenario: Add an Organization to the IACUC proposal
     Given the IACUC Protocol Creator creates an IACUC Protocol
     When  the IACUC Protocol Creator adds an organization to the IACUC Protocol
