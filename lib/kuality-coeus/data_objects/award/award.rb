@@ -41,9 +41,9 @@ class AwardObject < DataFactory
       approved_equipment:    collection('ApprovedEquipment'),
       key_personnel:         collection('AwardKeyPersonnel'),
       reports:               collection('AwardReports'),
-      funding_proposals:     [], # Contents MUST look like: {ip_number: '00001', merge_type: 'No Change'}, ...
-      subawards:             [], # Contents MUST look like: {org_name: 'Org Name', amount: '999.99'}, ...
-      sponsor_contacts:      [], # Contents MUST look like: {non_employee_id: '333', project_role: 'Close-out Contact'}, ...
+      funding_proposals:     [], # Contents MUST be Hashes with keys :ip_number and :merge_type
+      subawards:             [], # Contents MUST be Hashes with keys :org_name and :amount
+      sponsor_contacts:      [], # Contents MUST be Hashes with keys :non_employee_id and :project_role
       press: 'save'
     }
     set_options(defaults.merge(opts))

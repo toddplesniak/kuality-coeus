@@ -80,7 +80,7 @@ class AwardReportsObject < DataFactory
 
   def set_report_class
     if @class == '::random::'
-      @class == on(PaymentReportsTerms).report_classes.sample
+      @class = on(PaymentReportsTerms).report_classes.sample
     end
   end
 
