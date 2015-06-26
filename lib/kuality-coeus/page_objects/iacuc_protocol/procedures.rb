@@ -46,12 +46,12 @@ end
 
 class IACUCProceduresLocation < IACUCProcedures
   element(:type) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationTypeCode') }
-  value(:type_list) { |b| b.noko.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationTypeCode').options.map {|opt| opt.text }[1..-1]  }
+  value(:type_list) { |b| b.noko.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationTypeCode').options.map {|opt| opt.text }.tap(&:shift)  }
   element(:name) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationId') }
 
   # This returns an array of the location names. Purpose is for when 2 or more unique location names are needed
   # We will create and array of names, then delete the used name before sampling the array for the pick method
-  value(:name_array) { |b| b.frm.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationId').options.map {|oh| oh.text } }
+  value(:name_array) { |b| b.noko.select(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationId').options.map {|oh| oh.text } }
 
   element(:room) { |b| b.frm.text_field(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.locationRoom') }
   element(:description) { |b| b.frm.textarea(name: 'iacucProtocolProceduresHelper.newIacucProtocolStudyGroupLocation.studyGroupLocationDescription') }
@@ -76,11 +76,11 @@ end
 
 class IACUCProceduresSummary < IACUCProcedures
   undefine :custom_data, :personnel
-  value(:custom_data) { |b| b.frm.div(align: 'left', index: 1).text }
-  value(:personnel) { |b| b.frm.div(align: 'left', index: 2).text }
-  value(:locations) { |b| b.frm.div(align: 'left', index: 3).text }
+  value(:custom_data) { |b| b.noko.div(align: 'left', index: 1).text }
+  value(:personnel) { |b| b.noko.div(align: 'left', index: 2).text }
+  value(:locations) { |b| b.noko.div(align: 'left', index: 3).text }
 
   p_action(:view_qualification) { |full_name, b| b.frm.div(text: /#{full_name}/).link(id: 'viewQualificationsLink').click}
   # qualification dialog
-  value(:qualification_dialog) { |b| b.frm.div(class: 'fancybox-inner').text }
+  value(:qualification_dialog) { |b| b.noko.div(class: 'fancybox-inner').text }
 end

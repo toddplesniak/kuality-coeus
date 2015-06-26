@@ -61,8 +61,8 @@ class BasePage < PageFactory
       value(:committee_name) { |p| p.headerinfo_table[2][3].text }
       alias_method :pi, :committee_name
       alias_method :expiration_date, :committee_name
-      element(:headerarea) { |b| b.frm.div(id: 'headerarea') }
-      value(:headerinfo_table_no_frame) { |b| b.div(id: 'headerarea').table(class: 'headerinfo') }
+      element(:headerarea) { |b| b.noko.div(id: 'headerarea') }
+      value(:headerinfo_table_no_frame) { |b| b.headerarea.table(class: 'headerinfo') }
 
     end
 
@@ -248,12 +248,8 @@ class BasePage < PageFactory
     end
 
     def new_error_messages
-      value(:errors) do |b|
-        errs = []
-        b.error_lis.each { |li| errs << li.text }
-        errs.flatten
-      end
-      element(:error_lis) { |b| b.lis(class: 'uif-errorMessageItem') }
+      value(:errors) { |b| b.error_lis.map { |li| li.text } }
+      element(:error_lis) { |b| b.no_frame_noko.lis(class: 'uif-errorMessageItem') }
     end
 
     def validation_elements

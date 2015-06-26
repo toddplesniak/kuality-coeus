@@ -51,7 +51,7 @@ class EditAssignedNonPersonnel < BasePage
   element(:modal_div) { |b| b.div(data_parent: 'PropBudget-NonPersonnelCostsPage-EditNonPersonnel-Dialog') }
   element(:tab_list) { |b| b.modal_div.ul }
   value(:noko_rates_table) { |b| b.no_frame_noko.div(data_parent: 'PropBudget-NonPersonnelCostsPage-EditNonPersonnel-Dialog').section(class: 'uif-tableCollectionSection').tbody }
-  # FIXME!!!
+  # FIXME!!! This works perfectly well, now, but that's obviously a machine-generated ID, and prone to changing.
   element(:rates_table) { |b| b.table(id: 'uwcuma2') }
 
 end

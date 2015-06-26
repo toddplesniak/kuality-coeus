@@ -45,7 +45,7 @@ class Award < KCAwards
   action(:add_subaward) { |b| b.frm.button(name: 'methodToCall.addApprovedSubaward.anchorSubawards').click }
   element(:approved_subaward_table) { |b| b.frm.table(summary: 'Approved Subaward') }
 
-  element(:tm_table) { |b| b.frm.div(id: 'tab-DetailsDates:TimeMoney-div').table }
+  element(:tm_table) { |b| b.noko.div(id: 'tab-DetailsDates:TimeMoney-div').table }
   element(:institution_table) { |b| b.frm.div(id: 'tab-DetailsDates:Institution-div').table }
 
   element(:current_funding_proposals_table) { |b| b.frm.table(id: 'currentFundingProposalsTable') }

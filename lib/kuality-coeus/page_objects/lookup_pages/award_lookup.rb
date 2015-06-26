@@ -8,7 +8,7 @@ class AwardLookup < Lookups
 
   element(:award_id) { |b| b.frm.text_field(name: 'awardNumber') }
 
-  value(:award_ids) { |b| b.results_table.trs.map { |row| ids << row.tds[1].text.strip }.tap(&:shift) }
+  value(:award_ids) { |b| b.results_table.trs.map { |row| row.tds[1].text.strip }.tap(&:shift) }
 
   value(:results_text) { |b| b.noko.div(id: 'lookup').parent.text }
 

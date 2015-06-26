@@ -65,7 +65,6 @@ class Header < BasePage
   }
   element(:unit_link) { |b| b.link(text: 'UNIT') }
 
-
   action(:krad_portal) { |b| b.krad_portal_element.click }
   element(:krad_portal_element) { |b| b.link(title: 'KRAD Portal') }
 

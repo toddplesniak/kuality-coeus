@@ -11,10 +11,10 @@ end
 
 class OrganizationInquiry < Lookups
   # Page for uneditable info for an Organization
-  value(:organization_id) { |b| b.span(id: 'organizationId.div').text.strip }
-  value(:organization_name) { |b| b.span(id: 'organizationName.div').text.strip }
-  value(:address) { |b| b.span(id: 'address.div').text.strip }
-  value(:vendor_code) { |b| b.span(id: 'vendorCode.div').text.strip }
+  value(:organization_id) { |b| b.no_frame_noko.span(id: 'organizationId.div').text.strip }
+  value(:organization_name) { |b| b.no_frame_noko.span(id: 'organizationName.div').text.strip }
+  value(:address) { |b| b.no_frame_noko.span(id: 'address.div').text.strip }
+  value(:vendor_code) { |b| b.no_frame_noko.span(id: 'vendorCode.div').text.strip }
 
   action(:close_direct_inquiry) { |b| b.link(id: 'closeDirectInquiry').click }
 
