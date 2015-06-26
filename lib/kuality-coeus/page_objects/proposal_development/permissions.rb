@@ -13,6 +13,6 @@ class Permissions < BasePage
 
   private
   
-  element(:users_table) { |b| b.div(id: 'PropDev-PermissionsPage-UserTable').table }
+  element(:users_table) { |b| b.no_frame_noko.div(id: 'PropDev-PermissionsPage-UserTable').table }
   
 end

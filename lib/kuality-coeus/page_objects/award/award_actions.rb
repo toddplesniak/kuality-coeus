@@ -21,9 +21,7 @@ class AwardActions < KCAwards
 
   # This creates an array that contains the ids of the descendants of the specified Award...
   action(:descendants) { |award, b|
-    array = []
-    b.frm.li(id: "li#{award}").lis.each { |li| array << li.id[/\d+-\d+/] }
-    array
+    b.frm.li(id: "li#{award}").lis.map { |li| li.id[/\d+-\d+/] }
   }
 
   element(:award_hierarchy_link) { |b| b.frm.link(class: 'awardHierarchy') }

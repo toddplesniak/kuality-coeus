@@ -63,7 +63,6 @@ class IACUCProtocolObject < DataFactory
         doc.send_it if doc.send_button.present? #send notification
       end
       @protocol_number=doc.protocol_number
-      @search_key = { protocol_number: @protocol_number }
     end
   end
 
@@ -138,6 +137,7 @@ class IACUCProtocolObject < DataFactory
   alias_method :add_species_group, :add_species_groups
 
   def add_procedure opts={}
+    raise 'You have already made a @procedures variable in your protocol. Please interact with this object directly, now.' unless @procedures.nil?
     defaults = {
         navigate: @navigate
     }

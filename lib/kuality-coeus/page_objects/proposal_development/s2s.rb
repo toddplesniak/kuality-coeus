@@ -30,6 +30,6 @@ class S2S < BasePage
   # Forms
   element(:forms_table) { |b| b.frm.div(id: 'tab-OpportunitySearch:Forms-div').table }
   action(:include_form) { |name, b| b.forms_table.row(text: /#{Regexp.escape(name)}/).checkbox(title: 'Include') }
-  action(:form_names) { |b| array = []; b.forms_table.rows.each { |row| array << row[0].text }; array }
+  action(:form_names) { |b| b.forms_table.rows.map { |row| row[0].text } }
   
 end

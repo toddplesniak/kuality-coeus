@@ -31,4 +31,4 @@ def view(tab)
     end
 end
 
-end #contacts
+end

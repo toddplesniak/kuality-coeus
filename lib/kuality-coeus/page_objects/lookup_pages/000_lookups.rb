@@ -32,10 +32,7 @@ class Lookups < BasePage
       #used by Award for adding a key person wher user name is important
       action(:select_random_with_name) { |b| b.results_table.tbody.trs.to_a.sample.link(title: /^with KC Person KcPerson/).click; b.use_new_tab }
 
-      p_value(:docs_w_status) { |status, b| array = []; (b.results_table.rows.find_all{|row| row[3].text==status}).each { |row| array << row[0].text }; array }
-
-      action(:return_random_term) {|b| b.random_term_results.set; b.return_selected }
-      value(:random_term_results) { |b| b.results_table.checkboxes.to_a.sample }
+      p_value(:docs_w_status) { |status, b| (b.results_table.rows.find_all{|row| row[3].text==status}).map { |row| row[0].text } }
 
       # Used as the catch-all "document opening" method for conditional navigation,
       # when we can't know whether the current user will have edit permissions.

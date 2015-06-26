@@ -19,16 +19,14 @@ class EditAssignedNonPersonnel < BasePage
   element(:on_campus) { |b| b.checkbox(name: 'addProjectBudgetLineItemHelper.budgetLineItem.onOffCampusFlag') }
 
   value(:inflation_rates) { |b|
-    array = []
-    b.div(data_parent: 'PropBudget-NonPersonnelCostsPage-EditNonPersonnel-Dialog').tbody.trs.each { |tr|
-      array << {
+    b.div(data_parent: 'PropBudget-NonPersonnelCostsPage-EditNonPersonnel-Dialog').tbody.trs.map { |tr|
+      {
           description: tr[0].text,
           start_date: Utilities.datify(tr[1].text),
           institution_rate: tr[2].text,
           applicable_rate: tr[3].text
       }
     }
-    array
   }
 
   # Cost Sharing
@@ -36,16 +34,14 @@ class EditAssignedNonPersonnel < BasePage
 
   # Rates
   value(:rate_amounts) { |b|
-    array = []
-    b.noko_rates_table.trs.each do |tr|
-      array << {
+    b.noko_rates_table.trs.map do |tr|
+      {
           class: tr[0].text,
           type: tr[1].text,
           rate_cost: tr[2].text,
           rate_cost_sharing: tr[3].text
       }
     end
-    array
   }
 
   p_element(:apply) { |rate_class, type, b| b.rates_table.trs.find{ |tr| tr[0].text==rate_class && tr[1].text==type }.checkbox }

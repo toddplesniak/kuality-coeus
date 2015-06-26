@@ -40,7 +40,7 @@ class AwardKeyPersonObject < DataFactory
           #capture full_name last_name first_name
           lookup.select_random_with_name
         end
-        #need to view person to get the first and last name because full name is given and
+        #need to view person to get the first and last name because full name is given
         on KCPerson do |gather|
           @last_name = gather.last_name
           @first_name = gather.first_name

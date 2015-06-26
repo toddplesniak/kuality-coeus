@@ -24,7 +24,7 @@ class ActionList < BasePage
   action(:return_random) { |b| b.return_value_links[rand(b.return_value_links.length)].click }
   element(:return_value_links) { |b| b.results_table.links(text: 'return value') }
 
-  p_value(:docs_w_status) { |status, b| array = []; (b.results_table.rows.find_all{|row| row[3].text==status}).each { |row| array << row[0].text }; array }
+  p_value(:docs_w_status) { |status, b| (b.results_table.rows.find_all{|row| row[3].text==status}).map { |row| row[0].text } }
 
   # Used as the catch-all "document opening" method for conditional navigation,
   # when we can't know whether the current user will have edit permissions.
