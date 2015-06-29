@@ -256,35 +256,10 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
   end
 
-  def create_amendment opts={}
-    @amendment = {
-        summary: random_alphanums_plus,
-        sections: [['General Info', 'Funding Source', 'Protocol References and Other Identifiers',
-                    'Protocol Organizations', 'Questionnaire', 'General Info',
-                    'Areas of Research', 'Special Review', 'Protocol Personnel', 'Others'].sample]
-    }
-    @amendment.merge!(opts)
+  def add_amendment opts={}
+    @amendment = make IACUCAmendmentObject, opts
     view 'IACUC Protocol Actions'
-
-    on CreateAmendment do |page|
-      page.expand_all
-      page.summary.set @amendment[:summary]
-      @amendment[:sections].each do |sect|
-        page.amend(sect).set
-      end
-      page.create
-    end
-    confirmation('yes')
-    on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
-    on(CreateAmendment).save
-
-    #Amendment has a different header with 9 fields instead of the normal 6 fields
-    gather_document_info
-    @amendment[:protocol_number] = @doc[:protocol_number]
-    @amendment[:document_id] = @doc[:document_id]
-
-    @document_id = on(IACUCProtocolActions).document_id
-    on(IACUCProtocolOverview).send_it if on(IACUCProtocolOverview).send_button.present? #send notification
+    @amendment.create
   end
 
   def suspend
@@ -325,24 +300,6 @@ class IACUCProtocolObject < DataFactory
     on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
   end
 
-  # For Amendment document with 9 header area fields
-  def gather_document_info
-    keys=[]
-    values=[]
-    @doc={}
-
-    on IACUCProtocolOverview do |page|
-      # collecting the keys from the header table
-      page.headerarea.ths.each {|k| keys << k.text.gsub(':', ' ').gsub('#', 'number').strip.gsub(' ', '_').downcase.to_sym }
-      # collecting the values from the header table
-      page.headerarea.tds.each {|v| values << v.text }
-    end
-    # turning the two arrays into a usable hash
-    @doc = Hash[[keys, values].transpose]
-    #removing empty key value pairs
-    @doc.delete_if {|k,v| v.nil? or k==:"" }
-  end
-
   # ============
   private
   # ============
@@ -350,7 +307,7 @@ class IACUCProtocolObject < DataFactory
   def navigate
     lambda {
       begin
-        there = on(DocumentHeader).document_id==@document_id && @browser.frm.div(id: 'headerarea').h1.text.strip==@doc_header
+        there = on(DocumentHeader).document_id==@document_id && @browser.frm.div(id: 'headerarea').h1.text.gsub(/\W+$/,'')==@doc_header
       rescue Watir::Exception::UnknownObjectException, Selenium::WebDriver::Error::StaleElementReferenceError, WatirNokogiri::Exception::UnknownObjectException, Watir::Wait::TimeoutError
         there = false
       end

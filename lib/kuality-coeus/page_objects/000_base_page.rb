@@ -44,7 +44,7 @@ class BasePage < PageFactory
     end
 
     def document_header_elements
-      value(:doc_title) { |b| b.headerarea.h1.text.strip }
+      value(:doc_title) { |b| b.headerarea.h1.text.gsub(/\W+$/,'') }
       value(:headerinfo_table) { |b| b.noko.div(id: 'headerarea').table(class: 'headerinfo') }
       value(:document_id) { |p| p.headerinfo_table[0].text[/\d{5}/] }
       alias_method :doc_nbr, :document_id

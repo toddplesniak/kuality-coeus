@@ -1,7 +1,6 @@
 Then /^the IACUC Protocol (submission status|status) should be (.*)$/ do |status_field, status_message|
     @iacuc_protocol.view 'Protocol'
-    @iacuc_protocol.gather_document_info
-    expect(@iacuc_protocol.doc[damballa(status_field).to_sym]).to eq status_message
+    expect(on(IACUCProtocolOverview).send(damballa(status_field))).to eq status_message
 end
 
 Then /^the summary will display the location of the procedure$/ do
