@@ -4,11 +4,6 @@ class Lookups < BasePage
 
   class << self
 
-    # We must override the method in the base page because of the iframe container in the new UI...
-    def select(method_name, attrib, value)
-      element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}); b.frm.select(attrib => value) }
-    end
-
     def old_ui
       element(:results_table) { |b| b.frm.table(id: 'row') }
 

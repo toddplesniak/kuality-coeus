@@ -3,8 +3,7 @@ class Permissions < BasePage
   buttons 'Find User'
 
   element(:add_user_name) { |b| b.text_field(name: "newCollectionLines['permissionsHelper.workingUserRoles'].username") }
-  #FIXME!
-  select(:roles, :name, "newCollectionLines['permissionsHelper.workingUserRoles'].roleNames")
+  element(:roles) { |b| b.select(name: "newCollectionLines['permissionsHelper.workingUserRoles'].roleNames") }
   action(:add) { |b| b.button(id: 'PropDev-PermissionsPage-UserTable_add').click }
 
   p_value(:role_of) { |name, b| b.added_users[name] }

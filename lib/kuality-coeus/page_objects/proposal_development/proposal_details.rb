@@ -4,7 +4,7 @@ class ProposalDetails < BasePage
   document_buttons
   new_error_messages
   
-  element(:doc_title) { |b| b.no_frame_noko.h1(id: 'PropDev-DefaultView_header').span.text }
+  element(:doc_title) { |b| b.no_frame_noko.span(class: 'uif-headerText-span').text }
 
   element(:proposal_type) { |b| b.select(name: 'document.developmentProposal.proposalTypeCode') }
   value(:lead_unit) { |b| b.no_frame_noko.div(data_label: 'Lead Unit').text }

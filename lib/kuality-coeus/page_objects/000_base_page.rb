@@ -293,11 +293,6 @@ class BasePage < PageFactory
       buttons_text.each { |button| elementate(:button, button) }
     end
 
-    # TODO: This probably should be removed...
-    def select(method_name, attrib, value)
-      element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}) unless b.select(attrib => value).visible?; b.select(attrib => value) }
-    end
-
     def buttons_frame(*buttons_text)
       # for buttons with a frame element
       buttons_text.each { |button| elementate(:button, button, true) }
