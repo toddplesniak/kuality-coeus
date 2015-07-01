@@ -27,7 +27,7 @@ class OrganizationObject < DataFactory
           lookup.search
           return_random_organization
         end
-        @organization_id = page.organization_id.value
+        @organization_id = page.organization_id.value.strip
       else
         page.organization_id.fit @organization_id
       end
@@ -42,7 +42,7 @@ class OrganizationObject < DataFactory
     on OrganizationLookup do |lookup|
     the_row = rand(lookup.return_value_links.length)
     #need to capture the organization data that will be selected
-    @organization_id = lookup.return_value_links[the_row].parent.parent.td(index: 1).text
+    @organization_id = lookup.return_value_links[the_row].parent.parent.td(index: 1).text.strip
     @organization_name = lookup.return_value_links[the_row].parent.parent.td(index: 2).text
     @organization_address = lookup.return_value_links[the_row].parent.parent.td(index: 3).text
     @federal_employer_id =  lookup.return_value_links[the_row].parent.parent.td(index: 4).text

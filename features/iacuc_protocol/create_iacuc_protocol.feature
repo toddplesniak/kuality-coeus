@@ -19,7 +19,7 @@ Feature: Creating IACUC Protocols
     And   adds a Procedure to the IACUC Protocol
     When  a qualification and procedure are added to the procedure person
     Then  the procedures summary will display qualifications for the personnel
-  @test
+
   Scenario: The Three Principles fields can be edited
     When  the IACUC Protocol Creator edits the three principles of the IACUC Protocol
     Then  the three principles should have the edited values

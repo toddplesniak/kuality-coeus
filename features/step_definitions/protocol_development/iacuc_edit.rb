@@ -49,9 +49,6 @@ end
 
 When /adds? an organization to the IACUC Protocol$/ do
   @iacuc_protocol.add_organization
-
-  DEBUG.inspect @iacuc_protocol.organizations
-
 end
 
 When /^(the (.*) |)adds? an organization to the IACUC Protocol without the required fields$/ do |text, role_name|

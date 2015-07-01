@@ -41,33 +41,28 @@ Then /^the expiration date is set for the Protocol$/ do
   expect(on(KCProtocol).expiration_date).to_not equal nil
 end
 
-Then /^the (.*)Organization that was added should display on the IACUC Protocol$/ do |count|
-  index = { '' => 0, 'first ' => 0, 'second ' => 1 }
+Then /^the Organization that was added should display on the IACUC Protocol$/ do
   on IACUCProtocolOverview do |page|
-
-
-
-    DEBUG.pause 5757
-
-
-
-    expect(page.added_organization_id_with_name(index[count])).to include @iacuc_protocol.organizations[index[count]].organization_id
+    @iacuc_protocol.organizations.each { |org|
+      expect(page.organization_ids).to include org.organization_id
+    }
   end
 end
 
 And /^the added Organization information should display on the inquiry page$/ do
-  on(IACUCProtocolOverview).direct_inquiry(@iacuc_protocol.organizations[0].organization_id)
+  on(IACUCProtocolOverview).direct_inquiry(@iacuc_protocol.organizations.last.organization_id)
   on OrganizationInquiry do |page|
-    expect(page.organization_id).to eq @iacuc_protocol.organizations[0].organization_id
-    expect(page.address).to eq @iacuc_protocol.organizations[0].organization_address
-    expect(page.organization_name).to eq @iacuc_protocol.organizations[0].organization_name
+    expect(page.organization_id).to eq @iacuc_protocol.organizations.last.organization_id
+    expect(page.address).to eq @iacuc_protocol.organizations.last.organization_address
+    expect(page.organization_name).to eq @iacuc_protocol.organizations.last.organization_name
+    page.close_direct_inquiry
   end
 end
 
 Then /^on the IACUC Protocol the contact information for the added Organization is reverted$/ do
   on IACUCProtocolOverview do |page|
     page.expand_all
-    expect(page.contact_address(@iacuc_protocol.organizations[0].organization_id)).to eq @iacuc_protocol.organizations[0].old_organization_address
+    expect(page.contact_address(@iacuc_protocol.organizations.last.organization_id)).to eq @iacuc_protocol.organizations.last.old_organization_address
   end
 end
 
