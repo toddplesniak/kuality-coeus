@@ -106,11 +106,8 @@ When /adds? (\d+|a) personnel members? to the IACUC Protocol$/ do |num|
   count[num].times { @iacuc_protocol.add_personnel }
 end
 
-When /edits the Principles of (.*)/ do |principle|
-  on TheThreeRs do |page|
-    page.send(principle.downcase).set @iacuc_protocol.principles[principle.downcase.to_sym]
-    page.save
-  end
+When /edits the three principles of the IACUC Protocol/ do
+  @iacuc_protocol.update_the_three_rs reduction: random_alphanums_plus, refinement: random_alphanums_plus, replacement: random_alphanums_plus
 end
 
 When /adding a Special Review with incorrect data$/ do

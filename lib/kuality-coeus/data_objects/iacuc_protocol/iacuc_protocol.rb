@@ -93,6 +93,7 @@ class IACUCProtocolObject < DataFactory
     end
     set_options defaults
   end
+  alias_method :update_the_three_rs, :add_the_three_rs
 
   def send_notification_to_employee
     on(IACUCProtocolOverview).send_notification

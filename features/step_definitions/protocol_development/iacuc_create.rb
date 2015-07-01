@@ -1,3 +1,8 @@
+When /^(the (.*) |)creates an? IACUC Protocol$/ do |text, role_name|
+  steps %{ * I log in with the #{role_name} user } unless text == ''
+  @iacuc_protocol = create IACUCProtocolObject
+end
+
 When /^(the (.*) |)creates an? IACUC Protocol with the three R's$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
@@ -57,15 +62,6 @@ end
 
 And /adds a location name to the location type maintenance document$/ do
   @location_name = create IACUCLocationNameMaintenanceObject, location_type_code: @location_type.location_type
-end
-
-When /^(the (.*) |)assigns the created location to a Procedure on the IACUC Protocol$/ do |text, role_name|
-  steps %{ * I log in with the #{role_name} user } unless text == ''
-  @iacuc_protocol = create IACUCProtocolObject
-  @iacuc_protocol.add_the_three_rs
-  @iacuc_protocol.add_species_groups
-  @iacuc_protocol.add_procedure
-  @iacuc_protocol.procedures.add_location type: @location_type.location_type, name: @location_name.location_name, room: rand(100..999), species: @species.species
 end
 
 And /^(the (.*) |)submits an Amendment for review on the IACUC Protocol$/ do |text, role_name|

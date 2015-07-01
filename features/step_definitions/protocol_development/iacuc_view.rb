@@ -102,22 +102,13 @@ Then /^the personnel members? added to the IACUC Protocol (is|are) present$/ do 
   end
 end
 
-Then /^the three principles should have the edited values after saving the IACUC Protocol$/ do
+Then /^the three principles should have the edited values$/ do
+  visit Landing
+  @iacuc_protocol.view "The Three R's"
   on TheThreeRs do |page|
-    page.save
-    page.refresh
-    on(IACUCProtocolOverview).description.wait_until_present
-    @iacuc_protocol.view "The Three R's"
-    principle = ['reduction', 'refinement', 'replacement']
-    principle.each {|prince| expect(page.send(prince).value).to eq @iacuc_protocol.principles[prince.to_sym] }
-    page.save
-
-    principle.each do |prince|
-      page.send("#{prince}_expand")
-      page.continue_button.wait_until_present
-      expect(page.send(prince).value).to eq @iacuc_protocol.principles[prince.to_sym]
-      page.continue
-    end
+    [:reduction, :refinement, :replacement].each { |principle|
+      expect(page.send(principle).value).to eq @iacuc_protocol.send(principle)
+    }
   end
 end
 
