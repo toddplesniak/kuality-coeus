@@ -38,7 +38,7 @@ When /lifts the hold placed on the IACUC Protocol$/ do
   @iacuc_protocol.lift_hold
 end
 
-When /withdrawals the IACUC Protocol$/ do
+When /withdraws the IACUC Protocol$/ do
   @iacuc_protocol.withdraw
 end
 

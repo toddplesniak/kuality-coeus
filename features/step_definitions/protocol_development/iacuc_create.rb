@@ -1,4 +1,4 @@
-When /^(the (.*) |)creates an? IACUC Protocol$/ do |text, role_name|
+When /^(the (.*) |)creates an? IACUC Protocol with the three R's$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol = create IACUCProtocolObject
   @iacuc_protocol.add_the_three_rs
@@ -11,12 +11,7 @@ Given /^(the (.*) |)submits an IACUC Protocol for admin review$/ do |text, role_
   @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
 end
 
-And /^the (.*) approves a submitted IACUC Protocol$/ do |role_name|
-  steps '* I log in with the IACUC Protocol Creator user'
-  @iacuc_protocol = create IACUCProtocolObject
-  @iacuc_protocol.add_the_three_rs
-  @iacuc_protocol.submit_for_review review_type: 'Administrative Review'
-
+And /^the (.*) approves the IACUC Protocol$/ do |role_name|
   steps %{ * log in with the #{role_name} user }
   @iacuc_protocol.admin_approve
 end
@@ -71,13 +66,6 @@ When /^(the (.*) |)assigns the created location to a Procedure on the IACUC Prot
   @iacuc_protocol.add_species_groups
   @iacuc_protocol.add_procedure
   @iacuc_protocol.procedures.add_location type: @location_type.location_type, name: @location_name.location_name, room: rand(100..999), species: @species.species
-end
-
-Given /^(the (.*) |)creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |text, role_name|
-  steps %{ * I log in with the #{role_name} user } unless text == ''
-  @iacuc_protocol = create IACUCProtocolObject
-  @iacuc_protocol.add_the_three_rs reduction: random_alphanums_plus(2000), refinement: random_alphanums_plus(2000), replacement: random_alphanums_plus(2000)
-
 end
 
 And /^(the (.*) |)submits an Amendment for review on the IACUC Protocol$/ do |text, role_name|
