@@ -9,7 +9,7 @@ class IACUCProtocolObject < DataFactory
                #others
                :procedures, :location, :document_id, :special_review,
                :species_groups, :organizations, :withdrawal_reason,
-               :principles, :doc, :amendment, :personnel
+               :amendment, :personnel
 
   def initialize(browser, opts={})
     @browser = browser
@@ -36,7 +36,6 @@ class IACUCProtocolObject < DataFactory
   def create
     on(Header).researcher
     on(ResearcherMenu).create_iacuc_protocol
-
     on IACUCProtocolOverview do |doc|
       @document_id=doc.document_id
       @doc_header=doc.doc_title
@@ -72,23 +71,27 @@ class IACUCProtocolObject < DataFactory
     on(IACUCProtocolOverview).send(damballa(tab))
   end
 
-  def theThreeRs opts={}
-    @principles = {
-      alternate_search_required: 'No'
+  def add_the_three_rs opts={}
+    defaults = {
+      alternate_search_required: 'No',
+      reduction: random_alphanums,
+      refinement: random_alphanums,
+      replacement: random_alphanums
     }
-    @principles.merge!(opts)
+    defaults.merge!(opts)
 
     view "The Three R's"
     on TheThreeRs do |page|
       page.expand_all
 
-      page.reduction.fit @principles[:reduction]
-      page.refinement.fit @principles[:refinement]
-      page.replacement.fit @principles[:replacement]
+      page.reduction.fit defaults[:reduction]
+      page.refinement.fit defaults[:refinement]
+      page.replacement.fit defaults[:replacement]
 
-      page.alternate_search_required.fit @principles[:alternate_search_required]
+      page.alternate_search_required.fit defaults[:alternate_search_required]
       page.save
     end
+    set_options defaults
   end
 
   def send_notification_to_employee
@@ -168,6 +171,7 @@ class IACUCProtocolObject < DataFactory
   # Protocol Actions
   # -----
 
+  #FIXME: This does not updating instance variables properly...
   def submit_for_review opts={}
     review ||= {
         submission_type: '::random::',
@@ -175,7 +179,6 @@ class IACUCProtocolObject < DataFactory
         type_qualifier: '::random::'
     }
     review.merge!(opts)
-
     view 'IACUC Protocol Actions'
     on IACUCSubmitForReview do |page|
       page.expand_all
@@ -197,7 +200,6 @@ class IACUCProtocolObject < DataFactory
   end
 
   def admin_approve_amendment
-    view_by_protocol_number(@amendment[:protocol_number])
     view 'IACUC Protocol Actions'
     on AdministrativelyApproveProtocol do |page|
       page.expand_all
@@ -209,9 +211,9 @@ class IACUCProtocolObject < DataFactory
     # because when approving an amendment this information changes
     # and user is left on the amendment without any indication
     # of what the new document id is.
-    view_by_protocol_number
+    visit Landing
+    @navigate.call
     on ProtocolActions do |page|
-      page.headerarea.wait_until_present
       @document_id = page.document_id
     end
   end

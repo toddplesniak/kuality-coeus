@@ -22,8 +22,12 @@ class IACUCAmendmentObject < DataFactory
     # Navigation currently in the Protocol object's #add_amendent method.
     on CreateAmendment do |page|
       page.expand_all
-      page.summary.set @amendment[:summary]
-      @amendment[:sections].each do |sect|
+
+      DEBUG.pause 4949
+
+
+      page.summary.set @summary
+      @sections.each do |sect|
         page.amend(sect).set
       end
       page.create
@@ -31,6 +35,10 @@ class IACUCAmendmentObject < DataFactory
     confirmation('yes')
     on(NotificationEditor).send_it if on(NotificationEditor).send_button.present?
     on(CreateAmendment).save
+
+
+    DEBUG.pause 3457
+
 
     #Amendment has a different header with 9 fields instead of the normal 6 fields
     gather_document_info
@@ -57,11 +65,6 @@ class IACUCAmendmentObject < DataFactory
     @doc = Hash[[keys, values].transpose]
     #removing empty key value pairs
     @doc.delete_if {|k,v| v.nil? or k==:"" }
-
-
-    DEBUG.inspect @doc
-
-
   end
 
 end

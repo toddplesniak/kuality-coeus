@@ -6,8 +6,10 @@ class KCProtocol < BasePage
   error_messages
 
   buttons_frame 'Protocol', 'Personnel', 'Questionnaire', 'Custom Data', 'Special Review',
-          'Permissions', 'Notes & Attachments', 'Protocol Actions', 'Medusa', 'Online Review',
+          'Permissions', 'Notes & Attachments', 'Medusa', 'Online Review',
           "The Three R's", 'Species/Groups', 'Procedures', 'Protocol Exception', 'IACUC Protocol Actions'
+
+  element(:application) { |b| b.frm.div(id: 'Uif-Application') }
 
   # This removes the methods created in the BasePage, because
   # the Protocol child classes need their own specialized versions...

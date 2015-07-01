@@ -1,5 +1,7 @@
 class IACUCProtocolOverview < KCProtocol
 
+  expected_element :application
+
   description_field
   tiny_buttons
   protocol_common

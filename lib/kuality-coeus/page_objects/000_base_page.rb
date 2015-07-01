@@ -7,7 +7,8 @@ class BasePage < PageFactory
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
   action(:loading_old) { |b| b.frm.image(alt: 'working...').wait_while_present }
-  action(:loading) { |b| b.image(alt: 'Loading...').wait_while_present(60) }
+                                                                      #DEBUG
+  action(:loading) { |b| b.image(alt: 'Loading...').wait_while_present(180) }
   element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
   action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
   action(:processing_document) { |b| b.frm.div(text: /The document is being processed. You will be returned to the document once processing is complete./ ).wait_while_present }
@@ -105,8 +106,8 @@ class BasePage < PageFactory
       action(:send_fyi) { |b| b.send_button.click; b.loading; b.awaiting_doc }
     end
 
-    def tab_buttons
-      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present(60).click; b.loading; b.loading_old }
+    def tab_buttons                                                                        #DEBUG
+      action(:expand_all) { |b| b.frm.button(name: 'methodToCall.showAllTabs').when_present(180).click; b.loading; b.loading_old }
       element(:expand_all_button) { |b| b.frm.button(name: 'methodToCall.showAllTabs') }
       element(:show_button) { |b| b.button(src: '/kc-dev/kr/static/images/tinybutton-show.gif') }
     end

@@ -1,4 +1,4 @@
-@iacuc
+@iacuc @wip
 Feature: Protocol actions for IACUC
 
   [KCIAC-256] IACUC Admin can suspend, terminate, expire and withdraw IACUC protocols
@@ -7,9 +7,7 @@ Feature: Protocol actions for IACUC
 
   Background: Establish a Protocol Creator
     * Users exist with the following roles: IACUC Protocol Creator, Modify IACUC Protocols, IACUC Administrator
-
-  #RESKC-505
-  @system_failure
+  @test
   Scenario: Suspend an IACUC Protocol with an amendment
     Given the IACUC Administrator approves a submitted IACUC Protocol
     And   the IACUC Administrator submits an Amendment for review on the IACUC Protocol

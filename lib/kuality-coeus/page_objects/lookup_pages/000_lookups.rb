@@ -39,8 +39,8 @@ class Lookups < BasePage
       element(:first_name) { |b| b.frm.text_field(id: 'firstName') }
       element(:full_name) { |b| b.frm.text_field(id: 'fullName') }
       element(:user_name) { |b| b.frm.text_field(id: 'userName') }
-      element(:state) { |b| b.frm.select(id: 'state') }
-      action(:search) { |b| b.frm.button(title: 'search', value: 'search').when_present.click; b.loading }
+      element(:state) { |b| b.frm.select(id: 'state') }                                 #DEBUG
+      action(:search) { |b| b.frm.button(title: 'search', value: 'search').when_present(180).click; b.loading }
       element(:create_button) { |b| b.frm.link(title: 'Create a new record') }
       action(:create_new) { |b| b.create_button.click; b.loading }
       alias_method :create, :create_new
