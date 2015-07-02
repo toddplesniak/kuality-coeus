@@ -9,7 +9,7 @@ Feature: Protocol actions for IACUC
     * Users exist with the following roles: IACUC Protocol Creator, Modify IACUC Protocols, IACUC Administrator
     * the IACUC Protocol Creator submits an IACUC Protocol for admin review
     * the IACUC Administrator approves the IACUC Protocol
-  @test
+
   Scenario: Suspend an IACUC Protocol with an amendment
     Given the IACUC Administrator submits an Amendment for review on the IACUC Protocol
     When  the IACUC Administrator approves the amendment for the IACUC Protocol

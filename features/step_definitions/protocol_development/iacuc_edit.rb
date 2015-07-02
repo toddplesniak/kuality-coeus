@@ -42,11 +42,6 @@ When /withdraws the IACUC Protocol$/ do
   @iacuc_protocol.withdraw
 end
 
-When /^the IACUC Administrator approves the IACUC Protocol$/ do
-  steps '* log in with the IACUC Administrator user'
-  @iacuc_protocol.admin_approve
-end
-
 When /adds? an organization to the IACUC Protocol$/ do
   @iacuc_protocol.add_organization
 end
