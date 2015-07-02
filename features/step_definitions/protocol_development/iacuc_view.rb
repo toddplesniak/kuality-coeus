@@ -79,9 +79,6 @@ Then /^the group name, species, pain category, count type, species count should 
 end
 
 Then /^the second Species added should be the only Species on the IACUC Protocol$/ do
-
-  DEBUG.inspect @iacuc_protocol.species_groups
-
   on SpeciesGroups do |page|
     expect(page.group_added(0).value).to eq @iacuc_protocol.species_groups[0].group
   end
