@@ -1,4 +1,4 @@
-@iacuc @wip
+@iacuc
 Feature: Protocol actions for IACUC
 
   [KCIAC-256] IACUC Admin can suspend, terminate, expire and withdraw IACUC protocols
@@ -10,12 +10,6 @@ Feature: Protocol actions for IACUC
     * the IACUC Protocol Creator submits an IACUC Protocol for admin review
     * the IACUC Administrator approves the IACUC Protocol
 
-  Scenario: Suspend an IACUC Protocol with an amendment
-    Given the IACUC Administrator submits an Amendment for review on the IACUC Protocol
-    When  the IACUC Administrator approves the amendment for the IACUC Protocol
-    And   suspends the IACUC Protocol
-    Then  the IACUC Protocol submission status should be Suspended
-
   Scenario: Terminate an IACUC Protocol
     When  the IACUC Administrator terminates the IACUC Protocol
     Then  the IACUC Protocol submission status should be Terminated
@@ -24,12 +18,7 @@ Feature: Protocol actions for IACUC
     When  the IACUC Administrator expires the IACUC Protocol
     Then  the IACUC Protocol status should be Expired
 
-  Scenario: Withdraw a submitted IACUC Protocol
-    When  the IACUC Administrator withdraws the IACUC Protocol
-    Then  the IACUC Protocol submission status should be Withdrawn
-
   Scenario: Verify the expiration date is set after the IACUC Protocol is approved
-    When  the IACUC Administrator approves the IACUC Protocol
     Then  the expiration date is set for the Protocol
 
   Scenario: IACUC Admin deactivates an IACUC Protocol
