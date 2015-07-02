@@ -67,25 +67,23 @@ Then /^on the IACUC Protocol the contact information for the added Organization 
 end
 
 Then /^the group name, species, pain category, count type, species count should match the modified values$/ do
-  line_item = 0
+  line = 0
+  species = @iacuc_protocol.species_groups[line]
   on SpeciesGroups do |page|
-    expect(page.group_added_value(line_item)).to eq @species.group
-    expect(page.count_added_value(line_item)).to eq @species.count.to_s
-    expect(page.species_added_value(line_item)).to eq @species.species
-    expect(page.pain_category_added_value(line_item)).to eq @species.pain_category
-    expect(page.count_type_added_value(line_item)).to eq @species.count_type
+    expect(page.group_added_value(line)).to eq species.group
+    expect(page.count_added_value(line)).to eq species.count.to_s
+    expect(page.species_added_value(line)).to eq species.species
+    expect(page.pain_category_added_value(line)).to eq species.pain_category
+    expect(page.count_type_added_value(line)).to eq species.count_type
   end
 end
 
-Then /^the (.*) Species added should be the only Species on the IACUC Protocol$/ do |count|
+Then /^the second Species added should be the only Species on the IACUC Protocol$/ do
+
+  DEBUG.inspect @iacuc_protocol.species_groups
+
   on SpeciesGroups do |page|
-    index = {'second' => 0}
-    if count == 'second'
-      expect(page.group_added(index[count]).value).to_not eq @species.group
-      expect(page.group_added(index[count]).value).to eq @species2.group
-    else
-      pending "Need to handle validation for #{count} Species"
-    end
+    expect(page.group_added(0).value).to eq @iacuc_protocol.species_groups[0].group
   end
 end
 

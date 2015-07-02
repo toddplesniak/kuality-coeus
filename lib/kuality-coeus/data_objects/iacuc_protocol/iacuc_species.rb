@@ -69,6 +69,13 @@ class SpeciesGroupsObject < DataFactory
     on(IACUCProtocolOverview).send(damballa(tab))
   end
 
+  def delete
+    on SpeciesGroups do |page|
+      page.delete(@index)
+    end
+    on(Confirmation).yes
+  end
+
   def update_from_parent(navigation_lambda)
     @navigate=navigation_lambda
   end
@@ -78,5 +85,10 @@ end #SpeciesGroupsObject
 class SpeciesGroupsCollection < CollectionsFactory
 
   contains SpeciesGroupsObject
+
+  def delete(index)
+    self[index].delete
+    self.delete_at(index)
+  end
 
 end

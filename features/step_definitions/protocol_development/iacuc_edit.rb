@@ -73,14 +73,12 @@ end
 When /^(the (.*) |)adds? a Species with non\-integers for the species count$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   #count error message only displays a max of 8 characters so we will use that as our max characters for the count
-  @species = create SpeciesObject, count: random_alphanums(8)
-  @errors = [ "#{@species.count} is not a valid integer."]
+  @iacuc_protocol.add_species_groups count: random_alphanums(8)
+  @errors = [ "#{@iacuc_protocol.species_groups[0].count} is not a valid integer."]
 end
 
 When /saves the IACUC Protocol after modifying the required fields for the Species$/ do
-  @species.edit press:             'save',
-                index:             0,
-                group:             random_alphanums_plus(10, 'Species '),
+  @iacuc_protocol.species_groups[0].edit group:             random_alphanums_plus(10, 'Species '),
                 species:           '::random::',
                 pain_category:     '::random::',
                 count_type:        '::random::',
@@ -92,10 +90,7 @@ end
 
 When /^the IACUC Protocol Creator deletes the (.*) Species$/ do |line_item|
   index = {'first' => 0, 'second' => 1}
-  on SpeciesGroups do |page|
-    page.delete(index[line_item])
-  end
-  on(Confirmation).yes
+  @iacuc_protocol.species_groups.delete(index[line_item])
 end
 
 When /adds? (\d+|a) personnel members? to the IACUC Protocol$/ do |num|
