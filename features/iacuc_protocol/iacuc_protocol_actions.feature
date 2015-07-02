@@ -3,7 +3,7 @@ Feature: Protocol actions for IACUC
 
   [KCIAC-256] IACUC Admin can suspend, terminate, expire and withdraw IACUC protocols
   [KCTEST-881] expiration date should be later than the approval date on an approved IACUC Protocol
-  [KC-TA-5417] IACUC Admin can deactiveate and remove holds placed on IACUC Protocols
+  [KC-TA-5417] IACUC Admin can deactivate and remove holds placed on IACUC Protocols
 
   Background:
     * Users exist with the following roles: IACUC Protocol Creator, Modify IACUC Protocols, IACUC Administrator

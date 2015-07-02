@@ -38,7 +38,7 @@ class AwardReportsObject < DataFactory
           page.save
         rescue
           DEBUG.message 'A screw up!'
-          DEBUG.pause 6090
+          #DEBUG.pause 6090
         end
       }
 

@@ -61,7 +61,7 @@ class PaymentInvoiceObject < DataFactory
           page.save
         rescue
           DEBUG.message 'A screw up!'
-          DEBUG.pause 6091
+          #DEBUG.pause 6091
         end
       }
 

@@ -224,16 +224,8 @@ class IACUCProtocolObject < DataFactory
     on RequestToDeactivate do |page|
       page.expand_all
       page.submit
-
-
-      DEBUG.pause
-
-
     end
     on(NotificationEditor).send_it
-
-    DEBUG.pause 45
-
   end
 
   def place_hold
