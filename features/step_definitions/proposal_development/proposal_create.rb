@@ -85,7 +85,7 @@ end
 
 When /^(the (.*) |)creates a nonrandom Proposal with an invalid sponsor code$/ do |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
-  @proposal = create ProposalDevelopmentObject, :sponsor_id=>'000000', :lead_unit=>'BIO - Dept of Biology',
+  @proposal = create ProposalDevelopmentObject, :sponsor_id=>'000000', :lead_unit=>$current_user.roles.name('Proposal Creator').qualifiers[0][:unit],
       :activity_type=>'Instruction',
       :project_title=>'SMOKE TEST',
       :project_start_date=>next_week[:date_w_slashes],
@@ -111,7 +111,7 @@ end
 Given /(the (.*) |)creates a nonrandom Proposal with an invalid sponsor deadline time/ do  |text, role_name|
   steps %{ * I log in with the #{role_name} user } unless text == ''
   @proposal = create ProposalDevelopmentObject, :sponsor_id=> '000127',
-                     :lead_unit=>'BIO - Dept of Biology',
+                     :lead_unit=>$current_user.roles.name('Proposal Creator').qualifiers[0][:unit],
                      :activity_type=>'Instruction',
                      :project_title=>'SMOKE TEST',
                      :project_start_date=>next_week[:date_w_slashes],
