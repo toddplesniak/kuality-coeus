@@ -223,6 +223,7 @@ class IACUCProtocolObject < DataFactory
     view 'IACUC Protocol Actions'
     on RequestToDeactivate do |page|
       page.expand_all
+      page.reason.set random_alphanums
       page.submit
     end
     on(NotificationEditor).send_it

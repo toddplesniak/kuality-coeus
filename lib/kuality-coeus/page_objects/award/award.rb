@@ -52,7 +52,9 @@ class Award < KCAwards
 
   element(:error_summary) { |b| b.frm.div(class: 'error') }
 
-  value(:exception_errors)  { |b| b.noko.divs(align: 'left').map{|d| d.text} }
+  value(:exception_errors) { |b| b.noko.divs(align: 'left').map{|d| d.text} }
+
+  element(:error_message) { |b| b.frm.div(text: 'Error Message') }
 
   private
 
