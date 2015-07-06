@@ -17,7 +17,7 @@ Feature: Creating Proposal Logs
     When  the Create Proposal Log user creates a Proposal Log
     Then  the status of the Proposal Log should be INITIATED
     And   the Proposal Log status should be Pending
-
+  @test
   Scenario: Merge a new Proposal Log with an existing Temporary Proposal Log
     Given the Create Proposal Log user submits a new temporary Proposal Log with a particular PI
     When  the Create Proposal Log user submits a new permanent Proposal Log with the same PI into routing
