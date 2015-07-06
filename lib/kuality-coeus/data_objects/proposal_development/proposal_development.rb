@@ -17,7 +17,8 @@ class ProposalDevelopmentObject < DataFactory
 
     defaults = {
       proposal_type:         'New',
-      lead_unit:             '::random::',
+                             # FIXME:
+      lead_unit:             '000001',
       activity_type:         '::random::',
       project_title:         random_multiline(11, 1, :string),
       sponsor_id:            '::random::',
@@ -358,16 +359,6 @@ class ProposalDevelopmentObject < DataFactory
         navigate: @navigate
     }
     opts.merge!(defaults)
-  end
-
-  def set_lead_unit
-    on(Proposal)do |prop|
-      if prop.lead_unit.present?
-        prop.lead_unit.pick! @lead_unit
-      else
-        @lead_unit=prop.lead_unit_ro
-      end
-    end
   end
 
   def prep(object_class, opts)
