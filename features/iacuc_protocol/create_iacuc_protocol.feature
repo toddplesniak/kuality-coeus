@@ -12,7 +12,7 @@ Feature: Creating IACUC Protocols
   Scenario: IACUC Protocol initial status
     Then the IACUC Protocol status should be Pending/In Progress
     And  there are no errors on the page
-  @test
+
   Scenario: Personnel with qualifications can be added to a procedure and display on summary
     Given the Protocol Creator adds 1 personnel member to the IACUC Protocol
     And   adds a Species group to the IACUC Protocol

@@ -73,7 +73,7 @@ When /^(the (.*) |)adds? a Species with non\-integers for the species count$/ do
 end
 
 When /saves the IACUC Protocol after modifying the required fields for the Species$/ do
-  @iacuc_protocol.species_groups[0].edit group:             random_alphanums_plus(10, 'Species '),
+  @iacuc_protocol.species_groups[0].edit group: random_alphanums_plus(10, 'Species '),
                 species:           '::random::',
                 pain_category:     '::random::',
                 count_type:        '::random::',
@@ -107,7 +107,7 @@ When /adding a Special Review with incorrect data$/ do
 end
 
 When /adding a Special Review for human subjects, status approved, and an exemption$/ do
-  @iacuc_protocol.add_special_review type:    'Human Subjects',
+  @iacuc_protocol.add_special_review type: 'Human Subjects',
                             approval_status:  'Approved',
                             exemption_number: '::random::',
                             protocol_number:  nil,
