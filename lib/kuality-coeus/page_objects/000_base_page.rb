@@ -324,14 +324,14 @@ class BasePage < PageFactory
       el_name=damballa("#{text}_element")
       act_name=damballa(text)
 
-      if frame == true
+      if frame
         #for the old UI with a frame element (aka: Non-Krad)
         element(el_name) { |b| b.frm.send(type, text: text) }
         action(act_name) { |b| b.frm.send(type, text: text).click; b.loading }
       else
         element(el_name) { |b| b.send(type, text: text) }
         action(act_name) { |b| b.send(type, text: text).click; b.loading }
-     end
+      end
 
     end
 
@@ -349,6 +349,11 @@ class BasePage < PageFactory
 
     def onespace(string)
       string.gsub('  ', ' ')
+    end
+
+    # Used by the Lead Unit field in CreateProposal
+    def select(method_name, attrib, value)
+      element(method_name) { |b| b.execute_script(%{jQuery("select[#{attrib}|='#{value}']").show();}) unless b.select(attrib => value).visible?; b.select(attrib => value) }
     end
 
   end # self

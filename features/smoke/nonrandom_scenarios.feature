@@ -17,7 +17,7 @@ Feature: Nonrandom Scenarios
     When the original Award is edited again
     Then a confirmation screen asks if you want to edit the existing pending version
     And selecting 'yes' takes you to the pending version
-
+  @test
   Scenario Outline: Attempt to save a nonrandom proposal with an invalid sponsor code and deadline time
     Given I'm logged in with mresearcher
     And the Proposal Creator creates a nonrandom Proposal with an invalid <text>

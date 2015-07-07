@@ -17,8 +17,7 @@ class ProposalDevelopmentObject < DataFactory
 
     defaults = {
       proposal_type:         'New',
-                             # FIXME:
-      lead_unit:             '000001',
+      lead_unit:             '::random::',
       activity_type:         '::random::',
       project_title:         random_multiline(11, 1, :string),
       sponsor_id:            '::random::',

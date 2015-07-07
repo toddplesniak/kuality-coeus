@@ -6,7 +6,7 @@ class CreateProposal < BasePage
   document_buttons
 
   element(:proposal_type) { |b| b.select(name: 'document.developmentProposal.proposalTypeCode') }
-  element(:lead_unit) { |b| b.text_field(name: 'document.developmentProposal.ownedByUnitNumber') }
+  select(:lead_unit, :name, 'document.developmentProposal.ownedByUnitNumber')
   element(:activity_type) { |b| b.select(name: 'document.developmentProposal.activityTypeCode') }
 
   element(:project_start_date) { |b| b.psdf.focus; b.psdf }
