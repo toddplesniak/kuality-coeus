@@ -70,7 +70,7 @@ Feature: Basic Award Validations
   Scenario: KC-TS-2114 Blank project start date with Obligated Amount
     When the Award Modifier creates an Award with an obligated amount and blank project start date
     Then errors about the obligation amount and obligation start date are shown
-
+  @test
   Scenario: Project Start Date is after Obligation Start Date
     When  the Award Modifier creates an Award with a project start date later than the obligation start date
     Then  the Award should show an error saying the project start date can't be later than the obligation date
