@@ -14,7 +14,7 @@ class ReviewObject < DataFactory
         submission_type: '::random::',
         submission_review_type:  ['Full', 'Limited/Single Use', 'FYI', 'Response'].sample,
         type_qualifier: '::random::',
-        committee: '::random::',
+        #committee: '::random::',
         expedited_checklist: '::random::',
         requested_date: right_now[:date_w_slashes],
         primary_reviewers: [],
@@ -31,9 +31,11 @@ class ReviewObject < DataFactory
     # NOTE: Navigation is accomplished in the parent Protocol object!
     on SubmitForReview do |page|
       page.expand_all
-      if @committee=='::random::'
-        @committee=page.committee_list.sample
-      end
+      #if @committee=='::random::'
+
+
+      #  @committee=page.committee_list.sample
+      #end
       fill_out page, :submission_type, :submission_review_type, :type_qualifier,
                :committee
       # If the test doesn't specify a particular schedule date then

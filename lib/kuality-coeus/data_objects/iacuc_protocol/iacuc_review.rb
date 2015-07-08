@@ -1,4 +1,4 @@
-class ReviewObject < DataFactory
+class IACUCReviewObject < DataFactory
 
   attr_reader :submission_type, :review_type, :type_qualifier
 

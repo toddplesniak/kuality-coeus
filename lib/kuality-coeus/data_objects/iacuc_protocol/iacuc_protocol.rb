@@ -161,7 +161,7 @@ class IACUCProtocolObject < DataFactory
 
   def submit_for_review opts={}
     view 'IACUC Protocol Actions'
-    @review = make ReviewObject, opts
+    @review = make IACUCReviewObject, opts
     @review.create
   end
 
