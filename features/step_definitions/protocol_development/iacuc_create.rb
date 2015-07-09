@@ -26,11 +26,14 @@ end
 And /^the (.*) approves the IACUC Protocol$/ do |role_name|
   steps %{ * log in with the #{role_name} user }
   @iacuc_protocol.view 'IACUC Protocol Actions'
-  DEBUG.pause 4784
-
-
   @iacuc_protocol.admin_approve
 end
+
+And /^the (.*) modifies the IACUC Protocol's submission request$/ do |role_name|
+  steps %{ * log in with the #{role_name} user }
+  @iacuc_protocol.modify_submission_request
+end
+
 
 When /^the IACUC Protocol Creator creates an IACUC Protocol but misses a required field$/ do
   steps %{ * I log in with the IACUC Protocol Creator user }

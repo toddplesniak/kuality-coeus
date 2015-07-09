@@ -9,7 +9,7 @@ class IACUCProtocolObject < DataFactory
                #others
                :procedures, :location, :document_id, :special_review,
                :species_groups, :organizations, :withdrawal_reason,
-               :amendment, :personnel, :exceptions, :review
+               :amendment, :personnel, :exceptions, :submission
 
   def initialize(browser, opts={})
     @browser = browser
@@ -161,8 +161,13 @@ class IACUCProtocolObject < DataFactory
 
   def submit_for_review opts={}
     view 'IACUC Protocol Actions'
-    @review = make IACUCReviewObject, opts
-    @review.create
+    @submission = make IACUCSubmissionObject, opts
+    @submission.create
+  end
+
+  def modify_submission_request opts={}
+    view 'IACUC Protocol Actions'
+    @submission.edit opts
   end
 
   def admin_approve
