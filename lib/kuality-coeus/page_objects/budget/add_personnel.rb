@@ -9,13 +9,13 @@ class AddProjectPersonnel < Dialogs
   element(:last_name) { |b| b.text_field(name: %|addProjectPersonnelHelper.lookupFieldValues['lastName']|) }
   element(:first_name) { |b| b.text_field(name: %|addProjectPersonnelHelper.lookupFieldValues['firstName']|) }
 
-  p_action(:check_person) { |name, b| b.tr(text: /#{name}/).checkbox.set }
-
   element(:results_table) { |b| b.div(data_parent: 'PropBudget-ProjectPersonnelPage-Wizard').table }
+  element(:noko_results) { |b| b.no_frame_noko.div(data_parent: 'PropBudget-ProjectPersonnelPage-Wizard').table }
 
-  value(:returned_full_names) { |b| b.results_table.rows.map{ |row| row[1].text }.tap(&:shift) }
+  value(:returned_full_names) { |b| b.noko_results.rows.map{ |row| row[1].text }.tap(&:shift) }
 
-  p_action(:select_person) { |person, b| b.results_table.row(text: /#{person}/).checkbox.set }
+  p_action(:select_person) { |person, b| b.checkbox(id: b.noko_results.row(text: /#{person}/).checkbox.id).set }
+  alias_method :check_person, :select_person
 
   # To Be Named items...
 
