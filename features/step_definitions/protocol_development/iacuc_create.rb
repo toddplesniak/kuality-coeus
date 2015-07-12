@@ -34,7 +34,6 @@ And /^the (.*) modifies the IACUC Protocol's submission request$/ do |role_name|
   @iacuc_protocol.modify_submission_request
 end
 
-
 When /^the IACUC Protocol Creator creates an IACUC Protocol but misses a required field$/ do
   steps %{ * I log in with the IACUC Protocol Creator user }
   # Pick a field at random for the test...
