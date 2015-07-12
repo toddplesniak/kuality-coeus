@@ -19,9 +19,10 @@ class AddProjectPersonnel < Dialogs
 
   # To Be Named items...
 
-  value(:person_categories) { |b| b.to_be_named_table.tbody.trs.map { |tr| tr[0].text } }
-  p_element(:quantity) { |category, b| b.to_be_named_table.tr(text: /#{category}/).text_field }
+  value(:person_categories) { |b| b.noko_tbn_table.tbody.trs.map { |tr| tr[0].text } }
+  p_element(:quantity) { |category, b| b.text_field(name: b.noko_tbn_table.tr(text: /#{category}/).text_field.name) }
 
   element(:to_be_named_table) { |b| b.table(id: 'u1t17vx1_layout') }
+  element(:noko_tbn_table) { |b| b.no_frame_noko.table(id: 'u1t17vx1_layout') }
 
 end

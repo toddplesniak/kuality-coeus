@@ -5,7 +5,7 @@ class CommitteeDocumentObject < DataFactory
   attr_reader :description, :committee_id, :document_id, :status, :name,
               :home_unit, :min_members_for_quorum, :maximum_protocols,
               :adv_submission_days, :review_type, :last_updated, :updated_user,
-              :initiator, :members, :areas_of_research, :type, :schedule
+              :initiator, :members, :areas_of_research, :type, :schedule, :committee_type
   def_delegators :@members, :member, :voting_members
 
   def initialize(browser, opts={})
@@ -108,7 +108,9 @@ class CommitteeDocumentObject < DataFactory
       end
       unless there
         on(BasePage).close_extra_windows
-        visit CommitteeLookup do |page|
+        on(Header).central_admin
+        on(CentralAdmin).search_iacuc_committee
+        on CommitteeLookup do |page|
           fill_out page, :committee_id
           page.search
           # This rescue is a sad necessity, due to
