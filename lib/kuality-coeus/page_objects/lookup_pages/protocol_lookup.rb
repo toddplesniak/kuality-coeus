@@ -5,6 +5,9 @@ class ProtocolLookup < Lookups
   url_info 'Protocols', 'kra.irb.Protocol'
 
   old_ui
+  undefine :edit_item
+
+  action(:edit_item) { |match, b| b.frm.link(title: b.noko_results.row(text: /#{Regexp.escape(match)}/m).link(text: 'edit').title).click; b.use_new_tab; b.close_parents }
 
   element(:protocol_number) { |b| b.frm.text_field(name: 'protocolNumber') }
 

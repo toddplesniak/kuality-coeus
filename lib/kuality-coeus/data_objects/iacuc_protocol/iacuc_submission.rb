@@ -29,6 +29,7 @@ class IACUCSubmissionObject < DataFactory
         committee: 'KC IACUC 1',
         primary_reviewers: [],
         secondary_reviewers: [],
+        schedule_date: '::random::',
         billable: 'Yes'
     }
     options = defaults.merge(opts)
@@ -52,6 +53,13 @@ class IACUCSubmissionObject < DataFactory
       page.submit
     end
     set_options(options)
+
+
+    DEBUG.inspect self
+    DEBUG.pause 8743
+
+
+
   end
 
 end

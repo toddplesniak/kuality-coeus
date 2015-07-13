@@ -1,4 +1,4 @@
-@iacuc @wip
+@iacuc
 Feature: Protocol actions for IACUC Designated Member Review
 
   TBD

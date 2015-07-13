@@ -13,11 +13,13 @@ class IACUCModifySubmissionRequest < KCProtocol
 
   p_element(:reviewer_type) { |name, b| b.frm.select(name: b.noko_reviewer_select(name)) }
 
-  p_element(:noko_reviewer_select) { |name, b| b.noko_msr.trs.find{ |tr| tr.tds[0].text==name }.select(name: /reviewerTypeCode/).name }
-
   action(:submit) { |b| b.frm.button(name: 'methodToCall.modifySubmissionAction.anchor:ModifySubmissionRequest').click; b.loading }
 
   element(:msr_div) { |b| b.frm.div(id: 'tab-:ModifySubmissionRequest-div') }
   element(:noko_msr) { |b| b.noko.div(id: 'tab-:ModifySubmissionRequest-div') }
+
+  private
+
+  p_element(:noko_reviewer_select) { |name, b| b.noko_msr.trs.find{ |tr| tr.tds[0].text==name }.select(name: /reviewerTypeCode/).name }
 
 end
