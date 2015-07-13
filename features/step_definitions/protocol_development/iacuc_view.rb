@@ -138,3 +138,9 @@ Then /^the procedures summary will display qualifications for the personnel$/ do
     expect(page.qualification_dialog).to include @iacuc_protocol.procedures.personnel[0].qualifications
   end
 end
+
+Then /^the IACUC Administrator cannot delete the Protocol$/ do
+  steps '* log in with the IACUC Administrator user'
+  @iacuc_protocol.view 'IACUC Protocol Actions'
+  expect(on(IACUCProtocolActions).unavailable_actions).to include 'Delete Protocol, Amendment, or Renewal'
+end
