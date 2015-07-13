@@ -38,7 +38,8 @@ When /lifts the hold placed on the IACUC Protocol$/ do
   @iacuc_protocol.lift_hold
 end
 
-When /withdraws the IACUC Protocol$/ do
+When /^(the (.*) |)withdraws the IACUC Protocol$/ do |text, role_name|
+    steps %{ * I log in with the #{role_name} user } unless text == ''
   @iacuc_protocol.withdraw
 end
 
