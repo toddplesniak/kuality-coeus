@@ -343,7 +343,12 @@ class ProposalDevelopmentObject < DataFactory
       end
       unless there
         visit Landing
-        @browser.goto "#{$base_url+$context}kc-common/development-proposals/#{@proposal_number}"
+        on(Header).doc_search
+        on DocumentSearch do |lookup|
+          lookup.document_id.fit @document_id
+          lookup.search
+          lookup.open_result(@document_id)
+        end
       end
     }
   end
