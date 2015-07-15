@@ -249,7 +249,7 @@ class IRBProtocolObject < DataFactory
   end
 
   def navigate
-    lambda{ |type|
+    lambda{
       begin
         there = on(ProtocolOverview).protocol_number==@protocol_number
       rescue
@@ -257,12 +257,7 @@ class IRBProtocolObject < DataFactory
       end
       unless there
         on(Header).central_admin
-        on(CentralAdmin).search_human_participants
-        on ProtocolLookup do |page|
-          page.protocol_number.set @protocol_number
-          page.search
-          page.send("#{type}_first_item")
-        end
+        @browser.goto "#{$base_url+$context}kc-common/irb-protocols/#{@protocol_number}"
       end
     }
   end

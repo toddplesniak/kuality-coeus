@@ -363,30 +363,7 @@ class AwardObject < DataFactory
         there = false
       end
       unless there
-        # If we are in a strange place without a header because of time and money, need to get back from there...
-        @browser.goto $base_url+$context unless on(Header).header_div.present?
-
-        if on(Header).krad_portal_element.present?
-          on(Header).krad_portal
-        end
-        on(Header).central_admin
-        on(CentralAdmin).search_award
-        on AwardLookup do |page|
-          page.award_id.set @id
-          page.search
-          # TODO: Remove this when document search issues are resolved
-          begin
-            page.medusa
-          rescue Watir::Exception::UnknownObjectException
-            on(Header).doc_search
-            on DocumentSearch do |search|
-              search.document_id.set @document_id
-              search.search
-
-              search.open_item @document_id
-            end
-          end
-        end
+        @browser.goto "#{$base_url+$context}kc-common/awards/#{@id}"
         return if on(Award).error_message.present?
         on(Award).div(class: 'headerbox').table(class: 'headerinfo').wait_until_present
       end
