@@ -293,15 +293,16 @@ class IACUCProtocolObject < DataFactory
       end
       unless there
         on(BasePage).close_extra_windows
-        on(Header).researcher
-        on(ResearcherMenu).iacuc_search_protocols
-        on ProtocolLookup do |search|
-          fill_out search, :protocol_number
-          search.search
+        @browser.goto "#{$base_url+$context}kc-common/iacuc-protocols/#{@protocol_number}"
+        #on(Header).researcher
+        #on(ResearcherMenu).iacuc_search_protocols
+        #on ProtocolLookup do |search|
+        #  fill_out search, :protocol_number
+        #  search.search
           #TODO: Parameter needed for Amendment which creates a unique protocol number with 4 extra digits at the end
           #example base protocol number 1410000010 then amendment becomes 1410000010A001
-          search.edit_item(@protocol_number)
-        end
+        #  search.edit_item(@protocol_number)
+        #end
       end
     }
   end

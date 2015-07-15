@@ -4,21 +4,21 @@ Feature: Protocol actions for IACUC Designated Member Review
   TBD
 
   Background:
-    * Users exist with the following roles: IACUC Protocol Creator, Modify IACUC Protocols, IACUC Administrator
-    * the IACUC Admin verifies that the KC IACUC 1 committee has future scheduled events
-    * the IACUC Protocol Creator submits an IACUC Protocol for designated member review
 
+  @wip
   Scenario: Terminate an IACUC Protocol
-
-    #Given the IACUC Administrator modifies the IACUC Protocol's submission request
-    #When  the IACUC Administrator terminates the IACUC Protocol
-    #Then  the IACUC Protocol submission status should be Terminated
+    Given the IACUC Administrator modifies the IACUC Protocol's submission request
+    When  the IACUC Administrator terminates the IACUC Protocol
+    Then  the IACUC Protocol submission status should be Terminated
   @smoke
   Scenario: Withdraw an IACUC Protocol
     When  the IACUC Administrator withdraws the IACUC Protocol
     Then  the IACUC Protocol status should be Withdrawn
-
+  @test
   Scenario: Submitted IACUC Protocols cannot be deleted
+    * Users exist with the following roles: IACUC Protocol Creator, IACUC Administrator
+    * the IACUC Admin verifies that the KC IACUC 1 committee has future scheduled events
+    * the IACUC Protocol Creator submits an IACUC Protocol for designated member review
     Then  the IACUC Administrator cannot delete the Protocol
   @wip
   Scenario: Expire an IACUC Protocol

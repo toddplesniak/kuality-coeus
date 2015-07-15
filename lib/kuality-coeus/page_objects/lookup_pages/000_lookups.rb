@@ -8,10 +8,10 @@ class Lookups < BasePage
       element(:results_table) { |b| b.frm.table(id: 'row') }
       element(:noko_results) { |b| b.noko.table(id: 'row') }
 
-      action(:edit_item) { |match, b| b.frm.link(title: b.noko_results.row(text: /#{Regexp.escape(match)}/m).link(text: 'edit').title).click; b.use_new_tab; b.close_parents }
+      action(:edit_item) { |match, b| b.frm.link(title: b.noko_results.row(text: /#{Regexp.escape(match)}/m).link(text: /edit/).title).click; b.use_new_tab; b.close_parents }
       alias_method :edit_person, :edit_item
 
-      action(:edit_first_item) { |b| b.frm.link(text: 'edit').when_present.click; b.use_new_tab; b.close_parents }
+      action(:edit_first_item) { |b| b.frm.link(text: /edit/).when_present.click; b.use_new_tab; b.close_parents }
       action(:view_first_item) { |b| b.frm.link(text: 'view').when_present.click; b.use_new_tab; b.close_parents }
 
       action(:item_row) { |match, b| b.results_table.row(text: /#{Regexp.escape(match)}/m) }

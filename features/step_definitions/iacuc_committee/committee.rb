@@ -7,7 +7,7 @@ And /the IACUC Admin verifies that the (.*) committee has future scheduled event
   on CommitteeLookup do |page|
     page.committee_name.set committee_name
     page.search
-    page.frm.link(text: 'resume edit').click
+    page.edit_first_item
   end
   # TODO: Add conditional code that takes care of a situation where the committee doesn't exist in the system already.
   on Committee do |page|
