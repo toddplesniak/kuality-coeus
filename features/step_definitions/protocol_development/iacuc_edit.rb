@@ -158,3 +158,19 @@ And /^a qualification and procedure are added to the procedure person$/ do
   @iacuc_protocol.procedures.personnel[0].add_procedure @iacuc_protocol.procedures.categories[0].name
   @iacuc_protocol.procedures.personnel[0].update_qualifications random_alphanums
 end
+
+Given /^(the (.*) |)assigns committee members to review the submission$/ do |text, role_name|
+  steps %{* I log in with the #{role_name} user } unless text ==''
+                                            #DEBUG:
+  @iacuc_protocol.modify_submission_request schedule_date: nil # We have this in here because of a bug about selecting schedule items
+end
+
+And /^the (.*) modifies the IACUC Protocol's submission request so the non-employee is a reviewer$/ do |role_name|
+  steps %{ * log in with the #{role_name} user }
+  @iacuc_protocol.modify_submission_request primary_reviewers: ['Guest, David'], schedule_date: nil
+end
+
+Then /^(the (.*) |)approves the Protocol$/ do |text, role_name|
+  steps %{* I log in with the #{role_name} user } unless text ==''
+  @iacuc_protocol.approve
+end

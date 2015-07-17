@@ -170,13 +170,14 @@ class IACUCProtocolObject < DataFactory
     @submission.edit opts
   end
 
-  def admin_approve
+  def approve
     view 'IACUC Protocol Actions'
-    on AdministrativelyApproveProtocol do |page|
+    on IACUCApproveAction do |page|
       page.expand_all
+      # TODO: Someday make this more involved than just submitting.
       page.submit
     end
-    on(NotificationEditor).send_it
+
   end
 
   def admin_approve_amendment
@@ -273,7 +274,6 @@ class IACUCProtocolObject < DataFactory
     pageKlass = Kernel.const_get(page_class.split.map(&:capitalize).join(''))
     on pageKlass do |page|
       page.expand_all
-
       #TODO:: Add to this method to make more robust
       page.submit
     end
