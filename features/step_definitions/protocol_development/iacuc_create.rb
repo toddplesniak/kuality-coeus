@@ -34,6 +34,11 @@ And /^the (.*) modifies the IACUC Protocol's submission request$/ do |role_name|
   @iacuc_protocol.modify_submission_request
 end
 
+And /^the (.*) modifies the IACUC Protocol's submission request so the non-employee is a reviewer$/ do |role_name|
+  steps %{ * log in with the #{role_name} user }
+  @iacuc_protocol.modify_submission_request primary_reviewers: ['Guest, David'], schedule_date: nil
+end
+
 When /^the IACUC Protocol Creator creates an IACUC Protocol but misses a required field$/ do
   steps %{ * I log in with the IACUC Protocol Creator user }
   # Pick a field at random for the test...

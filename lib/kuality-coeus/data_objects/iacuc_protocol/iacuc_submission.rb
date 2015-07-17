@@ -36,8 +36,10 @@ class IACUCSubmissionObject < DataFactory
     on IACUCModifySubmissionRequest do |page|
       page.expand_all
       page.committee.select options[:committee]
-      # FIXME!
-      sleep 2
+      page.committee.fire_event('onchange')
+      if options[:schedule_date]=='::random::'
+        options[:schedule_date] = page.schedule_date_list.sample
+      end
       edit_fields options, page, :schedule_date, :submission_type,
                   :review_type, :billable, :type_qualifier,
                   :determination_due_date
@@ -46,20 +48,13 @@ class IACUCSubmissionObject < DataFactory
         options[:primary_reviewers] << committee_members[0]
       end
       if options[:secondary_reviewers].empty?
-        options[:secondary_reviewers] << committee_members[1]
+        options[:secondary_reviewers] << (committee_members - options[:primary_reviewers])[0]
       end
       options[:primary_reviewers].each { |r| page.reviewer_type(r).select 'primary' }
       options[:secondary_reviewers].each { |r| page.reviewer_type(r).select 'secondary' }
       page.submit
     end
     set_options(options)
-
-
-    DEBUG.inspect self
-    DEBUG.pause 8743
-
-
-
   end
 
 end

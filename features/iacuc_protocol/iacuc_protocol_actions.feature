@@ -8,11 +8,10 @@ Feature: Protocol actions for IACUC Designated Member Review
     * the IACUC Admin verifies that the KC IACUC 1 committee has future scheduled events
     * the IACUC Protocol Creator submits an IACUC Protocol for designated member review
 
-  @wip
-  Scenario: Terminate an IACUC Protocol
-    Given the IACUC Administrator modifies the IACUC Protocol's submission request
-    When  the IACUC Administrator terminates the IACUC Protocol
-    Then  the IACUC Protocol submission status should be Terminated
+  Scenario: IACUC Protocol with non-employee reviewer
+    When the IACUC Administrator modifies the IACUC Protocol's submission request so the non-employee is a reviewer
+    Then the non-employee's review comments can be added to the online review document
+
   @smoke
   Scenario: Withdraw an IACUC Protocol
     When  the IACUC Administrator withdraws the IACUC Protocol

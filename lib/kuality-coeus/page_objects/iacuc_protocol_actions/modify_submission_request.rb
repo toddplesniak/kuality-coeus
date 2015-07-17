@@ -2,6 +2,7 @@ class IACUCModifySubmissionRequest < KCProtocol
 
   element(:committee) { |b| b.frm.select(name: 'actionHelper.iacucProtocolModifySubmissionBean.committeeId') }
   element(:schedule_date) { |b| b.frm.select(name: 'actionHelper.iacucProtocolModifySubmissionBean.scheduleId') }
+  value(:schedule_date_list) { |b| b.noko.select(name: 'actionHelper.iacucProtocolModifySubmissionBean.scheduleId').options.map {|opt| opt.text }.tap(&:shift) }
   element(:submission_type) { |b| b.frm.select(name: 'actionHelper.iacucProtocolModifySubmissionBean.submissionTypeCode') }
   element(:review_type) { |b| b.frm.select(name: 'actionHelper.iacucProtocolModifySubmissionBean.protocolReviewTypeCode') }
 

@@ -10,7 +10,8 @@ class KCProtocol < BasePage
           "The Three R's", 'Species/Groups', 'Procedures', 'Protocol Exception', 'IACUC Protocol Actions', 'Protocol Actions'
 
   element(:application) { |b| b.frm.div(id: 'Uif-Application') }
-
+  #element(:notification) { |b| b.noko.div(class: 'kul-error kul-message').text }
+  
   # This removes the methods created in the BasePage, because
   # the Protocol child classes need their own specialized versions...
   undefine :submit, :committee_id

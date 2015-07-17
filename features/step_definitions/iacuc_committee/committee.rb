@@ -30,3 +30,14 @@ And /the IACUC Admin verifies that the (.*) committee has future scheduled event
     end
   end
 end
+
+Then /^the non\-employee's review comments can be added to the online review document$/ do
+  @iacuc_protocol.view 'Online Review'
+  n_e_r = @iacuc_protocol.submission.primary_reviewers[0]
+  on OnlineReview do |page|
+    page.expand_all
+    page.new_review_comment(n_e_r).set random_multiline
+    page.save_review_of n_e_r
+    expect(page.notification).to eq "Protocol Online Review (document number:#{page.review_doc_nbr(n_e_r)}, reviewer:#{n_e_r} ), saved successfully."
+  end
+end
