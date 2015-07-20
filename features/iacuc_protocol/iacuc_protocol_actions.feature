@@ -18,7 +18,7 @@ Feature: Protocol actions for IACUC Designated Member Review
 
   Scenario: Submitted IACUC Protocols cannot be deleted
     Then  the IACUC Administrator cannot delete the Protocol
-
+  @test
   Scenario: Create an IACUC Protocol Amendment
     Given the IACUC Administrator assigns committee members to review the submission
     When  the IACUC Administrator approves the Protocol
