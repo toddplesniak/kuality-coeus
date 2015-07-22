@@ -4,11 +4,6 @@ module Personnel
 
   include Utilities
 
-  CERTIFICATION_QUESTIONS = [
-                             :understand_coi_obligation,
-                             :agree_with_sponsor_terms
-  ]
-
   def role_value
     {
         'Principal Investigator' => 'PI',

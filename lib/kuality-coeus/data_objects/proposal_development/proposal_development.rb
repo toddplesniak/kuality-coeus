@@ -119,7 +119,7 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def fill_out_questionnaire opts={}
-    @questionnaire = prep(QuestionnaireObject, opts)
+    raise 'Please write me.'
   end
 
   def make_institutional_proposal

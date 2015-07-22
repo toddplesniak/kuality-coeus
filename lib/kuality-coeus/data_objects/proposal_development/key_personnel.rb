@@ -4,8 +4,7 @@
 
   attr_reader :first_name, :last_name, :type, :role, :document_id, :key_person_role,
               :full_name, :user_name, :home_unit, :organization, :units, :responsibility,
-              :financial, :certified, :certify_info_true,
-              :understand_coi_obligation, :agree_with_sponsor_terms,
+              :financial, :certified, :questionnaire,
               :other_key_persons, :era_commons_name, :degrees
 
   # Note that you must pass in both first and last names (or neither).
@@ -13,13 +12,11 @@
     @browser = browser
 
     defaults = {
-      type:                            'employee',
-      role:                            'Principal Investigator',
-      units:                           [],
-      degrees:                         collection('Degrees'),
-      certified:                       true, # Set this to false if you do not want any Proposal Person Certification Questions answered
-      understand_coi_obligation:      'Y',
-      agree_with_sponsor_terms:       'Y'
+      type:                'employee',
+      role:                'Principal Investigator',
+      units:               [],
+      degrees:             collection('Degrees'),
+      certified:           true, # Set this to false if you do not want any Proposal Person Certification Questions answered
     }
 
     set_options(defaults.merge(opts))
@@ -118,16 +115,17 @@
   end
 
   def certification
+    defaults = {
+        person: @full_name
+    }
+
     # TODO: Make this more robust for Key Persons...
     unless @role=='Key Person'
       if @certified
         view 'Personnel'
         on(KeyPersonnel).proposal_person_certification_of @full_name
-        CERTIFICATION_QUESTIONS.each { |q| on(KeyPersonnel).send(q, @full_name, get(q)) }
-      else
-        CERTIFICATION_QUESTIONS.each { |q| set(q, nil) }
+        @questionnaire.answer
       end
-      on(KeyPersonnel).save
     end
   end
 
@@ -188,9 +186,14 @@ end # KeyPersonObject
 
 class KeyPersonnelCollection < CollectionsFactory
 
+  def initialize(browser)
+    @browser=browser
+    @questionnaire = make QuestionnaireObject, defaults.merge(QuestionnaireObject::PROPOSAL_PERSON_CERT)
+  end
+
   contains KeyPersonObject
   include People
 
-  # finding methods
+
 
 end # KeyPersonnelCollection
