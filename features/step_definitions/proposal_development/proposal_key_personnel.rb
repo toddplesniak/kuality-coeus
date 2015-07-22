@@ -41,6 +41,12 @@ When /^various personnel are added to the Proposal$/ do
   |
 end
 
+And /certifies the Proposal's/ do
+  @proposal.key_personnel.names.each do |name|
+    @proposal.key_personnel.questionnaire.answer_for(name)
+  end
+end
+
 Given /^I? ?adds? the Grants.Gov user as the Proposal's PI$/ do
   @proposal.add_principal_investigator last_name: $users.grants_gov_pi.last_name, first_name: $users.grants_gov_pi.first_name
 end
@@ -101,8 +107,4 @@ And /^(\d+) key persons can be added to the Proposal$/ do |number|
       page.add_person
     end
   end
-end
-
-And /^certifies the principal investigator$/ do
-  @proposal.principal_investigator.certification
 end

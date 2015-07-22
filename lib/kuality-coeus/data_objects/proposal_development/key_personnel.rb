@@ -4,8 +4,8 @@
 
   attr_reader :first_name, :last_name, :type, :role, :document_id, :key_person_role,
               :full_name, :user_name, :home_unit, :organization, :units, :responsibility,
-              :financial, :certified, :questionnaire,
-              :other_key_persons, :era_commons_name, :degrees
+              :financial,
+              :era_commons_name, :degrees
 
   # Note that you must pass in both first and last names (or neither).
   def initialize(browser, opts={})
@@ -16,7 +16,6 @@
       role:                'Principal Investigator',
       units:               [],
       degrees:             collection('Degrees'),
-      certified:           true, # Set this to false if you do not want any Proposal Person Certification Questions answered
     }
 
     set_options(defaults.merge(opts))
@@ -46,10 +45,6 @@
       @home_unit=person.home_unit_of(@full_name)
     end
     set_up_units unless @role=='Key Person'
-
-    # Proposal Person Certification
-    certification
-
     # Add gathering/setting of more attributes here as needed
     on KeyPersonnel do |person|
       person.details_of @full_name
@@ -114,21 +109,6 @@
     end
   end
 
-  def certification
-    defaults = {
-        person: @full_name
-    }
-
-    # TODO: Make this more robust for Key Persons...
-    unless @role=='Key Person'
-      if @certified
-        view 'Personnel'
-        on(KeyPersonnel).proposal_person_certification_of @full_name
-        @questionnaire.answer
-      end
-    end
-  end
-
   def update_from_parent(navigate)
     @navigate=navigate
     notify_collections navigate
@@ -186,14 +166,15 @@ end # KeyPersonObject
 
 class KeyPersonnelCollection < CollectionsFactory
 
+  attr_reader :questionnaire
+
   def initialize(browser)
     @browser=browser
-    @questionnaire = make QuestionnaireObject, defaults.merge(QuestionnaireObject::PROPOSAL_PERSON_CERT)
+    @questionnaire = QuestionnaireObject.new @browser, QuestionnaireObject::PROPOSAL_PERSON_CERT
   end
 
   contains KeyPersonObject
   include People
-
 
 
 end # KeyPersonnelCollection

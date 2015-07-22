@@ -3,7 +3,7 @@ class QuestionnaireObject < DataFactory
   include StringFactory
 
   attr_reader :name, :questions, :module, :module_sub_item_code, :rule_id,
-              :mandatory, :label, :version, :person
+              :mandatory, :label, :version
 
   def initialize(browser, opts={})
     @browser = browser
@@ -14,7 +14,6 @@ class QuestionnaireObject < DataFactory
         opts[:qs].each { |q| opts[:questions] << make(QuestionsObject, q) }
         opts.tap { |o| o.delete(:qs) }
         set_options(opts)
-        requires :page_class
         @page_class = Object.const_get(@page_class)
   end
 
@@ -22,9 +21,9 @@ class QuestionnaireObject < DataFactory
     # TODO
   end
 
-  def answer
+  def answer_for(person)
       @questions.each { |q|
-        q.answer(@person, @page_class)
+        q.answer(person, @page_class)
       }
     on(@page_class).save
   end
