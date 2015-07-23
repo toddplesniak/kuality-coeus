@@ -42,8 +42,11 @@ When /^various personnel are added to the Proposal$/ do
 end
 
 And /certifies the Proposal's/ do
-  @proposal.key_personnel.names.each do |name|
-    @proposal.key_personnel.questionnaire.answer_for(name)
+  @proposal.view 'Personnel'
+  @proposal.key_personnel.each do |person|
+    next if person.role == 'Key Person'
+    on(KeyPersonnel).proposal_person_certification_of person.full_name
+    @proposal.key_personnel.questionnaire.answer_for(person.full_name, 'Y')
   end
 end
 

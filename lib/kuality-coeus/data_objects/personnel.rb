@@ -151,12 +151,4 @@ module People
     self.find { |person| person.key_person_role==role }
   end
 
-  # IMPORTANT: This method returns a KeyPersonObject--meaning that if there
-  # are multiple key persons in the collection that match this search only
-  # the first one will be returned.  If you need a collection of multiple persons
-  # write the method for that.
-  def uncertified_person(role)
-    self.find { |person| person.certified==false && person.role==role }
-  end
-
 end # People

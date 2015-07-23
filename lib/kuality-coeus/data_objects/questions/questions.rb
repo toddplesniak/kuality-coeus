@@ -3,7 +3,7 @@ class QuestionsObject < DataFactory
   include StringFactory
 
   attr_reader :question, :category, :response_type, :answer_count, :possible_answers,
-      :lookup_class, :lookup_field, :max_characters, :document_id, :question_id, :response
+      :lookup_class, :lookup_field, :max_characters, :document_id, :question_id, :responses
 
   def initialize(browser, opts={})
     @browser = browser
@@ -11,6 +11,7 @@ class QuestionsObject < DataFactory
         question: random_alphanums(25),
         category: '::random::',
         response_type: 'Yes/No',
+        responses: {},
         save_type: :blanket_approve
     }
     set_options(defaults.merge(opts))
@@ -39,14 +40,14 @@ class QuestionsObject < DataFactory
     end
   end
 
-  def answer(name, page_class)
+  def answer(name, response, page_class)
     case(@response_type)
       when 'Yes/No'
         on page_class do |page|
-          page.answer(name, @question, @response[0]).set
+          page.answer(name, @question, response).set
         end
     end
-
+    responses.store(name, response)
   end
 
 end

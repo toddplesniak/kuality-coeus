@@ -187,6 +187,7 @@ end
 And /^the (.*) submits a new Proposal into routing$/ do |role_name|
   steps %{ * the #{role_name} creates a Proposal }
   steps %q{ * adds a principal investigator to the Proposal }
+  steps %q{ * certifies the Proposal's principal investigator }
   steps %q{ * sets valid credit splits for the Proposal }
   steps %q{ * submits the Proposal into routing }
 end
