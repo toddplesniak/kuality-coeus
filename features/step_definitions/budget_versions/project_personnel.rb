@@ -39,6 +39,10 @@ end
 
 Then /^the Budget personnel should match the Proposal personnel$/ do
   @budget_version.view 'Project Personnel'
+
+  DEBUG.inspect on(BudgetPersonnel).project_personnel_info
+  DEBUG.pause 849
+
   budget_personnel = on(BudgetPersonnel).project_personnel_info.map{ |i| i[:person] }
   @proposal.key_personnel.each { |p| expect(budget_personnel).to include p.full_name  }
 end

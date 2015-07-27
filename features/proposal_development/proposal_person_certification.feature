@@ -15,3 +15,9 @@ Feature: Updating the Proposal Person Certification Questionnaire
     When  the Aggregator adds a question to the proposal person questionnaire
     Then  the Proposal Creator can answer the new certification question for the personnel
     * the Aggregator cleans up the proposal person questionnaire
+  @test
+  Scenario: Updated questionnaires don't affect submitted Proposals
+    Given the Proposal Creator submits a new Proposal into routing
+    When  the Aggregator adds a question to the proposal person questionnaire
+    Then  the questionnaire update dialog does not appear when the Creator views the certification
+    * the Aggregator cleans up the proposal person questionnaire

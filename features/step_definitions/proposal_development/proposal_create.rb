@@ -163,7 +163,6 @@ end
 When /^I? ?completes? the Proposal$/ do
   @proposal.add_principal_investigator
   @proposal.set_valid_credit_splits
-  @proposal.add_custom_data
 end
 
 When /completes? the required supplemental info on the Proposal$/ do
@@ -186,10 +185,18 @@ end
 
 And /^the (.*) submits a new Proposal into routing$/ do |role_name|
   steps %{ * the #{role_name} creates a Proposal }
-  steps %q{ * adds a principal investigator to the Proposal }
-  steps %q{ * certifies the Proposal's principal investigator }
+  steps %q{ * adds a principal investigator to the Proposal
+            * certifies the Proposal's principal investigator }
   steps %q{ * sets valid credit splits for the Proposal }
+  steps %q{ * creates a Budget Version for the Proposal
+            * includes the Budget Version for submission
+            * marks the Budget Version complete
+          }
   steps %q{ * submits the Proposal into routing }
+
+  DEBUG.pause 299
+
+
 end
 
 And /^(the (.*) |)completes the remaining required actions for an S2S submission$/ do |text, role_name|
