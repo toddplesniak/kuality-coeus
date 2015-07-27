@@ -170,7 +170,7 @@ class KeyPersonnelCollection < CollectionsFactory
 
   def initialize(browser)
     @browser=browser
-    @questionnaire = QuestionnaireObject.new @browser, QuestionnaireObject::PROPOSAL_PERSON_CERT
+    @questionnaire = QuestionnaireObject.new @browser, YAML.load_file("#{File.dirname(__FILE__)}/../questions/questionnaires.yml")[:proposal_person_cert]
   end
 
   contains KeyPersonObject

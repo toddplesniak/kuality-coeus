@@ -23,7 +23,7 @@ class QuestionnaireObject < DataFactory
 
   def answer_for(person, answer)
     @questions.each { |q|
-        q.answer(person, answer, @page_class)
+        q.answer(person, answer, @page_class) unless q.responses.keys.include? person
       }
     on(@page_class).save
   end
@@ -35,7 +35,7 @@ class QuestionnaireObject < DataFactory
     @questions.add defaults.merge(opts)
     view
     on Questionnaire do |page|
-      page.expand_all
+      page.description.set random_alphanums
       page.add_question
     end
     on QuestionLookup do |page|
@@ -61,28 +61,37 @@ class QuestionnaireObject < DataFactory
       page.search
       page.edit_first_item
     end
+    on(Questionnaire).expand_all
   end
 
-  PROPOSAL_PERSON_CERT = {
-      id: '10001',
-      name: 'Proposal Person Certification',
-      module: 'Development Proposal',
-      module_sub_item_code: 'Proposal Person Certification',
-      mandatory: 'Yes',
-      label: 'Proposal Person Certification',
-      version: '4',
-      page_class: 'KeyPersonnel',
-      qs: [{ question_id: '10089',
-             question: "I certify that I have reviewed this institution's policies and guidelines related to financial conflicts of interest. I understand that if I seek or receive federal funds in support of this project, I have an obligation to adhere to applicable federal regulations and this institution's policy regarding financial conflict of interest.",
-             response_type: 'Yes/No',
-             category: 'Certifications for Proposal Development'
-           },
-           { question_id: '10090',
-             category: 'Certifications for Proposal Development',
-             question: "If the proposal submitted herewith is funded and accepted by this institution, do you agree to conduct the project in accordance with the terms and conditions of the sponsoring agency and the policies of this institution, and will be fully responsible for meeting the requirements of the award, including providing the proper stewardship of sponsored funds, submitting all required technical reports and deliverables on timely basis, and properly disclosing all inventions to the University in accordance with Federal and University policies? Do you certify that the facilities/space and other institutional resources necessary to complete the proposed project are available to the project, or provisions have been arranged with Department/College to make such space or other University resources available in the event an award is made? Do you certify that the proposal submitted herewith is (1) complete in its technical content, (2) adheres to the rules of proper scholarship, including specifically the proper attribution and citation for all text and graphics, (3) complies with federal standards for the integrity of research (e.g., NSF/NIH Misconduct in Science Policy), and (4) is in accordance with specifications established by the sponsoring agency?",
-             response: 'Yes'
-           }]
-  }
+
+  def clean
+    case(@name)
+      when 'Proposal Person Certification'
+        default_questions = YAML.load_file("#{File.dirname(__FILE__)}/../questions/questionnaires.yml")[:proposal_person_cert][:qs]
+        ppc_questions = default_questions.map { |dq| dq[:question] }
+        view
+        on Questionnaire do |page|
+          page.description.set random_alphanums
+          if @questions.size > default_questions.size
+            @questions[2..-1].each do |question|
+              page.expand_question(question.question)
+              page.remove_question(question.question)
+            end
+          end
+          if page.questions.size > default_questions.size
+            page.questions.each do |question|
+              page.expand_question(question)
+              page.remove_question(question) unless ppc_questions.include? question
+            end
+          end
+          # TODO: Need to add logic here that replaces questions if they are lost...
+          page.blanket_approve
+        end
+      else
+        raise 'Not a cleanable Questionnaire. Your scenario needs fixing'
+    end
+  end
 
   QUESTION_CATEGORY = {
       'Proposal Person Certification' => 'Certifications for Proposal Development'

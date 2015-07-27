@@ -45,7 +45,10 @@ And /certifies the Proposal's/ do
   @proposal.view 'Personnel'
   @proposal.key_personnel.each do |person|
     next if person.role == 'Key Person'
-    on(KeyPersonnel).proposal_person_certification_of person.full_name
+    on KeyPersonnel do |page|
+      page.expand_all_personnel
+      page.proposal_person_certification_of person.full_name
+    end
     @proposal.key_personnel.questionnaire.answer_for(person.full_name, 'Y')
   end
 end
