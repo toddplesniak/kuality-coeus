@@ -4,9 +4,8 @@
   :name: Proposal Person Certification
   :module: Development Proposal
   :module_sub_item_code: Proposal Person Certification
-  :mandatory: 'Yes'
+  :mandatory: Yes
   :label: Proposal Person Certification
-  :version: '4'
   :page_class: KeyPersonnel
   :qs:
   - :question_id: '10089'
@@ -17,6 +16,7 @@
       of interest.
     :response_type: Yes/No
     :category: Certifications for Proposal Development
+    :hierarchy: :sibling
   - :question_id: '10090'
     :category: Certifications for Proposal Development
     :question: If the proposal submitted herewith is funded and accepted by this institution,
@@ -36,3 +36,32 @@
       Misconduct in Science Policy), and (4) is in accordance with specifications established
       by the sponsoring agency?
     :response: 'Yes'
+    :hierarchy: :sibling
+:irb_short:
+  :id: '1001'
+  :name: IRB Short
+  :module: IRB
+  :mandatory: No
+  :label: IRB Short Questionnaire
+  :page_class: TBD
+  :qs:
+    - :question_id: '10001'
+      :question: Does this project involve human subjects?
+      :response_type: Yes/No
+      :category: Misc - to be grouped
+      :hierarchy: :sibling
+    - :question_id: '10018'
+      :question: Please indicate the type of equity interest that you, your spouse,
+        registered domestic partner, or any dependent child(ren) have in this entity.
+      :response_type: Text
+      :answer_count: '4'
+      :max_characters: '50'
+      :possible_answers: '4'
+      :category: Misc - to be grouped
+      :hierarchy: :sibling
+    - :question_id: '10005'
+      :question: Are you the inventor of any drug, device, vaccine or procedure
+        associated with this protocol?
+      :response_type: Yes/No
+      :category: Misc - to be grouped
+      :hierarchy: :child
