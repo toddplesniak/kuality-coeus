@@ -186,12 +186,11 @@ end
 And /^the (.*) submits a new Proposal into routing$/ do |role_name|
   steps %{ * the #{role_name} creates a Proposal }
   steps %q{ * adds a principal investigator to the Proposal
-            * certifies the Proposal's principal investigator }
-  steps %q{ * sets valid credit splits for the Proposal }
+            * certifies the Proposal's principal investigator
+            * sets valid credit splits for the Proposal }
   steps %q{ * creates a Budget Version for the Proposal
             * includes the Budget Version for submission
-            * marks the Budget Version complete
-          }
+            * marks the Budget Version complete }
   steps %q{ * submits the Proposal into routing }
 
   DEBUG.pause 299
