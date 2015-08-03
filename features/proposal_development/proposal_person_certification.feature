@@ -7,6 +7,7 @@ Feature: Updating the Proposal Person Certification Questionnaire
   Background:
     * the CERTIFICATION_UPDATE_FEATURE_FLAG parameter is set to Y
     * Users exist with the following roles: Proposal Creator, Aggregator
+    * the Aggregator cleans up the proposal person questionnaire
 
   Scenario: Adding a question to the Person Certification Questionnaire
     Given the Proposal Creator creates a Proposal
@@ -14,10 +15,8 @@ Feature: Updating the Proposal Person Certification Questionnaire
     And   certifies the Proposal's personnel
     When  the Aggregator adds a question to the proposal person questionnaire
     Then  the Proposal Creator can answer the new certification question for the personnel
-    * the Aggregator cleans up the proposal person questionnaire
   @test
   Scenario: Updated questionnaires don't affect submitted Proposals
     Given the Proposal Creator submits a new Proposal into routing
     When  the Aggregator adds a question to the proposal person questionnaire
-    Then  the questionnaire update dialog does not appear when the Creator views the certification
-    * the Aggregator cleans up the proposal person questionnaire
+    Then  the questionnaire update dialog does not appear when the Creator views the personnel

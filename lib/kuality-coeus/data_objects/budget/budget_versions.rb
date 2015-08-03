@@ -187,12 +187,6 @@ class BudgetVersionsObject < DataFactory
       page.status.pick! @status
       page.apply_changes
     end
-
-
-    DEBUG.pause 499
-
-
-
   end
 
   def update_from_parent(navigate_method)

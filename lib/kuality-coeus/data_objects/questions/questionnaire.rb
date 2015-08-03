@@ -44,6 +44,8 @@ class QuestionnaireObject < DataFactory
       page.check_item @questions.last.question_id
       page.return_selected
     end
+    # FIXME: Figure out why this needs to be here:
+    sleep 3
     # FIXME: We probably eventually don't want to have a blanket approve here...
     on(Questionnaire).blanket_approve
   end
@@ -64,7 +66,7 @@ class QuestionnaireObject < DataFactory
     on(Questionnaire).expand_all
   end
 
-
+  # TODO: support the hierarchy feature...
   def clean
     case(@name)
       when 'Proposal Person Certification'

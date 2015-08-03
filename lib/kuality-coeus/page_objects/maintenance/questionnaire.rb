@@ -14,6 +14,9 @@ class Questionnaire < BasePage
   p_action(:remove_question) { |question, b| b.frm.
       link(id: "remove#{b.noko_question_table.link(text: question).name[/\d+$/]}" ).
       click }
+  p_action(:update_version) { |question, b| b.frm.
+      link(id: "update#{b.noko_question_table.link(text: question).name[/\d+$/]}" ).
+      click }
 
   p_action(:expand_question) { |question, b| b.frm.link(text: question).click }
   alias_method :collapse_question, :expand_question

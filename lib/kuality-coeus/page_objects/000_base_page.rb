@@ -125,7 +125,7 @@ class BasePage < PageFactory
       action(:select_all_from_this_page) { |b| b.frm.button(title: 'Select all rows from this page').click }
       action(:return_selected) { |b| b.frm.button(title: 'Return selected results').click; b.loading }
       p_action(:check_item) { |item, b| b.item_row(item).checkbox.set }
-      action(:select_random_checkbox) { |b| b.frm.tbody.tr(index: (rand(b.frm.tbody.trs.length))).checkbox.set }
+      action(:select_random_checkbox) { |b| b.frm.tbody.checkboxes.to_a.sample.set }
       action(:return_random_checkbox) { |b| b.select_random_checkbox; b.return_selected }
       p_action(:check_item_title) { |item, b| b.item_row_title(item).checkbox.set }
     end

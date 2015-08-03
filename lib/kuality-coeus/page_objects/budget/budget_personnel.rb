@@ -9,7 +9,7 @@ class BudgetPersonnel < BasePage
     b.personnel_rows.map { |row|
       {
           person:           row.td.text[/^.+(?=\W\()/],
-          role:             row.td(index: 1).text[/^.+(?=\W\()/],
+          role:             row.td(index: 1).text[/^.*(?=\W\()/],
           job_code:         row.td(index: 1).span.text[/(?<=\()\w+/],
           appointment_type: row.td(index: 2).text.strip,
           base_salary:      row.td(index: 3).text.strip
