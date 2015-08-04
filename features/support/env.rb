@@ -25,9 +25,15 @@ kuality = Kuality.new ENV['BROWSER'].to_sym
 
 Before do
   @browser = kuality.browser
+
+  if @browser.windows.size > 1
+    DEBUG.message 'closing extra windows...'
+    @browser.windows[1..-1].each { |w| w.close }
+    @browser.windows[0].use
+  end
+
   # clear browser cache for when multiple scenarios are run and pages fail to load correctly
   @browser.cookies.clear
-
   # DEBUG - Testing to see if this gets rid of the "A Server Error Occurred" issue...
   @browser.execute_script("window.alert = function() {}")
 
@@ -47,6 +53,8 @@ After do |scenario|
     DEBUG.message " Failed on #{@browser.url}"
     # DEBUG
     #Cucumber.wants_to_quit = true
+    @browser.goto 'https://en.wikipedia.org/wiki/Main_Page'
+    @browser.goto $base_url+$context
   end
   @browser.cookies.clear
 end
