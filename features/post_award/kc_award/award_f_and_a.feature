@@ -12,7 +12,7 @@ Feature: Award F&A Rates
   Scenario: Missing F&A Rate fields
     When  the Award Modifier adds an F&A rate to the Award but misses a required field
     Then  an error should appear saying the field is required
-
+  @wip
   Scenario: Invalid Fiscal Year
     When the Award Modifier adds an F&A rate with an invalid fiscal year
     Then an error should appear that says the fiscal year is not valid

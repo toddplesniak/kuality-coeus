@@ -55,6 +55,8 @@ After do |scenario|
     #Cucumber.wants_to_quit = true
     @browser.goto 'https://en.wikipedia.org/wiki/Main_Page'
     @browser.goto $base_url+$context
+    # DEBUG - Remove this if possible:
+    sleep 30
   end
   @browser.cookies.clear
 end

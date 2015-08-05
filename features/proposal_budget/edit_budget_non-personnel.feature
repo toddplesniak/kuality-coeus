@@ -20,7 +20,7 @@ Feature: Editing a Budget's Non-Personnel Costs
     And   adds an NPC with a base cost lower than the lowest cost limit to the 1st period and copies it to the others
     When  the first non-personnel cost is synced with the total cost limit for each period
     Then  the Period's total sponsor cost should equal the cost limit
-
+  @wip
   Scenario: Removing F&A charges, applying to all Budget periods
     Given the Proposal Creator adds a non-personnel cost with a narrow date range and a 'Travel' category type to the first Budget period
     When  the F & A rates for the non-personnel item are unapplied for all periods

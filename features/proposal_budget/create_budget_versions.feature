@@ -13,7 +13,7 @@ Feature: Creating/Editing Budget Versions in Proposal Documents
     Given I enter dollar amounts for all the budget periods
     When  I copy the Budget Version (all periods)
     Then  the copied budget's values are all as expected
-
+  @wip
   Scenario: "Default Periods" returns budget periods to a zeroed state
     Given I delete one of the budget periods
     And   enter dollar amounts for all the budget periods

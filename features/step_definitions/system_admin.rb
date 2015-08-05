@@ -1,5 +1,5 @@
 And /^the (.*) parameter is set to (.*)$/ do |parameter, value|
-  $users.admin.sign_in unless $users.admin.logged_in?
+  $users.admin.sign_in
   on(Header).system_admin_portal
   on(Header).system_admin
   on(SystemAdmin).parameter
