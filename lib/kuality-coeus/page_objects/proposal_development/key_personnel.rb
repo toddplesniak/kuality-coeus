@@ -47,6 +47,7 @@ class KeyPersonnel < BasePage
 
   # Person Certification
   p_action(:answer) { |name, question, value, b| b.section_of(name).div(data_label: /^#{question[0..20]}/).radio(value: value) }
+  value(:questions) { |name, b| b.section_of(name).divs(data_kc_questionindex: /\d+/).map { |div| div.data_label.gsub(/\W+<0>$/,'') } }
 
   # TODO: Genericize and move this method...
   def self.tabs(*tab_text)

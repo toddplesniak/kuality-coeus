@@ -50,6 +50,14 @@ And /certifies the Proposal's/ do
       page.proposal_person_certification_of person.full_name
     end
     @proposal.key_personnel.questionnaire.answer_for(person.full_name, 'Y')
+    if @proposal.key_personnel.questionnaire.questions.size != on(KeyPersonnel).questions(person.full_name).size
+      warn "The Proposal Person Questionnaire object is out of sync with the system's setup.\nGoing to brute-force answer the questionnaire, so that\nthe Person gets certified and the step definition requirements are met,\nbut the code and the system need to be synced up."
+      on KeyPersonnel do |page|
+        page.questions(person.full_name).each do |ques|
+          page.answer(person.full_name, ques, 'Y')
+        end
+      end
+    end
   end
 end
 
