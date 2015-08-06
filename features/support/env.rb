@@ -50,13 +50,13 @@ After do |scenario|
     @browser.screenshot.save 'screenshot.png'
     embed 'screenshot.png', 'image/png'
     # DEBUG
-    DEBUG.message " Failed on #{@browser.url}"
+    DEBUG.message "#{Time.now} Failed on #{@browser.url}"
     # DEBUG
     #Cucumber.wants_to_quit = true
     @browser.goto 'https://en.wikipedia.org/wiki/Main_Page'
-    @browser.goto $base_url+$context
     # DEBUG - Remove this if possible:
     sleep 30
+    @browser.goto $base_url+$context
   end
   @browser.cookies.clear
 end
