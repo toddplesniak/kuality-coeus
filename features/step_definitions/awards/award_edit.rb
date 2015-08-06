@@ -111,3 +111,71 @@ end
 And /^adds the unassigned user as a Principal Investigator for the Award$/ do
   @award.add_key_person first_name: 'PleaseDoNot', last_name: 'AddOrEditRoles'
 end
+
+And /adds a (.*) with a responsibility split of (\d+) and a financial split of (\d+)$/ do  |role, responsibility, financial|
+  @award.view_tab :contacts
+  case role
+    when 'PI' || 'Principal Investigator'
+      @award.add_key_person project_role: 'Principal Investigator'
+      @award.set_credit_split full_name: @award.key_personnel[:principal_investigator],
+                              responsibility: responsibility, financial: financial
+    when 'COI' || 'Co-Investigator'
+      @award.add_key_person project_role: 'Co-Investigator'
+      @award.set_credit_split full_name: @award.key_personnel[:co_investigator].gsub('  ', ' '),
+                              responsibility: responsibility, financial: financial
+  end
+end
+
+And /adds the second (.*) with a responsibility split of (\d+) and a financial split of (\d+)$/ do  |role, responsibility, financial|
+  case role
+    when 'PI' || 'Principal Investigator'
+      @award.add_key_person project_role: 'Principal Investigator'
+      # @award.unit_recognition(@key_personnel.role.full_name,split)
+      @award.set_credit_split full_name: @award.key_personnel[:principal_investigator][1],
+                              responsibility: responsibility, financial: financial
+
+    when 'COI' || 'Co-Investigator'
+      @award.add_key_person project_role: 'Co-Investigator'
+      @award.set_credit_split full_name: @award.key_personnel[:co_investigator].gsub('  ', ' '),
+                          responsibility: responsibility, financial: financial
+  end
+end
+
+And /creates a child node that is copied from the parent$/ do
+
+  #assumes on correct award
+  @child_node = create AwardChildObject, description: 'child'+random_string(10), account_id: 'child'+random_alphanums(10),   transaction_type: '::random::'
+end
+
+And /removes the co-investigators from the child node$/ do
+  @child_node.delete_all_contacts_with_role('Co-Investigator')
+  #Have to set credit splits to 100 after removing the childern
+  @child_node.sets_unit
+  @child_node.set_valid_credit_split
+end
+
+And /makes the (first|second) co-investigator the principle investigator$/ do  |person|
+  @child_node.delete_all_contacts_with_role('Principal Investigator')
+  @child_node.get_key_people
+  rolex =[]
+  @child_node.key_people.each {|x| rolex << x[:role] }
+  rolex.flatten!
+
+  case person
+    when 'first'
+      @child_node.edit_person_project_role(@child_node.key_people[rolex.index('Co-Investigator')][:name], 'Principal Investigator')
+    when 'second'
+      @child_node.edit_person_project_role(@child_node.key_people[rolex.rindex('Co-Investigator')][:name], 'Principal Investigator')
+  end
+  @child_node.delete_all_contacts_with_role('Co-Investigator')
+  @child_node.set_valid_credit_splits
+end
+
+And /^submits the child node$/ do
+  #Child node requires a report for the submit button to be present
+  @child_node.add_report type:           'Progress/Status',
+                         frequency:      'As required',
+                         frequency_base: 'As Required',
+                         osp_file_copy:  'Report'
+  @child_node.submit
+end

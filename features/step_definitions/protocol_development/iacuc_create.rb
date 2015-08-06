@@ -72,7 +72,8 @@ When /^(the (.*) |)assigns the created location to a Procedure on the IACUC Prot
 
   @species = create SpeciesObject
   @procedures = create IACUCProceduresObject
-  @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name, room: rand(100..999), species: @species.species)
+  @procedures.set_location(type: @location_type.location_type, name: @location_name.location_name,
+                           room: rand(100..999), species: @species.species)
 end
 
 Given /^(the (.*) |)creates an IACUC Protocol with the three principles, reduction, refinement, replacement$/ do |text, role_name|

@@ -225,6 +225,7 @@ end
 
 And /opens the Award$/ do
   @award.view :award
+  DEBUG.pause(4)
 end
 
 When /^the Award Modifier searches for the Award from the award lookup page$/ do

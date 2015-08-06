@@ -6,8 +6,8 @@ class BasePage < PageFactory
   action(:close_extra_windows) { |b| b.close_children if b.windows.length > 1 }
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
-  action(:loading_old) { |b| b.frm.image(alt: 'working...').wait_while_present }
-  action(:loading) { |b| b.image(alt: 'Loading...').wait_while_present(60) }
+  action(:loading_old) { |b| b.frm.image(alt: 'working...').wait_while_present(360) }
+  action(:loading) { |b| b.image(alt: 'Loading...').wait_while_present(360) }
   element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
   action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
   action(:processing_document) { |b| b.frm.div(text: /The document is being processed. You will be returned to the document once processing is complete./ ).wait_while_present }
@@ -275,7 +275,7 @@ class BasePage < PageFactory
       }.each do |key, value|
         # Makes methods for the person's 4 credit splits (doesn't have to take the full name of the person to work)
         # Example: page.responsibility('Joe Schmoe').set '100.00'
-        action(key.to_sym) { |name, b| b.credit_split_div_table.row(text: /#{Regexp.escape(name)}/)[value].text_field }
+        action(key.to_sym) { |name, b| b.credit_split_div_table.row(text: /#{name}/)[value].text_field }
         # Makes methods for the person's units' credit splits
         # Example: page.unit_financial('Jane Schmoe', 'Unit').set '50.0'
         action("unit_#{key}".to_sym) { |full_name, unit_name, p| p.target_unit_row(full_name, unit_name)[value].text_field }

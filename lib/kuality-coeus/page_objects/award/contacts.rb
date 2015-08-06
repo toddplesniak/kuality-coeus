@@ -18,6 +18,39 @@ class AwardContacts < KCAwards
   value(:key_personnel) { |b| b.key_personnel_table.hiddens(name: /award_person.identifier_\d+/).map { |hid| hid.parent.text.strip } }
 
   value(:get_full_name) {|b| b.frm.div(id: 'per.fullName.div').text.strip }
+
+  p_element(:person_row) { |full_name, b| b.frm.table(id: 'contacts-table').div(text: /#{full_name}/).button(title: 'Direct Inquiry').parent.parent.parent }
+  p_action(:delete_person) { |full_name, b| b.person_row(full_name).button(name: /^methodToCall\.deleteProjectPerson\.line/).click; b.loading }
+
+  p_element(:edit_project_role) { |full_name, b| b.person_row(full_name).select(id: /contactRoleCode/) }
+
+  # p_action(:delete_people_with_role) {|role, b| b.frm.table(id: 'contacts-table').select_lists.each { |list| list.parent.parent.parent.button(name: /^methodToCall\.deleteProjectPerson\.line/).click if list.value == role  }; b.loading }
+
+  p_action(:delete_person_with_role) { |role, b| b.frm.table(id: 'contacts-table').select_list(value: role).parent.parent.parent.button(name: /^methodToCall\.deleteProjectPerson\.line/).click; b.loading }
+
+  #gathers people in a hash {[name: 'bob', role: 'COI'],}
+  value(:get_key_people) do |b|
+    peoples = []
+    b.frm.table(id: 'contacts-table').trs.each do |row|
+      ( peoples <<  { name: row.td.text.strip, role: row.select.selected_options.map(&:text).join } ) if row.button(name: /^methodToCall\.deleteProjectPerson\.line/).exists?
+    end
+    peoples
+  end
+
+
+
+
+
+  #name
+    # months = Hash.new { |hash, key| hash[key] = Array.new(5) }
+  # b.frm.table(id: 'contacts-table').trs.each { |row| puts row.td.text if row.button(name: /^methodToCall.deleteProjectPerson.line/).exists? }
+
+
+
+
+
+
+
   # Person Details
 
   # Unit Details
@@ -34,8 +67,8 @@ class AwardContacts < KCAwards
   #Note: used to validate that the buttons exist at all...
   element(:lead_unit_radio_button) { |b| b.frm.radio(name: 'selectedLeadUnit') }
   p_element(:lead_unit_radio) { |name, unit, b| b.person_unit_row(name, unit).radio(name: 'selectedLeadUnit') }
-  p_action(:delete_unit) { |name, unit, b| b.person_unit_row(name, unit).button(name: /methodToCall.deleteProjectPersonUnit/).click }
-  p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /methodToCall.deleteProjectPersonUnit/) }
+  p_action(:delete_unit) { |name, unit, b| b.person_unit_row(name, unit).button(name: /^methodToCall\.deleteProjectPersonUnit/).click }
+  p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /^methodToCall\.deleteProjectPersonUnit/) }
   action(:unit_name) { |name, unit, b| b.person_unit_row(name, unit)[2].text.strip }
 
   action(:delete_unit_row) { |b| b.frm.button(name: /methodToCall.deleteProjectPersonUnit/).click }
@@ -58,12 +91,37 @@ class AwardContacts < KCAwards
   element(:close_button) { |b| b.frm.button(title: 'close') }
 
   # Combined Credit Split
-  element(:cs_recognition) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[0].credit") }
-  element(:cs_responsibility) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[1].credit") }
-  element(:cs_space) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[2].credit") }
-  element(:cs_financial) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[3].credit") }
+  element(:cs_recognition) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[0].credit') }
+  element(:cs_responsibility) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[1].credit') }
+  element(:cs_space) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[2].credit') }
+  element(:cs_financial) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[3].credit') }
 
+  element(:cs_unit_recognition) { |b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].units[0].creditSplits[0].credit') }
+  element(:cs_unit_responsibility) { |b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].units[0].creditSplits[1].credit') }
 
+  action(:recalculate) { |b| b.frm.button(name: 'methodToCall.recalculateCreditSplit').click; b.loading}
+
+  # p_element(:responsibility) { |full_name, b| b.frm.div(id: "#{full_name.gsub(' ', '  ')}_Responsibility_1").text_field }
+  # p_element(:financial) { |full_name, b| b.frm.div(id: "#{full_name.gsub(' ', '  ')}_Financial_2").text_field }
+
+  # p_element(:unit_responsibility) { |index, b| b.frm.text_field(id: "document.awardList[0].projectPersons[#{index}].units[0].creditSplits[0].credit") }
+  # p_element(:unit_financial) { |index, b| b.frm.text_field(id: "document.awardList[0].projectPersons[#{index}].units[0].creditSplits[1].credit") }
+  element(:no_splits) { |b| b.frm.td(text: 'Key Personnel and Credit Split (0)') }
+  value(:people_present) { |b| arry=[]; b.frm.div(id: 'tab-ProjectPersonnel:CombinedCreditSplit-div').table.tbody.tds(class: 'tab-subhead').each {|td| arry << td.text}; arry }
+
+  p_element(:person_has_unit) {|full_name, b| b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").button(name: /^methodToCall\.deleteProjectPersonUnit\.personIndex/)   }
+  p_action(:unit_lookup_for_person) {|full_name, b| b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").button(title: 'Search ').click }
+  p_action(:add_unit_for_person) {|full_name, b| b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").button(title: 'Add Contact').click }
+  # p_value(:get_unit_numbers_for_person) {|full_name, b| arry=[]; b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").tbody(index: 2).trs.each {|row| arry << row.td(index: 1).text.strip }; arry.uniq! }
+
+  #TODO: HTML tags to remove having to use the delete button to find the units on a personnel memeber
+  p_element(:person_units_delete_buttons) {|full_name, b| b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").buttons(name: /^methodToCall\.deleteProjectPersonUnit\.personIndex/)   }
+  p_value(:get_unit_numbers_for_person) {|full_name, b| arry=[]; b.person_units_delete_buttons(full_name).each {|btn| arry << btn.parent.parent.parent.td(index: 1).text.strip }; arry.uniq! }
+  p_value(:person_div_text) {|full_name, b| arry=[]; b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").table(summary: 'Project Personnel Units').tbody(index: 2).trs.each {|row| arry << row.td(index: 1).text.strip }; arry }
+  p_value(:person_div_text_with_radio) {|full_name, b| arry=[]; b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").table(summary: 'Project Personnel Units').tbody(index: 2).trs.each {|row| arry << row.td(index: 2).text.strip }; arry }
+  p_value(:person_div_text_straight) {|full_name, b| b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").table(summary: 'Project Personnel Units').tbody(index: 2).trs.each {|row| puts row.td(index: 1).text.strip } }
+
+  p_value(:unit_details_with_radio_buttons) { |full_name,b | b.table(summary: 'Key Personnel').div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").radio(name: 'selectedLeadUnit').exists? }
   # ===========
   private
   # ===========

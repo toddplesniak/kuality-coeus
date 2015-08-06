@@ -31,7 +31,7 @@ class PaymentInvoiceObject < DataFactory
       page.payment_basis.fire_event('onchange')
 
       page.payment_method.wait_until_present
-
+      DEBUG.pause(4)
       page.payment_method.pick! @payment_method
       page.payment_type.pick! @payment_and_invoice_requirements[:payment_type]
       page.payment_type.fire_event('onchange')

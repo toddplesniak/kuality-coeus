@@ -37,6 +37,13 @@ class Lookups < BasePage
       action(:return_random_term) {|b| b.random_term_results.set; b.return_selected }
       value(:random_term_results) { |b| b.results_table.checkboxes.to_a.sample }
 
+      action(:return_random_person) { |b| b.return_random_person_links.sample.click }
+      element(:return_random_person_links) { |b| arry=[]; b.results_table.tbody.trs.each {|row| arry << row.link(text: 'return value') if row.td(index: 2).text != @key_personnel[:full_name] }; arry }
+
+      element(:gather_people) {|b| hsh={}; b.results_table.tbody.trs.each {|row| hsh[row.td(index: 2).text] = row.link(text: 'return value') }; hsh }
+      #used with the gather
+      action(:select_person) {|p| p.click}
+
       # Used as the catch-all "document opening" method for conditional navigation,
       # when we can't know whether the current user will have edit permissions.
       # Note: The assumption is that there is only one item returned in the search,

@@ -1,5 +1,8 @@
 When /I? ?adds? a report to the Award$/ do
-  @award.add_report
+  @award.add_report type:           'Progress/Status',
+                    frequency:      'As required',
+                    frequency_base: 'As Required',
+                    osp_file_copy:  'Report'
 end
 
 When /adds (\d+) reports to the Award$/ do |x|
@@ -7,6 +10,7 @@ When /adds (\d+) reports to the Award$/ do |x|
 end
 
 When /I? ?adds? Terms to the Award$/ do
+
   @award.add_terms
 end
 

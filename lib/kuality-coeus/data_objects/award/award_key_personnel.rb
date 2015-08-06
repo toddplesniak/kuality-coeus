@@ -190,6 +190,10 @@ class AwardKeyPersonnelCollection < CollectionsFactory
     self.find{ |person| person.project_role=='Principal Investigator' || person.project_role=='PI/Contact' }
   end
 
+  def co_investigator
+    self.find{ |person| person.project_role=='Co-Investigator' }
+  end
+
   def with_units
     self.find_all { |person| person.units.size > 0 }
   end
