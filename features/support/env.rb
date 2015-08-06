@@ -53,7 +53,7 @@ After do |scenario|
     DEBUG.message "#{Time.now} Failed on #{@browser.url}"
     # DEBUG
     #Cucumber.wants_to_quit = true
-    @browser.goto 'https://en.wikipedia.org/wiki/Main_Page'
+    @browser.goto 'https://www.google.com'
     # DEBUG - Remove this if possible:
     sleep 30
     @browser.goto $base_url+$context
