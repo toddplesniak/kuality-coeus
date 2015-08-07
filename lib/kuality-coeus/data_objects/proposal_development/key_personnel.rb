@@ -166,15 +166,14 @@ end # KeyPersonObject
 
 class KeyPersonnelCollection < CollectionsFactory
 
+  contains KeyPersonObject
+  include People, DocumentUtilities
+
   attr_reader :questionnaire
 
   def initialize(browser)
     @browser=browser
     @questionnaire = QuestionnaireObject.new @browser, YAML.load_file("#{File.dirname(__FILE__)}/../questions/questionnaires.yml")[:proposal_person_cert]
   end
-
-  contains KeyPersonObject
-  include People
-
 
 end # KeyPersonnelCollection

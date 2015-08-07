@@ -140,7 +140,7 @@ end
 
 When /^I? ?completes? the Proposal$/ do
   @proposal.add_principal_investigator
-  @proposal.set_valid_credit_splits
+  @proposal.key_personnel.set_valid_credit_splits
 end
 
 When /completes? the required supplemental info on the Proposal$/ do

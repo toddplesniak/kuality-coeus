@@ -66,7 +66,7 @@ Given /^I? ?adds? the Grants.Gov user as the Proposal's PI$/ do
 end
 
 When /^I? ?sets? valid credit splits for the Proposal$/ do
-  @proposal.set_valid_credit_splits
+  @proposal.key_personnel.set_valid_credit_splits
 end
 
 And /can approve the Proposal$/ do
