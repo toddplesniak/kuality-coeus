@@ -23,6 +23,8 @@ World Utilities
 
 kuality = Kuality.new ENV['BROWSER'].to_sym
 
+# Hooks...
+
 Before do
   @browser = kuality.browser
 
@@ -65,7 +67,7 @@ After do |scenario|
     #  self.instance_variables[2..-1].each { |var| DEBUG.inspect instance_variable_get(var) }
     #}
     # DEBUG
-    #Cucumber.wants_to_quit = true
+    Cucumber.wants_to_quit = true
     @browser.goto 'https://www.google.com'
     # DEBUG - Remove this if possible:
     sleep 30
