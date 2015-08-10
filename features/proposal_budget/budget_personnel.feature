@@ -12,12 +12,12 @@ Feature: Project Personnel in Proposal Budget Versions
     Given various personnel are added to the Proposal
     When  the Proposal Creator syncs the Budget's personnel with the Proposal
     Then  the Budget personnel should match the Proposal personnel
-  @wip
+
   Scenario: Personnel info imported from Person record
     Given a User exists with a 'SUMMER EMPLOYEE' appointment type
     When  the Proposal Creator adds the 'SUMMER EMPLOYEE' User to the Budget personnel
     Then  the Budget personnel list shows the SUMMER EMPLOYEE's job code, salary, and appointment type info
-  @wip
+
   Scenario: Adding Project Person with Salary and no Inflation Rate
     Given the Proposal Creator adds an employee to the Budget personnel
     And   adds a to-be-named person to the Budget personnel

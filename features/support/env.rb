@@ -36,8 +36,6 @@ Before do
 
   # clear browser cache for when multiple scenarios are run and pages fail to load correctly
   @browser.cookies.clear
-  # DEBUG - Testing to see if this gets rid of the "A Server Error Occurred" issue...
-  @browser.execute_script("window.alert = function() {}")
 
   x = false
   i = 0
@@ -63,11 +61,6 @@ After do |scenario|
     embed 'screenshot.png', 'image/png'
     # DEBUG
     DEBUG.message "#{Time.now} Failed on #{@browser.url}"
-    #DEBUG.do {
-    #  self.instance_variables[2..-1].each { |var| DEBUG.inspect instance_variable_get(var) }
-    #}
-    # DEBUG
-    Cucumber.wants_to_quit = true
     @browser.goto 'https://www.google.com'
     # DEBUG - Remove this if possible:
     sleep 30
