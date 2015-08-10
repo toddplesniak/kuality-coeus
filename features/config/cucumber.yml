@@ -1,0 +1,11 @@
+<%
+rerun_tests = File.file?('cucumber-rerun.txt') ? IO.read('cucumber-rerun.txt') : ""
+rerun_opts = if rerun_tests.to_s.strip.empty?
+  "features --tags @none_so_will_pass"
+else
+  "@cucumber-rerun.txt --format json -o cucumber.json"
+end
+first_try = "--format rerun --out cucumber-rerun.txt --format json -o cucumber.json"
+%>
+first_try: features <%= first_try %>
+second_try: <%= rerun_opts %>
