@@ -34,7 +34,11 @@
     on AddPersonnel do |page|
       page.set_role(role_value[@role])
       page.key_person_role.fit @key_person_role
+
+
+
       page.add_person
+
     end
     on KeyPersonnel do |person|
       person.expand_all_personnel

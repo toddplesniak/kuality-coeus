@@ -69,4 +69,6 @@ After do |scenario|
   @browser.cookies.clear
 end
 
-at_exit { kuality.browser.close }
+at_exit {
+  kuality.browser.close
+}

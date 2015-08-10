@@ -1,4 +1,4 @@
-@proposal @wip
+@proposal
 Feature: Proposal Key Personnel Validations
 
   As a researcher I want to know if there are problems
@@ -22,7 +22,7 @@ Feature: Proposal Key Personnel Validations
     Given I add a Principal Investigator with a Financial credit split of 99.99
     When  data validation is activated
     Then  an error should say the credit split does not equal 100%
-
+  @wip
   Scenario: I should see an error when I add a key person without a specified proposal role
     When I add a key person without a key person role
     Then an error should appear that says a key person role is required
