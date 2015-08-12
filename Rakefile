@@ -30,7 +30,7 @@ namespace :jenkins do
   end
 
   Cucumber::Rake::Task.new(:full_suite) do |t|
-    t.cucumber_opts = 'features -b -t ~@wip -t ~@smoke -t ~@performance -t ~@system_failure --format rerun --out rerun.txt --expand -r features --format json -o cucumber.json'
+    t.cucumber_opts = 'features --order random -b -t ~@wip -t ~@smoke -t ~@performance -t ~@system_failure --format rerun --out rerun.txt --expand -r features --format json -o cucumber.json'
   end
 
   Cucumber::Rake::Task.new(:smoke_suite) do |t|
@@ -38,7 +38,7 @@ namespace :jenkins do
   end
 
   Cucumber::Rake::Task.new(:rerun_failed) do |t|
-    t.cucumber_opts = '@rerun.txt -b --expand -r features --format json -o cucumber_rr.json -b'
+    t.cucumber_opts = '@rerun.txt -b --expand -r features --format json -o cucumber_rr.json -b --strict'
   end
 
 end
@@ -58,6 +58,19 @@ namespace :vagrant do
     end
   end
 
+  task :smoke_with_rerun do
+    rerun = 'rerun.txt'
+    FileUtils.rm_f rerun if File.exist?(rerun)
+    begin
+      Rake::Task['vagrant:smoke_suite'].invoke
+    rescue Exception => e
+      if File.exist?(rerun)
+        rerun_features = IO.read(rerun)
+        Rake::Task['vagrant:rerun_failed'].invoke unless rerun_features.to_s.strip.empty?
+      end
+    end
+  end
+
   Cucumber::Rake::Task.new(:test) do |t|
     t.cucumber_opts = '/kuality-coeus/features -b -t @test --format rerun --out rerun.txt --expand -r /kuality-coeus/features'
   end
@@ -67,11 +80,11 @@ namespace :vagrant do
   end
 
   Cucumber::Rake::Task.new(:smoke_suite) do |t|
-    t.cucumber_opts = '/kuality-coeus/features --expand -t @smoke --format rerun --out rerun.txt -r /kuality-coeus/features'
+    t.cucumber_opts = '/kuality-coeus/features --verbose --expand -t @smoke -t ~@wip -t ~@system_failure --format rerun --out rerun.txt -r /kuality-coeus/features'
   end
 
   Cucumber::Rake::Task.new(:rerun_failed) do |t|
-    t.cucumber_opts = '@rerun.txt -b --expand -r /kuality-coeus/features'
+    t.cucumber_opts = '@rerun.txt -r /kuality-coeus/features -b --expand --verbose --strict'
   end
 
 end

@@ -10,7 +10,8 @@ $cas_context = $cas? ENV['CAS_CONTEXT'] : ''
 
 if ENV['HEADLESS']
   require 'headless'
-  Headless.new.start
+  display = Time.now.to_i
+  Headless.new(display: display).start
 end
 
 require "#{File.dirname(__FILE__)}/../../lib/kuality-coeus"
@@ -70,5 +71,7 @@ After do |scenario|
 end
 
 at_exit {
-  kuality.browser.close
+  if kuality.browser.exist?
+    kuality.browser.close
+  end
 }
