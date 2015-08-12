@@ -69,9 +69,3 @@ After do |scenario|
   end
   @browser.cookies.clear
 end
-
-at_exit {
-  if kuality.browser.exist?
-    kuality.browser.close
-  end
-}
