@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'rake'
+gem 'io-console'
 gem 'rspec'
 gem 'cucumber'
 gem 'test-factory', '>=0.5.3'
