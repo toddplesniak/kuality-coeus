@@ -10,8 +10,9 @@ $cas_context = $cas? ENV['CAS_CONTEXT'] : ''
 
 if ENV['HEADLESS']
   require 'headless'
-  display = Time.now.to_i
-  Headless.new(display: display).start
+  #display = Time.now.to_i
+  #Headless.new(display: display).start
+  Headless.new.start
 end
 
 require "#{File.dirname(__FILE__)}/../../lib/kuality-coeus"
