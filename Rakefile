@@ -38,7 +38,7 @@ namespace :jenkins do
   end
 
   Cucumber::Rake::Task.new(:rerun_failed) do |t|
-    t.cucumber_opts = '@rerun.txt -b --expand -r features --format json -o cucumber_rr.json -b --strict'
+    t.cucumber_opts = '@rerun.txt -b --expand -r features --format json -o cucumber.json -b --strict'
   end
 
 end
@@ -66,6 +66,14 @@ namespace :vagrant do
     rescue Exception => e
       if File.exist?(rerun)
         rerun_features = IO.read(rerun)
+
+        # DEBUG
+        puts
+        puts 'In the rescue clause...'
+        puts
+        puts rerun_features
+        puts
+
         Rake::Task['vagrant:rerun_failed'].invoke unless rerun_features.to_s.strip.empty?
       end
     end
