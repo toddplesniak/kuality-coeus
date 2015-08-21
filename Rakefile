@@ -92,7 +92,7 @@ namespace :vagrant do
   end
 
   Cucumber::Rake::Task.new(:rerun_failed) do |t|
-    t.cucumber_opts = '@rerun.txt -r /kuality-coeus/features -b --expand --verbose --strict --format json -o cucumber1.json'
+    t.cucumber_opts = '@rerun.txt -r /kuality-coeus/features -b --expand --verbose --strict --format json -o cucumber.json'
   end
 
 end

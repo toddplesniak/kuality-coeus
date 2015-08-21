@@ -58,6 +58,7 @@ end
 
 After do |scenario|
   # Grab a screenshot
+  @browser.screenshot.save "passed#{Time.now}.png"
   if scenario.failed?
     @browser.screenshot.save 'screenshot.png'
     embed 'screenshot.png', 'image/png'
