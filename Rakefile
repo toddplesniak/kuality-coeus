@@ -96,4 +96,3 @@ namespace :vagrant do
   end
 
 end
-
