@@ -88,11 +88,11 @@ namespace :vagrant do
   end
 
   Cucumber::Rake::Task.new(:smoke_suite) do |t|
-    t.cucumber_opts = '/kuality-coeus/features --verbose --expand -t @smoke -t ~@wip -t ~@system_failure --format rerun --out rerun.txt -r /kuality-coeus/features --format json -o cucumber.json'
+    t.cucumber_opts = '/kuality-coeus/features --verbose --expand -t @smoke -t ~@wip -t ~@system_failure --format rerun --out rerun.txt -r /kuality-coeus/features'
   end
 
   Cucumber::Rake::Task.new(:rerun_failed) do |t|
-    t.cucumber_opts = '@rerun.txt -r /kuality-coeus/features -b --expand --verbose --strict --format json -o cucumber1.json'
+    t.cucumber_opts = '@rerun.txt -r /kuality-coeus/features -b --expand --verbose --strict --format json -o cucumber.json'
   end
 
 end
