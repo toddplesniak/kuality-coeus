@@ -18,7 +18,7 @@ class AwardObject < DataFactory
                 :anticipated_amount, :obligated_amount,
                 :custom_data, :description, :project_start_date, :project_end_date, :obligation_start_date,
                 :obligation_end_date, :time_and_money, :parent, :people_present, :key_people
-  def_delegators :@key_personnel, :principal_investigator, :co_investigator
+  def_delegators :@key_personnel, :principal_investigator, :co_investigator,  :co_investigators
 
   def initialize(browser, opts={})
     @browser = browser
@@ -41,6 +41,7 @@ class AwardObject < DataFactory
       approved_equipment:    collection('ApprovedEquipment'),
       key_personnel:         collection('AwardKeyPersonnel'),
       reports:               collection('AwardReports'),
+      children:              collection('AwardChild'),
       funding_proposals:     [], # Contents MUST look like: {ip_number: '00001', merge_type: 'No Change'}, ...
       subawards:             [], # Contents MUST look like: {org_name: 'Org Name', amount: '999.99'}, ...
       sponsor_contacts:      [], # Contents MUST look like: {non_employee_id: '333', project_role: 'Close-out Contact'}, ...
@@ -244,53 +245,6 @@ class AwardObject < DataFactory
       page.save
     end
   end
-  #this for when you have actual values
-  def set_credit_split opts={}
-    @credit_splits ||= {
-        full_name:           'find name',
-        units:               [],
-        responsibility:      '100',
-        financial:           '100',
-        unit_responsibility: '100',
-        unit_financial:      '100'
-    }
-    @credit_splits.merge!(opts)
-    view :contacts
-    on AwardContacts do |page|
-      page.expand_all
-      page.responsibility(@credit_splits[:full_name]).fit @credit_splits[:responsibility]
-      page.financial(@credit_splits[:full_name]).fit @credit_splits[:financial]
-
-      # gather units for person to use for setting valid credit splits, PI user has radio buttons other roles do not
-      if page.unit_details_with_radio_buttons(@credit_splits[:full_name])
-        @credit_splits[:units] = page.person_div_text_with_radio(@credit_splits[:full_name])
-        @credit_splits[:units].uniq!
-      else
-        @credit_splits[:units] = page.person_div_text(@credit_splits[:full_name])
-        @credit_splits[:units].uniq!
-      end
-
-      # if page.get_unit_numbers_for_person(@credit_splits[:full_name]).count == 1
-      if @credit_splits[:units].count == 1
-        #person has only one unit
-        page.unit_responsibility(@credit_splits[:full_name], @credit_splits[:units][0]).fit @credit_splits[:unit_responsibility]
-        page.unit_financial(@credit_splits[:full_name], @credit_splits[:units][0]).fit @credit_splits[:unit_financial]
-      else
-        #User has multiple units need to set values for each one.
-        split = (100.0/@credit_splits[:units].count).round(2)
-
-        @credit_splits[:units].each do |unit|
-          #person has multiple units that need to equal 100
-          #need to fill in these with
-          page.unit_responsibility(@credit_splits[:full_name], unit).set split
-          page.unit_financial(@credit_splits[:full_name], unit).set split
-        end
-      end
-
-      page.recalculate
-      page.save
-    end
-  end
 
   def submit
     DEBUG.pause(7)
@@ -398,112 +352,18 @@ class AwardObject < DataFactory
   end
 
   def add_key_person opts={}
-    @key_personnel = { type: 'employee',
+    defaults = { type: 'employee',
                        project_role: 'Principal Investigator',
                        key_person_role: random_alphanums(5),
                        press: 'save'
+               }
+    @key_personnel.add defaults.merge!(opts)
+  end
 
-                     }
-    @key_personnel.merge!(opts)
-
-    view :contacts
-    on AwardContacts do |page|
-      page.expand_all
-      DEBUG.pause(4)
-      #get the people already added
-      if page.no_splits.exists?
-        @people_present = ['first person added']
-      else
-        @people_present = page.people_present
-      end
-    end
-
-      if @key_personnel[:type] == 'employee'
-        on(AwardContacts).employee_search
-        on KcPersonLookup do |lookup|
-          lookup.last_name.fit @key_personnel[:last_name]
-          lookup.first_name.fit @key_personnel[:first_name]
-          lookup.search
-
-          #get people array,
-          @people_hash = lookup.gather_people
-          @people_present.each {|x| @people_hash.delete("#{x}")   }  unless @people_present==[]
-          select_person = @people_hash.to_a.sample
-
-          lookup.select_person(select_person[1])
-        end
-      else
-        on(AwardContacts).non_employee_search
-        on AddressBookLookup do |lookup|
-          lookup.last_name.fit @key_personnel[:last_name]
-          lookup.first_name.fit @key_personnel[:first_name]
-          lookup.search
-          lookup.return_random
-        end
-      end
-
-    on AwardContacts do |page|
-      if @key_personnel[:project_role] == 'Principal Investigator'
-        page.kp_project_role.select_value 'PI'
-      else
-        page.kp_project_role.pick! @key_personnel[:project_role]
-      end
-
-      case @key_personnel[:type]
-        when 'employee'
-          person_type = 'kp_employee_user_name'
-        when 'non_employee'
-          person_type = 'kp_non_employee_id'
-      end
-
-      case @key_personnel[:project_role]
-        when 'Principal Investigator'
-          @key_personnel[:principal_investigator] = page.send(person_type).value.gsub('  ', ' ').strip
-        when 'Co-Investigator'
-          @key_personnel[:co_investigator] = page.send(person_type).value.strip
-        when 'Key Person'
-          page.key_person_role.fit @key_person_role
-          @key_personnel[:key_person] = page.send(person_type)
-      end
-
-      if @key_personnel[:type] == 'non-employee'
-        @key_personnel[:added_personnel] = page.send(person_type) if @key_personnel[:type] == 'non-employee'
-      else
-        @key_personnel[:added_personnel] = page.send(person_type)
-      end
-      page.add_key_person
-      page.send(@key_personnel[:press]) unless @key_personnel[:press].nil?
-      # set_options(@key_personnel.merge(opts))
-
-      #ADD UNIT if person does not have a unit
-     case @key_personnel[:project_role]
-       when 'Co-Investigator'
-         #add unit if no unit exists for
-         page.expand_all
-         DEBUG.pause(4)
-         if page.person_has_unit(@key_personnel[:co_investigator].gsub(' ', '')).exists?
-         else
-           #add a unit
-           page.unit_lookup_for_person(@key_personnel[:co_investigator])
-           on UnitLookup do |lookup|
-             lookup.search
-             lookup.return_random
-           end
-           on AwardContacts do |page|
-             page.add_unit_for_person(@key_personnel[:co_investigator])
-             page.save
-             page.expand_all
-           end
-         end
-     end
-      get_key_people
-    end
-  end #add key person
-
-  def create_child_node  opts={}
+  def add_child_from_parent  opts={}
     view :award_actions
-    @child_node = make AwardChildObject, opts
-    @child_node.create
+    defaults = { description: 'child'+random_alphanums(20), navigate: @navigate, key_personnel: @key_personnel }
+    @children.add defaults.merge!(opts)
   end
 
   def get_key_people
@@ -511,47 +371,6 @@ class AwardObject < DataFactory
     on AwardContacts do |page|
       page.expand_all
       @key_people = page.get_key_people
-    end
-  end
-
-  def delete_contact(name)
-    view :contacts
-    on AwardContacts do |del|
-      del.expand_all
-      del.delete_person(name)
-    end
-  end
-
-  def delete_all_contacts_with_role(role)
-    view :contacts
-    on AwardContacts do |del|
-      del.expand_all
-      DEBUG.pause(5)
-
-      #make array of names to delete
-      case role
-        when 'Principal Investigator'
-          rolex ='PI'
-        when 'Co-Investigator'
-          rolex = 'COI'
-        when 'Key Person'
-          rolex = 'KP'
-      end
-      #get people
-      @key_people = del.get_key_people
-      people_to_delete =[]
-      @key_people.each_index { |i| with_role=@key_people[i].key rolex; (people_to_delete << @key_people[i][:name]) if with_role }
-      people_to_delete.each { |name| del.delete_person(name) }
-      # del.save
-    end
-  end
-
-  def edit_person_project_role(name, new_role)
-    view :contacts
-    on AwardContacts do |edit|
-      edit.expand_all
-      edit.edit_project_role(name).select(new_role)
-      edit.save
     end
   end
 

@@ -33,6 +33,10 @@ class TransactionObject < DataFactory
       page.destination_award.pick! trans[:destination_award]
       page.obligated_change.fit trans[:obligated_change]
       page.anticipated_change.fit trans[:anticipated_change]
+
+      page.obligated_change.fit trans[:obligated_change]
+      page.anticipated_change.fit trans[:anticipated_change]
+
       page.add_transaction
       page.save
       @number=page.last_transaction_id

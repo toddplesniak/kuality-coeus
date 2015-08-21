@@ -3,9 +3,11 @@ class AwardKeyPersonObject < DataFactory
   include Navigation, Personnel
 
   attr_reader :employee_user_name, :non_employee_id, :project_role,
-              :key_person_role, :units, :first_name, :last_name, :full_name,
+              :key_person_role, :first_name, :last_name, :full_name,
               :lead_unit, :type, :responsibility, :financial, :recognition,
               :space, :key_person_role, :get_units
+
+  attr_accessor :units
 
   def initialize(browser, opts={})
     @browser = browser
@@ -25,36 +27,32 @@ class AwardKeyPersonObject < DataFactory
 
   # Navigation done by parent object...
   def create
-    on(AwardContacts).expand_all
+    on AwardContacts do |page|
+      page.expand_all
+      DEBUG.pause(4)
+      #get the people already added
+      if page.no_splits.exists?
+        @people_present = ['first person added']
+      else
+        @people_present = page.people_present
+      end
+    end
+
     if @type == 'employee'
       on AwardContacts do |page|
         page.employee_search
-      end
-
-      if @last_name == nil && @first_name == nil
-
-        on KcPersonLookup do |lookup|
-          lookup.last_name.fit @last_name
-          lookup.first_name.fit @first_name
-          lookup.search
-          #capture full_name last_name first_name
-          lookup.select_random_with_name
-        end
-        #need to view person to get the first and last name because full name is given and
-        on KCPerson do |gather|
-          @last_name = gather.last_name
-          @first_name = gather.first_name
-          @full_name = gather.full_name
-          gather.close_window
-        end
       end
       on KcPersonLookup do |lookup|
         lookup.last_name.fit @last_name
         lookup.first_name.fit @first_name
         lookup.search
-        lookup.return_random
+        #return random person if that person is not already on award
+        people_hash = lookup.gather_people
+        @people_present.each {|x| people_hash.delete("#{x}")   } unless @people_present==[]
+        select_person = people_hash.to_a.sample
+        @full_name = select_person[0]
+        lookup.select_person(select_person[1])
       end
-
     else #Non-employee
       on AwardContacts do |page|
         page.non_employee_search
@@ -62,6 +60,7 @@ class AwardKeyPersonObject < DataFactory
       end
       on NonOrgAddressBookLookup do |lookup|
         lookup.search
+        #TODO:: need to return random of a person that is not already added to award
         lookup.return_random
       end
       #set up name
@@ -74,8 +73,14 @@ class AwardKeyPersonObject < DataFactory
     end #to employee or non-employee
 
     on AwardContacts do |page|
-      page.kp_project_role.select @project_role
-      page.key_person_role.fit @key_person_role if @project_role == 'Key Person'
+      case @project_role
+        when 'Principal Investigator' || 'PI/Contact'
+          page.kp_project_role.select_value 'PI'
+        when 'Key Person'
+          page.key_person_role.fit @key_person_role
+        else
+          page.kp_project_role.select @project_role
+      end
 
       page.add_key_person
       page.expand_all
@@ -83,8 +88,10 @@ class AwardKeyPersonObject < DataFactory
       @full_name_no_spaces = @full_name.gsub(' ', '').gsub(',', '')
       if @get_units == 'yes' && @role != 'Key Person'
         @units = page.units(@full_name_no_spaces)
+        @units.uniq!
       end
     end
+
   end  #create
 
   def edit opts={}
@@ -98,9 +105,20 @@ class AwardKeyPersonObject < DataFactory
       opts.each do |field, value|
         update.send(field, @full_name).fit value
       end
+      #need to handle edit of project role need to use ()value: 'PI'), for cases 'Principal Investigator' and 'PI/Contact'
       update.save
     end
     update_options(opts)
+  end #edit
+
+  #deletes a key person
+  def delete
+    on AwardContacts do |delete|
+       delete.expand_all
+       delete.delete_person(@full_name)
+       delete.save
+    end
+    #TODO:: Remove from data object
   end
 
   # TODO: Some of this method should be moved to the Personnel
@@ -109,14 +127,40 @@ class AwardKeyPersonObject < DataFactory
     # TODO: Add conditional navigation
     on AwardContacts do |add_unit|
       add_unit.expand_all
-      add_unit.add_lead_unit(@full_name) if lead
-      add_unit.add_unit_number(@full_name).set unit_number
-      add_unit.add_unit(@full_name)
-      @units << {number: unit_number, name: add_unit.unit_name(@full_name, unit_number) }
-      confirmation 'no'
+    end
+
+    if unit_number == '::random::'
+      on AwardContacts do |add_unit|
+        add_unit.unit_lookup_for_person(@full_name)
+      end
+      on UnitLookup do |lookup|
+        lookup.search
+        lookup.return_random
+      end
+      on AwardContacts do |add_unit|
+        add_unit.add_lead_unit(@full_name) if lead
+        add_unit.add_unit(@full_name)
+        @units << add_unit.units(@full_name)
+        @units.flatten!
+      end
+    else
+      on AwardContacts do |add_unit|
+        add_unit.add_lead_unit(@full_name) if lead
+        add_unit.add_unit_number(@full_name).set unit_number
+        add_unit.add_unit(@full_name)
+        @units << {number: unit_number, name: add_unit.unit_name(@full_name, unit_number) }
+        confirmation 'no'
+      end
+    end
+
+    on AwardContacts do |add_unit|
       add_unit.save
     end
     @lead_unit=unit_number if lead
+  end
+
+  def add_random_unit(lead=false)
+    add_unit('::random::', lead)
   end
 
   def add_lead_unit(unit_number)
@@ -125,7 +169,10 @@ class AwardKeyPersonObject < DataFactory
 
   def set_lead_unit(unit_number)
     # TODO: Add conditional navigation
+    #Note: Editing a project_role to be the PI will require the page to be saved
+    # before radio buttons appear for the new PI
     on AwardContacts do |page|
+      page.expand_all
       page.lead_unit_radio(@full_name, unit_number).set
       page.save
     end
@@ -145,10 +192,9 @@ class AwardKeyPersonObject < DataFactory
   end
 
   def update_splits opts={}
-    view 'Contacts'
     on AwardContacts do |page|
       page.expand_all
-      edit_item_fields opts, @full_name, page, :recognition, :responsibility, :space, :financial
+      edit_item_fields opts, @full_name, page, :financial, :responsibility
       page.save
     end
     update_options(opts)
@@ -161,7 +207,6 @@ class AwardKeyPersonObject < DataFactory
     end
   end
 
-
   def update_unit_splits(unit_number, opts)
     on CombinedCreditSplit do |page|
       opts.each do |type, value|
@@ -172,6 +217,33 @@ class AwardKeyPersonObject < DataFactory
     # @units.find{ |u| u[:number]==unit_number}.merge!(opts)
   end
 
+  #Units is an array from key personnel object
+  def update_unit_splits_to_valid(units=@units)
+    on AwardContacts do |page|
+      page.expand_all
+      #for each unit set value of responsibility and financial
+      if units.count == 1
+        #person has only one unit
+        units.flatten!
+        page.unit_responsibility(@full_name, units[0][:name]).fit '100.00'
+        page.unit_financial(@full_name, units[0][:name]).fit '100.00'
+      else
+        #User has multiple units need to set values for each one.
+        split = (100.0/units.count).round(2)
+
+        units.each do |unit|
+          #person has multiple units that need to equal 100
+          page.unit_responsibility(@full_name, unit[:name]).set split
+          page.unit_financial(@full_name, unit[:name]).set split
+        end
+      end
+      page.recalculate
+      page.save
+    end
+  end
+
+
+
   # ===========
   private
   # ===========
@@ -180,22 +252,35 @@ class AwardKeyPersonObject < DataFactory
     AwardContacts
   end
 
-end
+end  #AwardKeyPersonObject
 
 class AwardKeyPersonnelCollection < CollectionsFactory
 
   contains AwardKeyPersonObject
+  include People
 
   def principal_investigator
     self.find{ |person| person.project_role=='Principal Investigator' || person.project_role=='PI/Contact' }
+  end
+
+  def principal_investigators
+    self.find_all{ |person| person.project_role=='Principal Investigator' || person.project_role=='PI/Contact' }
   end
 
   def co_investigator
     self.find{ |person| person.project_role=='Co-Investigator' }
   end
 
+  def co_investigators
+    self.find_all { |person| person.project_role=='Co-Investigator' }
+  end
+
   def with_units
     self.find_all { |person| person.units.size > 0 }
+  end
+
+  def validate_units
+    self.each {|person| person.add_random_unit unless person.units.size > 0 }
   end
 
 end

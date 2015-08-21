@@ -28,23 +28,25 @@ class PaymentInvoiceObject < DataFactory
     on PaymentReportsTerms do |page|
       page.expand_all
       page.payment_basis.pick! @payment_basis
-      page.payment_basis.fire_event('onchange')
 
-      page.payment_method.wait_until_present
+      page.payment_method.fire_event('onchange')
       DEBUG.pause(4)
+      #need to wait until payment_method select list has populated with more than just select
       page.payment_method.pick! @payment_method
-      page.payment_type.pick! @payment_and_invoice_requirements[:payment_type]
+
       page.payment_type.fire_event('onchange')
+      page.payment_type.pick! @payment_and_invoice_requirements[:payment_type]
 
-      page.frequency.wait_until_present
-
-      page.frequency.pick! @payment_and_invoice_requirements[:frequency]
+      #DEBUG:: increment and add comments to find where this issue is
+      #element disconnected from dom, for this line
+      # count = 1
       page.frequency.fire_event('onchange')
+      page.frequency.pick! @payment_and_invoice_requirements[:frequency]
       if @payment_and_invoice_requirements[:frequency]=='None' && @payment_and_invoice_requirements[:frequency_base]=='::random::'
         @payment_and_invoice_requirements[:frequency_base]=nil
       else
-        page.frequency_base.pick! @payment_and_invoice_requirements[:frequency_base]
         page.frequency_base.fire_event('onchange')
+        page.frequency_base.pick! @payment_and_invoice_requirements[:frequency_base]
       end
       page.osp_file_copy.pick! @payment_and_invoice_requirements[:osp_file_copy]
       page.add_payment_type

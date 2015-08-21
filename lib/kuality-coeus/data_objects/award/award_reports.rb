@@ -26,15 +26,21 @@ class AwardReportsObject < DataFactory
     on PaymentReportsTerms do |page|
       page.expand_all
       set_report_type
+
+      page.add_frequency(@report).fire_event 'onchange'
       DEBUG.pause(6)
       set_frequency
+
+      page.add_frequency_base(@report).fire_event 'onchange'
       DEBUG.pause(5)
       page.add_frequency_base(@report).pick! @frequency_base
-      DEBUG.pause(6)
+      # DEBUG.pause(6)
+      page.add_osp_file_copy(@report).fire_event 'onchange'
       page.add_osp_file_copy(@report).pick! @osp_file_copy
-      DEBUG.pause(4)
+      # DEBUG.pause(4)
+      page.add_due_date(@report).fire_event 'onchange'
       page.add_due_date(@report).fit @due_date
-      DEBUG.pause(5)
+      # DEBUG.pause(5)
       page.add_report(@report)
       page.save
     end

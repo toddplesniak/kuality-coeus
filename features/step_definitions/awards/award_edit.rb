@@ -112,70 +112,96 @@ And /^adds the unassigned user as a Principal Investigator for the Award$/ do
   @award.add_key_person first_name: 'PleaseDoNot', last_name: 'AddOrEditRoles'
 end
 
-And /adds a (.*) with a responsibility split of (\d+) and a financial split of (\d+)$/ do  |role, responsibility, financial|
+And /adds a (.*) to the award$/ do  |role|
   @award.view_tab :contacts
   case role
     when 'PI' || 'Principal Investigator'
       @award.add_key_person project_role: 'Principal Investigator'
-      @award.set_credit_split full_name: @award.key_personnel[:principal_investigator],
-                              responsibility: responsibility, financial: financial
     when 'COI' || 'Co-Investigator'
       @award.add_key_person project_role: 'Co-Investigator'
-      @award.set_credit_split full_name: @award.key_personnel[:co_investigator].gsub('  ', ' '),
-                              responsibility: responsibility, financial: financial
   end
 end
 
-And /adds the second (.*) with a responsibility split of (\d+) and a financial split of (\d+)$/ do  |role, responsibility, financial|
-  case role
-    when 'PI' || 'Principal Investigator'
-      @award.add_key_person project_role: 'Principal Investigator'
-      # @award.unit_recognition(@key_personnel.role.full_name,split)
-      @award.set_credit_split full_name: @award.key_personnel[:principal_investigator][1],
-                              responsibility: responsibility, financial: financial
+And /^all key personnel on the award have at least one unit$/ do
+  @award.key_personnel.validate_units
+end
 
-    when 'COI' || 'Co-Investigator'
-      @award.add_key_person project_role: 'Co-Investigator'
-      @award.set_credit_split full_name: @award.key_personnel[:co_investigator].gsub('  ', ' '),
-                          responsibility: responsibility, financial: financial
-  end
+And /^sets credit splits of the the PI to (.*) COI to (.*) and second COI to (.*)$/ do |pi, coi, coi2|
+  DEBUG.message "PI #{@award.principal_investigator.units}, coi-1 #{@award.co_investigators[0].units}, coi-2 #{@award.co_investigators[1].units}"
+
+  @award.principal_investigator.edit responsibility: pi, financial: pi
+  @award.principal_investigator.update_unit_splits_to_valid(@award.principal_investigator.units)
+
+  @award.co_investigators[0].edit responsibility: coi, financial: coi
+  @award.co_investigators[0].update_unit_splits_to_valid(@award.co_investigators[0].units)
+
+  @award.co_investigators[1].edit responsibility: coi2, financial: coi2
+  @award.co_investigators[1].update_unit_splits_to_valid(@award.co_investigators[1].units)
 end
 
 And /creates a child node that is copied from the parent$/ do
-
-  #assumes on correct award
-  @child_node = create AwardChildObject, description: 'child'+random_string(10), account_id: 'child'+random_alphanums(10),   transaction_type: '::random::'
+  @award.add_child_from_parent description: 'child'+random_string(10), account_id: 'child'+random_alphanums(10), transaction_type: '::random::'
 end
 
-And /removes the co-investigators from the child node$/ do
-  @child_node.delete_all_contacts_with_role('Co-Investigator')
-  #Have to set credit splits to 100 after removing the childern
-  @child_node.sets_unit
-  @child_node.set_valid_credit_split
-end
+And /submits the first child with the first co-investigator as the only contact$/ do
+  @award.children[0].view :contacts
 
-And /makes the (first|second) co-investigator the principle investigator$/ do  |person|
-  @child_node.delete_all_contacts_with_role('Principal Investigator')
-  @child_node.get_key_people
-  rolex =[]
-  @child_node.key_people.each {|x| rolex << x[:role] }
-  rolex.flatten!
+  #need to remove from Data Object
+  #TODO:: need to remove from data object when deleted to clean up principal_investigators[0] to just be principal_investigator.delete
+  @award.children[0].principal_investigators[0].delete
+  DEBUG.message "child1 cois #{@award.children[0].co_investigators.inspect}"
+  @award.children[0].co_investigators[0].edit project_role: 'Principal Investigator'
+  #delete the second coi, but they are now the only coi
+  DEBUG.message "coi are #{@award.children[0].co_investigators.inspect}"
+  @award.children[0].co_investigators[0].delete
 
-  case person
-    when 'first'
-      @child_node.edit_person_project_role(@child_node.key_people[rolex.index('Co-Investigator')][:name], 'Principal Investigator')
-    when 'second'
-      @child_node.edit_person_project_role(@child_node.key_people[rolex.rindex('Co-Investigator')][:name], 'Principal Investigator')
-  end
-  @child_node.delete_all_contacts_with_role('Co-Investigator')
-  @child_node.set_valid_credit_splits
-end
+  #TODO:: need to remove from data object on delete to clean up this cosde
+  @award.children[0].principal_investigators[1].update_splits financial: '100', responsibility: '100'
+  @award.children[0].principal_investigators[1].update_unit_splits_to_valid
 
-And /^submits the child node$/ do
+  #need to select the lead unit
+  @award.children[0].principal_investigators[1].set_lead_unit @award.children[0].principal_investigators[1].units[0][:number]
   #Child node requires a report for the submit button to be present
-  @child_node.add_report type:           'Progress/Status',
-                         frequency:      'As required',
-                         frequency_base: 'As Required',
-                         osp_file_copy:  'Report'
-  @child_node.submit
+  @award.children[0].add_report
+
+  @award.children[0].submit
 end
+
+And  /^submits a second child with the second co-investigator as the only contact$/ do
+  @award.children[1].view :contacts
+  DEBUG.message "kp child2 PI #{@award.children[1].key_personnel.principal_investigators.inspect}"
+  DEBUG.pause(31)
+  @award.children[1].principal_investigators[1].delete
+  DEBUG.message "kp child1 PI #{@award.children[0].key_personnel.principal_investigators.inspect}"
+  DEBUG.pause(32)
+  @award.children[1].principal_investigators[0].delete
+  DEBUG.message "kp child2 coi-1 #{@award.children[1].key_personnel.co_investigators[0].inspect}"
+  DEBUG.pause(33)
+  @award.children[1].key_personnel.co_investigators[0].edit project_role: 'Principal Investigator'
+
+
+  #TODO:: need to remove from data object on delete to clean up this code
+  @award.children[1].principal_investigators[1].update_splits financial: '100', responsibility: '100'
+  @award.children[1].principal_investigators[1].update_unit_splits_to_valid
+
+  #need to select the lead unit
+  @award.children[1].principal_investigators[1].set_lead_unit @award.children[1].principal_investigators[1].units[0][:number]
+  #Child node requires a report for the submit button to be present
+  @award.children[1].add_report type:           'Progress/Status',
+                                          frequency:      'As required',
+                                          frequency_base: 'As Required',
+                                          osp_file_copy:  'Report'
+  @award.children[1].submit
+end
+
+And /submits the third child with the principal investigator as the only contact$/ do
+  @award.children[2].co_investigators[1].delete
+  @award.children[2].co_investigators[0].delete
+
+  @award.children[2].add_report type:           'Progress/Status',
+                                          frequency:      'As required',
+                                          frequency_base: 'As Required',
+                                          osp_file_copy:  'Report'
+  @award.children[2].submit
+end
+

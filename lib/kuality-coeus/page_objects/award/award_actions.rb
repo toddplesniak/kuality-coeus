@@ -27,7 +27,7 @@ class AwardActions < KCAwards
   }
 
   element(:award_hierarchy_link) { |b| b.frm.link(class: 'awardHierarchy') }
-  action(:award_hierarchy) { |b| b.award_hierarchy_link.click }
+  action(:award_hierarchy) { |b| b.award_hierarchy_link.when_present.click }
 
   #NEW CHILD
   element(:new_child) { |b| b.frm.radio(index: 0, id: 'awardHierarchyTempObject1createNewChildRadio')}
