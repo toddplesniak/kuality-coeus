@@ -1,4 +1,4 @@
-@iacuc @wip
+@iacuc
 Feature: Creating IACUC Protocols
 
   As a researcher I want the ability to create a protocol for animal subjects
@@ -8,7 +8,7 @@ Feature: Creating IACUC Protocols
   Background:
     * Users exist with the following roles: IACUC Protocol Creator
     * the IACUC Protocol Creator creates an IACUC Protocol with the three R's
-
+  @smoke
   Scenario: IACUC Protocol initial status
     Then the IACUC Protocol status should be Pending/In Progress
     And  there are no errors on the page

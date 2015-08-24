@@ -58,13 +58,25 @@ namespace :vagrant do
 
   task :full_with_rerun do
     rerun = 'rerun.txt'
-    FileUtils.rm_f rerun if File.exist?(rerun)
+    remove_files rerun, 'cucumber.json', 'cucumber1.json'
     begin
       Rake::Task['vagrant:full_suite'].invoke
     rescue Exception => e
+      clean_json_report
       if File.exist?(rerun)
         rerun_features = IO.read(rerun)
-        Rake::Task['vagrant:rerun_failed'].invoke unless rerun_features.to_s.strip.empty?
+
+        # DEBUG
+        puts
+        puts 'In the rescue clause...'
+        puts
+        puts rerun_features
+        puts
+        begin
+          Rake::Task['vagrant:rerun_failed'].invoke unless rerun_features.to_s.strip.empty?
+        rescue Exception => x
+          fix_embedded_images
+        end
       end
     end
   end
@@ -99,7 +111,7 @@ namespace :vagrant do
   end
 
   Cucumber::Rake::Task.new(:full_suite) do |t|
-    t.cucumber_opts = '/kuality-coeus/features -b -t ~@wip -t ~@smoke -t ~@performance -t ~@system_failure --format rerun --out rerun.txt --expand -r /kuality-coeus/features'
+    t.cucumber_opts = '/kuality-coeus/features -b -t ~@wip -t ~@smoke -t ~@performance -t ~@system_failure --format rerun --out rerun.txt --expand -r /kuality-coeus/features --format json -o cucumber.json'
   end
 
   Cucumber::Rake::Task.new(:smoke_suite) do |t|
