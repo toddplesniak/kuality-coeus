@@ -28,7 +28,7 @@ And /adds a non-employee as a Principal Investigator to the Award$/ do
 end
 
 When /^a Co-Investigator is added to the Award$/ do
-  @award.add_key_person project_role: 'Co-Investigator', key_person_role: nil, press: 'save'
+  @award.add_key_person project_role: 'Co-Investigator', key_person_role: nil
 end
 
 When /^I? ?add the (.*) unit to the Award's PI$/ do |unit|

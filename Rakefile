@@ -128,12 +128,20 @@ def clean_json_report
   rep = 'cucumber.json'
   if File.exist? rep
     cuke = IO.read rep
-    tests = JSON.parse cuke
-    tests.each do |test|
-      test['elements'].delete_if { |el| el['steps'].map{ |step| step['result']['status'] }.include?('failed') }
+    features = JSON.parse cuke
+    failures = []
+    features.each do |feature|
+      statuses = []
+      feature['elements'].each do |element|
+        statuses << element['steps'].map { |s| s['result']['status'] }
+      end
+      statuses.flatten!
+      if statuses.include?('failed') || statuses.include?('skipped')
+        failures << feature
+      end
     end
-    tests.delete_if { |test| test['elements'].empty? }
-    json = JSON.pretty_generate tests
+    passed = features - failures
+    json = JSON.pretty_generate passed
     File.write rep, json
   end
 end
@@ -141,19 +149,22 @@ end
 def fix_embedded_images
   rep = 'cucumber1.json'
   cuke = IO.read rep
-  tests = JSON.parse cuke
-  tests.each do |test|
-    test['elements'].each do |element|
-      if element['after'][0].has_key? 'embeddings'
-        screenshot = element['after'][0]['embeddings']
-        failed_step = element['steps'].find { |step| step['result']['status']=='failed' }
-        failed_step.store('embeddings', screenshot)
-        element['after'][0].delete 'embeddings'
+  features = JSON.parse cuke
+  features.each do |feature|
+    feature['elements'].each do |element|
+      if element.has_key? 'after'
+        if element['after'][0].has_key? 'embeddings'
+          screenshot = element['after'][0]['embeddings']
+          failed_step = element['steps'].find { |step| step['result']['status']=='failed' }
+          failed_step ||= element['steps'][-1]
+          failed_step.store('embeddings', screenshot)
+          element['after'][0].delete 'embeddings'
+        end
       end
     end
   end
-  json = JSON.pretty_generate tests
-  File.write 'cucumber1.json', json
+  json = JSON.pretty_generate features
+  File.write rep, json
 end
 
 def remove_files *args

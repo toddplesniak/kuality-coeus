@@ -1,7 +1,9 @@
 When /^the Create Proposal Log user creates a Proposal Log but misses a required field$/ do
   steps %{ * I log in with the Create Proposal Log user }
   # Pick a field at random for the test...
-  required_field = ['Title', 'Proposal Type', 'Lead Unit'
+  required_field = ['Title',
+                    'Proposal Type',
+                    'Lead Unit'
           ].sample
   # Properly set the nil value depending on the field type...
   required_field=~/Type/ ? value='select' : value=''

@@ -16,9 +16,9 @@ Feature: Editing a Budget's Non-Personnel Costs
   #RESOPS-324
   @system_failure
   Scenario: Syncing non-personnel line items in all periods with total cost limits
-    Given the Proposal Creator adds a total cost limit to all of the Budget's periods
-    And   adds a non-personnel cost to each Budget Period that exceeds the cost limit
-    And   adds an NPC with a base cost lower than the lowest cost limit to the 1st period and copies it to the others
+    Given the Proposal Creator adds a total cost limit of $1000000 to all of the Budget's periods
+    And   adds a non-personnel item with a total base cost of $1100000 to each Budget Period
+    And   adds an NPC with a base cost of $999000 to the 1st period and copies it to the others
     When  the first non-personnel cost is synced with the total cost limit for each period
     Then  the Period's total sponsor cost should equal the cost limit
   @system_failure
