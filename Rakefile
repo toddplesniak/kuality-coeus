@@ -116,15 +116,16 @@ end
 
 def zen_garden(space, task)
   decapitate
-  remove_files 'rerun.txt', 'cucumber.json', 'cucumber_clean.json', 'cucumber_fix.json', 'screenshot.png', 'rerun.json', 'first_run.json'
+  rr = 'rerun.txt'
+  remove_files rr, 'cucumber.json', 'cucumber_clean.json', 'cucumber_fix.json', 'screenshot.png', 'rerun.json', 'first_run.json'
   rescued = false
   begin
     Rake::Task["#{space}:#{task}"].invoke
   rescue Exception => e
     clean_first_run
     rescued = true
-    if File.exist?(rerun)
-      rerun_features = IO.read(rerun)
+    if File.exist? rr
+      rerun_features = IO.read(rr)
       begin
         Rake::Task["#{space}:rerun_failed"].invoke unless rerun_features.to_s.strip.empty?
       rescue Exception => x
