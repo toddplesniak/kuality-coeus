@@ -1,4 +1,4 @@
-@award
+@award @performance
 Feature: Sponsor Term Creation
 
   As an Application Administrator,

@@ -1,3 +1,4 @@
+@performance
 Feature: Adding Budget Non-Personnel Costs
 
   As a researcher, I want to be able to add non-personnel expenses to a period of my budget.

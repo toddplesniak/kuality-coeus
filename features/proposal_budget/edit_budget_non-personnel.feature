@@ -14,7 +14,7 @@ Feature: Editing a Budget's Non-Personnel Costs
     When  the non-personnel cost is synced with the direct cost limit for each period
     Then  the direct cost is equal to the direct cost limit in all periods
   #RESOPS-324
-  @system_failure
+  @wip
   Scenario: Syncing non-personnel line items in all periods with total cost limits
     Given the Proposal Creator adds a total cost limit of $1000000 to all of the Budget's periods
     And   adds a non-personnel item with a total base cost of $1100000 to each Budget Period

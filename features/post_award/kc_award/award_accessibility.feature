@@ -1,4 +1,4 @@
-@award
+@award @performance
 Feature: Accessing Awards (Permissions, Rights, Access)
 
   Summary to be written

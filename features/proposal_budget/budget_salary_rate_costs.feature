@@ -1,3 +1,4 @@
+@performance
 Feature: Employee Salary Rate Costs and Cost Share
 
   Description TBW
