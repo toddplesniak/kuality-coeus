@@ -1,4 +1,4 @@
-@budget @wip
+@budget
 Feature: Project Personnel in Proposal Budget Versions
 
   User story to be written...

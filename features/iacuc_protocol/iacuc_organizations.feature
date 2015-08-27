@@ -1,4 +1,4 @@
-@iacuc @performance
+@iacuc
 Feature: Adding Organizations to IACUC Protocols
 
   [KCTEST-884] As a researcher I want the ability to add Organizations to a IACUC protocol

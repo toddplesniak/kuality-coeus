@@ -65,7 +65,7 @@ end
 def decapitate
   if ENV['HEADLESS']
     require 'headless'
-    display = Time.now.to_i
+    display = Time.now.to_i.to_s[7..-1]
     Headless.new(display: display, reuse: true, destroy_at_exit: true).start
   end
 end
