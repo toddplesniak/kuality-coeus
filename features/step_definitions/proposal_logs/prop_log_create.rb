@@ -55,7 +55,10 @@ end
 
 When /^the Create Proposal Log user submits a new temporary Proposal Log with a particular PI$/ do
   steps %{ * I log in with the Create Proposal Log user }
-  on(Header).system_admin
+  on Header do |page|
+    page.system_admin_portal
+    page.system_admin
+  end
   on(SystemAdmin).person
   on PersonLookup do |page|
     page.search
