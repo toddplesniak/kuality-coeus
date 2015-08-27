@@ -369,7 +369,7 @@ class ProposalDevelopmentObject < DataFactory
       on(CreateProposal).lookup_sponsor
       on SponsorLookup do |look|
         # Necessary here because of how the HTML gets instantiated...
-        look.sponsor_name.wait_until_present(10)
+        look.sponsor_name.wait_until_present(90)
         # Commented out for CX...
         #fill_out look, :sponsor_type_code
         look.search

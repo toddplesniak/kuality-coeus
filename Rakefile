@@ -36,8 +36,12 @@ namespace :vagrant do
     zen_garden 'vagrant', 'smoke_suite'
   end
 
+  task :test_with_rerun do
+    zen_garden 'vagrant', 'test'
+  end
+
   Cucumber::Rake::Task.new(:test) do |t|
-    t.cucumber_opts = '/kuality-coeus/features -b -t @test --format rerun --out rerun.txt --expand -r /kuality-coeus/features'
+    t.cucumber_opts = '/kuality-coeus/features -b -t @test --format rerun --out rerun.txt --expand -r /kuality-coeus/features --format json -o first_run.json'
   end
 
   Cucumber::Rake::Task.new(:full_suite) do |t|
@@ -53,6 +57,45 @@ namespace :vagrant do
   end
 
 end
+
+def remove_files *args
+  args.each { |arg| FileUtils.rm_f(arg) if File.exist?(arg) }
+end
+
+def decapitate
+  if ENV['HEADLESS']
+    require 'headless'
+    display = Time.now.to_i
+    Headless.new(display: display, reuse: true, destroy_at_exit: true).start
+  end
+end
+
+def zen_garden(space, task)
+  decapitate
+  rr = 'rerun.txt'
+  remove_files rr, 'cucumber.json', 'cucumber_clean.json', 'cucumber_fix.json', 'screenshot.png', 'rerun.json', 'first_run.json'
+  rescued = false
+  begin
+    Rake::Task["#{space}:#{task}"].invoke
+  rescue Exception => e
+    clean_first_run
+    rescued = true
+    if File.exist? rr
+      rerun_features = IO.read(rr)
+      begin
+        Rake::Task["#{space}:rerun_failed"].invoke unless rerun_features.to_s.strip.empty?
+      rescue Exception => x
+        # No need to do anything except stop the non-zero exit
+      end
+      clean_rerun
+    end
+  end
+  unless rescued
+    FileUtils.mv 'first_run.json', 'cucumber.json'
+  end
+end
+
+# JSON Parser methods...
 
 def clean_first_run
   rep = 'first_run.json'
@@ -100,41 +143,4 @@ def clean_rerun
   end
   json = JSON.pretty_generate features
   File.write 'cucumber_fix.json', json
-end
-
-def remove_files *args
-  args.each { |arg| FileUtils.rm_f(arg) if File.exist?(arg) }
-end
-
-def decapitate
-  if ENV['HEADLESS']
-    require 'headless'
-    display = Time.now.to_i
-    Headless.new(display: display, reuse: true, destroy_at_exit: true).start
-  end
-end
-
-def zen_garden(space, task)
-  decapitate
-  rr = 'rerun.txt'
-  remove_files rr, 'cucumber.json', 'cucumber_clean.json', 'cucumber_fix.json', 'screenshot.png', 'rerun.json', 'first_run.json'
-  rescued = false
-  begin
-    Rake::Task["#{space}:#{task}"].invoke
-  rescue Exception => e
-    clean_first_run
-    rescued = true
-    if File.exist? rr
-      rerun_features = IO.read(rr)
-      begin
-        Rake::Task["#{space}:rerun_failed"].invoke unless rerun_features.to_s.strip.empty?
-      rescue Exception => x
-        # No need to do anything except stop the non-zero exit
-      end
-      clean_rerun
-    end
-  end
-  unless rescued
-    FileUtils.mv 'first_run.json', 'cucumber.json'
-  end
 end

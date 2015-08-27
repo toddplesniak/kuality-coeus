@@ -7,7 +7,14 @@ class BasePage < PageFactory
   action(:close_children) { |b| b.windows[0].use; b.windows[1..-1].each{ |w| w.close} }
   action(:close_parents) { |b| b.windows[0..-2].each{ |w| w.close} }
   action(:loading_old) { |b| b.frm.image(alt: 'working...').wait_while_present }
-  action(:loading) { |b| b.image(alt: 'Loading...').wait_while_present }
+  action(:loading) { |b|
+    begin
+      b.image(alt: 'Loading...').wait_while_present(60)
+    rescue Watir::Wait::TimeoutError
+      warn "Waiting way too long for the Loading spinner to disappear!\nConsider that something is probably not right."
+      b.image(alt: 'Loading...').wait_while_present(120)
+    end
+  }
   element(:return_to_portal_button) { |b| b.frm.button(title: 'Return to Portal') }
   action(:awaiting_doc) { |b| b.return_to_portal_button.wait_while_present }
   action(:processing_document) { |b| b.frm.div(text: /The document is being processed. You will be returned to the document once processing is complete./ ).wait_while_present }

@@ -55,7 +55,9 @@ end
 
 When /^the Create Proposal Log user submits a new temporary Proposal Log with a particular PI$/ do
   steps %{ * I log in with the Create Proposal Log user }
-  visit PersonLookup do |page|
+  on(Header).system_admin
+  on(SystemAdmin).person
+  on PersonLookup do |page|
     page.search
 
     # TODO: This is really really slow. The HTML on the page needs improving. There is currently
