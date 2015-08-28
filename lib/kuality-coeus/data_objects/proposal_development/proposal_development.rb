@@ -1,6 +1,6 @@
 class ProposalDevelopmentObject < DataFactory
 
-  include StringFactory, DateFactory, DocumentUtilities
+  include StringFactory, DateFactory
   
   attr_reader :proposal_type, :lead_unit, :activity_type, :project_title, :proposal_number,
               :sponsor_id, :sponsor_type_code, :project_start_date, :project_end_date, :document_id,
@@ -63,6 +63,7 @@ class ProposalDevelopmentObject < DataFactory
       @proposal_number=page.proposal_number
       page.save
       return if page.errors.size > 0
+      # Removed until permissions is working again...
       #@permissions = make PermissionsObject, merge_settings(aggregators: [@initiator])
     end
     on(ProposalSidebar).sponsor_and_program_info
@@ -118,7 +119,7 @@ class ProposalDevelopmentObject < DataFactory
   end
 
   def fill_out_questionnaire opts={}
-    @questionnaire = prep(QuestionnaireObject, opts)
+    raise 'Please write me.'
   end
 
   def make_institutional_proposal
@@ -308,10 +309,6 @@ class ProposalDevelopmentObject < DataFactory
     on(NewDocumentHeader).copy
     on CopyToNewDocument do |page|
       page.lead_unit.select lead_unit
-      page.include_budget.send(budget)
-      page.budget_version.pick budget_version
-      page.include_attachments.send(attachments)
-      page.include_questionnaire.send(questionnaire)
       page.copy
     end
 
@@ -326,6 +323,7 @@ class ProposalDevelopmentObject < DataFactory
 
   def set_new_doc_number(new_doc_number)
     @document_id = new_doc_number
+    notify_collections @navigate
     #TODO: What else goes here?
   end
 
@@ -359,16 +357,6 @@ class ProposalDevelopmentObject < DataFactory
     opts.merge!(defaults)
   end
 
-  def set_lead_unit
-    on(Proposal)do |prop|
-      if prop.lead_unit.present?
-        prop.lead_unit.pick! @lead_unit
-      else
-        @lead_unit=prop.lead_unit_ro
-      end
-    end
-  end
-
   def prep(object_class, opts)
     merge_settings(opts)
     object = make object_class, opts
@@ -381,7 +369,7 @@ class ProposalDevelopmentObject < DataFactory
       on(CreateProposal).lookup_sponsor
       on SponsorLookup do |look|
         # Necessary here because of how the HTML gets instantiated...
-        look.sponsor_name.wait_until_present(10)
+        look.sponsor_name.wait_until_present(90)
         # Commented out for CX...
         #fill_out look, :sponsor_type_code
         look.search

@@ -1,3 +1,4 @@
+# coding: UTF-8
 #----------------------#
 # Add to the error message hash in situations that throw uncomplicated errors.
 # $current_page makes this possible.
@@ -9,7 +10,7 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the Award has no PI' => 'There is no Principal Investigator selected. Please enter a Principal Investigator',
             'only one PI is allowed in the Contacts' => 'Only one Principal Investigator is allowed',
             'the IP can not be added because it\'s not fully approved' => 'Cannot add this funding proposal. The associated Development Proposal has "Approval Pending - Submitted" status.',
-            'the approval should occur later than the application' => 'Approval Date should be the same or later than Application Date.',
+            'the approval should occur later than the application' => 'Approval Date: Approval Date should be the same or later than Application Date.',
             'not to select other roles alongside aggregator' => 'Do not select other roles when Aggregator is selected.',
             'a revision type must be selected' => 'S2S Revision Type must be selected when Proposal Type is Revision.',
             %|I need to select the 'Other' revision type| => %|The revision 'specify' field is only applicable when the revision type is "Other"|,
@@ -21,12 +22,13 @@ Then /^an error should appear that says (.*)$/ do |error|
             'the anticipated amount must be equal to or more than obligated' => 'The Anticipated Amount must be greater than or equal to Obligated Amount.',
             'the project period has a typo' => 'Project Period is not formatted correctly.',
             'cost share type is required' => 'Cost Share Type Code is a required field.',
-            'the fiscal year is not valid' => 'not found is not a valid date.',
+            'the fiscal year is not valid' => 'Fiscal Year is not formatted correctly.',
             'the approved equipment can\'t have duplicates' => 'Approved Equipment Vendor, Model and Item must be unique',
             'the invoiced exceeds the obligated amount' => 'Cumulative Invoiced Amount would exceed the Obligated Subaward Amount.',
             'the start date must be before the end' => 'Project Start Date: The Project Start Date (Start Dt) must be before the Project End Date (End Dt).',
             'the project title can\'t contain special characters' => 'Project Title: Must be an alphanumeric character or punctuation.',
-            'the IP ID can only have alphanumeric characters' => 'Original Institutional Proposal ID: Can only be alphanumeric characters ',
+            # Note the trailing "space" in this string. It is NOT a space. It's some weird invisible character...
+            'the IP ID can only have alphanumeric characters' => 'Original Institutional Proposal ID: Can only be alphanumeric characters ',
             'the Award ID is invalid' => 'Award ID: Award ID is invalid.',
             'the deadline time is not valid' => 'Sponsor Deadline Time: DeadlineTime is invalid.',
             'a valid IP ID must be selected' => 'Original Institutional Proposal ID: A valid Original Institutional Proposal ID (Original Institutional Proposal ID) must be selected.',
@@ -45,7 +47,7 @@ Then /^an error requiring at least one unit for the co-investigator is shown$/ d
 end
 
 Then /^an error about un-certified personnel is shown$/ do
-  expect(on(DataValidation).validation_errors_and_warnings).to include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].first_name} #{@proposal.key_personnel[0].last_name}.|
+  expect(on(DataValidation).validation_errors_and_warnings).to include %|The Investigators are not all certified. Please certify #{@proposal.key_personnel[0].full_name}.|
 end
 
 Then /^an error should say the credit split does not equal 100%$/ do
@@ -122,7 +124,7 @@ Then /^errors appear on the Contacts page, saying the credit splits for the PI a
     page.expand_all
     DocumentUtilities::CREDIT_SPLITS.values.each do |type|
       expect(page.errors).to include "The Project Personnel #{type} Credit Split does not equal 100%"
-      expect(page.errors).to include "The Unit #{type} Credit Split for #{@award.key_personnel[:principal_investigator]} does not equal 100%"
+      expect(page.errors).to include "The Unit #{type} Credit Split for #{@award.principal_investigator.full_name} does not equal 100%"
     end
   end
 end
@@ -137,8 +139,8 @@ end
 
 Then /^the Award should throw an error saying (.*)/ do |error|
   errors = {
-    'they are already in the Award Personnel' => "#{@award.key_personnel[:principal_investigator]} is already added to the Award Project Personnel",
-    'the Award\'s PI requires at least one unit' => "At least one Unit is required for #{@award.key_personnel[:principal_investigator]}"
+    'they are already in the Award Personnel' => "#{@award.principal_investigator.full_name} is already added to the Award Project Personnel",
+    'the Award\'s PI requires at least one unit' => "At least one Unit is required for #{@award.principal_investigator.full_name}"
   }
   expect($current_page.errors).to include errors[error]
 end
@@ -182,7 +184,7 @@ end
 #------------------------#
 And /^error messages should appear for invalid dates on the Special Review$/ do
   special_review_dates = [:application_date, :approval_date, :expiration_date]
-  special_review_dates.map! {|date_type| "#{@special_review.send(date_type)} is not a valid date."}
+  special_review_dates.map! {|date_type| "#{@iacuc_protocol.special_review[0].send(date_type)} is not a valid date."}
 
   special_review_dates.each do |err|
     expect($current_page.errors).to include err

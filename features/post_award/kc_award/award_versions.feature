@@ -1,4 +1,5 @@
-@award
+#RESKC-567
+@award @system_failure
 Feature: Award Versions
 
   Summary to be written

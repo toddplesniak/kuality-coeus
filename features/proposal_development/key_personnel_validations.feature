@@ -22,12 +22,11 @@ Feature: Proposal Key Personnel Validations
     Given I add a Principal Investigator with a Financial credit split of 99.99
     When  data validation is activated
     Then  an error should say the credit split does not equal 100%
-  #RESKC-533
-  @system_failure
+  @wip
   Scenario: I should see an error when I add a key person without a specified proposal role
     When I add a key person without a key person role
     Then an error should appear that says a key person role is required
-
+  @wip
   Scenario: Can't add the same person to Personnel twice
     When I add a principal investigator to the Proposal
     Then the same person cannot be added to the Proposal personnel again

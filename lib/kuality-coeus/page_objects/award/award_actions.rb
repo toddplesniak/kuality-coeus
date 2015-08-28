@@ -21,12 +21,13 @@ class AwardActions < KCAwards
 
   # This creates an array that contains the ids of the descendants of the specified Award...
   action(:descendants) { |award, b|
-    array = []
-    b.frm.li(id: "li#{award}").lis.each { |li| array << li.id[/\d+-\d+/] }
-    array
+    b.frm.li(id: "li#{award}").lis.map { |li| li.id[/\d+-\d+/] }
   }
 
   element(:award_hierarchy_link) { |b| b.frm.link(class: 'awardHierarchy') }
+
+  undefine :notification
+  value(:notification) { |b| b.noko.div(class: 'msg-excol').div(class: 'kul-error').text }
   action(:award_hierarchy) { |b| b.award_hierarchy_link.when_present.click }
 
   #NEW CHILD

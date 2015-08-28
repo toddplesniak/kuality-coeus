@@ -1,7 +1,7 @@
 # coding: UTF-8
 class AwardObject < DataFactory
 
-  include Navigation, DateFactory, StringFactory, DocumentUtilities, Utilities
+  include DateFactory, StringFactory, DocumentUtilities, Utilities
 
   attr_reader :award_status,
               :award_title, :lead_unit_id, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
@@ -41,13 +41,11 @@ class AwardObject < DataFactory
       approved_equipment:    collection('ApprovedEquipment'),
       key_personnel:         collection('AwardKeyPersonnel'),
       reports:               collection('AwardReports'),
-      children:              collection('AwardChild'),
-      funding_proposals:     [], # Contents MUST look like: {ip_number: '00001', merge_type: 'No Change'}, ...
-      subawards:             [], # Contents MUST look like: {org_name: 'Org Name', amount: '999.99'}, ...
-      sponsor_contacts:      [], # Contents MUST look like: {non_employee_id: '333', project_role: 'Close-out Contact'}, ...
-      press:                 'save'
+      funding_proposals:     [], # Contents MUST be Hashes with keys :ip_number and :merge_type
+      subawards:             [], # Contents MUST be Hashes with keys :org_name and :amount
+      sponsor_contacts:      [], # Contents MUST be Hashes with keys :non_employee_id and :project_role
+      press: 'save'
     }
-
     set_options(defaults.merge(opts))
     @navigate = navigate
   end
@@ -71,7 +69,6 @@ class AwardObject < DataFactory
       create.send(@press) unless @press.nil?
       @document_id = create.header_document_id
       @id = create.award_id.strip
-      @search_key = { award_id: @id }
       @document_status = create.header_status
     end
   end #create
@@ -100,60 +97,10 @@ class AwardObject < DataFactory
 
   def view(tab)
     @navigate.call
+    return if on(Award).error_message.present?
     unless on(Award).current_tab == tab
       on(Award).send(StringFactory.damballa(tab.to_s))
     end
-
-  end
-
-  def view_award
-    on(Header).doc_search
-    on DocumentSearch do |search|
-      search.document_id.set @document_id
-      search.search
-      search.open_item @document_id
-    end
-  end
-
-  def navigate
-    lambda {
-      #we are in a strange place without a header because of time and money. need to get back from there
-      @browser.goto $base_url+$context unless on(Header).header_div.present?
-      if on(Header).krad_portal_element.present?
-        on(Header).krad_portal
-      else
-        # DEBUG.message "krad portal does not exist we can continue on"
-      end
-
-      begin
-        there = on(Award).header_award_id==@id
-      rescue
-        there = false
-      end
-
-      unless there
-        on(Header).central_admin
-        on(CentralAdmin).search_award
-        on AwardLookup do |page|
-          page.award_id.set @id
-          page.search
-          # TODO: Remove this when document search issues are resolved
-          begin
-            page.medusa
-          rescue Watir::Exception::UnknownObjectException
-            on(Header).doc_search
-            on DocumentSearch do |search|
-              search.document_id.set @document_id
-              search.search
-              search.open_item @document_id
-            end
-          end
-        end
-        # on(Award).horzontal_links.wait_until_present
-        on(Award).headerinfo_table.wait_until_present
-      end
-
-      } #lambda
   end
 
   def copy(type='new', parent=nil, descendents=:clear)
@@ -168,14 +115,6 @@ class AwardObject < DataFactory
       copy.send("copy_as_#{type}", @id)
       copy.child_of_target_award(@id).pick! parent
       copy.copy_award @id
-    end
-  end
-
-  def on_award?
-    if on(Award).headerinfo_table.exist?
-      on(Award).header_award_id==@id
-    else
-      false
     end
   end
 
@@ -209,33 +148,38 @@ class AwardObject < DataFactory
     end
   end
 
-    def add_payment_and_invoice opts={}
-      raise "You already created a Payment & Invoice in your scenario.\nYou want to interact with that item directly, now." unless @payment_and_invoice.nil?
-      view :payment_reports__terms
-      @payment_and_invoices = make PaymentInvoiceObject, opts
-      @payment_and_invoices.create
+  def add_payment_and_invoice opts={}
+    raise "You already created a Payment & Invoice in your scenario.\nYou want to interact with that item directly, now." unless @payment_and_invoice.nil?
+    view :payment_reports__terms
+    @payment_and_invoices = make PaymentInvoiceObject, opts
+    @payment_and_invoices.create
+  end
+
+  def add_sponsor_contact opts={}
+    s_c = opts.empty? ? {non_employee_id: rand(4000..4103).to_s, project_role: '::random::'} : opts
+    view :contacts
+    on AwardContacts do |page|
+      page.expand_all
+      page.search_sponsor_contact
+    end
+    on NonOrgAddressBookLookup do |lookup|
+      lookup.search
+      lookup.return_random
     end
 
-    def add_sponsor_contact opts={}
-      s_c = opts.empty? ? {non_employee_id: rand(4000..4103).to_s, project_role: '::random::'} : opts
-      view :contacts
-      on AwardContacts do |page|
-        page.expand_all
-        page.search_sponsor_contact
-      end
-      on NonOrgAddressBookLookup do |lookup|
-        lookup.search
-        lookup.return_random
-      end
-
-      on AwardContacts do |page|
-        page.sponsor_project_role.pick! s_c[:project_role]
-        page.add_sponsor_contact
-        page.save
-      end
+    on AwardContacts do |page|
+      page.sponsor_project_role.pick! s_c[:project_role]
+      page.add_sponsor_contact
+      page.save
     end
+  end
 
-  def add_terms opts={}
+  def add_report opts={}
+    view :payment_reports__terms
+    @reports.add opts
+  end
+
+   def add_terms opts={}
     raise "You already created terms in your scenario.\nYou want to interact with that object directly, now." unless @terms.nil?
     view :payment_reports__terms
     @terms = make AwardTermsObject, opts
@@ -253,26 +197,17 @@ class AwardObject < DataFactory
   end
 
   def submit
-    DEBUG.pause(7)
     view :award_actions
-    DEBUG.pause(14)
-    on AwardActions do |page|
-      page.submit_button.wait_until_present
-      page.submit
-    end
-    DEBUG.pause(11)
-    confirmation
-    DEBUG.pause(12)
-    raise 'Award not submitted' if on(AwardActions).errors.size > 0
+    on(AwardActions).submit
+    on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    raise 'Award submission failed.' unless on(AwardActions).notification=='Document was successfully submitted.'
   end
 
   def add_custom_data opts={}
     view :custom_data
     defaults = {
         document_id: @document_id,
-        doc_header: @doc_header,
-        lookup_class: @lookup_class,
-        search_key: @search_key
+        doc_header: @doc_header
     }
     if @custom_data.nil?
       @custom_data = make AwardCustomDataObject, defaults.merge(opts)
@@ -281,7 +216,7 @@ class AwardObject < DataFactory
   end
 
   def initialize_time_and_money
-    view :award
+    @navigate.call
     on(Award).time_and_money
     # Set up to only create the instance variable if it doesn't exist, yet
     if @time_and_money.nil?
@@ -291,15 +226,6 @@ class AwardObject < DataFactory
     else
       @time_and_money.check_status
     end
-  end
-
-  def add_report opts={}
-    #IntellectualProperty and TechnicalManagement removed because of a validation bug in CX (https://github.com/rSmart/issues/issues/289).
-    # opts[:report] ||= %w{Financial Procurement Property ProposalsDue}.sample
-    opts[:report] ||= ['Property'].sample
-    defaults = {award_id: @id, number: (@reports.count_of(opts[:report])+1).to_s}
-    view :payment_reports__terms
-    @reports.add defaults.merge(opts)
   end
 
   def add_fna_rate opts={}
@@ -358,33 +284,53 @@ class AwardObject < DataFactory
   end
 
   def add_key_person opts={}
-    defaults = { type: 'employee',
-                       project_role: 'Principal Investigator',
-                       key_person_role: random_alphanums(5),
-                       press: 'save'
-               }
+    view :contacts
+    defaults = {
+        navigate: @navigate
+                     }
     @key_personnel.add defaults.merge!(opts)
   end
 
-  def add_child_from_parent opts={}
-    view :award_actions
-    award_copy = data_object_copy
-    DEBUG.inspect award_copy
+  # ==============
+  private
+  # ==============
 
-    defaults = { description: 'child'+random_alphanums(20), navigate: @navigate, key_personnel: award_copy[:key_personnel] }
-    @children.add defaults.merge!(opts)
+  def navigate
+    lambda {
+      begin
+        there = on(Award).header_document_id==@document_id
+      rescue
+        there = false
+      end
+      unless there
+        # If we are in a strange place without a header because of time and money, need to get back from there...
+        @browser.goto $base_url+$context unless on(Header).header_div.present?
+
+        if on(Header).krad_portal_element.present?
+          on(Header).krad_portal
+        end
+        on(Header).central_admin
+        on(CentralAdmin).search_award
+        on AwardLookup do |page|
+          page.award_id.set @id
+          page.search
+          # TODO: Remove this when document search issues are resolved
+          begin
+            page.medusa
+          rescue Watir::Exception::UnknownObjectException
+            on(Header).doc_search
+            on DocumentSearch do |search|
+              search.document_id.set @document_id
+              search.search
+
+              search.open_item @document_id
+            end
+          end
+        end
+        return if on(Award).error_message.present?
+        on(Award).div(class: 'headerbox').table(class: 'headerinfo').wait_until_present
+      end
+    }
   end
 
-  def get_key_people
-    view :contacts
-    on AwardContacts do |page|
-      page.expand_all
-      @key_people = page.get_key_people
-    end
-  end
-
-  def on_tm?
-    !(on(Award).t_m_button.exist?)
-  end
-
-end #NewAwardObject
+end #AwardObject

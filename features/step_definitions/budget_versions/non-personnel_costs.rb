@@ -55,6 +55,12 @@ And /^adds a non\-personnel cost to each Budget Period that exceeds the cost lim
   end
 end
 
+And /^adds a non\-personnel item with a total base cost of \$(\d+) to each Budget Period$/ do |tbc|
+  @budget_version.budget_periods.each do |period|
+    period.assign_non_personnel_cost total_base_cost: tbc
+  end
+end
+
 And /^adds a non\-personnel cost with an? '(.*)' category type to each Budget Period$/ do |type|
   @budget_version.budget_periods.each do |period|
     period.assign_non_personnel_cost category_type: type
@@ -118,6 +124,11 @@ end
 And /^adds an NPC with a base cost lower than the lowest cost limit to the 1st period and copies it to the others$/ do
   lowest_cost_limit = @budget_version.budget_periods.collect{ |p| p.cost_limit }.sort[0]
   @budget_version.period(1).assign_non_personnel_cost total_base_cost: (lowest_cost_limit.to_f/5).round(2)
+  @budget_version.save_npc_and_apply_to_later(@budget_version.period(1), @budget_version.period(1).non_personnel_costs.last)
+end
+
+And /^adds an NPC with a base cost of \$(\d+) to the 1st period and copies it to the others$/ do |tbc|
+  @budget_version.period(1).assign_non_personnel_cost total_base_cost: tbc
   @budget_version.save_npc_and_apply_to_later(@budget_version.period(1), @budget_version.period(1).non_personnel_costs.last)
 end
 

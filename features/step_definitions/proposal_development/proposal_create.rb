@@ -140,8 +140,7 @@ end
 
 When /^I? ?completes? the Proposal$/ do
   @proposal.add_principal_investigator
-  @proposal.set_valid_credit_splits
-  @proposal.add_custom_data
+  @proposal.key_personnel.set_valid_credit_splits
 end
 
 When /completes? the required supplemental info on the Proposal$/ do
@@ -164,8 +163,12 @@ end
 
 And /^the (.*) submits a new Proposal into routing$/ do |role_name|
   steps %{ * the #{role_name} creates a Proposal }
-  steps %q{ * adds a principal investigator to the Proposal }
-  steps %q{ * sets valid credit splits for the Proposal }
+  steps %q{ * adds a principal investigator to the Proposal
+            * certifies the Proposal's principal investigator
+            * sets valid credit splits for the Proposal }
+  steps %q{ * creates a Budget Version for the Proposal
+            * includes the Budget Version for submission
+            * marks the Budget Version complete }
   steps %q{ * submits the Proposal into routing }
 end
 
@@ -210,4 +213,16 @@ Given /^(the (.*) user |)creates a Proposal with these Performance Site Location
   steps %{ * I log in with the #{role_name} user } unless text==''
   locations = psl.split(',')
   @proposal = create ProposalDevelopmentObject, performance_site_locations: locations
+end
+
+When /^mresearcher creates a non\-random Proposal$/ do
+  steps %{ * I'm logged in with mresearcher }
+  @proposal = create ProposalDevelopmentObject, :sponsor_id=> '000127',
+                     :lead_unit=>'BIO - Dept of Biology',
+                     :activity_type=>'Instruction',
+                     :project_title=>'SMOKE TEST',
+                     :project_start_date=>next_week[:date_w_slashes],
+                     :project_end_date=>next_year[:date_w_slashes],
+                     :sponsor_deadline_date=>next_year[:date_w_slashes],
+                     :sponsor_deadline_time=>'23:59'
 end

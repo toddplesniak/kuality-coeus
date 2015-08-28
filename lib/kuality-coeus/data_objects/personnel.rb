@@ -4,11 +4,6 @@ module Personnel
 
   include Utilities
 
-  CERTIFICATION_QUESTIONS = [
-                             :understand_coi_obligation,
-                             :agree_with_sponsor_terms
-  ]
-
   def role_value
     {
         'Principal Investigator' => 'PI',
@@ -80,7 +75,6 @@ module Personnel
       on CreditAllocation do |update|
         update.unit_responsibility(@full_name, unit[:number]).fit unit[:responsibility]
         update.unit_financial(@full_name, unit[:number]).fit unit[:financial]
-        update.save
       end
       # This updates the @units variable, in case
       # it was not the passed parameter...
@@ -89,8 +83,8 @@ module Personnel
           @units[@units.find_index{|u| u[:number]==unit[:number]}][split]=unit[split]
         end
       end
-
     end
+    on(CreditAllocation).save
   end
 
   def log_in
@@ -163,14 +157,6 @@ module People
 
   def key_person(role)
     self.find { |person| person.key_person_role==role }
-  end
-
-  # IMPORTANT: This method returns a KeyPersonObject--meaning that if there
-  # are multiple key persons in the collection that match this search only
-  # the first one will be returned.  If you need a collection of multiple persons
-  # write the method for that.
-  def uncertified_person(role)
-    self.find { |person| person.certified==false && person.role==role }
   end
 
 end # People

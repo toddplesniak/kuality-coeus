@@ -9,7 +9,7 @@ end
 When /^I? ?complete a valid simple Proposal for a '(.*)' organization$/ do |org|
   @proposal = create ProposalDevelopmentObject, sponsor_type_code: org
   @proposal.add_principal_investigator
-  @proposal.set_valid_credit_splits
+  @proposal.key_personnel.set_valid_credit_splits
   @proposal.add_custom_data
 end
 
@@ -39,13 +39,11 @@ Then /^The S2S opportunity search should become available$/ do
 end
 
 When /^The Proposal's 'Future Action Requests' should include 'PENDING APPROVE' for the principal investigator$/ do
-  pi = @proposal.key_personnel.principal_investigator
-  name = "#{pi.last_name}, #{pi.first_name}"
   @proposal.view :proposal_actions
   on ProposalActions do |page|
     page.expand_all
     page.show_future_action_requests
-    page.requested_action_for(name).should=="PENDING\nAPPROVE"
+    page.requested_action_for(@proposal.principal_investigator.full_name).should=="PENDING\nAPPROVE"
   end
 end
 
@@ -116,8 +114,13 @@ Then /^it is still possible to copy the Proposal$/ do
   expect{@proposal.copy_to_new_document '000001 - University'}.not_to raise_error
 end
 
-And /^the Proposal is copied to a different lead unit$/ do
+And /^the Proposal is copied to a different lead unit$/ do |x|
   @copied_proposal = @proposal.copy 'BL-BL'
+end
+
+Then /^the Proposal can be copied$/ do
+  @copied_proposal = @proposal.copy @proposal.lead_unit
+  expect(@copied_proposal.document_id).not_to eq @proposal.document_id
 end
 
 And /changes the Proposal's activity type$/ do

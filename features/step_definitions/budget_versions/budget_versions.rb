@@ -171,6 +171,13 @@ And /adds a (direct|total) cost limit to all of the Budget's periods$/ do |type|
   end
 end
 
+And /adds a (direct|total) cost limit of \$(\d+) to all of the Budget's periods$/ do |type, amount|
+  cls = {direct: :direct_cost_limit, total: :cost_limit }
+  @budget_version.budget_periods.each do |period|
+    period.edit cls[type.to_sym] => amount
+  end
+end
+
 Then /^the direct cost is equal to the direct cost limit in all periods$/ do
   @budget_version.view 'Periods And Totals'
   @budget_version.budget_periods.each do |period|

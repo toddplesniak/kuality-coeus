@@ -8,12 +8,6 @@ $file_folder = "#{File.dirname(__FILE__)}/../../lib/resources/"
 $cas = ENV['CAS']
 $cas_context = $cas? ENV['CAS_CONTEXT'] : ''
 
-if ENV['HEADLESS']
-  require 'headless'
-  headless = Headless.new
-  headless.start
-end
-
 require "#{File.dirname(__FILE__)}/../../lib/kuality-coeus"
 require 'rspec/matchers'
 
@@ -24,14 +18,11 @@ World Utilities
 
 kuality = Kuality.new ENV['BROWSER'].to_sym
 
+# Hooks...
+
 Before do
   @browser = kuality.browser
-  # clear browser cache for when multiple scenarios are run and pages fail to load correctly
   @browser.cookies.clear
-
-  # DEBUG - Testing to see if this gets rid of the "A Server Error Occurred" issue...
-  @browser.execute_script("window.alert = function() {}")
-
   # Clean out any users that might exist
   $users.clear
   $current_user=nil
@@ -44,13 +35,13 @@ After do |scenario|
   if scenario.failed?
     @browser.screenshot.save 'screenshot.png'
     embed 'screenshot.png', 'image/png'
-   # DEBUG.pause
     # DEBUG
-    DEBUG.message " Failed on #{@browser.url}"
-    # DEBUG
-    #Cucumber.wants_to_quit = true
+    DEBUG.message "#{Time.now}\n#{scenario.name} - Failed\non URL: #{@browser.url}"
   end
-  @browser.cookies.clear
+  DEBUG.message Time.now
+  DEBUG.message(`ps aufxww | grep Xvfb`) if ENV['HEADLESS']
 end
 
-at_exit { kuality.browser.close }
+at_exit {
+  kuality.browser.close
+}

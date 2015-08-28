@@ -138,7 +138,6 @@ end # UserYamlCollection
 
 class UserObject < DataFactory
 
-  include Navigation
   include StringFactory
 
   attr_reader :user_name, :principal_id,
@@ -175,8 +174,7 @@ class UserObject < DataFactory
         phones:           [{type:   'Work',
                             number:  '602-840-7300',
                             default: :set }],
-        groups:           collection('UserGroups'),
-        # principal_name:   random_alphanums
+        groups:           collection('UserGroups')
     }
     defaults.merge!(opts)
     if opts.empty? # then we want to make the admin user...
@@ -270,10 +268,6 @@ class UserObject < DataFactory
           add.add_email
         end
       end
-
-      # DEBUG.message "principal name #{@principal_name}"
-      # add.principal_name.fit @principal_name unless @principal_name.nil?
-
       # A breaking of the design pattern, but there's no other
       # way to obtain this number:
       @principal_id = add.principal_id
@@ -328,14 +322,17 @@ class UserObject < DataFactory
   def sign_in
     unless $current_user==self
       $current_user.sign_out if $current_user
-      #begin
-      #  visit Login
-      #rescue Selenium::WebDriver::Error::UnhandledAlertError
-      #  warn 'Modal dialog appeared...'
-      #  puts @browser.alert.text
-      #  @browser.alert.close
-      #  sleep 5
-      #end
+      begin
+        visit(Login).username.present?
+      rescue Selenium::WebDriver::Error::UnhandledAlertError
+        warn 'Modal dialog appeared...'
+        puts @browser.alert.text
+        @browser.alert.close
+        sleep 5
+      rescue Watir::Exception::UnknownObjectException
+        warn 'Blank screen, maybe?'
+        @browser.goto 'www.google.com'
+      end
       visit Login do |log_in|
         log_in.username.set @user_name
         log_in.login
