@@ -26,7 +26,7 @@ Feature: Proposal Key Personnel Validations
   Scenario: I should see an error when I add a key person without a specified proposal role
     When I add a key person without a key person role
     Then an error should appear that says a key person role is required
-
+  @wip
   Scenario: Can't add the same person to Personnel twice
     When I add a principal investigator to the Proposal
     Then the same person cannot be added to the Proposal personnel again
