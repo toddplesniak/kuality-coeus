@@ -1,5 +1,4 @@
-# https://kualico.atlassian.net/browse/RESKC-522
-@iacuc @system_failure
+@iacuc
 Feature: Protocol actions for IACUC Designated Member Review
 
   TBD
@@ -25,7 +24,7 @@ Feature: Protocol actions for IACUC Designated Member Review
     When  the IACUC Administrator approves the Protocol
     Then  the IACUC Protocol status should be Active
     And   the IACUC Protocol submission status should be Approved
-  @wip
+
   Scenario: Verify the expiration date is set after the IACUC Protocol is approved
     Then  the expiration date is set for the Protocol
   @wip

@@ -117,7 +117,7 @@ def clean_first_run
     failing = JSON.pretty_generate failures
     passing = JSON.pretty_generate passed
     File.write 'cucumber_clean.json', passing
-    File.write 'first_run_failures.json', failing
+    File.write "first_run_failures_build_#{ENV['BUILD_ID']}.json", failing
   end
 end
 

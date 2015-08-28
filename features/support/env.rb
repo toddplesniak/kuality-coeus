@@ -36,8 +36,10 @@ After do |scenario|
     @browser.screenshot.save 'screenshot.png'
     embed 'screenshot.png', 'image/png'
     # DEBUG
-    DEBUG.message "#{Time.now} Failed on #{@browser.url}"
+    DEBUG.message "#{Time.now}\n#{scenario.name} - Failed\non URL: #{@browser.url}"
   end
+  DEBUG.message Time.now
+  DEBUG.message(`ps aufxww | grep Xvfb`) if ENV['HEADLESS']
 end
 
 at_exit {
