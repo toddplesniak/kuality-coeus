@@ -29,7 +29,6 @@ class AwardTermsObject < DataFactory
       if @random_terms == '::random::'
         # the_terms = ['EquipmentApproval', 'Invention','Property', 'Publication',
         #              'ReferencedDocument', 'RightsInData' 'SubawardApproval', 'TravelRestrictions']
-
         the_terms = ['Equipment Approval', 'Invention', 'Prior Approval', 'Property', 'Publication',
               'Referenced Document', 'Rights In Data', 'Subaward Approval', 'Travel Restrictions']
 

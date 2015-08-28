@@ -37,7 +37,7 @@ When /completes? the nonrandom Award requirements$/ do
 end
 
 When /^data validation is turned on for the Award$/ do
-  @award.view_tab :award_actions
+  @award.view :award_actions
   on AwardActions do |page|
     page.expand_all
     page.validation_button.wait_until_present
@@ -113,7 +113,7 @@ And /^adds the unassigned user as a Principal Investigator for the Award$/ do
 end
 
 And /adds a (.*) to the award$/ do  |role|
-  @award.view_tab :contacts
+  @award.view :contacts
   case role
     when 'PI' || 'Principal Investigator'
       @award.add_key_person project_role: 'Principal Investigator'
@@ -141,26 +141,28 @@ end
 
 And /creates a child node that is copied from the parent$/ do
   @award.add_child_from_parent description: 'child'+random_string(10), account_id: 'child'+random_alphanums(10), transaction_type: '::random::'
+
 end
 
 And /submits the first child with the first co-investigator as the only contact$/ do
   @award.children[0].view :contacts
 
-  #need to remove from Data Object
-  #TODO:: need to remove from data object when deleted to clean up principal_investigators[0] to just be principal_investigator.delete
-  @award.children[0].principal_investigators[0].delete
-  DEBUG.message "child1 cois #{@award.children[0].co_investigators.inspect}"
+  @award.children[0].key_personnel.delete(@award.children[0].principal_investigator.full_name)
   @award.children[0].co_investigators[0].edit project_role: 'Principal Investigator'
-  #delete the second coi, but they are now the only coi
-  DEBUG.message "coi are #{@award.children[0].co_investigators.inspect}"
-  @award.children[0].co_investigators[0].delete
+  @award.children[0].key_personnel.delete(@award.children[0].co_investigators[0].full_name)
 
-  #TODO:: need to remove from data object on delete to clean up this cosde
-  @award.children[0].principal_investigators[1].update_splits financial: '100', responsibility: '100'
-  @award.children[0].principal_investigators[1].update_unit_splits_to_valid
+  DEBUG.inspect @award.key_personnel
+  DEBUG.message "now the children"
+  DEBUG.inspect @award.children[0].key_personnel
+
+  exit
+
+
+  @award.children[0].principal_investigator.update_splits financial: '100', responsibility: '100'
+  @award.children[0].principal_investigator.update_unit_splits_to_valid
 
   #need to select the lead unit
-  @award.children[0].principal_investigators[1].set_lead_unit @award.children[0].principal_investigators[1].units[0][:number]
+  @award.children[0].principal_investigator.set_lead_unit @award.children[0].principal_investigator.units[0][:number]
   #Child node requires a report for the submit button to be present
   @award.children[0].add_report
 
@@ -169,39 +171,26 @@ end
 
 And  /^submits a second child with the second co-investigator as the only contact$/ do
   @award.children[1].view :contacts
-  DEBUG.message "kp child2 PI #{@award.children[1].key_personnel.principal_investigators.inspect}"
-  DEBUG.pause(31)
-  @award.children[1].principal_investigators[1].delete
-  DEBUG.message "kp child1 PI #{@award.children[0].key_personnel.principal_investigators.inspect}"
-  DEBUG.pause(32)
-  @award.children[1].principal_investigators[0].delete
-  DEBUG.message "kp child2 coi-1 #{@award.children[1].key_personnel.co_investigators[0].inspect}"
-  DEBUG.pause(33)
-  @award.children[1].key_personnel.co_investigators[0].edit project_role: 'Principal Investigator'
+  @award.children[1].key_personnel.delete(@award.children[1].principal_investigator.full_name)
 
+  @award.children[1].co_investigators[1].edit project_role: 'Principal Investigator'
+  @award.children[1].key_personnel.delete(@award.children[1].co_investigators[0].full_name)
 
-  #TODO:: need to remove from data object on delete to clean up this code
-  @award.children[1].principal_investigators[1].update_splits financial: '100', responsibility: '100'
-  @award.children[1].principal_investigators[1].update_unit_splits_to_valid
+  @award.children[1].principal_investigator.update_splits financial: '100', responsibility: '100'
+  @award.children[1].principal_investigator.update_unit_splits_to_valid
 
   #need to select the lead unit
-  @award.children[1].principal_investigators[1].set_lead_unit @award.children[1].principal_investigators[1].units[0][:number]
+  @award.children[1].principal_investigator.set_lead_unit @award.children[1].principal_investigator.units[0][:number]
   #Child node requires a report for the submit button to be present
-  @award.children[1].add_report type:           'Progress/Status',
-                                          frequency:      'As required',
-                                          frequency_base: 'As Required',
-                                          osp_file_copy:  'Report'
+  @award.children[1].add_report
+
   @award.children[1].submit
 end
 
 And /submits the third child with the principal investigator as the only contact$/ do
-  @award.children[2].co_investigators[1].delete
-  @award.children[2].co_investigators[0].delete
+  2.times{@award.children[2].key_personnel.delete(@award.children[2].co_investigators[0].full_name) }
 
-  @award.children[2].add_report type:           'Progress/Status',
-                                          frequency:      'As required',
-                                          frequency_base: 'As Required',
-                                          osp_file_copy:  'Report'
+  @award.children[2].add_report
   @award.children[2].submit
 end
 

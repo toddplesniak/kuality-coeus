@@ -44,6 +44,7 @@ After do |scenario|
   if scenario.failed?
     @browser.screenshot.save 'screenshot.png'
     embed 'screenshot.png', 'image/png'
+   # DEBUG.pause
     # DEBUG
     DEBUG.message " Failed on #{@browser.url}"
     # DEBUG

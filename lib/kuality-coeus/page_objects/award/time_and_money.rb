@@ -25,8 +25,10 @@ class TimeAndMoney < KCAwards
   element(:comments) { |b| b.frm.text_field(name: 'transactionBean.newPendingTransaction.comments') }
   element(:source_award) { |b| b.frm.select(name: 'transactionBean.newPendingTransaction.sourceAwardNumber') }
   element(:destination_award) { |b| b.frm.select(name: 'transactionBean.newPendingTransaction.destinationAwardNumber') }
-  element(:obligated_change) { |b| b.frm.text_field(name: 'transactionBean.newPendingTransaction.obligatedAmount') }
-  element(:anticipated_change) { |b| b.frm.text_field(name: 'transactionBean.newPendingTransaction.anticipatedAmount') }
+  element(:obligated_direct_change) { |b| b.frm.text_field(name: 'transactionBean.newPendingTransaction.obligatedDirectAmount') }
+  element(:anticipated_direct_change) { |b| b.frm.text_field(name: 'transactionBean.newPendingTransaction.anticipatedDirectAmount') }
+  element(:obligated_fna_change) { |b| b.frm.text_field(name: 'transactionBean.newPendingTransaction.obligatedIndirectAmount') }
+  element(:anticipated_fna_change) { |b| b.frm.text_field(name: 'transactionBean.newPendingTransaction.anticipatedIndirectAmount') }
   action(:add_transaction) { |b| b.frm.button(name: /methodToCall.addTransaction.anchorTransactions\d+/).click; b.loading }
 
   # Returns the last transaction number listed in the table...

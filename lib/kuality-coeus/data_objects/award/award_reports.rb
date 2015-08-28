@@ -25,14 +25,14 @@ class AwardReportsObject < DataFactory
   def create
     on PaymentReportsTerms do |page|
       page.expand_all
+      DEBUG.pause(4)
       set_report_type
 
       page.add_frequency(@report).fire_event 'onchange'
-      DEBUG.pause(6)
+      DEBUG.pause(10)
       set_frequency
-
       page.add_frequency_base(@report).fire_event 'onchange'
-      DEBUG.pause(5)
+      DEBUG.pause(11)
       page.add_frequency_base(@report).pick! @frequency_base
       # DEBUG.pause(6)
       page.add_osp_file_copy(@report).fire_event 'onchange'

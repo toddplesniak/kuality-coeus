@@ -1,6 +1,6 @@
 class AwardKeyPersonObject < DataFactory
 
-  include Navigation, Personnel
+  include Personnel
 
   attr_reader :employee_user_name, :non_employee_id, :project_role,
               :key_person_role, :first_name, :last_name, :full_name,
@@ -27,32 +27,29 @@ class AwardKeyPersonObject < DataFactory
 
   # Navigation done by parent object...
   def create
-    on AwardContacts do |page|
-      page.expand_all
-      DEBUG.pause(4)
-      #get the people already added
-      if page.no_splits.exists?
-        @people_present = ['first person added']
-      else
-        @people_present = page.people_present
-      end
-    end
-
+    on(AwardContacts).expand_all
+    added_persons = []
     if @type == 'employee'
       on AwardContacts do |page|
         page.employee_search
+        begin
+          added_persons = page.people_present
+        rescue
+          added_persons = []
+        end
       end
       on KcPersonLookup do |lookup|
         lookup.last_name.fit @last_name
         lookup.first_name.fit @first_name
         lookup.search
         #return random person if that person is not already on award
-        people_hash = lookup.gather_people
-        @people_present.each {|x| people_hash.delete("#{x}")   } unless @people_present==[]
-        select_person = people_hash.to_a.sample
-        @full_name = select_person[0]
-        lookup.select_person(select_person[1])
+        people_array = lookup.returned_full_names - $users.full_names - added_persons
+
+        @full_name = people_array.sample
+        # lookup.select_person(select_person[1])
+        lookup.return_value(@full_name)
       end
+
     else #Non-employee
       on AwardContacts do |page|
         page.non_employee_search
@@ -65,6 +62,7 @@ class AwardKeyPersonObject < DataFactory
       end
       #set up name
       on AwardContacts do |page|
+        page.kp_non_employee_id.wait_until_present
         @full_name = page.kp_non_employee_id.value.strip
         @first_name = @full_name.partition(',').first.strip
         @last_name =  @full_name.partition(',').last.strip
@@ -73,6 +71,7 @@ class AwardKeyPersonObject < DataFactory
     end #to employee or non-employee
 
     on AwardContacts do |page|
+      page.kp_project_role.wait_until_present
       case @project_role
         when 'Principal Investigator' || 'PI/Contact'
           page.kp_project_role.select_value 'PI'
@@ -114,6 +113,7 @@ class AwardKeyPersonObject < DataFactory
   #deletes a key person
   def delete
     on AwardContacts do |delete|
+       DEBUG.message "is this delete on KP being called? #{@full_name}"
        delete.expand_all
        delete.delete_person(@full_name)
        delete.save
@@ -263,10 +263,6 @@ class AwardKeyPersonnelCollection < CollectionsFactory
     self.find{ |person| person.project_role=='Principal Investigator' || person.project_role=='PI/Contact' }
   end
 
-  def principal_investigators
-    self.find_all{ |person| person.project_role=='Principal Investigator' || person.project_role=='PI/Contact' }
-  end
-
   def co_investigator
     self.find{ |person| person.project_role=='Co-Investigator' }
   end
@@ -281,6 +277,17 @@ class AwardKeyPersonnelCollection < CollectionsFactory
 
   def validate_units
     self.each {|person| person.add_random_unit unless person.units.size > 0 }
+  end
+
+  def delete(person)
+    p = self.find { |p| p.full_name==person }
+    DEBUG.message "person to delete is"
+    DEBUG.inspect p
+    p.delete
+    self.delete_if { |p| p.full_name==person }
+
+    # DEBUG.inspect self
+
   end
 
 end

@@ -1,13 +1,13 @@
 class AwardChildObject < DataFactory
 
-  include Navigation, DateFactory, StringFactory, DocumentUtilities
+  include DateFactory, StringFactory
 
   attr_reader :document_id, :account_id, :transaction_type,
               :key_personnel, :reports
 
   attr_accessor :document_status, :document_id, :id, :search_key
 
-  def_delegators :@key_personnel, :principal_investigator, :co_investigator,  :co_investigators, :principal_investigators
+  def_delegators :@key_personnel, :principal_investigator, :co_investigator,  :co_investigators
 
   def initialize(browser, opts={})
     @browser = browser
@@ -48,7 +48,7 @@ class AwardChildObject < DataFactory
   end
 
   def view(tab)
-    navigate unless on_award?
+    @navigate.call unless on_award?
     unless on(Award).current_tab == tab
       on(Award).send(StringFactory.damballa(tab.to_s))
     end
@@ -74,34 +74,8 @@ class AwardChildObject < DataFactory
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
   end
 
-  def navigate
-    #we are in a strange place without a header because of time and money. need to get back from there
-    @browser.goto $base_url+$context unless on(Header).header_div.present?
-
-    if on(Header).krad_portal_element.present?
-      on(Header).krad_portal
-    else
-      # DEBUG.message "krad portal does not exist we can continue on"
-    end
-    on(Header).central_admin
-    on(CentralAdmin).search_award
-    on AwardLookup do |page|
-      page.award_id.set @id
-      page.search
-      # TODO: Remove this when document search issues are resolved
-      begin
-        page.medusa
-      rescue Watir::Exception::UnknownObjectException
-        on(Header).doc_search
-        on DocumentSearch do |search|
-          search.document_id.set @document_id
-          search.search
-          search.open_item @document_id
-        end
-      end
-    end
-    # on(Award).horzontal_links.wait_until_present
-    on(Award).headerinfo_table.wait_until_present
+  def update_from_parent id
+    @id = id
   end
 
   def on_award?
@@ -122,18 +96,5 @@ end #AwardChildObject
 class AwardChildCollection < CollectionsFactory
 
   contains AwardChildObject
-  include People
-
-  def child1
-    self.find { |kid| kid[:id].include? '00002' }
-  end
-
-  def child2
-    self.find { |kid| kid[:id].include? '00003' }
-  end
-
-  def child3
-    self.find { |kid| kid[:id].include? '00004' }
-  end
 
 end

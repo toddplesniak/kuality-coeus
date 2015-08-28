@@ -28,7 +28,10 @@ Feature: Award Hierarchy
     And  creates a child node that is copied from the parent
     And  submits the third child with the principal investigator as the only contact
     And  the Time And Money Modifier initializes the Award's Time And Money document
-
+    And  add a T&M transaction from External to the Award, with obligated and anticipated amounts of 900
+    And  add a T&M transaction to the first child from External to the Award, with obligated and anticipated amounts of 100
+    And  add a T&M transaction to the second child from External to the Award, with obligated and anticipated amounts of 100
+    And  add a T&M transaction to the third child from External to the Award, with obligated and anticipated amounts of 100
 
 
 #  Click the Time & Money button to open the document

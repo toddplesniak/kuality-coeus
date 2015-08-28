@@ -27,6 +27,7 @@ class PaymentInvoiceObject < DataFactory
   def create
     on PaymentReportsTerms do |page|
       page.expand_all
+      page.payment_basis.wait_until_present
       page.payment_basis.pick! @payment_basis
 
       page.payment_method.fire_event('onchange')
@@ -36,11 +37,15 @@ class PaymentInvoiceObject < DataFactory
 
       page.payment_type.fire_event('onchange')
       page.payment_type.pick! @payment_and_invoice_requirements[:payment_type]
+      # page.payment_type.fire_event('onchange')
 
       #DEBUG:: increment and add comments to find where this issue is
       #element disconnected from dom, for this line
-      # count = 1
+      # count = 5
       page.frequency.fire_event('onchange')
+    end
+
+    on PaymentReportsTerms do |page|
       page.frequency.pick! @payment_and_invoice_requirements[:frequency]
       if @payment_and_invoice_requirements[:frequency]=='None' && @payment_and_invoice_requirements[:frequency_base]=='::random::'
         @payment_and_invoice_requirements[:frequency_base]=nil

@@ -117,7 +117,7 @@ Then /^an error message says (the date must be in a valid format|the start date 
 end
 
 Then /^errors appear on the Contacts page, saying the credit splits for the PI aren't equal to 100\%$/ do
-  @award.view_tab :contacts
+  @award.view :contacts
   on AwardContacts do |page|
     page.expand_all
     DocumentUtilities::CREDIT_SPLITS.values.each do |type|

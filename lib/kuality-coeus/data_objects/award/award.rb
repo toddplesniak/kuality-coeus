@@ -1,7 +1,7 @@
 # coding: UTF-8
 class AwardObject < DataFactory
 
-  include Navigation, DateFactory, StringFactory, DocumentUtilities
+  include Navigation, DateFactory, StringFactory, DocumentUtilities, Utilities
 
   attr_reader :award_status,
               :award_title, :lead_unit_id, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
@@ -47,8 +47,9 @@ class AwardObject < DataFactory
       sponsor_contacts:      [], # Contents MUST look like: {non_employee_id: '333', project_role: 'Close-out Contact'}, ...
       press:                 'save'
     }
-    @lookup_class=AwardLookup
+
     set_options(defaults.merge(opts))
+    @navigate = navigate
   end
 #
   def create
@@ -98,17 +99,11 @@ class AwardObject < DataFactory
   end
 
   def view(tab)
-    navigate unless on_award?
+    @navigate.call
     unless on(Award).current_tab == tab
       on(Award).send(StringFactory.damballa(tab.to_s))
     end
 
-  end
-
-  def view_tab(tab)
-    unless on(Award).current_tab == tab
-      on(Award).send(StringFactory.damballa(tab.to_s))
-    end
   end
 
   def view_award
@@ -121,33 +116,44 @@ class AwardObject < DataFactory
   end
 
   def navigate
-    #we are in a strange place without a header because of time and money. need to get back from there
-    @browser.goto $base_url+$context unless on(Header).header_div.present?
-
-    if on(Header).krad_portal_element.present?
-      on(Header).krad_portal
-    else
-      # DEBUG.message "krad portal does not exist we can continue on"
-    end
-    on(Header).central_admin
-    on(CentralAdmin).search_award
-    on AwardLookup do |page|
-      page.award_id.set @id
-      page.search
-      # TODO: Remove this when document search issues are resolved
-      begin
-        page.medusa
-      rescue Watir::Exception::UnknownObjectException
-        on(Header).doc_search
-        on DocumentSearch do |search|
-          search.document_id.set @document_id
-          search.search
-          search.open_item @document_id
-        end
+    lambda {
+      #we are in a strange place without a header because of time and money. need to get back from there
+      @browser.goto $base_url+$context unless on(Header).header_div.present?
+      if on(Header).krad_portal_element.present?
+        on(Header).krad_portal
+      else
+        # DEBUG.message "krad portal does not exist we can continue on"
       end
-    end
-    # on(Award).horzontal_links.wait_until_present
-    on(Award).headerinfo_table.wait_until_present
+
+      begin
+        there = on(Award).header_award_id==@id
+      rescue
+        there = false
+      end
+
+      unless there
+        on(Header).central_admin
+        on(CentralAdmin).search_award
+        on AwardLookup do |page|
+          page.award_id.set @id
+          page.search
+          # TODO: Remove this when document search issues are resolved
+          begin
+            page.medusa
+          rescue Watir::Exception::UnknownObjectException
+            on(Header).doc_search
+            on DocumentSearch do |search|
+              search.document_id.set @document_id
+              search.search
+              search.open_item @document_id
+            end
+          end
+        end
+        # on(Award).horzontal_links.wait_until_present
+        on(Award).headerinfo_table.wait_until_present
+      end
+
+      } #lambda
   end
 
   def copy(type='new', parent=nil, descendents=:clear)
@@ -255,9 +261,9 @@ class AwardObject < DataFactory
       page.submit
     end
     DEBUG.pause(11)
-    on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    confirmation
     DEBUG.pause(12)
-
+    raise 'Award not submitted' if on(AwardActions).errors.size > 0
   end
 
   def add_custom_data opts={}
@@ -275,7 +281,7 @@ class AwardObject < DataFactory
   end
 
   def initialize_time_and_money
-    open_document
+    view :award
     on(Award).time_and_money
     # Set up to only create the instance variable if it doesn't exist, yet
     if @time_and_money.nil?
@@ -360,9 +366,12 @@ class AwardObject < DataFactory
     @key_personnel.add defaults.merge!(opts)
   end
 
-  def add_child_from_parent  opts={}
+  def add_child_from_parent opts={}
     view :award_actions
-    defaults = { description: 'child'+random_alphanums(20), navigate: @navigate, key_personnel: @key_personnel }
+    award_copy = data_object_copy
+    DEBUG.inspect award_copy
+
+    defaults = { description: 'child'+random_alphanums(20), navigate: @navigate, key_personnel: award_copy[:key_personnel] }
     @children.add defaults.merge!(opts)
   end
 

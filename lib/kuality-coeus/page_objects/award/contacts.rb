@@ -92,7 +92,7 @@ class AwardContacts < KCAwards
   action(:recalculate) { |b| b.frm.button(name: 'methodToCall.recalculateCreditSplit').click; b.loading}
 
   element(:no_splits) { |b| b.frm.td(text: 'Key Personnel and Credit Split (0)') }
-  value(:people_present) { |b| arry=[]; b.frm.div(id: 'tab-ProjectPersonnel:CombinedCreditSplit-div').table.tbody.tds(class: 'tab-subhead').each {|td| arry << td.text}; arry }
+  value(:people_present) { |b| b.frm.div(id: 'tab-ProjectPersonnel:CombinedCreditSplit-div').table.tbody.tds(class: 'tab-subhead').map {|td| td.text} }
 
   p_action(:unit_lookup_for_person) {|full_name, b| b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").button(title: 'Search ').click }
 

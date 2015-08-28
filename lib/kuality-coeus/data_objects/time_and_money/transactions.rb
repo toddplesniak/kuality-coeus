@@ -10,8 +10,10 @@ class TransactionObject < DataFactory
     defaults = {
         comments: random_alphanums_plus,
         source_award: 'External',
-        obligated_change: random_dollar_value(111),
-        anticipated_change: random_dollar_value(111)
+        obligated_direct_change: random_dollar_value(111),
+        anticipated_direct_change: random_dollar_value(111),
+        obligated_fna_change: random_dollar_value(111),
+        anticipated_fna_change: random_dollar_value(111)
     }
     set_options(defaults.merge(opts))
     requires :destination_award
@@ -28,14 +30,21 @@ class TransactionObject < DataFactory
         @status = page.header_status
       end
       page.expand_all
-      page.comments.fit trans[:comments]
-      page.source_award.pick! trans[:source_award]
-      page.destination_award.pick! trans[:destination_award]
-      page.obligated_change.fit trans[:obligated_change]
-      page.anticipated_change.fit trans[:anticipated_change]
+      page.comments.fit @comments
+      page.source_award.pick! @source_award
+      page.destination_award.pick! @destination_award
 
-      page.obligated_change.fit trans[:obligated_change]
-      page.anticipated_change.fit trans[:anticipated_change]
+      page.obligated_direct_change.fit @obligated_change
+      page.anticipated_direct_change.fit @anticipated_change
+
+      page.obligated_fna_change.fit @obligated_change
+      page.anticipated_fna_change.fit @anticipated_change
+
+      # page.obligated_change.fit trans[:obligated_change]
+      # page.anticipated_change.fit trans[:anticipated_change]
+      #
+      # page.obligated_change.fit trans[:obligated_change]
+      # page.anticipated_change.fit trans[:anticipated_change]
 
       page.add_transaction
       page.save
