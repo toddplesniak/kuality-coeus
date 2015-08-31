@@ -29,22 +29,17 @@ class AwardKeyPersonObject < DataFactory
   def create
     on(AwardContacts).expand_all
     added_persons = []
+
     if @type == 'employee'
       on AwardContacts do |page|
-        page.employee_search
         begin
           added_persons = page.people_present
         rescue
           added_persons = []
         end
-        #need to view person to get the first and last name because full name is given and
-        on KCPerson do |gather|
-          @last_name = gather.last_name
-          @first_name = gather.first_name
-          @full_name = gather.full_name
-          gather.close_window
-        end
+        page.employee_search
       end
+
       on KcPersonLookup do |lookup|
         lookup.last_name.fit @last_name
         lookup.first_name.fit @first_name

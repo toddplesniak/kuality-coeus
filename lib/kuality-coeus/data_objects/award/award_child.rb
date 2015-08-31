@@ -44,7 +44,9 @@ class AwardChildObject < DataFactory
       @id = create.award_id.strip
       @search_key = { award_id: @id }
       @document_status = create.header_status
+      DEBUG.message "doc id #{@document_id.inspect}, id #{@id.inspect}, search key #{@search_key.inspect}, doc status #{@document_status.inspect}"
     end
+    notify_collections(@id, @navigate)
   end
 
   def view(tab)
@@ -70,8 +72,8 @@ class AwardChildObject < DataFactory
       page.submit_button.wait_until_present
       page.submit
     end
-    DEBUG.pause(11)
-    on(Confirmation).yes if on(Confirmation).yes_button.exists?
+    # DEBUG.pause(11)
+    # on(Confirmation).yes if on(Confirmation).yes_button.exists?
   end
 
   def update_from_parent id

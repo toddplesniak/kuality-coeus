@@ -1,4 +1,4 @@
-@award
+@award @wip
 Feature: Award Hierarchy
 
   Testing Award Hierarchy to ensure funds and
@@ -32,46 +32,6 @@ Feature: Award Hierarchy
     And  add a T&M transaction to the first child from External to the Award, with obligated and anticipated amounts of 100
     And  add a T&M transaction to the second child from External to the Award, with obligated and anticipated amounts of 100
     And  add a T&M transaction to the third child from External to the Award, with obligated and anticipated amounts of 100
+    And  submits the T&M document
+    Then the T&M status is final
 
-
-#  Click the Time & Money button to open the document
-#  Click Edit
-#  Transaction Type = Allotment (increment)
-#  Comment (example Add initial funds to all child nodes)
-#  Transactions > show
-#  First transaction- fund root with anticipated
-#  Comment: ex. Anticipated funds
-#  Source = External
-#  Destination + *-00001 (root)
-#  Anticipated Direct Change = 900,000
-#  Anticipated F&A Change = 450,000
-#  Add
-#
-#  Second transaction- fund child node -00002
-#  Comment: ex. Distribution for Tester
-#  Source = *external
-#  Destination + *-00002 (Tester’s node)
-#  Obligated Direct Change = 100,000
-#  Obligated F&A Change = 50,000
-#  Add
-#  Third transaction- fund child node -00003
-#  Comment: ex. Distribution for McAfee
-#  Source = *external
-#  Destination + *-00003 (McAfee’s node)
-#  Obligated Direct Change = 100,000
-#  Obligated F&A Change = 50,000
-#  Add
-#
-#  Fourth transaction- fund child node -00004
-#  Comment: ex. Distribution for Shankle
-#  Source = *external
-#  Destination + *-00004 (Shankle’s node)
-#  Obligated Direct Change = 100,000
-#  Obligated F&A Change = 50,000
-#  Add
-#  Submit the T&M document
-#  Return to Award or close
-
-
-
-#  Scenario: Award hierarchy child nodes created for every project year.

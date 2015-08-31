@@ -125,8 +125,6 @@ And /^all key personnel on the award have at least one unit$/ do
 end
 
 And /^sets credit splits of the the PI to (.*) COI to (.*) and second COI to (.*)$/ do |pi, coi, coi2|
-  DEBUG.message "PI #{@award.principal_investigator.units}, coi-1 #{@award.co_investigators[0].units}, coi-2 #{@award.co_investigators[1].units}"
-
   @award.principal_investigator.edit responsibility: pi, financial: pi
   @award.principal_investigator.update_unit_splits_to_valid(@award.principal_investigator.units)
 
@@ -149,13 +147,7 @@ And /submits the first child with the first co-investigator as the only contact$
   @award.children[0].co_investigators[0].edit project_role: 'Principal Investigator'
   @award.children[0].key_personnel.delete(@award.children[0].co_investigators[0].full_name)
 
-  DEBUG.inspect @award.key_personnel
-  DEBUG.message "now the children"
-  DEBUG.inspect @award.children[0].key_personnel
-
-  exit
-
-
+  #DEBUG -BUG HERE: Navigation takes user to the Award *-00001 when it should be the child award *-00002
   @award.children[0].principal_investigator.update_splits financial: '100', responsibility: '100'
   @award.children[0].principal_investigator.update_unit_splits_to_valid
 

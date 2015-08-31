@@ -41,6 +41,7 @@ class AwardObject < DataFactory
       approved_equipment:    collection('ApprovedEquipment'),
       key_personnel:         collection('AwardKeyPersonnel'),
       reports:               collection('AwardReports'),
+      children:              collection('AwardChild'),
       funding_proposals:     [], # Contents MUST be Hashes with keys :ip_number and :merge_type
       subawards:             [], # Contents MUST be Hashes with keys :org_name and :amount
       sponsor_contacts:      [], # Contents MUST be Hashes with keys :non_employee_id and :project_role
@@ -197,10 +198,15 @@ class AwardObject < DataFactory
   end
 
   def submit
+    # DEBUG.pause(14)
     view :award_actions
+    # DEBUG.pause(14)
     on(AwardActions).submit
+    # DEBUG.pause(14)
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
-    raise 'Award submission failed.' unless on(AwardActions).notification=='Document was successfully submitted.'
+    # DEBUG.pause(14)
+    # raise 'Award submission failed.' unless on(AwardActions).notification=='Document was successfully submitted.'
+    raise 'Award not submitted' if on(AwardActions).errors.size > 0
   end
 
   def add_custom_data opts={}
@@ -289,6 +295,14 @@ class AwardObject < DataFactory
         navigate: @navigate
                      }
     @key_personnel.add defaults.merge!(opts)
+  end
+
+  def add_child_from_parent opts={}
+    view :award_actions
+    # award_copy = data_object_copy
+    # DEBUG.inspect award_copy
+    defaults = { description: 'child'+random_alphanums(20), navigate: @navigate, key_personnel: @key_personnel.dup }
+    @children.add defaults.merge!(opts)
   end
 
   # ==============
