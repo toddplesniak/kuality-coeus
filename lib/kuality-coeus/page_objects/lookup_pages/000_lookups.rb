@@ -30,6 +30,9 @@ class Lookups < BasePage
 
       p_value(:docs_w_status) { |status, b| (b.results_table.rows.find_all{|row| row[3].text==status}).map { |row| row[0].text } }
 
+      action(:return_random_person) { |b| b.return_random_person_links.sample.click }
+      element(:return_random_person_links) { |b| arry=[]; b.results_table.tbody.trs.each {|row| arry << row.link(text: 'return value') if row.td(index: 2).text != @key_personnel[:full_name] }; arry }
+
       # Used as the catch-all "document opening" method for conditional navigation,
       # when we can't know whether the current user will have edit permissions.
       # Note: The assumption is that there is only one item returned in the search,

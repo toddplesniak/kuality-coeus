@@ -109,3 +109,78 @@ end
 And /^adds the unassigned user as a Principal Investigator for the Award$/ do
   @award.add_key_person first_name: 'PleaseDoNot', last_name: 'AddOrEditRoles'
 end
+
+And /adds a (.*) to the award$/ do  |role|
+  @award.view :contacts
+  case role
+    when 'PI' || 'Principal Investigator'
+      @award.add_key_person project_role: 'Principal Investigator'
+    when 'COI' || 'Co-Investigator'
+      @award.add_key_person project_role: 'Co-Investigator'
+  end
+end
+
+And /^all key personnel on the award have at least one unit$/ do
+  @award.key_personnel.validate_units
+end
+
+And /^sets credit splits of the the PI to (.*) COI to (.*) and second COI to (.*)$/ do |pi, coi, coi2|
+  @award.principal_investigator.edit responsibility: pi, financial: pi
+  @award.principal_investigator.update_unit_splits_to_valid(@award.principal_investigator.units)
+
+  @award.co_investigators[0].edit responsibility: coi, financial: coi
+  @award.co_investigators[0].update_unit_splits_to_valid(@award.co_investigators[0].units)
+
+  @award.co_investigators[1].edit responsibility: coi2, financial: coi2
+  @award.co_investigators[1].update_unit_splits_to_valid(@award.co_investigators[1].units)
+end
+
+And /creates a child node that is copied from the parent$/ do
+  @award.add_child_from_parent description: 'child'+random_string(10), account_id: 'child'+random_alphanums(10), transaction_type: '::random::'
+
+end
+
+And /submits the first child with the first co-investigator as the only contact$/ do
+  @award.children[0].view :contacts
+
+  @award.children[0].key_personnel.delete(@award.children[0].principal_investigator.full_name)
+  @award.children[0].co_investigators[0].edit project_role: 'Principal Investigator'
+  @award.children[0].key_personnel.delete(@award.children[0].co_investigators[0].full_name)
+
+  #DEBUG -BUG HERE: Navigation takes user to the Award *-00001 when it should be the child award *-00002
+  @award.children[0].principal_investigator.update_splits financial: '100', responsibility: '100'
+  @award.children[0].principal_investigator.update_unit_splits_to_valid
+
+  #need to select the lead unit
+  @award.children[0].principal_investigator.set_lead_unit @award.children[0].principal_investigator.units[0][:number]
+  #Child node requires a report for the submit button to be present
+  @award.children[0].add_report
+
+  @award.children[0].submit
+end
+
+And  /^submits a second child with the second co-investigator as the only contact$/ do
+  @award.children[1].view :contacts
+  @award.children[1].key_personnel.delete(@award.children[1].principal_investigator.full_name)
+
+  @award.children[1].co_investigators[1].edit project_role: 'Principal Investigator'
+  @award.children[1].key_personnel.delete(@award.children[1].co_investigators[0].full_name)
+
+  @award.children[1].principal_investigator.update_splits financial: '100', responsibility: '100'
+  @award.children[1].principal_investigator.update_unit_splits_to_valid
+
+  #need to select the lead unit
+  @award.children[1].principal_investigator.set_lead_unit @award.children[1].principal_investigator.units[0][:number]
+  #Child node requires a report for the submit button to be present
+  @award.children[1].add_report
+
+  @award.children[1].submit
+end
+
+And /submits the third child with the principal investigator as the only contact$/ do
+  2.times{@award.children[2].key_personnel.delete(@award.children[2].co_investigators[0].full_name) }
+
+  @award.children[2].add_report
+  @award.children[2].submit
+end
+

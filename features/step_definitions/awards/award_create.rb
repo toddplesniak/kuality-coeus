@@ -33,6 +33,18 @@ Given /^the Award Modifier creates? an Award with (.*) as the Lead Unit$/ do |le
   @award = create AwardObject, lead_unit_id: lead_unit
 end
 
+Given /^the (.*) creates an Award for 3 years$/ do |role_name|
+  steps %{ * I log in with the #{role_name} user }
+  # Implicit in this step is that the Award creator
+  # is creating the Award in the unit they have
+  # rights to. This is why this step specifies what the
+  # Award's unit should be...
+  lead_unit = $current_user.roles.name($current_user.role).qualifiers[0][:unit]
+  raise 'Unable to determine a lead unit for the selected user. Please debug your scenario.' if lead_unit.nil?
+  @award = create AwardObject, lead_unit_id: lead_unit, project_start_date: '7/1/2015', project_end_date: '06/30/2018',
+                  obligation_start_date: '07/01/2015', obligation_end_date: '06/20/2018'
+end
+
 #----------------------#
 #Award Validations Based on Errors During Creation
 #----------------------#

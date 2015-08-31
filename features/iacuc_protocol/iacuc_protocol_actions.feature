@@ -27,7 +27,7 @@ Feature: Protocol actions for IACUC Designated Member Review
 
   Scenario: Verify the expiration date is set after the IACUC Protocol is approved
     Then  the expiration date is set for the Protocol
-  @wip
+
   Scenario: IACUC Admin deactivates an IACUC Protocol
     When  the IACUC Administrator deactivates the IACUC Protocol
     Then  the IACUC Protocol status should be Deactivated

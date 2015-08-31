@@ -8,6 +8,7 @@ class KCAwards < BasePage
           'Payment, Reports & Terms', 'Special Review', 'Custom Data',
           'Comments, Notes & Attachments', 'Award Actions', 'Medusa'
 
+  value(:current_tab) {|b| b.frm.span(class: 'tabright tabcurrent').button.value }
   value(:doc_title) { |b| b.noko.div(id: 'headerarea').h1.text.strip }
   action(:time_and_money) { |b| b.t_m_button.when_present.click; b.loading }
   element(:t_m_button) { |b| b.frm.button(name: 'methodToCall.timeAndMoney') }

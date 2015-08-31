@@ -143,8 +143,16 @@ module People
     self.find { |person| person.role=='Principal Investigator' || person.role=='PI/Contact' }
   end
 
+  def principal_investigators
+    self.find_all { |person| person.role=='Principal Investigator' || person.role=='PI/Contact' }
+  end
+
   def co_investigator
     self.find { |person| person.role=='Co-Investigator' }
+  end
+
+  def co_investigators
+    self.find_all { |person| person.role=='Co-Investigator' }
   end
 
   def key_person(role)

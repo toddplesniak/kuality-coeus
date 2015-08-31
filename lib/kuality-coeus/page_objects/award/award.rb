@@ -27,17 +27,18 @@ class Award < KCAwards
   element(:cfda_number) { |b| b.frm.text_field(name: 'document.awardList[0].cfdaNumber') }
   element(:nsf_science_code) { |b| b.frm.select(name: 'document.awardList[0].nsfCode') }
   action(:lookup_sponsor) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.coeus.common.framework.sponsor.Sponsor!!).(((sponsorCode:document.awardList[0].sponsorCode,sponsorName:document.awardList[0].sponsor.sponsorName))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchorDetailsDates').click }
-  element(:project_start_date) { |b| b.frm.text_field(name: /awardEffectiveDate/) }
-  element(:project_end_date) { |b| b.frm.text_field(name: /finalExpirationDate/) }
+  element(:project_start_date) { |b| b.frm.text_field(title: 'Project Start Date') }
+  element(:project_end_date) { |b| b.frm.text_field(title: '* Project End Date') }
   value(:project_end_date_ro) { |b| b.tm_table[1][1].text }
-  element(:obligation_start_date) { |b| b.frm.text_field(name: /currentFundEffectiveDate/) }
-  element(:obligation_end_date) { |b| b.frm.text_field(name: /obligationExpirationDate/) }
-  element(:anticipated_direct) { |b| b.frm.text_field(name: /anticipatedTotalDirect/) }
+  # element(:obligation_start_date) { |b| b.frm.text_field(name: /currentFundEffectiveDate/) }
+  element(:obligation_start_date) { |b| b.frm.text_field(title: 'Project Start Date', index: 1) }
+  element(:obligation_end_date) { |b| b.frm.text_field(title: 'Obligation End Date') }
+  element(:anticipated_direct) { |b| b.frm.text_field(title: 'Anticipated Total Direct') }
   value(:anticipated_direct_ro) { |b| b.tm_table[3][1].text }
-  element(:anticipated_fna) { |b| b.frm.text_field(name: /anticipatedTotalIndirect/) }
-  element(:obligated_direct) { |b| b.frm.text_field(name: /obligatedTotalDirect/) }
+  element(:anticipated_fna) { |b| b.frm.text_field(title: 'Anticipated Total Indirect') }
+  element(:obligated_direct) { |b| b.frm.text_field(title: 'Obligated Total Direct') }
   value(:obligated_direct_ro) { |b| b.tm_table[3][3].text }
-  element(:obligated_fna) { |b| b.frm.text_field(name: /obligatedTotalIndirect/) }
+  element(:obligated_fna) { |b| b.frm.text_field(title: 'Obligated Total Indirect') }
 
   element(:add_organization_name) { |b| b.frm.text_field(name: 'approvedSubawardFormHelper.newAwardApprovedSubaward.organizationName') }
   action(:search_organization) { |b| b.frm.button(name: 'methodToCall.performLookup.(!!org.kuali.coeus.common.framework.org.Organization!!).(((organizationName:approvedSubawardFormHelper.newAwardApprovedSubaward.organizationName,organizationId:approvedSubawardFormHelper.newAwardApprovedSubaward.organizationId))).((``)).((<>)).(([])).((**)).((^^)).((&&)).((//)).((~~)).(::::;;::::).anchorSubawards').click }

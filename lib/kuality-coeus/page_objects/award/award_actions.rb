@@ -28,5 +28,11 @@ class AwardActions < KCAwards
 
   undefine :notification
   value(:notification) { |b| b.noko.div(class: 'msg-excol').div(class: 'kul-error').text }
+  action(:award_hierarchy) { |b| b.award_hierarchy_link.when_present.click }
 
+  #NEW CHILD
+  element(:new_child) { |b| b.frm.radio(index: 0, id: 'awardHierarchyTempObject1createNewChildRadio')}
+  element(:copy_from_parent) { |b| b.frm.radio(index: 1, id: 'awardHierarchyTempObject1createNewChildRadio')}
+  element(:selected_award) { |b| b.frm.radio(index: 2, id: 'awardHierarchyTempObject1createNewChildRadio')}
+  action(:create_child) { |b| b.frm.button(name: /^methodToCall.create.awardNumber/).click }
 end

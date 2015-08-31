@@ -1,7 +1,7 @@
 # coding: UTF-8
 class AwardObject < DataFactory
 
-  include DateFactory, StringFactory, DocumentUtilities
+  include DateFactory, StringFactory, DocumentUtilities, Utilities
 
   attr_reader :award_status,
               :award_title, :lead_unit_id, :activity_type, :award_type, :sponsor_id, :sponsor_type_code,
@@ -11,13 +11,14 @@ class AwardObject < DataFactory
               :anticipated_fna, :obligated_fna,
               :funding_proposals, #TODO: Add Benefits rates and preaward auths...
               :budget_versions, :sponsor_contacts, :payment_and_invoice, :terms, :reports,
-              :approved_equipment
+              :approved_equipment,
+              :children
   attr_accessor :document_status, :document_id, :subawards, :transaction_type, :id, :anticipated_direct, :obligated_direct,
                 # These will probably need to be removed:
                 :anticipated_amount, :obligated_amount,
                 :custom_data, :description, :project_start_date, :project_end_date, :obligation_start_date,
-                :obligation_end_date, :time_and_money, :parent
-  def_delegators :@key_personnel, :principal_investigator
+                :obligation_end_date, :time_and_money, :parent, :people_present, :key_people
+  def_delegators :@key_personnel, :principal_investigator, :co_investigator,  :co_investigators
 
   def initialize(browser, opts={})
     @browser = browser
@@ -40,6 +41,7 @@ class AwardObject < DataFactory
       approved_equipment:    collection('ApprovedEquipment'),
       key_personnel:         collection('AwardKeyPersonnel'),
       reports:               collection('AwardReports'),
+      children:              collection('AwardChild'),
       funding_proposals:     [], # Contents MUST be Hashes with keys :ip_number and :merge_type
       subawards:             [], # Contents MUST be Hashes with keys :org_name and :amount
       sponsor_contacts:      [], # Contents MUST be Hashes with keys :non_employee_id and :project_role
@@ -97,7 +99,7 @@ class AwardObject < DataFactory
   def view(tab)
     @navigate.call
     return if on(Award).error_message.present?
-    unless on(Award).send(StringFactory.damballa("#{tab}_element")).parent.class_name=~/tabcurrent$/
+    unless on(Award).current_tab == tab
       on(Award).send(StringFactory.damballa(tab.to_s))
     end
   end
@@ -178,7 +180,7 @@ class AwardObject < DataFactory
     @reports.add opts
   end
 
-  def add_terms opts={}
+   def add_terms opts={}
     raise "You already created terms in your scenario.\nYou want to interact with that object directly, now." unless @terms.nil?
     view :payment_reports__terms
     @terms = make AwardTermsObject, opts
@@ -196,10 +198,15 @@ class AwardObject < DataFactory
   end
 
   def submit
+    # DEBUG.pause(14)
     view :award_actions
+    # DEBUG.pause(14)
     on(AwardActions).submit
+    # DEBUG.pause(14)
     on(Confirmation).yes if on(Confirmation).yes_button.exists?
-    raise 'Award submission failed.' unless on(AwardActions).notification=='Document was successfully submitted.'
+    # DEBUG.pause(14)
+    # raise 'Award submission failed.' unless on(AwardActions).notification=='Document was successfully submitted.'
+    raise 'Award not submitted' if on(AwardActions).errors.size > 0
   end
 
   def add_custom_data opts={}
@@ -288,6 +295,14 @@ class AwardObject < DataFactory
         navigate: @navigate
                      }
     @key_personnel.add defaults.merge!(opts)
+  end
+
+  def add_child_from_parent opts={}
+    view :award_actions
+    # award_copy = data_object_copy
+    # DEBUG.inspect award_copy
+    defaults = { description: 'child'+random_alphanums(20), navigate: @navigate, key_personnel: @key_personnel.dup }
+    @children.add defaults.merge!(opts)
   end
 
   # ==============

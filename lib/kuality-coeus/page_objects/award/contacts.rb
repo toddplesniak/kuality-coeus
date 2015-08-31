@@ -18,6 +18,23 @@ class AwardContacts < KCAwards
   value(:key_personnel) { |b| b.key_personnel_table.hiddens(name: /award_person.identifier_\d+/).map { |hid| hid.parent.text.strip } }
 
   value(:get_full_name) {|b| b.frm.div(id: 'per.fullName.div').text.strip }
+
+  p_element(:person_row) { |full_name, b| b.frm.table(id: 'contacts-table').div(text: /#{full_name}/).button(title: 'Direct Inquiry').parent.parent.parent }
+  p_action(:delete_person) { |full_name, b| b.person_row(full_name).button(name: /^methodToCall\.deleteProjectPerson\.line/).when_present.click; b.loading }
+
+  p_element(:edit_project_role) { |full_name, b| b.person_row(full_name).select(id: /contactRoleCode/) }
+
+  p_action(:delete_person_with_role) { |role, b| b.frm.table(id: 'contacts-table').select_list(value: role).parent.parent.parent.button(name: /^methodToCall\.deleteProjectPerson\.line/).click; b.loading }
+
+  #gathers people in a hash {[name: 'bob', role: 'COI'],}
+  value(:get_key_people) do |b|
+    peoples = []
+    b.frm.table(id: 'contacts-table').trs.each do |row|
+      ( peoples <<  { name: row.td.text.strip, role: row.select.selected_options.map(&:text).join } ) if row.button(name: /^methodToCall\.deleteProjectPerson\.line/).exists?
+    end
+    peoples
+  end
+
   # Person Details
 
   # Unit Details
@@ -26,7 +43,12 @@ class AwardContacts < KCAwards
   action(:add_unit) { |name, b| b.person_units(name).button(title: 'Add Contact').click }
   # This returns an array of hashes, like so:
   # [{:name=>"Unit1 Name", :number=>"Unit1 Number"}, {:name=>"Unit2 Name", :number=>"Unit2 Number"}]
-  action(:units) { |name, b| b.person_units(name).to_a[2..-1].map{ |row| {name: row[2].strip, number: row[3].strip } } }
+  #If statement required because Principal Investigator has radio buttons that messes up the indexing
+  action(:units) { |name, b| if b.lead_unit_radio_exists(name)
+                               b.person_units(name).to_a[2..-1].map{ |row| {name: row[2].strip, number: row[3].strip } }
+                            else
+                              b.person_units(name).to_a[2..-1].map{ |row| {name: row[1].strip, number: row[2].strip } }
+                            end }
 
   p_element(:unit_details_errors_div) { |name, p| p.target_key_person_div(name).div(class: 'left-errmsg-tab').div }
   p_value(:unit_details_errors) { |name, p| p.unit_details_errors_div(name).divs.collect { |div| div.text } }
@@ -35,7 +57,10 @@ class AwardContacts < KCAwards
   element(:lead_unit_radio_button) { |b| b.frm.radio(name: 'selectedLeadUnit') }
   p_element(:lead_unit_radio) { |name, unit, b| b.person_unit_row(name, unit).radio(name: 'selectedLeadUnit') }
   p_action(:delete_unit) { |name, unit, b| b.delete_unit_element(name, unit).click }
-  p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /methodToCall.deleteProjectPersonUnit/) }
+  # p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /methodToCall.deleteProjectPersonUnit/) }
+  p_value(:lead_unit_radio_exists) { |name, b| b.person_units(name).radio(name: 'selectedLeadUnit').exists? }
+  # p_action(:delete_unit) { |name, unit, b| b.person_unit_row(name, unit).button(name: /^methodToCall\.deleteProjectPersonUnit/).click }
+  p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /^methodToCall\.deleteProjectPersonUnit/) }
   action(:unit_name) { |name, unit, b| b.person_unit_row(name, unit)[2].text.strip }
 
   action(:delete_unit_row) { |b| b.frm.button(name: /methodToCall.deleteProjectPersonUnit/).click }
@@ -58,11 +83,20 @@ class AwardContacts < KCAwards
   element(:close_button) { |b| b.frm.button(title: 'close') }
 
   # Combined Credit Split
-  element(:cs_recognition) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[0].credit") }
-  element(:cs_responsibility) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[1].credit") }
-  element(:cs_space) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[2].credit") }
-  element(:cs_financial) {|b| b.frm.text_field(id: "document.awardList[0].projectPersons[0].creditSplits[3].credit") }
+  element(:cs_recognition) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[0].credit') }
+  element(:cs_responsibility) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[1].credit') }
+  element(:cs_space) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[2].credit') }
+  element(:cs_financial) {|b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].creditSplits[3].credit') }
 
+  element(:cs_unit_recognition) { |b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].units[0].creditSplits[0].credit') }
+  element(:cs_unit_responsibility) { |b| b.frm.text_field(id: 'document.awardList[0].projectPersons[0].units[0].creditSplits[1].credit') }
+
+  action(:recalculate) { |b| b.frm.button(name: 'methodToCall.recalculateCreditSplit').click; b.loading}
+
+  element(:no_splits) { |b| b.frm.td(text: 'Key Personnel and Credit Split (0)') }
+  value(:people_present) { |b| b.frm.div(id: 'tab-ProjectPersonnel:CombinedCreditSplit-div').table.tbody.tds(class: 'tab-subhead').map {|td| td.text} }
+
+  p_action(:unit_lookup_for_person) {|full_name, b| b.frm.div(id: "tab-#{full_name.gsub(' ', '')}:UnitDetails-div").button(title: 'Search ').click }
 
   # ===========
   private
