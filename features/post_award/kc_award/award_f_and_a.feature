@@ -1,4 +1,4 @@
-@award @performance
+@award
 Feature: Award F&A Rates
 
   As an Award Modifier, I want the system to help

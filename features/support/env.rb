@@ -38,8 +38,6 @@ After do |scenario|
     # DEBUG
     DEBUG.message "#{Time.now}\n#{scenario.name} - Failed\non URL: #{@browser.url}"
   end
-  DEBUG.message Time.now
-  DEBUG.message(`ps aufxww | grep Xvfb`) if ENV['HEADLESS']
 end
 
 at_exit {
