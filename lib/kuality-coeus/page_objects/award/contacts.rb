@@ -26,15 +26,6 @@ class AwardContacts < KCAwards
 
   p_action(:delete_person_with_role) { |role, b| b.frm.table(id: 'contacts-table').select_list(value: role).parent.parent.parent.button(name: /^methodToCall\.deleteProjectPerson\.line/).click; b.loading }
 
-  #gathers people in a hash {[name: 'bob', role: 'COI'],}
-  value(:get_key_people) do |b|
-    peoples = []
-    b.frm.table(id: 'contacts-table').trs.each do |row|
-      ( peoples <<  { name: row.td.text.strip, role: row.select.selected_options.map(&:text).join } ) if row.button(name: /^methodToCall\.deleteProjectPerson\.line/).exists?
-    end
-    peoples
-  end
-
   # Person Details
 
   # Unit Details
@@ -57,9 +48,6 @@ class AwardContacts < KCAwards
   element(:lead_unit_radio_button) { |b| b.frm.radio(name: 'selectedLeadUnit') }
   p_element(:lead_unit_radio) { |name, unit, b| b.person_unit_row(name, unit).radio(name: 'selectedLeadUnit') }
   p_action(:delete_unit) { |name, unit, b| b.delete_unit_element(name, unit).click }
-  # p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /methodToCall.deleteProjectPersonUnit/) }
-  p_value(:lead_unit_radio_exists) { |name, b| b.person_units(name).radio(name: 'selectedLeadUnit').exists? }
-  # p_action(:delete_unit) { |name, unit, b| b.person_unit_row(name, unit).button(name: /^methodToCall\.deleteProjectPersonUnit/).click }
   p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /^methodToCall\.deleteProjectPersonUnit/) }
   action(:unit_name) { |name, unit, b| b.person_unit_row(name, unit)[2].text.strip }
 

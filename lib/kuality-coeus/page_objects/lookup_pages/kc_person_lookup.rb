@@ -20,8 +20,4 @@ class KcPersonLookup < Lookups
   value(:returned_full_names) { |b| b.noko.table(id: 'row').rows.collect{ |row| row[FULL_NAME].text }.tap(&:shift).delete_if{ |name| name==" " } }
   value(:returned_user_names) { |b| b.noko.table(id: 'row').rows.collect{ |row| row[USER_NAME].text }.tap(&:shift) }
 
-  # element(:gather_people) {|b| hsh={}; b.results_table.tbody.trs.each {|row| hsh[row.td(index: 2).text] = row.link(text: 'return value') }; hsh }
-  #used with the gather
-  # action(:select_person) {|p| p.click}
-
 end
