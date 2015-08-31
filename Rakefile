@@ -102,26 +102,45 @@ def clean_first_run
   if File.exist? rep
     cuke = IO.read rep
     features = JSON.parse cuke
-    failures = []
+    # Delete the failing scenarios...
     features.each do |feature|
-      statuses = []
-      feature['elements'].each do |element|
-        statuses << element['steps'].map { |s| s['result']['status'] }
-      end
-      statuses.flatten!
-      if statuses.include?('failed') || statuses.include?('skipped')
-        failures << feature
+      feature['elements'].delete_if do |element|
+        step_statuses = element['steps'].map { |step| step['result']['status'] }
+        true if step_statuses.include?('failed') || step_statuses.include?('skipped')
+        case(element['type'])
+          when 'background'
+            true if element['before'][0]['result']['status']=='failed' || element['before'][0]['result']['status']=='skipped'
+          when 'scenario'
+            true if element['after'][0]['result']['status']=='failed' || element['after'][0].has_key?('embeddings')
+          else
+            raise "Element type #{element['type']} not accounted for. Please add this code."
+        end
       end
     end
-    passed = features - failures
-    failing = JSON.pretty_generate failures
-    passing = JSON.pretty_generate passed
-    File.write 'cucumber_clean.json', passing
-    File.write "first_run_failures_build_#{ENV['BUILD_ID']}.json", failing
+    # Extra "background" and "scenario" elements need to be deleted...
+    features.each do |feature|
+      next if feature['elements'].size < 2
+      feature['elements'].each_with_index do |element, index|
+        delete_it = case element['type']
+                      when 'background'
+                        true if feature['elements'][index+1].nil? || feature['elements'][index+1]['type']=='background'
+                      when 'scenario'
+                        true if feature['elements'][index-1].nil? || feature['elements'][index-1]['type']=='scenario'
+                      else
+                        raise "Element type #{element['type']} not accounted for. Please add this code."
+                    end
+        element['delete_me'] = 'yes' if delete_it
+      end
+      feature['elements'].delete_if { |element| element['delete_me']=='yes' }
+    end
+    features.delete_if { |f| f['elements'].empty? }
+    passing = JSON.pretty_generate features
+    File.write 'clean.json', passing
   end
 end
 
 def clean_rerun
+  list = JSON.parse(IO.read('clean.json'))
   rep = 'rerun.json'
   cuke = IO.read rep
   features = JSON.parse cuke
@@ -141,6 +160,14 @@ def clean_rerun
       end
     end
   end
-  json = JSON.pretty_generate features
-  File.write 'cucumber_fix.json', json
+  features.each do |feature|
+    item = list.find { |item| item['id']==feature['id'] }
+    if item
+      feature['elements'].each { |e| item['elements'] << e }
+    else
+      list << feature
+    end
+  end
+  json = JSON.pretty_generate list
+  File.write 'cucumber.json', json
 end
