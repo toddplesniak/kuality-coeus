@@ -40,12 +40,6 @@ class TransactionObject < DataFactory
       page.obligated_fna_change.fit @obligated_change
       page.anticipated_fna_change.fit @anticipated_change
 
-      # page.obligated_change.fit trans[:obligated_change]
-      # page.anticipated_change.fit trans[:anticipated_change]
-      #
-      # page.obligated_change.fit trans[:obligated_change]
-      # page.anticipated_change.fit trans[:anticipated_change]
-
       page.add_transaction
       page.save
       @number=page.last_transaction_id
