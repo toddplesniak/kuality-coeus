@@ -51,6 +51,8 @@ class AwardContacts < KCAwards
   p_element(:delete_unit_element) { |name, unit, b| b.person_unit_row(name, unit).button(name: /^methodToCall\.deleteProjectPersonUnit/) }
   action(:unit_name) { |name, unit, b| b.person_unit_row(name, unit)[2].text.strip }
 
+  p_value(:lead_unit_radio_exists) { |name, b| b.person_units(name).radio(name: 'selectedLeadUnit').exists? }
+
   action(:delete_unit_row) { |b| b.frm.button(name: /methodToCall.deleteProjectPersonUnit/).click }
   # This button is only present in the context of a Key Person...
   action(:add_unit_details) { |name, p| p.person_units(name).button(title: 'Add Unit Details').click }

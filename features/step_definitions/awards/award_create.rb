@@ -43,6 +43,7 @@ Given /^the (.*) creates an Award for 3 years$/ do |role_name|
   raise 'Unable to determine a lead unit for the selected user. Please debug your scenario.' if lead_unit.nil?
   @award = create AwardObject, lead_unit_id: lead_unit, project_start_date: '7/1/2015', project_end_date: '06/30/2018',
                   obligation_start_date: '07/01/2015', obligation_end_date: '06/20/2018'
+  DEBUG.inspect @award
 end
 
 #----------------------#
